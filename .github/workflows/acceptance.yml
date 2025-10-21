@@ -15,9 +15,15 @@ jobs:
   acceptance:
     name: Acceptance
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [in-memory, redis]
     permissions:
       contents: read
       id-token: write
+    env:
+      ALPHAVANTAGE_API_KEY: ${{ secrets.ALPHAVANTAGE_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -57,12 +63,17 @@ jobs:
       - name: Run unit tests
         run: poetry run pytest -q tests/unit
 
-      - name: Run acceptance tests (opt-in markers)
-        env:
-          ALPHAVANTAGE_API_KEY: ${{ secrets.ALPHAVANTAGE_API_KEY }}
+      - name: Select profile env
+        if: matrix.profile == 'redis'
+        run: echo "COMPOSE_PROFILES=redis" >> "$GITHUB_ENV"
+
+      - name: Echo acceptance context
         run: |
+          echo "Matrix profile: ${{ matrix.profile }}"
           echo "AlphaVantage key configured: $([ -n "$ALPHAVANTAGE_API_KEY" ] && echo yes || echo no)"
-          poetry run pytest -q -m acceptance
+
+      - name: Run acceptance (Makefile)
+        run: make accept
 
       - name: Generate SBOM (CycloneDX JSON)
         uses: anchore/sbom-action@v0

@@ -39,6 +39,7 @@ cashews = { version = "^7.4.1", extras = ["redis"] }
 loguru = "^0.7.2"
 numpy = "^2.1.3"
 numpy-financial = "^1.0.0"
+svc-infra = { path = "../svc-infra", develop = true }
 
 # Providers (can be heavy; keep in main deps for simplicity initially)
 yahooquery = "^2.3.7"
@@ -60,10 +61,11 @@ types-requests = "^2.32.0.20241016"
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_functions = ["test_*"]
-addopts = "-q"
+addopts = "-q -m 'not acceptance'"
 markers = [
     "providers: External provider client tests",
     "models: Financial domain models tests",
+    "acceptance: Acceptance tests (opt-in)",
 ]
 
 [tool.ruff]

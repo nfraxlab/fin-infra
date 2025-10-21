@@ -13,15 +13,15 @@ Comprehensive checklist for making fin-infra production‑ready. Each section fo
 ## Must‑have (Ship with v1)
 
 ### A0. Acceptance Harness & CI Promotion Gate (new)
-- [ ] Design: Acceptance env contract (ports, env, seed keys, base URL). (ADR‑0001 — docs/acceptance.md)
-- [ ] Implement: docker-compose.test.yml + Makefile targets (accept/up/wait/seed/down).
+- [x] Design: Acceptance env contract (ports, env, seed keys, base URL). (ADR‑0001 — docs/acceptance.md)
+- [x] Implement: docker-compose.test.yml + Makefile targets (accept/up/wait/seed/down).
 	- Files: docker-compose.test.yml, Makefile
-- [ ] Implement: minimal acceptance app and first smoke test.
+- [x] Implement: minimal acceptance app and first smoke test.
 	- Files: tests/acceptance/app.py, tests/acceptance/test_smoke_ping.py, tests/acceptance/conftest.py
-- [ ] Implement: wait-for helper (Makefile curl loop) and tester container.
+- [x] Implement: wait-for helper (Makefile curl loop) and tester container.
 - [x] Verify: CI job to run acceptance matrix and teardown.
 	- Files: .github/workflows/acceptance.yml
-- [ ] Docs: docs/acceptance.md and docs/acceptance-matrix.md updated for tester and profiles.
+- [x] Docs: docs/acceptance.md and docs/acceptance-matrix.md updated for tester and profiles.
 - [x] Supply-chain: generate SBOM and image scan (Trivy) with severity gate; upload SBOM as artifact. (acceptance.yml)
 - [x] Provenance: sign SBOM artifact (cosign keyless) — best-effort for v1. (acceptance.yml)
 - [ ] Backend matrix: run acceptance against in‑memory + Redis (cache) profiles.

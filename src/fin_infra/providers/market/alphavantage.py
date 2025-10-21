@@ -10,7 +10,7 @@ import httpx
 from .base import MarketDataProvider
 from ...models import Quote, Candle
 from ...settings import Settings
-from ...utils.cache import cached
+from typing import Any
 
 
 _BASE = "https://www.alphavantage.co/query"
@@ -28,7 +28,6 @@ class AlphaVantageMarketData(MarketDataProvider):
             self.settings, "alphavantage_api_key", None
         )
 
-    @cached(ttl=15)
     def quote(self, symbol: str) -> Quote:
         if not self.api_key:
             # Return a minimal placeholder to keep type contract; price 0
@@ -45,7 +44,6 @@ class AlphaVantageMarketData(MarketDataProvider):
         )
         return Quote(symbol=symbol, price=price, as_of=as_of)
 
-    @cached(ttl=60)
     def history(self, symbol: str, *, period: str = "1mo", interval: str = "1d") -> Sequence[Candle]:
         # Alpha Vantage uses fixed functions; map interval roughly to TIME_SERIES_DAILY
         if not self.api_key:
