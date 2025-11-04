@@ -100,7 +100,7 @@ def easy_market(
 def add_market_data(
     app: "FastAPI",
     *,
-    provider: str | None = None,
+    provider: str | MarketDataProvider | None = None,
     prefix: str = "/market",
     cache_ttl: int = 60,
     **config
@@ -130,10 +130,10 @@ def add_market_data(
     
     Args:
         app: FastAPI application instance
-        provider: Provider name (default: auto-detect from env or "yahoo")
+        provider: Provider name ("alphavantage", "yahoo"), provider instance, or None for auto-detect
         prefix: URL prefix for market routes (default: "/market")
         cache_ttl: Cache TTL in seconds for quotes (default: 60)
-        **config: Optional provider configuration overrides
+        **config: Optional provider configuration overrides (ignored if provider is an instance)
     
     Returns:
         Configured MarketDataProvider instance used by the routes
@@ -150,8 +150,13 @@ def add_market_data(
         >>> app = easy_service_app(name="FinanceAPI")
         >>> market = add_market_data(app)
         
-        # With Alpha Vantage provider
+        # With provider name
         >>> market = add_market_data(app, provider="alphavantage")
+        
+        # With provider instance (useful for custom configuration)
+        >>> from fin_infra.markets import easy_market
+        >>> market_provider = easy_market(provider="yahoo")
+        >>> market = add_market_data(app, provider=market_provider)
         
         # Custom prefix and cache TTL
         >>> market = add_market_data(
@@ -177,8 +182,11 @@ def add_market_data(
     if TYPE_CHECKING:
         from fastapi import FastAPI
     
-    # Create market provider instance
-    market = easy_market(provider=provider, **config)
+    # Create market provider instance (or use the provided one)
+    if isinstance(provider, MarketDataProvider):
+        market = provider
+    else:
+        market = easy_market(provider=provider, **config)
     
     # Create router
     router = APIRouter(prefix=prefix, tags=["market"])

@@ -115,6 +115,28 @@ class TestAddBanking:
         response = client.get("/banking/accounts", headers={"Authorization": "InvalidFormat token123"})
         assert response.status_code == 401
         assert "Invalid authorization header" in response.json()["detail"]
+    
+    def test_add_banking_with_provider_instance(self):
+        """Test that add_banking accepts a provider instance directly."""
+        from fin_infra.providers.base import BankingProvider
+        
+        app = FastAPI()
+        
+        # Create mock provider instance that implements BankingProvider
+        mock_provider = Mock(spec=BankingProvider)
+        mock_provider.create_link_token.return_value = "link_token_instance"
+        
+        from fin_infra.banking import add_banking
+        banking = add_banking(app, provider=mock_provider)
+        
+        # Should use the provided instance directly
+        assert banking is mock_provider
+        
+        # Test that routes work with instance
+        client = TestClient(app)
+        response = client.post("/banking/link", json={"user_id": "user123"})
+        assert response.status_code == 200
+        assert response.json() == {"link_token": "link_token_instance"}
 
 
 class TestAddMarketData:
@@ -233,6 +255,34 @@ class TestAddMarketData:
             response = client.get("/market/quote/INVALID")
             assert response.status_code == 400
             assert "Invalid symbol" in response.json()["detail"]
+    
+    def test_add_market_data_with_provider_instance(self):
+        """Test that add_market_data accepts a provider instance directly."""
+        from fin_infra.providers.base import MarketDataProvider
+        from fin_infra.models import Quote
+        from datetime import datetime
+        
+        app = FastAPI()
+        
+        # Create mock provider instance that implements MarketDataProvider
+        mock_provider = Mock(spec=MarketDataProvider)
+        # Return a proper Quote model (not Mock)
+        mock_quote = Quote(symbol="TSLA", price=250.0, as_of=datetime.now(), currency="USD")
+        mock_provider.quote.return_value = mock_quote
+        
+        from fin_infra.markets import add_market_data
+        market = add_market_data(app, provider=mock_provider)
+        
+        # Should use the provided instance directly
+        assert market is mock_provider
+        
+        # Test that routes work with instance
+        client = TestClient(app)
+        response = client.get("/market/quote/TSLA")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["symbol"] == "TSLA"
+        assert data["price"] == 250.0
     
     def test_add_market_data_auto_detect_provider(self):
         """Test that add_market_data auto-detects provider from env."""

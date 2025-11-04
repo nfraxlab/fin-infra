@@ -164,7 +164,7 @@ def easy_banking(provider: str = "teller", **config) -> BankingProvider:
 def add_banking(
     app: "FastAPI",
     *,
-    provider: str | None = None,
+    provider: str | BankingProvider | None = None,
     prefix: str = "/banking",
     cache_ttl: int = 60,
     **config
@@ -210,10 +210,10 @@ def add_banking(
     
     Args:
         app: FastAPI application instance
-        provider: Provider name (default: from BANKING_PROVIDER env or "teller")
+        provider: Provider name ("plaid", "teller"), provider instance, or None for auto-detect
         prefix: URL prefix for banking routes (default: "/banking")
         cache_ttl: Cache TTL in seconds for account data (default: 60)
-        **config: Optional provider configuration overrides
+        **config: Optional provider configuration overrides (ignored if provider is an instance)
     
     Returns:
         Configured BankingProvider instance used by the routes
@@ -223,15 +223,20 @@ def add_banking(
         ImportError: If svc-infra or provider SDK is not installed
     
     Examples:
-        # Basic setup with Teller (default)
+        # Basic setup with auto-detect (Teller default)
         >>> from svc_infra.api.fastapi.ease import easy_service_app
         >>> from fin_infra.banking import add_banking
         >>> 
         >>> app = easy_service_app(name="FinanceAPI")
         >>> banking = add_banking(app)
         
-        # With Plaid provider
+        # With provider name
         >>> banking = add_banking(app, provider="plaid")
+        
+        # With provider instance (useful for custom configuration)
+        >>> from fin_infra.banking import easy_banking
+        >>> banking_provider = easy_banking(provider="teller")
+        >>> banking = add_banking(app, provider=banking_provider)
         
         # Custom prefix and cache TTL
         >>> banking = add_banking(
@@ -256,12 +261,14 @@ def add_banking(
     from fastapi import APIRouter, Depends, Header, HTTPException, Query
     from datetime import date
     
-    # Auto-detect provider from environment if not specified
-    if provider is None:
-        provider = os.getenv("BANKING_PROVIDER", "teller")
-    
-    # Create banking provider instance
-    banking = easy_banking(provider=provider, **config)
+    # Create banking provider instance (or use the provided one)
+    if isinstance(provider, BankingProvider):
+        banking = provider
+    else:
+        # Auto-detect provider from environment if not specified
+        if provider is None:
+            provider = os.getenv("BANKING_PROVIDER", "teller")
+        banking = easy_banking(provider=provider, **config)
     
     # Create router
     router = APIRouter(prefix=prefix, tags=["banking"])
