@@ -44,7 +44,9 @@ Environment Variables:
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
+
+from pydantic import BaseModel
 
 from ..providers.registry import resolve
 from ..providers.base import BankingProvider
@@ -54,6 +56,28 @@ if TYPE_CHECKING:
 
 
 __all__ = ["easy_banking", "add_banking"]
+
+
+# Pydantic models defined at module level to avoid forward reference issues
+class CreateLinkTokenRequest(BaseModel):
+    """Request model for creating a link token."""
+    user_id: str
+
+
+class CreateLinkTokenResponse(BaseModel):
+    """Response model for link token creation."""
+    link_token: str
+
+
+class ExchangeTokenRequest(BaseModel):
+    """Request model for exchanging public token."""
+    public_token: str
+
+
+class ExchangeTokenResponse(BaseModel):
+    """Response model for token exchange."""
+    access_token: str
+    item_id: Optional[str] = None
 
 
 def easy_banking(provider: str = "teller", **config) -> BankingProvider:
@@ -228,6 +252,10 @@ def add_banking(
         - docs/banking.md: API documentation and examples
         - svc-infra docs: Backend integration patterns
     """
+    # Import FastAPI router and dependencies FIRST
+    from fastapi import APIRouter, Depends, Header, HTTPException, Query
+    from datetime import date
+    
     # Auto-detect provider from environment if not specified
     if provider is None:
         provider = os.getenv("BANKING_PROVIDER", "teller")
@@ -235,13 +263,71 @@ def add_banking(
     # Create banking provider instance
     banking = easy_banking(provider=provider, **config)
     
-    # TODO: Mount routes in next implementation phase
-    # This will include:
-    # - FastAPI router with banking endpoints
-    # - Integration with svc-infra cache decorators
-    # - PII masking in logging
-    # - Token validation middleware
+    # Create router
+    router = APIRouter(prefix=prefix, tags=["banking"])
     
-    # For now, return the provider instance
-    # Full route mounting will be implemented in the next phase
+    # Dependency to extract access token from header
+    def get_access_token(authorization: str = Header(..., alias="Authorization")) -> str:
+        if not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Invalid authorization header")
+        return authorization[7:]  # Strip "Bearer "
+    
+    # Routes - use module-level Pydantic models
+    @router.post("/link", response_model=CreateLinkTokenResponse)
+    async def create_link_token(request: CreateLinkTokenRequest):
+        """Create link token for user authentication."""
+        link_token = banking.create_link_token(user_id=request.user_id)
+        return CreateLinkTokenResponse(link_token=link_token)
+    
+    @router.post("/exchange", response_model=ExchangeTokenResponse)
+    async def exchange_token(request: ExchangeTokenRequest):
+        """Exchange public token for access token (Plaid flow)."""
+        result = banking.exchange_public_token(public_token=request.public_token)
+        return ExchangeTokenResponse(**result)
+    
+    @router.get("/accounts")
+    async def get_accounts(access_token: str = Depends(get_access_token)):
+        """List accounts for access token."""
+        accounts = banking.accounts(access_token=access_token)
+        return {"accounts": accounts}
+    
+    @router.get("/transactions")
+    async def get_transactions(
+        access_token: str = Depends(get_access_token),
+        start_date: Optional[date] = Query(None),
+        end_date: Optional[date] = Query(None),
+    ):
+        """List transactions for access token."""
+        transactions = banking.transactions(
+            access_token=access_token,
+            start_date=start_date,
+            end_date=end_date,
+        )
+        return {"transactions": transactions}
+    
+    @router.get("/balances")
+    async def get_balances(
+        access_token: str = Depends(get_access_token),
+        account_id: Optional[str] = Query(None),
+    ):
+        """Get current balances."""
+        balances = banking.balances(
+            access_token=access_token,
+            account_id=account_id,
+        )
+        return {"balances": balances}
+    
+    @router.get("/identity")
+    async def get_identity(access_token: str = Depends(get_access_token)):
+        """Get identity/account holder information."""
+        identity = banking.identity(access_token=access_token)
+        return {"identity": identity}
+    
+    # Mount router to app
+    app.include_router(router)
+    
+    # Store provider instance on app state for access in routes
+    if not hasattr(app.state, "banking_provider"):
+        app.state.banking_provider = banking
+    
     return banking
