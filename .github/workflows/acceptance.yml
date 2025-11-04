@@ -79,15 +79,15 @@ jobs:
         uses: anchore/sbom-action@v0
         with:
           path: .
-          artifact-name: fin-infra-sbom-${{ github.run_id }}-${{ github.run_attempt }}
-          output-file: sbom.cdx.json
+          artifact-name: fin-infra-sbom-${{ matrix.profile }}
+          output-file: sbom-${{ matrix.profile }}.cdx.json
           format: cyclonedx-json
 
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v4
         with:
-          name: sbom-cdx-${{ github.run_id }}-${{ github.run_attempt }}
-          path: sbom.cdx.json
+          name: sbom-cdx-${{ matrix.profile }}
+          path: sbom-${{ matrix.profile }}.cdx.json
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3
@@ -98,14 +98,14 @@ jobs:
         run: |
           cosign version
           cosign sign-blob \
-            --output-signature sbom.cdx.json.sig \
-            --output-certificate sbom.cdx.json.crt \
-            sbom.cdx.json
+            --output-signature sbom-${{ matrix.profile }}.cdx.json.sig \
+            --output-certificate sbom-${{ matrix.profile }}.cdx.json.crt \
+            sbom-${{ matrix.profile }}.cdx.json
 
       - name: Upload SBOM signature artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: sbom-signature-${{ github.run_id }}-${{ github.run_attempt }}
+          name: sbom-signature-${{ matrix.profile }}
           path: |
-            sbom.cdx.json.sig
-            sbom.cdx.json.crt
+            sbom-${{ matrix.profile }}.cdx.json.sig
+            sbom-${{ matrix.profile }}.cdx.json.crt
