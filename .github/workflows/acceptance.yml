@@ -58,7 +58,7 @@ jobs:
           echo "lock_status=recreated" >> $GITHUB_OUTPUT
 
       - name: Install deps (main + dev)
-        run: poetry install --no-root --only main,dev --sync --no-interaction
+        run: poetry install --only main,dev --sync --no-interaction
 
       - name: Run unit tests
         run: poetry run pytest -q tests/unit
