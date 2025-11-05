@@ -44,6 +44,7 @@ Environment Variables:
 from __future__ import annotations
 
 import os
+from datetime import date
 from typing import TYPE_CHECKING, Optional
 
 from pydantic import BaseModel
@@ -265,7 +266,6 @@ def add_banking(
     """
     # Import FastAPI dependencies
     from fastapi import Depends, Header, HTTPException, Query
-    from datetime import date
     
     # Import svc-infra public router (no auth - banking providers use their own access tokens like Plaid/Teller)
     from svc_infra.api.fastapi.dual.public import public_router
