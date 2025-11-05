@@ -173,13 +173,15 @@ Every fin-infra capability with an `add_*()` helper must:
 1. Use appropriate dual router (public_router, user_router, etc.)
 2. Mount with `include_in_schema=True` for OpenAPI visibility
 3. Use descriptive tags for doc organization (e.g., "Banking", "Market Data")
-4. Return provider instance for programmatic access
-5. Store provider on `app.state` for route access
+4. **CRITICAL**: Call `add_prefixed_docs()` to register landing page card
+5. Return provider instance for programmatic access
+6. Store provider on `app.state` for route access
 
 Example:
 ```python
 def add_market_data(app: FastAPI, provider=None, prefix="/market") -> MarketDataProvider:
     from svc_infra.api.fastapi.dual.public import public_router
+    from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
     
     market = easy_market(provider=provider)
     router = public_router(prefix=prefix, tags=["Market Data"])
@@ -189,9 +191,27 @@ def add_market_data(app: FastAPI, provider=None, prefix="/market") -> MarketData
         return market.quote(symbol)
     
     app.include_router(router, include_in_schema=True)
+    
+    # Register scoped docs for landing page card (REQUIRED)
+    add_prefixed_docs(
+        app,
+        prefix=prefix,
+        title="Market Data",
+        auto_exclude_from_root=True,
+        visible_envs=None,  # Show in all environments
+    )
+    
     app.state.market_provider = market
     return market
 ```
+
+**Why `add_prefixed_docs()` is required**:
+- Creates separate documentation card on landing page (like /auth, /payments cards in svc-infra)
+- Generates scoped OpenAPI schema at `{prefix}/openapi.json`
+- Provides dedicated Swagger UI at `{prefix}/docs`
+- Provides dedicated ReDoc at `{prefix}/redoc`
+- Excludes capability routes from root docs (keeps root clean)
+- Without this call, routes work but don't appear as cards on landing page
 
 ### Documentation Card Requirements
 Each capability must have:

@@ -117,6 +117,7 @@ Every `add_*()` helper (add_banking, add_market_data, add_brokerage, etc.) must:
 - [ ] Use appropriate svc-infra dual router (public_router, user_router, service_router)
 - [ ] Mount with `app.include_router(router, include_in_schema=True)`
 - [ ] Use descriptive tags for OpenAPI organization (e.g., `tags=["Banking"]`)
+- [ ] **CRITICAL**: Call `add_prefixed_docs()` to register landing page card
 - [ ] Return configured provider instance for programmatic access
 - [ ] Store provider on `app.state.{capability}_provider` for route access
 - [ ] Handle provider instance OR provider name (string) parameter
@@ -127,6 +128,7 @@ Every `add_*()` helper (add_banking, add_market_data, add_brokerage, etc.) must:
 def add_market_data(app: FastAPI, provider=None, prefix="/market") -> MarketDataProvider:
     """Wire market data provider to FastAPI app with routes."""
     from svc_infra.api.fastapi.dual.public import public_router
+    from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
     
     # Create or use provider
     if isinstance(provider, MarketDataProvider):
@@ -144,6 +146,15 @@ def add_market_data(app: FastAPI, provider=None, prefix="/market") -> MarketData
     # Mount with OpenAPI visibility
     app.include_router(router, include_in_schema=True)
     
+    # Register scoped docs for landing page card (REQUIRED)
+    add_prefixed_docs(
+        app,
+        prefix=prefix,
+        title="Market Data",
+        auto_exclude_from_root=True,
+        visible_envs=None,  # Show in all environments
+    )
+    
     # Store for route access
     app.state.market_provider = market
     return market
@@ -155,6 +166,36 @@ def add_market_data(app: FastAPI, provider=None, prefix="/market") -> MarketData
 3. **Better OpenAPI**: Security schemes show lock icons appropriately
 4. **Standard responses**: Pre-configured 401/403/500 responses
 5. **Pattern consistency**: Matches svc-infra payment/auth/admin modules
+
+#### Landing Page Cards via `add_prefixed_docs()`
+**CRITICAL**: Every capability must call `add_prefixed_docs()` to register its own documentation card on the landing page.
+
+What `add_prefixed_docs()` does:
+1. **Creates landing page card**: Appears like /auth, /payments, /admin cards in svc-infra
+2. **Generates scoped OpenAPI schema**: `{prefix}/openapi.json` with only capability routes
+3. **Provides dedicated Swagger UI**: `{prefix}/docs` shows only capability docs
+4. **Provides dedicated ReDoc**: `{prefix}/redoc` for alternative docs view
+5. **Excludes from root docs**: Routes removed from root `/docs` (keeps root clean)
+6. **Environment filtering**: `visible_envs` controls which environments show the card
+
+Without this call:
+- ❌ Routes work but don't appear as cards on landing page (`/`)
+- ❌ Capability hidden in root docs instead of having dedicated docs
+- ❌ No scoped OpenAPI schema for capability
+- ❌ Harder to discover and navigate capability docs
+
+Example usage (already in add_banking and add_market_data):
+```python
+from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
+
+add_prefixed_docs(
+    app,
+    prefix="/banking",           # Matches router prefix
+    title="Banking",             # Card title on landing page
+    auto_exclude_from_root=True, # Remove from root docs
+    visible_envs=None,           # Show in all envs (or specify [LOCAL_ENV, DEV_ENV])
+)
+```
 
 ### Documentation Card Requirements (MANDATORY FOR ALL CAPABILITIES)
 
