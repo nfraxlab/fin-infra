@@ -1,0 +1,10 @@
+# Trivy ignore list (temporary, vendor images)
+# Context: Upstream python:3.12-slim and redis:7-alpine base images may ship with
+# known CVEs in their system libraries (e.g., libxml2, openssl, zlib).
+# We only ignore these CVEs for vendor images until the tag updates propagate.
+# Date added: 2025-11-06
+# Review by: 2025-12-06 (remove once base images are patched)
+
+# Common CVEs in Alpine/Debian base images
+CVE-2025-49794
+CVE-2025-49796
