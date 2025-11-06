@@ -23,14 +23,12 @@ Example:
 """
 
 import logging
-from typing import Any
 
 from fastapi import FastAPI, Depends, HTTPException, status
-from pydantic import BaseModel
 
 from svc_infra.api.fastapi.dual.protected import user_router, RequireUser
 from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
-from svc_infra.cache import cache_read, resource
+from svc_infra.cache import resource
 from svc_infra.webhooks import add_webhooks
 
 from fin_infra.credit import easy_credit
@@ -41,19 +39,6 @@ logger = logging.getLogger(__name__)
 
 # Create cache resource for credit data
 credit_resource = resource("credit", "user_id")
-
-
-# Request/Response models
-class CreditScoreRequest(BaseModel):
-    """Request to get credit score."""
-    user_id: str
-    permissible_purpose: str | None = "account_review"  # FCRA requirement
-
-
-class CreditReportRequest(BaseModel):
-    """Request to get full credit report."""
-    user_id: str
-    permissible_purpose: str | None = "account_review"  # FCRA requirement
 
 
 def add_credit(
@@ -126,7 +111,9 @@ def add_credit(
     @router.post("/score", response_model=CreditScore)
     @credit_resource.cache_read(ttl=cache_ttl, suffix="score")
     async def get_credit_score(
-        request: CreditScoreRequest,
+        *,
+        user_id: str,
+        permissible_purpose: str = "account_review",
         user: dict = Depends(RequireUser),
     ) -> CreditScore:
         """Get credit score for a user (cached 24h).
@@ -140,16 +127,13 @@ def add_credit(
         - 24h cache TTL: 1 API call/day instead of 10+
         - Estimated savings: 95% reduction in bureau costs
         """
-        user_id = request.user_id
-        purpose = request.permissible_purpose or "account_review"
-        
         # FCRA compliance logging
         logger.info(
             "credit.score_accessed",
             extra={
                 "user_id": user_id,
                 "bureau": "experian",
-                "permissible_purpose": purpose,
+                "permissible_purpose": permissible_purpose,
                 "accessed_by": user.get("user_id"),
                 "event_type": "credit_access",
             }
@@ -194,7 +178,9 @@ def add_credit(
     @router.post("/report", response_model=CreditReport)
     @credit_resource.cache_read(ttl=cache_ttl, suffix="report")
     async def get_credit_report(
-        request: CreditReportRequest,
+        *,
+        user_id: str,
+        permissible_purpose: str = "account_review",
         user: dict = Depends(RequireUser),
     ) -> CreditReport:
         """Get full credit report for a user (cached 24h).
@@ -208,16 +194,13 @@ def add_credit(
         - 24h cache TTL: 1 API call/day instead of 10+
         - Full reports cost more than scores (~$2-$5 per pull)
         """
-        user_id = request.user_id
-        purpose = request.permissible_purpose or "account_review"
-        
         # FCRA compliance logging
         logger.info(
             "credit.report_accessed",
             extra={
                 "user_id": user_id,
                 "bureau": "experian",
-                "permissible_purpose": purpose,
+                "permissible_purpose": permissible_purpose,
                 "accessed_by": user.get("user_id"),
                 "event_type": "credit_access",
                 "report_type": "full",
@@ -244,7 +227,6 @@ def add_credit(
         app,
         prefix=prefix,
         title="Credit Monitoring",
-        description="Credit scores and reports from Experian, Equifax, TransUnion",
         auto_exclude_from_root=True,
         visible_envs=visible_envs,
     )

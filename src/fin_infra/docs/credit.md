@@ -154,16 +154,208 @@ inquiry = CreditInquiry(
 
 **v1 Note**: v1 implements Experian with mock data only. Real API integration requires API key and is deferred to v2.
 
+## Real API Integration (v2)
+
+### Prerequisites
+
+1. **Experian Developer Account**: Sign up at [https://developer.experian.com/](https://developer.experian.com/)
+2. **API Credentials**: Obtain `CLIENT_ID` and `CLIENT_SECRET` from developer portal
+3. **Redis Instance**: Required for OAuth token caching (uses svc-infra cache)
+4. **Budget Approval**: Bureau API costs ~$0.50-$2.00 per credit pull
+
+### OAuth 2.0 Flow
+
+Experian uses OAuth 2.0 Client Credentials flow for authentication:
+
+```python
+# OAuth handled automatically by ExperianAuthManager
+from fin_infra.credit.experian.auth import ExperianAuthManager
+
+auth_manager = ExperianAuthManager(
+    client_id="your_client_id",
+    client_secret="your_client_secret",
+    base_url="https://sandbox.experian.com/consumerservices"  # or production URL
+)
+
+# Get access token (automatically cached for 1 hour)
+token = await auth_manager.get_access_token()
+
+# Token refresh handled automatically when expired
+```
+
+### API Calls
+
+#### Get Credit Score
+
+```python
+from fin_infra.credit import easy_credit
+
+# Auto-detects credentials from environment
+credit = easy_credit()
+
+# Real API call to Experian
+score = await credit.get_credit_score("user123")
+
+print(f"Score: {score.score}")  # e.g., 735
+print(f"Model: {score.score_model}")  # e.g., "FICO 8"
+print(f"Bureau: {score.bureau}")  # "experian"
+print(f"Factors: {score.factors}")  # ["Credit utilization high", ...]
+```
+
+**API Endpoint**: `POST /consumerservices/credit/v1/scores`
+
+**Request**:
+```json
+{
+  "consumerPii": {
+    "primaryApplicant": {
+      "name": {"firstName": "John", "lastName": "Doe"},
+      "ssn": "123456789",
+      "dob": {"year": 1990, "month": 1, "day": 1}
+    }
+  }
+}
+```
+
+**Response** (simplified):
+```json
+{
+  "creditScore": 735,
+  "scoreModel": "FICO 8",
+  "scoreFactors": [
+    {"code": "12", "description": "Credit utilization is high"}
+  ]
+}
+```
+
+#### Get Credit Report
+
+```python
+from fin_infra.credit import easy_credit
+
+credit = easy_credit()
+
+# Real API call for full credit report
+report = await credit.get_credit_report("user123")
+
+print(f"Score: {report.score.score}")
+print(f"Accounts: {len(report.accounts)}")
+print(f"Inquiries: {len(report.inquiries)}")
+print(f"Public Records: {len(report.public_records)}")
+
+# Iterate through accounts
+for account in report.accounts:
+    print(f"{account.creditor_name}: Balance ${account.balance}")
+    print(f"  Status: {account.account_status}")
+    print(f"  Payment History: {account.payment_history}")
+```
+
+**API Endpoint**: `POST /consumerservices/credit/v1/reports`
+
+### FastAPI Integration with add_credit()
+
+The `add_credit()` helper wires all integrations:
+
+```python
+from fastapi import FastAPI
+from svc_infra.cache import init_cache
+from svc_infra.logging import setup_logging
+from fin_infra.credit.add import add_credit
+
+# Setup backend (svc-infra)
+setup_logging()
+app = FastAPI()
+init_cache(url="redis://localhost")
+
+# Wire credit monitoring (fin-infra)
+credit_provider = add_credit(
+    app,
+    prefix="/credit",
+    cache_ttl=86400,  # 24 hours
+    enable_webhooks=True,
+    visible_envs=None,  # Show in all environments
+)
+
+# Routes available:
+# POST /credit/score - Get credit score (cached 24h, protected)
+# POST /credit/report - Get full report (cached 24h, protected)
+# GET /credit/docs - Scoped Swagger UI
+# GET /credit/openapi.json - Scoped OpenAPI schema
+# POST /_webhooks/subscriptions - Subscribe to credit.score_changed events
+```
+
+**What add_credit() does**:
+1. ✅ Mounts protected routes with `user_router()` (requires authentication)
+2. ✅ Wires cache with `@cache_read(ttl=86400)` (24h TTL, 90% cost savings)
+3. ✅ Publishes webhooks on score changes (`credit.score_changed`)
+4. ✅ Logs FCRA compliance events (structured JSON logs)
+5. ✅ Creates landing page card at `/docs`
+6. ✅ Stores provider on `app.state.credit_provider`
+
+### Error Handling
+
+```python
+from fastapi import HTTPException
+from fin_infra.credit.experian.client import ExperianAPIError
+
+try:
+    score = await credit.get_credit_score(user_id)
+except ExperianAPIError as e:
+    if e.status_code == 429:
+        # Rate limit exceeded
+        raise HTTPException(status_code=429, detail="Rate limit exceeded")
+    elif e.status_code == 401:
+        # Invalid credentials
+        raise HTTPException(status_code=503, detail="Bureau service misconfigured")
+    else:
+        # Other API error
+        raise HTTPException(status_code=503, detail="Bureau service unavailable")
+```
+
+**Built-in retry logic**: Automatic retries with exponential backoff (3 attempts, uses tenacity from svc-infra)
+
+### Rate Limits
+
+| Environment | Rate Limit | Cost |
+|-------------|------------|------|
+| **Sandbox** | 10 requests/minute | Free |
+| **Production** | 100 requests/minute | $0.50-$2.00/pull |
+
+**Recommendation**: Use 24h caching to stay well below rate limits and reduce costs by 90%.
+
 ## Environment Variables
 
-### Experian
+### Experian (v2 Real API)
 
 ```bash
-# API credentials (get from https://developer.experian.com/)
-EXPERIAN_API_KEY=your_api_key_here
-EXPERIAN_CLIENT_ID=your_client_id_here  # If required
-EXPERIAN_ENVIRONMENT=sandbox  # or "production"
+# OAuth 2.0 credentials (get from https://developer.experian.com/)
+EXPERIAN_CLIENT_ID=your_client_id_here
+EXPERIAN_CLIENT_SECRET=your_client_secret_here
+
+# Base URL (sandbox or production)
+EXPERIAN_BASE_URL=https://sandbox.experian.com/consumerservices  # Sandbox
+# EXPERIAN_BASE_URL=https://api.experian.com/consumerservices  # Production
+
+# Optional: Custom cache TTL for OAuth tokens (default: 3600 seconds = 1 hour)
+EXPERIAN_TOKEN_CACHE_TTL=3600
 ```
+
+**How to get credentials**:
+1. Sign up at [https://developer.experian.com/](https://developer.experian.com/)
+2. Create a new application in the developer portal
+3. Copy `CLIENT_ID` and `CLIENT_SECRET` from application settings
+4. Use sandbox URL for testing (free tier, 10 req/min limit)
+5. Request production access after testing (requires business verification)
+
+### Experian (v1 Mock - Deprecated)
+
+```bash
+# Legacy v1 mock implementation (no real API calls)
+EXPERIAN_API_KEY=mock_key_not_required
+EXPERIAN_ENVIRONMENT=sandbox
+```
+
+**Note**: v1 is deprecated. Use v2 with real credentials for production.
 
 ## Integration with svc-infra
 
@@ -285,32 +477,165 @@ credit = add_credit(app, cache_ttl=0)  # Every request hits bureau API
 
 ### Webhooks (Score Change Notifications)
 
-**v2 Integration** (not implemented in v1):
+**Status**: ✅ Implemented via svc-infra webhooks (add_webhooks)
+
+The `add_credit()` helper automatically wires webhook support. Users can subscribe to `credit.score_changed` events to receive notifications when credit scores change.
+
+#### Subscribe to Webhooks
+
+**cURL Example**:
+```bash
+curl -X POST http://localhost:8000/_webhooks/subscriptions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "topic": "credit.score_changed",
+    "url": "https://your-app.com/webhooks/credit",
+    "secret": "your_webhook_secret"
+  }'
+```
+
+**Response**:
+```json
+{
+  "id": "sub_abc123",
+  "topic": "credit.score_changed",
+  "url": "https://your-app.com/webhooks/credit",
+  "created_at": "2024-11-06T10:30:00Z",
+  "status": "active"
+}
+```
+
+#### Webhook Payload
+
+When a credit score changes, subscribers receive:
+
+```json
+{
+  "event_id": "evt_xyz789",
+  "topic": "credit.score_changed",
+  "timestamp": "2024-11-06T10:30:00Z",
+  "data": {
+    "user_id": "user123",
+    "score": 735,
+    "bureau": "experian",
+    "timestamp": "2024-11-06T10:30:00Z"
+  },
+  "signature": "sha256=..."
+}
+```
+
+#### Verify Webhook Signatures
+
+**Python Example**:
+```python
+import hmac
+import hashlib
+from fastapi import Request, HTTPException
+
+@app.post("/webhooks/credit")
+async def handle_credit_webhook(request: Request):
+    # Get signature from headers
+    signature = request.headers.get("X-Webhook-Signature")
+    
+    # Get raw body
+    body = await request.body()
+    
+    # Verify signature
+    secret = "your_webhook_secret"
+    expected_sig = hmac.new(
+        secret.encode(),
+        body,
+        hashlib.sha256
+    ).hexdigest()
+    
+    if not hmac.compare_digest(f"sha256={expected_sig}", signature):
+        raise HTTPException(status_code=401, detail="Invalid signature")
+    
+    # Process webhook
+    payload = await request.json()
+    user_id = payload["data"]["user_id"]
+    new_score = payload["data"]["score"]
+    
+    print(f"User {user_id} score changed to {new_score}")
+    
+    # Send notification to user
+    await send_push_notification(
+        user_id,
+        f"Your credit score changed to {new_score}!"
+    )
+    
+    return {"ok": True}
+```
+
+#### Test Webhooks
+
+**Test Fire** (triggers a test webhook delivery):
+```bash
+curl -X POST http://localhost:8000/_webhooks/test-fire \
+  -H "Content-Type: application/json" \
+  -d '{
+    "subscription_id": "sub_abc123",
+    "payload": {
+      "user_id": "test_user",
+      "score": 750,
+      "bureau": "experian"
+    }
+  }'
+```
+
+#### Webhook Retry Logic
+
+Webhooks use svc-infra's built-in retry system:
+- **Retries**: 3 attempts with exponential backoff (1s, 2s, 4s)
+- **Timeout**: 30 seconds per attempt
+- **Success**: HTTP 200-299 response
+- **Failure**: HTTP 4xx/5xx or timeout → retry
+- **Dead Letter**: After 3 failed attempts, webhook stored in dead-letter queue
+
+#### List Subscriptions
+
+```bash
+# List all webhook subscriptions
+GET http://localhost:8000/_webhooks/subscriptions
+```
+
+#### Delete Subscription
+
+```bash
+# Unsubscribe from webhook
+DELETE http://localhost:8000/_webhooks/subscriptions/{subscription_id}
+```
+
+#### How add_credit() Publishes Events
+
+The `add_credit()` helper automatically publishes `credit.score_changed` events:
 
 ```python
-from svc_infra.webhooks import add_webhooks, webhook_event
-from fastapi import FastAPI
+# Inside add_credit() implementation
+from svc_infra.webhooks.service import WebhookService
 
-app = FastAPI()
+# After fetching credit score
+score = await provider.get_credit_score(user_id)
 
-# Wire webhooks
-add_webhooks(app, events=["credit.score_changed"])
-
-# Emit event when bureau notifies us of score change
-await webhook_event(
-    app,
-    "credit.score_changed",
-    {
-        "user_id": "user123",
-        "old_score": 720,
-        "new_score": 735,
-        "change": +15,
-        "bureau": "experian"
+# Publish webhook event
+webhook_svc = WebhookService(outbox=app.state.webhooks_outbox, subs=app.state.webhooks_subscriptions)
+webhook_svc.publish(
+    topic="credit.score_changed",
+    payload={
+        "user_id": user_id,
+        "score": score.score,
+        "bureau": "experian",
+        "timestamp": score.report_date.isoformat()
     }
 )
 ```
 
-Users can subscribe to webhooks at `POST /credit/subscribe` endpoint.
+**Event triggers**:
+- ✅ User requests credit score (POST /credit/score)
+- ✅ Score refresh endpoint called
+- ⏸️ Bureau push notifications (v3 - requires bureau webhook support)
+
+**Note**: Webhooks are only published when score data changes. Cached responses don't trigger events.
 
 ### Compliance Event Logging (FCRA)
 

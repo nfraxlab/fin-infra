@@ -24,7 +24,6 @@ Example:
 """
 
 import base64
-from typing import Literal
 
 import httpx
 from svc_infra.cache import cache_read

@@ -14,8 +14,7 @@ Example:
     >>> data = await client.get_credit_score("user123")
 """
 
-import asyncio
-from typing import Any, Literal
+from typing import Any
 
 import httpx
 from tenacity import (

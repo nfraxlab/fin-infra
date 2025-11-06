@@ -39,15 +39,10 @@ Example:
 """
 
 import os
-from typing import Literal
 
-from fin_infra.providers.base import CreditProvider
-from fin_infra.settings import Settings
-
-
-import os
-from typing import Literal
-
+from fin_infra.credit.add import add_credit
+from fin_infra.credit.experian import ExperianProvider
+from fin_infra.credit.mock import MockExperianProvider
 from fin_infra.providers.base import CreditProvider
 from fin_infra.settings import Settings
 
@@ -169,11 +164,6 @@ def easy_credit(
     else:
         raise ValueError(f"Unknown credit provider: {provider}")
 
-
-# Re-export for backward compatibility
-from fin_infra.credit.experian import ExperianProvider
-from fin_infra.credit.mock import MockExperianProvider
-from fin_infra.credit.add import add_credit
 
 __all__ = [
     "ExperianProvider",

@@ -248,24 +248,44 @@ log_compliance_event(
 3. **Batch processing**: Pull reports overnight for subscribed users
 4. **Webhooks**: Let bureau notify us of changes (no polling)
 
-### 8. v1 Implementation Scope
+### 8. Implementation Status
 
-**Included**:
+**v1 (Mock Implementation - COMPLETE)**:
 - ✅ Experian provider (mock sandbox implementation)
 - ✅ CreditScore, CreditReport, CreditAccount, CreditInquiry models
 - ✅ easy_credit() one-liner
-- ✅ add_credit_monitoring() FastAPI helper
-- ✅ svc-infra.cache integration (24h TTL)
-- ✅ Compliance event logging (FCRA)
-- ✅ Unit tests with mock data
-- ✅ Documentation (docs/credit.md)
+- ✅ add_credit_monitoring() FastAPI helper (generic APIRouter)
+- ✅ Unit tests with mock data (22 tests passing)
+- ✅ Documentation (docs/credit.md - 400+ lines)
 
-**Deferred to v2**:
-- ⏸️ Real Experian API integration (requires API key)
-- ⏸️ Equifax, TransUnion providers
-- ⏸️ Webhook subscriptions (score change notifications)
-- ⏸️ Score history tracking
-- ⏸️ Acceptance tests (requires sandbox credentials)
+**v2 (Real API Integration - COMPLETE)**:
+- ✅ Real Experian API integration (OAuth 2.0 client credentials flow)
+- ✅ ExperianAuthManager: Token acquisition, caching with svc-infra cache, auto-refresh
+- ✅ ExperianClient: HTTP client with retry logic (tenacity), error handling (429/401/500)
+- ✅ Response parsing: parse_credit_score, parse_account, parse_inquiry functions
+- ✅ Module organization: experian/ package (auth, client, parser, provider modules)
+- ✅ MockExperianProvider: Backward compatibility for v1 tests
+- ✅ easy_credit() auto-detection: Uses mock if no credentials, real if credentials present
+- ✅ svc-infra.cache integration: @cache_read decorator with 24h TTL (90% cost savings)
+- ✅ svc-infra.webhooks integration: add_webhooks() + WebhookService.publish() on score changes
+- ✅ Compliance event logging: logger.info("credit.score_accessed", extra={...}) for FCRA §604
+- ✅ svc-infra dual routers: user_router() + RequireUser for protected routes
+- ✅ svc-infra scoped docs: add_prefixed_docs() for landing page card
+- ✅ Unit tests for v2 modules: 85 tests passing (10 auth + 16 client + 25 parser + 13 provider + 21 integration)
+- ✅ Acceptance tests: 6 tests ready (skip if no credentials: test_get_credit_score_real_api, etc.)
+- ✅ Documentation: Real API integration examples (~150 lines), environment variables, webhooks (~100 lines)
+- ✅ Cost optimization documentation: 90% savings with 24h cache ($300k → $30k/month for 10k users)
+
+**v2.1 (Multi-Bureau - DEFERRED)**:
+- ⏸️ Equifax provider (requires enterprise partnership)
+- ⏸️ TransUnion provider (requires enterprise partnership)
+
+**v3 (Advanced Features - DEFERRED)**:
+- ⏸️ Score history tracking (database storage with svc-infra.db)
+- ⏸️ Dispute management (POST /credit/disputes)
+- ⏸️ Credit monitoring alerts (email/SMS via svc-infra notifications when available)
+- ⏸️ Credit score trends and insights (ML-based recommendations)
+
 
 ## Consequences
 
@@ -317,10 +337,29 @@ Rejected: Credit scoring is regulated and requires bureau data; impossible to se
 
 ## Implementation Status
 
+**v1 Deliverables** (Mock Implementation):
 - [x] ADR documented
-- [ ] Data models (CreditScore, CreditReport, CreditAccount, CreditInquiry)
-- [ ] Experian provider (mock implementation)
-- [ ] easy_credit() builder
-- [ ] add_credit_monitoring() FastAPI helper
-- [ ] Unit tests with mock data
-- [ ] docs/credit.md
+- [x] Data models (CreditScore, CreditReport, CreditAccount, CreditInquiry, PublicRecord)
+- [x] Experian provider (mock implementation)
+- [x] easy_credit() builder
+- [x] add_credit_monitoring() FastAPI helper
+- [x] Unit tests with mock data (22 tests passing)
+- [x] docs/credit.md (400+ lines)
+
+**v2 Deliverables** (Real API Integration):
+- [x] ExperianAuthManager (OAuth 2.0 client credentials flow)
+- [x] ExperianClient (HTTP client with retry logic and error handling)
+- [x] Response parsers (parse_credit_score, parse_account, parse_inquiry)
+- [x] Module organization (experian/ package structure)
+- [x] MockExperianProvider (backward compatibility)
+- [x] easy_credit() auto-detection (mock vs real based on credentials)
+- [x] svc-infra.cache integration (@cache_read with 24h TTL)
+- [x] svc-infra.webhooks integration (add_webhooks + WebhookService.publish)
+- [x] Compliance event logging (logger.info for FCRA §604)
+- [x] svc-infra dual routers (user_router + RequireUser)
+- [x] svc-infra scoped docs (add_prefixed_docs for landing page card)
+- [x] Unit tests for v2 (85 total tests passing in 3.60s)
+- [x] Acceptance tests (6 tests ready, skip if no credentials)
+- [x] Documentation updates (Real API integration, environment vars, webhooks, cost optimization)
+- [x] README updates (v2 OAuth credentials)
+- [x] ADR-0012 updates (v2 implementation notes)

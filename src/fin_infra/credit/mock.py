@@ -25,7 +25,6 @@ from fin_infra.models.credit import (
     CreditInquiry,
     CreditReport,
     CreditScore,
-    PublicRecord,
 )
 from fin_infra.providers.base import CreditProvider
 

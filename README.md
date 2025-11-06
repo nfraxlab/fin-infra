@@ -180,9 +180,10 @@ PLAID_ENV=sandbox
 # Market data providers
 ALPHAVANTAGE_API_KEY=your_api_key
 
-# Credit providers
-EXPERIAN_USERNAME=your_username
-EXPERIAN_PASSWORD=your_password
+# Credit providers (v2: OAuth 2.0)
+EXPERIAN_CLIENT_ID=your_client_id
+EXPERIAN_CLIENT_SECRET=your_client_secret
+EXPERIAN_BASE_URL=https://sandbox-us-api.experian.com  # or production URL
 ```
 
 ## Development
