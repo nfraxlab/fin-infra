@@ -2269,6 +2269,11 @@ Completed in follow-up iteration:
     - Files created: `conversation/planning.py` (~464 lines), `conversation/__init__.py`, `conversation/ease.py`
     - Import updated in `net_worth/ease.py`: `from fin_infra.conversation import FinancialPlanningConversation`
     - ADR-0021 updated to document scope boundary (root-level vs domain-specific)
+    - **AUDIT COMPLETE** (2025-11-07): Verified NO duplication, all chat/conversation AI capabilities centralized in `conversation/`
+      - Audit doc: `src/fin_infra/docs/research/conversation-architecture-audit.md` (~550 lines)
+      - Confirmed: Other LLM usage (categorization, insights, normalization) is single-shot inference, NOT conversation
+      - Confirmed: All modules correctly reuse `ai-infra.llm.CoreLLM` (zero LLM infrastructure duplication)
+      - Decision tree documented for future LLM feature development
   - File: src/fin_infra/conversation/planning.py (~464 lines)
 - [x] Implement: net_worth/goals.py (LLM-validated goal tracking) - **COMPLETE**
   - [x] FinancialGoalTracker class with CoreLLM validation + local math
