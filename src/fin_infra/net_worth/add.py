@@ -42,6 +42,8 @@ from fastapi import Depends, FastAPI, HTTPException, Query
 
 from fin_infra.net_worth.ease import NetWorthTracker, easy_net_worth
 from fin_infra.net_worth.models import (
+    ConversationResponse,
+    GoalProgressResponse,
     NetWorthRequest,
     NetWorthResponse,
     SnapshotHistoryRequest,
@@ -378,6 +380,303 @@ def add_net_worth_tracking(
                 "snapshot_date": snapshot.snapshot_date,
             }
         
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+    
+    # ===========================
+    # V2 LLM Endpoints (Optional)
+    # ===========================
+    
+    @router.get(
+        "/insights",
+        summary="Generate Financial Insights (V2)",
+        description="LLM-generated insights: wealth trends, debt reduction, goals, asset allocation (cached 24h)",
+    )
+    async def get_insights(
+        user_id: str = Query(..., description="User identifier"),
+        type: str = Query(
+            ...,
+            description="Insight type: wealth_trends, debt_reduction, goal_recommendations, asset_allocation",
+        ),
+        access_token: str = Query(None, description="Provider access token"),
+        days: int = Query(90, ge=7, le=365, description="Historical data period"),
+    ):
+        """
+        Generate LLM-powered financial insights.
+        
+        **Requires**: enable_llm=True in easy_net_worth()
+        
+        **Example Request**:
+        ```
+        GET /net-worth/insights?user_id=user_123&type=wealth_trends&days=90
+        ```
+        
+        **Example Response**:
+        ```json
+        {
+          "trend": "improving",
+          "trend_percentage": 12.5,
+          "key_drivers": ["Investment growth", "Debt reduction"],
+          "recommendations": ["Consider increasing 401k...", "Refinance high-interest debt"],
+          "risk_factors": ["Variable income"],
+          "confidence": 0.92
+        }
+        ```
+        """
+        # Check if LLM enabled
+        if tracker.insights_generator is None:
+            raise HTTPException(
+                status_code=503,
+                detail="LLM insights not enabled. Set enable_llm=True in easy_net_worth()",
+            )
+        
+        try:
+            # Get snapshots
+            snapshots = await tracker.get_snapshots(user_id=user_id, days=days)
+            
+            if not snapshots:
+                raise HTTPException(
+                    status_code=404, detail="No snapshots found. Create at least 1 snapshot first."
+                )
+            
+            # Generate insights based on type
+            if type == "wealth_trends":
+                insights = await tracker.insights_generator.analyze_wealth_trends(
+                    snapshots=snapshots
+                )
+            elif type == "debt_reduction":
+                insights = await tracker.insights_generator.generate_debt_reduction_plan(
+                    snapshots=snapshots
+                )
+            elif type == "goal_recommendations":
+                insights = await tracker.insights_generator.recommend_goals(snapshots=snapshots)
+            elif type == "asset_allocation":
+                insights = await tracker.insights_generator.suggest_asset_allocation(
+                    snapshots=snapshots
+                )
+            else:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Invalid insight type: {type}. Must be: wealth_trends, debt_reduction, goal_recommendations, asset_allocation",
+                )
+            
+            return insights.model_dump()
+        
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+    
+    @router.post(
+        "/conversation",
+        response_model=ConversationResponse,
+        summary="Financial Planning Conversation (V2)",
+        description="Multi-turn Q&A about financial planning (context from previous exchanges)",
+    )
+    async def ask_question(
+        user_id: str = Query(..., description="User identifier"),
+        question: str = Query(..., min_length=3, max_length=500, description="User question"),
+        session_id: str | None = Query(None, description="Conversation session ID"),
+        access_token: str | None = Query(None, description="Provider access token"),
+    ) -> ConversationResponse:
+        """
+        Ask financial planning questions with multi-turn context.
+        
+        **Requires**: enable_llm=True in easy_net_worth()
+        
+        **Example Request**:
+        ```
+        POST /net-worth/conversation?user_id=user_123&question=How+can+I+save+more?
+        ```
+        
+        **Example Response**:
+        ```json
+        {
+          "answer": "Based on your current net worth of $55,000...",
+          "follow_up_questions": [
+            "Would you like me to create a savings plan?",
+            "Have you considered automating your savings?"
+          ],
+          "confidence": 0.89,
+          "sources": ["current_net_worth", "conversation_history"]
+        }
+        ```
+        """
+        # Check if LLM enabled
+        if tracker.conversation is None:
+            raise HTTPException(
+                status_code=503,
+                detail="LLM conversation not enabled. Set enable_llm=True in easy_net_worth()",
+            )
+        
+        try:
+            # Get current snapshot for context
+            snapshot = await tracker.calculate_net_worth(
+                user_id=user_id, access_token=access_token
+            )
+            
+            # Get goals for context (if goal_tracker available)
+            goals = []
+            if tracker.goal_tracker:
+                # TODO: Implement get_goals() method
+                pass
+            
+            # Ask question with context
+            response = await tracker.conversation.ask(
+                user_id=user_id,
+                question=question,
+                session_id=session_id,
+                current_net_worth=snapshot.total_net_worth,
+                goals=goals,
+            )
+            
+            # Convert to API response format
+            return ConversationResponse(
+                answer=response.answer,
+                follow_up_questions=response.follow_up_questions,
+                confidence=response.confidence,
+                sources=response.sources,
+            )
+        
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+    
+    @router.post(
+        "/goals",
+        summary="Create/Validate Financial Goal (V2)",
+        description="LLM-validated goal creation with savings calculations",
+    )
+    async def create_goal(
+        user_id: str = Query(..., description="User identifier"),
+        goal_type: str = Query(..., description="Goal type: retirement, home_purchase, debt_free, wealth_milestone"),
+        target_amount: float = Query(..., gt=0, description="Target amount"),
+        target_date: str | None = Query(None, description="Target date (YYYY-MM-DD)"),
+        target_age: int | None = Query(None, ge=18, le=120, description="Target age (for retirement)"),
+        current_age: int | None = Query(None, ge=18, le=120, description="Current age (for retirement)"),
+        access_token: str | None = Query(None, description="Provider access token"),
+    ):
+        """
+        Create and validate financial goal with LLM.
+        
+        **Requires**: enable_llm=True in easy_net_worth()
+        
+        **Example Request**:
+        ```
+        POST /net-worth/goals?user_id=user_123&goal_type=retirement&target_amount=2000000&target_age=65&current_age=35
+        ```
+        
+        **Example Response**:
+        ```json
+        {
+          "is_realistic": true,
+          "confidence": 0.87,
+          "required_monthly_savings": 1500.0,
+          "assumptions": ["7% annual return", "3% inflation"],
+          "risks": ["Market volatility"],
+          "recommendations": ["Max out 401k contributions", "Consider Roth IRA"]
+        }
+        ```
+        """
+        # Check if LLM enabled
+        if tracker.goal_tracker is None:
+            raise HTTPException(
+                status_code=503,
+                detail="LLM goal tracking not enabled. Set enable_llm=True in easy_net_worth()",
+            )
+        
+        try:
+            # Get current snapshot for context
+            snapshot = await tracker.calculate_net_worth(
+                user_id=user_id, access_token=access_token
+            )
+            
+            # Build goal dict
+            goal_data = {
+                "type": goal_type,
+                "target_amount": target_amount,
+                "current_amount": snapshot.total_net_worth,
+            }
+            
+            if target_date:
+                goal_data["target_date"] = target_date
+            if target_age:
+                goal_data["target_age"] = target_age
+            if current_age:
+                goal_data["current_age"] = current_age
+            
+            # Validate goal with LLM
+            validation = await tracker.goal_tracker.validate_goal_with_llm(
+                goal=goal_data, current_snapshot=snapshot
+            )
+            
+            return validation.model_dump()
+        
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+    
+    @router.get(
+        "/goals/{goal_id}/progress",
+        response_model=GoalProgressResponse,
+        summary="Get Goal Progress Report (V2)",
+        description="Weekly progress report with LLM recommendations",
+    )
+    async def get_goal_progress(
+        goal_id: str,
+        user_id: str = Query(..., description="User identifier"),
+        access_token: str | None = Query(None, description="Provider access token"),
+    ) -> GoalProgressResponse:
+        """
+        Get goal progress with LLM recommendations.
+        
+        **Requires**: enable_llm=True in easy_net_worth()
+        
+        **Example Request**:
+        ```
+        GET /net-worth/goals/goal_abc123/progress?user_id=user_123
+        ```
+        
+        **Example Response**:
+        ```json
+        {
+          "goal_id": "goal_abc123",
+          "progress_percentage": 45.0,
+          "on_track": true,
+          "required_monthly_savings": 1500.0,
+          "actual_monthly_savings": 1650.0,
+          "estimated_completion_date": "2055-01-15",
+          "recommendations": ["You're ahead of schedule!", "Consider increasing..."]
+        }
+        ```
+        """
+        # Check if LLM enabled
+        if tracker.goal_tracker is None:
+            raise HTTPException(
+                status_code=503,
+                detail="LLM goal tracking not enabled. Set enable_llm=True in easy_net_worth()",
+            )
+        
+        try:
+            # Get current snapshot
+            snapshot = await tracker.calculate_net_worth(
+                user_id=user_id, access_token=access_token
+            )
+            
+            # Get historical snapshots for progress tracking
+            snapshots = await tracker.get_snapshots(user_id=user_id, days=90)
+            
+            # TODO: Implement goal retrieval from database
+            # For now, return mock data
+            raise HTTPException(
+                status_code=501,
+                detail="Goal progress tracking not fully implemented. Need goal persistence layer.",
+            )
+        
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
     

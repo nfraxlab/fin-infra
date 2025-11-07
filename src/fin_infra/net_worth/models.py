@@ -522,3 +522,138 @@ class SnapshotHistoryResponse(BaseModel):
     count: int = Field(..., ge=0, description="Number of snapshots returned")
     start_date: datetime = Field(..., description="Earliest snapshot date")
     end_date: datetime = Field(..., description="Latest snapshot date")
+
+
+# ===========================
+# V2 LLM Endpoint Models
+# ===========================
+
+
+class InsightsRequest(BaseModel):
+    """
+    Request for LLM-generated financial insights.
+    
+    **Example**:
+    ```python
+    request = InsightsRequest(
+        user_id="user_123",
+        type="wealth_trends",
+        access_token="plaid_token_abc"
+    )
+    ```
+    """
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    user_id: str = Field(..., description="User identifier")
+    type: str = Field(
+        ...,
+        description="Insight type: wealth_trends, debt_reduction, goal_recommendations, asset_allocation",
+    )
+    access_token: str | None = Field(None, description="Provider access token")
+    days: int = Field(90, ge=7, le=365, description="Historical data period")
+
+
+class ConversationRequest(BaseModel):
+    """
+    Request for multi-turn financial conversation.
+    
+    **Example**:
+    ```python
+    request = ConversationRequest(
+        user_id="user_123",
+        question="How can I save more money each month?",
+        session_id="session_abc",
+        access_token="plaid_token_abc"
+    )
+    ```
+    """
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    user_id: str = Field(..., description="User identifier")
+    question: str = Field(..., min_length=3, max_length=500, description="User question")
+    session_id: str | None = Field(None, description="Conversation session ID")
+    access_token: str | None = Field(None, description="Provider access token")
+
+
+class ConversationResponse(BaseModel):
+    """
+    Response from financial conversation.
+    
+    **Example**:
+    ```python
+    response = ConversationResponse(
+        answer="Based on your spending...",
+        follow_up_questions=["Would you like...", "Have you considered..."],
+        confidence=0.92,
+        sources=["current_net_worth", "goal_retirement"]
+    )
+    ```
+    """
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    answer: str = Field(..., description="LLM-generated answer")
+    follow_up_questions: list[str] = Field(
+        default_factory=list, description="Suggested follow-up questions"
+    )
+    confidence: float = Field(..., ge=0.0, le=1.0, description="Response confidence score")
+    sources: list[str] = Field(default_factory=list, description="Data sources used")
+
+
+class GoalCreateRequest(BaseModel):
+    """
+    Request to create/validate financial goal.
+    
+    **Example**:
+    ```python
+    request = GoalCreateRequest(
+        user_id="user_123",
+        goal={
+            "type": "retirement",
+            "target_amount": 2000000.0,
+            "target_age": 65,
+            "current_age": 35
+        },
+        access_token="plaid_token_abc"
+    )
+    ```
+    """
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    user_id: str = Field(..., description="User identifier")
+    goal: dict = Field(..., description="Goal details")
+    access_token: str | None = Field(None, description="Provider access token")
+
+
+class GoalProgressResponse(BaseModel):
+    """
+    Response with goal progress report.
+    
+    **Example**:
+    ```python
+    response = GoalProgressResponse(
+        goal_id="goal_abc123",
+        progress_percentage=45.0,
+        on_track=True,
+        required_monthly_savings=1500.0,
+        actual_monthly_savings=1650.0,
+        estimated_completion_date="2055-01-15",
+        recommendations=["Increase contributions...", "Consider..."]
+    )
+    ```
+    """
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    goal_id: str = Field(..., description="Goal identifier")
+    progress_percentage: float = Field(..., ge=0.0, le=100.0, description="Progress %")
+    on_track: bool = Field(..., description="Whether goal is on track")
+    required_monthly_savings: float = Field(..., description="Required monthly savings")
+    actual_monthly_savings: float = Field(..., description="Actual monthly savings")
+    estimated_completion_date: str = Field(..., description="Estimated completion date")
+    recommendations: list[str] = Field(
+        default_factory=list, description="LLM recommendations"
+    )
