@@ -2227,11 +2227,19 @@ Completed in follow-up iteration:
   - [x] Document ai-infra integration: CoreLLM.with_structured_output, Pydantic validation, few-shot prompting
   - [x] Document svc-infra integration: Cache (24h TTL), jobs (weekly scheduler), webhooks (goal alerts)
   - File: docs/adr/0021-net-worth-llm-insights.md (~650 lines)
-- [ ] Design: Easy builder signature update
-  - [ ] `easy_net_worth(banking=None, brokerage=None, crypto=None, enable_llm=False, llm_provider="google", **config)`
-  - [ ] Default: LLM disabled (backward compatible, no API costs)
-  - [ ] When enabled: Uses ai-infra.llm with structured output
-  - [ ] Multi-provider support: Google Gemini (default), OpenAI, Anthropic
+- [x] Design: Update easy_net_worth signature (enable_llm parameter) - **COMPLETE**
+  - [x] Added parameters: enable_llm (default False), llm_provider (default "google"), llm_model (optional override)
+  - [x] Backward compatible: V1 features work when enable_llm=False (no breaking changes)
+  - [x] LLM initialization: When enabled, creates CoreLLM + 3 components (insights, goals, conversation)
+  - [x] Graceful degradation: Components import with try/except (work even if modules not yet implemented)
+  - [x] Default models: Google "gemini-2.0-flash-exp", OpenAI "gpt-4o-mini", Anthropic "claude-3-5-haiku"
+  - [x] Updated NetWorthTracker.__init__: Accept 3 optional LLM components (insights_generator, goal_tracker, conversation)
+  - [x] Stored config: enable_llm, llm_provider, llm_model saved on tracker instance for API use
+  - [x] Documentation: 4 code examples (V1 minimal, V2 with LLM, multi-provider, custom LLM)
+  - [x] Cost documentation: $0.064/user/month breakdown (insights $0.042, conversation $0.018, goals $0.0036)
+  - File: src/fin_infra/net_worth/ease.py (updated ~350 → ~450 lines)
+
+#### Implementation
 - [ ] Implement: net_worth/insights.py (LLM-generated financial insights)
   - [ ] NetWorthInsightsGenerator class with CoreLLM + structured output
   - [ ] generate_wealth_trends(snapshots): Analyze net worth changes over time

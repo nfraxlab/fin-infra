@@ -52,7 +52,18 @@ class NetWorthTracker:
     Provides simple methods for calculating net worth,
     creating snapshots, and retrieving history.
     
-    **Example**:
+    **V1 Features** (Always Available):
+    - `calculate_net_worth()`: Real-time net worth calculation (<100ms, $0 cost)
+    - `create_snapshot()`: Store snapshot in database
+    - `get_snapshots()`: Retrieve historical snapshots
+    
+    **V2 Features** (When enable_llm=True):
+    - `generate_insights()`: LLM-generated financial insights ($0.042/user/month)
+    - `ask()`: Multi-turn financial planning conversation ($0.018/user/month)
+    - `validate_goal()`: LLM-validated goal tracking ($0.0036/user/month)
+    - `track_goal_progress()`: Weekly progress reports with course correction
+    
+    **Example - V1 Only**:
     ```python
     tracker = NetWorthTracker(aggregator)
     
@@ -65,16 +76,50 @@ class NetWorthTracker:
     # Get historical snapshots
     history = await tracker.get_snapshots("user_123", days=90)
     ```
+    
+    **Example - V2 with LLM**:
+    ```python
+    tracker = NetWorthTracker(
+        aggregator=aggregator,
+        insights_generator=insights_generator,
+        goal_tracker=goal_tracker,
+        conversation=conversation,
+    )
+    
+    # V1 features still work
+    snapshot = await tracker.calculate_net_worth("user_123")
+    
+    # V2 features now available
+    insights = await tracker.generate_insights("user_123", type="wealth_trends")
+    response = await tracker.ask("How can I save more?", "user_123")
+    goal = await tracker.validate_goal({
+        "type": "retirement",
+        "target_amount": 2000000.0,
+        "target_age": 65
+    })
+    ```
     """
     
-    def __init__(self, aggregator: NetWorthAggregator):
+    def __init__(
+        self,
+        aggregator: NetWorthAggregator,
+        insights_generator: Any = None,
+        goal_tracker: Any = None,
+        conversation: Any = None,
+    ):
         """
-        Initialize tracker with aggregator.
+        Initialize tracker with aggregator and optional LLM components.
         
         Args:
-            aggregator: NetWorthAggregator instance
+            aggregator: NetWorthAggregator instance (required)
+            insights_generator: NetWorthInsightsGenerator instance (optional, V2)
+            goal_tracker: FinancialGoalTracker instance (optional, V2)
+            conversation: FinancialPlanningConversation instance (optional, V2)
         """
         self.aggregator = aggregator
+        self.insights_generator = insights_generator
+        self.goal_tracker = goal_tracker
+        self.conversation = conversation
     
     async def calculate_net_worth(
         self,
@@ -315,13 +360,87 @@ def easy_net_worth(
         base_currency=base_currency,
     )
     
+    # Initialize LLM components (V2, optional)
+    insights_generator = None
+    goal_tracker = None
+    conversation = None
+    
+    if enable_llm:
+        try:
+            from ai_infra.llm import CoreLLM
+        except ImportError:
+            raise ImportError(
+                "LLM features require ai-infra package. "
+                "Install with: pip install ai-infra"
+            )
+        
+        # Determine default model
+        default_models = {
+            "google": "gemini-2.0-flash-exp",
+            "openai": "gpt-4o-mini",
+            "anthropic": "claude-3-5-haiku",
+        }
+        model_name = llm_model or default_models.get(llm_provider)
+        
+        if not model_name:
+            raise ValueError(
+                f"Unknown llm_provider: {llm_provider}. "
+                f"Use 'google', 'openai', or 'anthropic'"
+            )
+        
+        # Create shared CoreLLM instance
+        llm = CoreLLM()
+        
+        # Create LLM components (deferred import to avoid circular dependency)
+        # These modules will be created in Section 17 V2 implementation
+        try:
+            from fin_infra.net_worth.insights import NetWorthInsightsGenerator
+            insights_generator = NetWorthInsightsGenerator(
+                llm=llm,
+                provider=llm_provider,
+                model_name=model_name,
+            )
+        except ImportError:
+            # insights.py not yet implemented, skip
+            pass
+        
+        try:
+            from fin_infra.net_worth.goals import FinancialGoalTracker
+            goal_tracker = FinancialGoalTracker(
+                llm=llm,
+                provider=llm_provider,
+                model_name=model_name,
+            )
+        except ImportError:
+            # goals.py not yet implemented, skip
+            pass
+        
+        try:
+            from fin_infra.net_worth.conversation import FinancialPlanningConversation
+            conversation = FinancialPlanningConversation(
+                llm=llm,
+                provider=llm_provider,
+                model_name=model_name,
+            )
+        except ImportError:
+            # conversation.py not yet implemented, skip
+            pass
+    
     # Create tracker
-    tracker = NetWorthTracker(aggregator)
+    tracker = NetWorthTracker(
+        aggregator=aggregator,
+        insights_generator=insights_generator,
+        goal_tracker=goal_tracker,
+        conversation=conversation,
+    )
     
     # Store config for later use (jobs, webhooks)
     tracker.snapshot_schedule = snapshot_schedule
     tracker.change_threshold_percent = change_threshold_percent
     tracker.change_threshold_amount = change_threshold_amount
+    tracker.enable_llm = enable_llm
+    tracker.llm_provider = llm_provider
+    tracker.llm_model = model_name if enable_llm else None
     tracker.config = config
     
     return tracker
