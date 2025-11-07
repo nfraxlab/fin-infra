@@ -16,7 +16,8 @@ class CategorizationMethod(str, Enum):
 
     EXACT = "exact"  # Exact match from dictionary
     REGEX = "regex"  # Regex pattern match
-    ML = "ml"  # Machine learning prediction
+    ML = "ml"  # Machine learning prediction (sklearn)
+    LLM = "llm"  # LLM prediction (Layer 4, ai-infra)
     USER_OVERRIDE = "user_override"  # User-defined override
     FALLBACK = "fallback"  # Default fallback
 

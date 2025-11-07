@@ -1,15 +1,17 @@
 """
-Hybrid categorization engine (exact → regex → ML).
+Hybrid categorization engine (exact → regex → ML → LLM).
 
-3-layer approach:
+4-layer approach:
 1. Layer 1 (Exact Match): O(1) dictionary lookup, 85-90% coverage
-2. Layer 2 (Regex): O(n) pattern matching, 5-10% coverage
-3. Layer 3 (ML): sklearn Naive Bayes fallback, 5% coverage
+2. Layer 2 (Regex): O(n) pattern matching, 5-8% coverage
+3. Layer 3 (ML): sklearn Naive Bayes, 3-5% coverage
+4. Layer 4 (LLM): ai-infra LLM fallback for low confidence, 2-3% coverage
 
-Expected overall accuracy: 96-98%
+Expected overall accuracy: 95-97% (V2 with LLM)
 """
 
 import time
+import logging
 from pathlib import Path
 from typing import Optional
 
@@ -17,31 +19,46 @@ from . import rules
 from .models import CategorizationMethod, CategoryPrediction
 from .taxonomy import Category
 
+# LLM layer (optional, imported only if needed)
+try:
+    from .llm_layer import LLMCategorizer
+except ImportError:
+    LLMCategorizer = None
+
+logger = logging.getLogger(__name__)
+
 
 class CategorizationEngine:
     """
     Hybrid categorization engine.
 
-    Uses 3-layer approach for high accuracy and performance:
+    Uses 4-layer approach for high accuracy and performance:
     1. Exact match (dictionary)
     2. Regex patterns
-    3. Machine learning (sklearn Naive Bayes) - coming soon
+    3. Machine learning (sklearn Naive Bayes)
+    4. LLM fallback (ai-infra) - V2 feature
 
     Args:
         enable_ml: Enable ML fallback (Layer 3)
-        confidence_threshold: Minimum confidence for ML predictions
+        enable_llm: Enable LLM fallback (Layer 4)
+        confidence_threshold: Minimum confidence for ML/LLM trigger (default 0.6)
         model_path: Path to pre-trained ML model
+        llm_categorizer: LLMCategorizer instance (Layer 4)
     """
 
     def __init__(
         self,
         enable_ml: bool = False,
-        confidence_threshold: float = 0.75,
+        enable_llm: bool = False,
+        confidence_threshold: float = 0.6,
         model_path: Optional[Path] = None,
+        llm_categorizer: Optional['LLMCategorizer'] = None,
     ):
         self.enable_ml = enable_ml
+        self.enable_llm = enable_llm
         self.confidence_threshold = confidence_threshold
         self.model_path = model_path
+        self.llm_categorizer = llm_categorizer
 
         # ML model (lazy loaded)
         self._ml_model = None
@@ -52,10 +69,16 @@ class CategorizationEngine:
             "exact_matches": 0,
             "regex_matches": 0,
             "ml_predictions": 0,
+            "llm_predictions": 0,
             "fallback": 0,
         }
+        
+        logger.info(
+            f"CategorizationEngine initialized: ml={enable_ml}, llm={enable_llm}, "
+            f"threshold={confidence_threshold}"
+        )
 
-    def categorize(
+    async def categorize(
         self,
         merchant_name: str,
         user_id: Optional[str] = None,
@@ -66,7 +89,7 @@ class CategorizationEngine:
 
         Args:
             merchant_name: Merchant name to categorize
-            user_id: User ID for personalized overrides (future)
+            user_id: User ID for personalized overrides
             include_alternatives: Include top-3 alternative predictions
 
         Returns:
@@ -110,8 +133,46 @@ class CategorizationEngine:
         if self.enable_ml:
             ml_result = self._predict_ml(normalized, include_alternatives)
             if ml_result:
-                self.stats["ml_predictions"] += 1
-                return ml_result
+                # Check if confidence is high enough
+                if ml_result.confidence >= self.confidence_threshold:
+                    self.stats["ml_predictions"] += 1
+                    return ml_result
+                
+                # Low confidence - try Layer 4 (LLM) if enabled
+                if self.enable_llm and self.llm_categorizer:
+                    logger.debug(
+                        f"sklearn confidence low ({ml_result.confidence:.2f} < {self.confidence_threshold}), "
+                        f"trying LLM for '{merchant_name}'"
+                    )
+                    try:
+                        llm_result = await self.llm_categorizer.categorize(
+                            merchant_name=merchant_name,
+                            user_id=user_id,
+                        )
+                        
+                        # Convert LLM CategoryPrediction to our CategoryPrediction
+                        self.stats["llm_predictions"] += 1
+                        return CategoryPrediction(
+                            merchant_name=merchant_name,
+                            normalized_name=normalized,
+                            category=Category(llm_result.category),
+                            confidence=llm_result.confidence,
+                            method=CategorizationMethod.LLM,
+                            alternatives=[],
+                            reasoning=llm_result.reasoning,
+                        )
+                    except Exception as e:
+                        # LLM failed, fallback to sklearn prediction
+                        logger.warning(
+                            f"LLM categorization failed for '{merchant_name}': {e}, "
+                            f"using sklearn fallback (confidence={ml_result.confidence:.2f})"
+                        )
+                        self.stats["ml_predictions"] += 1
+                        return ml_result
+                else:
+                    # LLM disabled, use sklearn prediction even if low confidence
+                    self.stats["ml_predictions"] += 1
+                    return ml_result
 
         # Fallback: Uncategorized
         self.stats["fallback"] += 1
