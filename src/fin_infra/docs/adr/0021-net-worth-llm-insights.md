@@ -111,6 +111,25 @@ Response: {
 ```
 
 ### Layer 4: LLM Conversation (V2, Multi-Turn Q&A)
+
+**⚠️ SCOPE UPDATE (2025-11-07)**: This layer has been **refactored to root-level** `src/fin_infra/conversation/` directory.
+
+**Rationale**: Financial planning conversation is GENERAL (not net-worth-specific):
+- Answers questions about: saving, budgeting, debt, refinancing, retirement, tax planning
+- Uses net worth as ONE data source among many (also spending, income, goals, debt)
+- Reusable across ALL fin-infra domains (budgeting, spending analysis, debt management)
+- Follows svc-infra pattern: root-level primitives (cache, api, jobs) vs domain-specific (auth, payments)
+
+**Architecture Boundary**:
+- ✅ **Root-level** (`conversation/`): General financial Q&A, multi-turn context, safety filters
+- ✅ **Domain-specific** (`net_worth/`): Net worth calculation, insights, goal tracking
+
+See `src/fin_infra/conversation/` for full implementation.
+
+---
+
+**Original Layer 4 Specification** (now implemented in `conversation/`):
+
 - **Purpose**: Answer financial planning questions with context
 - **Latency**: 500-2000ms (LLM call)
 - **Cost**: $0.018/user/month (2 conversations/month, 10 turns each)
@@ -140,6 +159,8 @@ Response: {
   "sources": ["current_net_worth", "spending_analysis"]
 }
 ```
+
+**Implementation**: See `src/fin_infra/conversation/planning.py` for `FinancialPlanningConversation` class.
 
 ## Architecture Diagram
 

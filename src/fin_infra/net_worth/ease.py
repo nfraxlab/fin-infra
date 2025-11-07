@@ -416,14 +416,15 @@ def easy_net_worth(
             pass
         
         try:
-            from fin_infra.net_worth.conversation import FinancialPlanningConversation
+            from fin_infra.conversation import FinancialPlanningConversation
             conversation = FinancialPlanningConversation(
                 llm=llm,
+                cache=cache,  # Required for context storage
                 provider=llm_provider,
                 model_name=model_name,
             )
         except ImportError:
-            # conversation.py not yet implemented, skip
+            # conversation module not yet implemented, skip
             pass
     
     # Create tracker

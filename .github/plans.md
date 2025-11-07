@@ -2240,24 +2240,52 @@ Completed in follow-up iteration:
   - File: src/fin_infra/net_worth/ease.py (updated ~350 → ~450 lines)
 
 #### Implementation
-- [ ] Implement: net_worth/insights.py (LLM-generated financial insights)
-  - [ ] NetWorthInsightsGenerator class with CoreLLM + structured output
-  - [ ] generate_wealth_trends(snapshots): Analyze net worth changes over time
-  - [ ] generate_debt_reduction_plan(liabilities): Prioritize debt payoff by APR
-  - [ ] generate_goal_recommendations(current_net_worth, goals): Path to financial goals
-  - [ ] generate_asset_allocation_advice(assets, age, risk_tolerance): Portfolio rebalancing
-  - [ ] Structured output: FinancialInsight(summary, key_findings, recommendations, confidence)
-  - [ ] Few-shot prompt template: 10 examples of wealth trends, debt strategies, goal advice
-- [ ] Implement: net_worth/conversation.py (multi-turn LLM conversation)
-  - [ ] FinancialPlanningConversation class with CoreLLM
-  - [ ] ask(question, context): Answer financial planning questions
-  - [ ] Context includes: Current net worth, historical snapshots, user goals, previous exchanges
-  - [ ] Conversation memory: Store in svc-infra.cache (1-day TTL, 10-turn limit)
-  - [ ] Safety: Detect sensitive questions (SSN, passwords) and refuse to answer
-  - [ ] Structured output: ConversationResponse(answer, follow_up_questions, confidence, sources)
-- [ ] Implement: net_worth/goals.py (LLM-validated goal tracking)
-  - [ ] FinancialGoalTracker class with CoreLLM validation
-  - [ ] validate_goal(goal): Check feasibility ("$2M by 65 requires $1,500/month savings")
+- [x] Implement: net_worth/insights.py (LLM-generated financial insights) - **COMPLETE**
+  - [x] NetWorthInsightsGenerator class with CoreLLM + structured output
+  - [x] 4 Pydantic schemas: WealthTrendAnalysis, DebtReductionPlan, GoalRecommendation, AssetAllocationAdvice
+  - [x] generate_wealth_trends(snapshots): Analyze net worth changes over time with drivers/risks/recommendations
+  - [x] generate_debt_reduction_plan(liabilities): Avalanche method (highest APR first), interest saved calculation
+  - [x] generate_goal_recommendations(goal, current_net_worth): Validate feasibility, suggest 3 alternative paths
+  - [x] generate_asset_allocation_advice(allocation, age, risk): Portfolio rebalancing with specific steps
+  - [x] 4 system prompts with few-shot examples (2 examples each, specific numbers)
+  - [x] AI safety disclaimers in all prompts ("Not a substitute for certified financial advisor")
+  - [x] Cost-efficient: ~$0.0014/call with Google Gemini (2k input, 500 output tokens)
+  - [x] Comprehensive docstrings with examples, cost estimates, usage patterns
+  - File: src/fin_infra/net_worth/insights.py (~700 lines)
+- [x] Implement: net_worth/conversation.py (multi-turn LLM conversation) - **COMPLETE**
+  - [x] FinancialPlanningConversation class with CoreLLM + structured output
+  - [x] 3 Pydantic schemas: Exchange, ConversationContext, ConversationResponse
+  - [x] ask(user_id, question, net_worth, goals): Multi-turn Q&A with context
+  - [x] Context management: Load/save from svc-infra.cache (24h TTL, 10-turn limit)
+  - [x] Safety filters: is_sensitive_question() detects SSN, passwords, account numbers (6 patterns)
+  - [x] Conversation history: Stores last 10 exchanges, auto-truncates older exchanges
+  - [x] System prompt with 3 few-shot examples (specific advice, need more info, data sources)
+  - [x] AI safety disclaimers ("Not a substitute for certified financial advisor")
+  - [x] clear_session() method to manually clear conversation cache
+  - [x] Cost-efficient: ~$0.0009/call (first turn), ~$0.0005/call (subsequent with cache)
+  - [x] Comprehensive docstrings with examples, cost estimates, usage patterns
+  - **REFACTORED**: Moved from `src/fin_infra/net_worth/conversation.py` to `src/fin_infra/conversation/` (root-level domain)
+    - Rationale: Conversation is GENERAL (not net-worth-specific) - works across all fin-infra domains
+    - Files created: `conversation/planning.py` (~464 lines), `conversation/__init__.py`, `conversation/ease.py`
+    - Import updated in `net_worth/ease.py`: `from fin_infra.conversation import FinancialPlanningConversation`
+    - ADR-0021 updated to document scope boundary (root-level vs domain-specific)
+  - File: src/fin_infra/conversation/planning.py (~464 lines)
+- [x] Implement: net_worth/goals.py (LLM-validated goal tracking) - **COMPLETE**
+  - [x] FinancialGoalTracker class with CoreLLM validation + local math
+  - [x] 2 Pydantic schemas: GoalValidation, GoalProgressReport
+  - [x] 4 local calculation functions (retirement, home_purchase, debt_free, wealth_milestone)
+    - calculate_retirement_goal(): FV formula with compound interest
+    - calculate_home_purchase_goal(): Down payment + closing costs timeline
+    - calculate_debt_free_goal(): Debt payoff with APR calculations
+    - calculate_wealth_milestone(): Growth rate projection
+  - [x] validate_goal(goal): Check feasibility with LLM context around local calculations (don't trust LLM math)
+  - [x] track_progress(goal, current_net_worth): Weekly progress reports with course corrections
+  - [x] 2 system prompts with few-shot examples (validation, progress tracking)
+  - [x] AI safety disclaimers ("Not a substitute for certified financial advisor")
+  - [x] Cost-efficient: ~$0.0009/validation, ~$0.0009/week progress ($0.0036/user/month)
+  - [x] Comprehensive docstrings with formulas, examples, cost estimates
+  - File: src/fin_infra/net_worth/goals.py (~850 lines)
+- [ ] Implement: Update add_net_worth_tracking (mount LLM endpoints)
   - [ ] track_progress(goal, snapshots): Compare actual vs target trajectory
   - [ ] generate_progress_report(goal, snapshots): Monthly/quarterly reports
   - [ ] suggest_course_correction(goal, snapshots): Recommendations when off-track
