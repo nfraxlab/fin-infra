@@ -30,7 +30,7 @@ Comprehensive checklist for making fin-infra production‑ready. Each section fo
 #### Step 1: Check svc-infra Comprehensively
 - [ ] Search svc-infra README for related functionality
 - [ ] Check svc-infra source tree: `src/svc_infra/*/` for relevant modules
-- [ ] Review svc-infra docs: `src/svc_infra/docs/*.md` for guides
+- [ ] Review svc-infra docs: `src/svc_infra/src/fin_infra/docs/*.md` for guides
 - [ ] Grep svc-infra codebase for similar functions/classes
 - [ ] Check svc-infra's easy_* builders and add_* helpers
 
@@ -216,11 +216,11 @@ Connect to 16,000+ financial institutions via Plaid, Teller, or MX. Fetch balanc
 Quick start: `banking = easy_banking(provider="teller")`
 
 Use cases: Account linking, transaction sync, balance checks, identity verification
-[Full docs →](docs/banking.md)
+[Full docs →](src/fin_infra/docs/banking.md)
 ```
 
 #### 2. Dedicated Documentation File
-Each capability needs `docs/{capability}.md` with:
+Each capability needs `src/fin_infra/docs/{capability}.md` with:
 - [ ] Comprehensive feature overview
 - [ ] Supported providers comparison table
 - [ ] Configuration options (env vars, parameters)
@@ -241,7 +241,7 @@ Routes must appear in FastAPI docs (`/docs`) with:
 Verification: Visit `/docs` and confirm capability has its own card/section.
 
 #### 4. Architecture Decision Records (When Applicable)
-For significant architectural choices, create `docs/adr/{number}-{title}.md`:
+For significant architectural choices, create `src/fin_infra/docs/adr/{number}-{title}.md`:
 - [ ] Provider selection rationale
 - [ ] Auth flow decisions
 - [ ] Data model choices
@@ -249,8 +249,8 @@ For significant architectural choices, create `docs/adr/{number}-{title}.md`:
 - [ ] Security considerations
 
 Examples:
-- `docs/adr/0003-banking-integration.md` (token storage, PII handling)
-- `docs/adr/0004-market-data-integration.md` (provider fallback chains)
+- `src/fin_infra/docs/adr/0003-banking-integration.md` (token storage, PII handling)
+- `src/fin_infra/docs/adr/0004-market-data-integration.md` (provider fallback chains)
 
 #### 5. Integration Examples
 Show real-world usage in `examples/` or main docs:
@@ -304,7 +304,7 @@ Every financial capability implementation (Banking, Market Data, Brokerage, Cred
   - Quick start code (3-5 lines)
   - Key use cases (bullet list)
   - Link to detailed docs
-- [ ] **Dedicated doc file**: `docs/{capability}.md` with:
+- [ ] **Dedicated doc file**: `src/fin_infra/docs/{capability}.md` with:
   - Feature overview
   - Provider comparison table
   - Configuration guide (env vars, parameters)
@@ -318,7 +318,7 @@ Every financial capability implementation (Banking, Market Data, Brokerage, Cred
   - Security schemes shown correctly
   - Request/response models documented
   - Example values in schemas
-- [ ] **ADR (when applicable)**: Create `docs/adr/{number}-{title}.md` for:
+- [ ] **ADR (when applicable)**: Create `src/fin_infra/docs/adr/{number}-{title}.md` for:
   - Provider selection rationale
   - Auth flow decisions
   - Data model choices
@@ -502,7 +502,7 @@ rate = irr([-10000, 3000, 4000, 5000])
 ## Must‑have (Ship with v1)
 
 ### A0. Acceptance Harness & CI Promotion Gate (new)
-- [x] Design: Acceptance env contract (ports, env, seed keys, base URL). (ADR‑0001 — docs/acceptance.md)
+- [x] Design: Acceptance env contract (ports, env, seed keys, base URL). (ADR‑0001 — src/fin_infra/docs/acceptance.md)
 - [x] Implement: docker-compose.test.yml + Makefile targets (accept/up/wait/seed/down).
 	- Files: docker-compose.test.yml, Makefile
 - [x] Implement: minimal acceptance app and first smoke test.
@@ -510,7 +510,7 @@ rate = irr([-10000, 3000, 4000, 5000])
 - [x] Implement: wait-for helper (Makefile curl loop) and tester container.
 - [x] Verify: CI job to run acceptance matrix and teardown.
 	- Files: .github/workflows/acceptance.yml
-- [x] Docs: docs/acceptance.md and docs/acceptance-matrix.md updated for tester and profiles.
+- [x] Docs: src/fin_infra/docs/acceptance.md and src/fin_infra/docs/acceptance-matrix.md updated for tester and profiles.
 - [x] Supply-chain: generate SBOM and image scan (Trivy) with severity gate; upload SBOM as artifact. (acceptance.yml)
 - [x] Provenance: sign SBOM artifact (cosign keyless) — best-effort for v1. (acceptance.yml)
 - [~] Backend matrix: run acceptance against in‑memory + Redis (cache) profiles. (Reuse svc‑infra caching; Redis profile coverage is handled in svc‑infra contexts.)
@@ -531,7 +531,7 @@ Owner: TBD — Evidence: PRs, tests, CI runs
 - [x] Skipped: unit tests for HTTP timeouts/retries (covered by svc‑infra).
 - [x] Implement: Easy model exports - `from fin_infra.models import Account, Transaction, Quote, Candle` (already exists)
 - [x] Tests: Unit tests for financial data models (validation, serialization) → tests/unit/test_models.py (20 tests passing)
-- [x] Docs: quickstart for settings (link to svc‑infra for timeouts/retries & caching) + model reference → docs/getting-started.md (already comprehensive)
+- [x] Docs: quickstart for settings (link to svc‑infra for timeouts/retries & caching) + model reference → src/fin_infra/docs/getting-started.md (already comprehensive)
 - Providers skeletons:
 	- Market: providers/market/yahoo.py (proto) → swap to chosen vendor(s) below.
 	- Crypto: providers/market/ccxt_crypto.py (proto)
@@ -555,7 +555,7 @@ Owner: TBD — Evidence: PRs, tests, CI runs
 - [x] Implement: Easy builder pattern - global resolve() function returns configured provider
 - [x] Tests: dynamic import, provider listing, error handling, caching → tests/unit/test_provider_registry.py (19 tests passing)
 - [~] Verify: All easy_* functions use registry internally (will implement with each provider in sections 2-5)
-- [x] Docs: docs/providers.md with examples + configuration table + easy builder usage (comprehensive guide created)
+- [x] Docs: src/fin_infra/docs/providers.md with examples + configuration table + easy builder usage (comprehensive guide created)
 
 ### 2. Banking / Account Aggregation (default: Teller)
 - [x] **Research (svc-infra check)**:
@@ -574,7 +574,7 @@ Owner: TBD — Evidence: PRs, tests, CI runs
   - **Default: Teller** (true free tier, simpler auth, US-only)
   - **Alternate 1: Plaid** (industry standard, broader coverage, production-ready)
   - **Alternate 2: MX** (enterprise-grade, comprehensive data)
-- [x] Design: auth flow contracts; token storage interface; PII boundary. (ADR‑0003 — docs/adr/0003-banking-integration.md)
+- [x] Design: auth flow contracts; token storage interface; PII boundary. (ADR‑0003 — src/fin_infra/docs/adr/0003-banking-integration.md)
   - Auth flows documented (Teller direct, Plaid exchange)
   - Token storage: encrypted in svc-infra DB
   - PII: mask account numbers (last 4), mask routing numbers, never log SSN
@@ -600,13 +600,13 @@ Owner: TBD — Evidence: PRs, tests, CI runs
   - [x] Return provider instance from `add_banking()`
 - [x] **Documentation Cards (MANDATORY)**:
   - [x] README card with overview and quick start
-  - [x] Dedicated `docs/banking.md` with comprehensive API reference
+  - [x] Dedicated `src/fin_infra/docs/banking.md` with comprehensive API reference
     - 850+ line comprehensive guide covering all aspects
     - Updated "Easy Add Banking" section with actual add_banking() implementation
     - Added complete "Integration Examples" section (lines 369-501)
     - Examples: production app, minimal setup, programmatic usage, background jobs
   - [x] OpenAPI visibility verified (Banking card appears in /docs)
-  - [x] ADR exists: `docs/adr/0003-banking-integration.md`
+  - [x] ADR exists: `src/fin_infra/docs/adr/0003-banking-integration.md`
   - [~] Integration examples in docs
     - Complete production app (fin-infra + svc-infra: logging, cache, observability, auth, banking)
     - Minimal example (one-liner add_banking())
@@ -642,7 +642,7 @@ Owner: TBD — Evidence: PRs, tests, CI runs
 - [x] Verify: acceptance profile banking=teller ready (test passes with TELLER_CERTIFICATE_PATH)
 - [x] Verify: `easy_banking()` works with zero config (tested with env var mocking)
 - [x] Security: Certificate handling documented, .gitignore updated, SECURITY.md created
-- [x] Docs: docs/banking.md (comprehensive guide with Teller-first approach, certificate auth, easy_banking usage, FastAPI integration, security/PII, troubleshooting)
+- [x] Docs: src/fin_infra/docs/banking.md (comprehensive guide with Teller-first approach, certificate auth, easy_banking usage, FastAPI integration, security/PII, troubleshooting)
 
 **[x] Section 2 Banking Integration - COMPLETE**
 
@@ -722,13 +722,13 @@ All items checked off. Evidence:
   - [x] Return provider instance from `add_market_data()`
 - [x] **Documentation Cards (MANDATORY)**:
   - [x] README card with overview and quick start
-  - [x] Dedicated `docs/market-data.md` with comprehensive API reference
+  - [x] Dedicated `src/fin_infra/docs/market-data.md` with comprehensive API reference
     - 650+ line comprehensive guide covering all aspects
     - Added "FastAPI Integration" section with add_market_data() implementation
     - Added complete "Integration Examples" section with 6 examples
     - Examples: production app, minimal setup, programmatic usage, background jobs, rate limit handling
   - [x] OpenAPI visibility verified (Market Data card appears in /docs)
-  - [x] ADR exists: `docs/adr/0004-market-data-integration.md`
+  - [x] ADR exists: `src/fin_infra/docs/adr/0004-market-data-integration.md`
   - [~] Integration examples in docs
     - Complete production app (fin-infra + svc-infra: logging, cache, observability, market data)
     - Minimal example (one-liner add_market_data())
@@ -736,7 +736,7 @@ All items checked off. Evidence:
     - Background jobs (svc-infra jobs + fin-infra market data with scheduled updates)
     - Rate limit handling (svc-infra retry + fin-infra providers)
     - ⚠️ Code examples written but NOT actually tested (syntax only)
-- [x] Docs: docs/market-data.md with examples + rate‑limit mitigation notes + easy_market usage + svc-infra caching integration
+- [x] Docs: src/fin_infra/docs/market-data.md with examples + rate‑limit mitigation notes + easy_market usage + svc-infra caching integration
 
 **[x] Section 3 Status: COMPLETE**
 
@@ -747,7 +747,7 @@ Evidence:
 - **Quality**: 135 unit tests total passing, mypy clean, ruff clean
 - **Real API verified**: Both Alpha Vantage and Yahoo Finance working with live data
 - **Router**: Using svc-infra public_router() with dual route registration
-- **Documentation**: docs/market-data.md complete (650+ lines) with comprehensive API reference and examples
+- **Documentation**: src/fin_infra/docs/market-data.md complete (650+ lines) with comprehensive API reference and examples
 
 ### 4. Market Data – Crypto (free tier: CoinGecko, alternates: CCXT, CryptoCompare)
 - [x] **Research (svc-infra check)**:
@@ -801,7 +801,7 @@ Evidence:
   - [x] Return provider instance from `add_crypto_data()`
 - [x] **Documentation Cards (MANDATORY)**:
   - [x] README card with overview and quick start
-  - [x] Dedicated `docs/crypto-data.md` with comprehensive API reference
+  - [x] Dedicated `src/fin_infra/docs/crypto-data.md` with comprehensive API reference
     - 550+ line comprehensive guide covering all aspects
     - Added "FastAPI Integration" section with add_crypto_data() implementation
     - Added complete "Integration Examples" section with 5 examples
@@ -814,7 +814,7 @@ Evidence:
     - Programmatic usage (direct provider, no FastAPI, CLI/scripts)
     - Background jobs (svc-infra jobs + fin-infra crypto with 24/7 scheduling)
     - ⚠️ Code examples written but NOT actually tested (syntax only)
-- [x] Docs: docs/crypto-data.md with real‑time data notes + easy_crypto usage + provider comparison + svc-infra integration.
+- [x] Docs: src/fin_infra/docs/crypto-data.md with real‑time data notes + easy_crypto usage + provider comparison + svc-infra integration.
 
 **[x] Section 4 Status: COMPLETE**
 
@@ -864,7 +864,7 @@ Evidence:
 - [x] Tests: mock order placement → position update → portfolio history + watchlist management (all 20 tests passing).
 - [x] Verify: acceptance profile brokerage=alpaca ready (5 tests: get_account, list_positions, list_orders, submit_and_cancel_order, get_portfolio_history).
 - [x] Verify: `easy_brokerage()` defaults to paper mode, requires explicit `mode="live"` for production
-- [x] Docs: docs/brokerage.md (492 lines) with disclaimers + sandbox setup + easy_brokerage usage + paper vs live mode + watchlist management + svc-infra integration examples.
+- [x] Docs: src/fin_infra/docs/brokerage.md (492 lines) with disclaimers + sandbox setup + easy_brokerage usage + paper vs live mode + watchlist management + svc-infra integration examples.
 
 **[x] Section 5 Status: COMPLETE** (All core items, docs, ADR, watchlist, acceptance test, and provider research completed)
 
@@ -878,7 +878,7 @@ Evidence (what was implemented):
 - **Router**: Using svc-infra public_router() with dual route registration [x]
 - **Tests**: 20 unit tests (7 easy_brokerage, 3 add_brokerage, 4 core API routes, 6 watchlist routes), all passing [x]
 - **Acceptance Tests**: 5 real API tests (get_account, list_positions, list_orders, submit_and_cancel_order, get_portfolio_history) - 153 lines [x]
-- **Documentation**: docs/brokerage.md (492 lines) + ADR-0006 (443 lines) = 935 lines comprehensive documentation [x]
+- **Documentation**: src/fin_infra/docs/brokerage.md (492 lines) + ADR-0006 (443 lines) = 935 lines comprehensive documentation [x]
 - **Provider Research**: Interactive Brokers and TD Ameritrade analysis completed, recommendation documented [x]
 - **Quality**: All tests passing, Pydantic v2 compliant, mock-based unit tests + real API acceptance tests [x]
 - **Implementation**: OrderRequest at module level for FastAPI, comprehensive error handling, credential auto-detection [x]
@@ -889,13 +889,13 @@ Completed in follow-up iteration:
 - [x] TD Ameritrade research - Documented in research notes above
 - [x] Watchlist DTOs and management - Watchlist model + 6 provider methods + 6 FastAPI routes + 6 tests
 - [x] Acceptance test with real Alpaca paper trading API - 5 tests (get_account, list_positions, list_orders, submit_and_cancel_order, get_portfolio_history)
-- [x] docs/brokerage.md documentation - 492 lines comprehensive guide
+- [x] src/fin_infra/docs/brokerage.md documentation - 492 lines comprehensive guide
 
 ### 6. Caching, Rate Limits & Retries (cross‑cutting) - [x] COMPLETE
 **Status**: Documentation-only task completed. All functionality provided by svc-infra.
 
 **Evidence**:
-- **Documentation**: docs/caching-rate-limits-retries.md - 550+ lines comprehensive guide [x]
+- **Documentation**: src/fin_infra/docs/caching-rate-limits-retries.md - 550+ lines comprehensive guide [x]
 - **Cache Integration**: Examples of cache_read decorator with TTL/tags for market quotes, banking accounts, crypto tickers [x]
 - **Rate Limiting**: Middleware setup, endpoint-level limiting, user-specific limits, provider quota tracking [x]
 - **HTTP Retries**: httpx client with exponential backoff, provider-specific strategies, circuit breaker pattern [x]
@@ -910,7 +910,7 @@ Completed in follow-up iteration:
 
 **Completed**:
 - [x] Research svc-infra modules (cache, rate limit, HTTP client APIs) - Documented in guide
-- [x] Create comprehensive documentation guide - docs/caching-rate-limits-retries.md (550+ lines)
+- [x] Create comprehensive documentation guide - src/fin_infra/docs/caching-rate-limits-retries.md (550+ lines)
 - [x] Cache integration examples - Market quotes, banking accounts, crypto tickers, resource-based caching
 - [x] Rate limiting examples - Application-level, route-specific, user-specific, provider quota tracking
 - [x] HTTP retry examples - Automatic retries, custom strategies, provider-specific patterns, circuit breaker
@@ -929,7 +929,7 @@ Completed in follow-up iteration:
 - **Easy Builder**: `easy_normalization()` returns (resolver, converter) singleton tuple [x]
 - **Models**: SymbolMetadata, ExchangeRate, CurrencyConversionResult Pydantic models [x]
 - **Tests**: 24 unit tests (ticker/CUSIP/ISIN conversion, provider normalization, batch operations, custom mappings) [x]
-- **Documentation**: docs/normalization.md - 650+ lines with quick start, API reference, integration examples [x]
+- **Documentation**: src/fin_infra/docs/normalization.md - 650+ lines with quick start, API reference, integration examples [x]
 - **Total Unit Tests**: 171 passing (147 existing + 24 normalization) [x]
 
 **svc-infra Integration**:
@@ -951,7 +951,7 @@ Completed in follow-up iteration:
 - [x] Implement easy_normalization() one-liner
 - [x] Tests (24 unit tests: ticker/CUSIP/ISIN, provider normalization, batch, custom mappings)
 - [x] Verify cross-provider symbol resolution (Yahoo, CoinGecko, Alpaca mappings)
-- [x] Documentation (docs/normalization.md - 650+ lines with examples, API reference)
+- [x] Documentation (src/fin_infra/docs/normalization.md - 650+ lines with examples, API reference)
 
 ### 8. Security, Secrets & PII boundaries
 - [x] **REUSE svc-infra**: Auth/sessions via `svc_infra.api.fastapi.auth`
@@ -1036,7 +1036,7 @@ Completed in follow-up iteration:
 - [x] Design: gating order (ruff, mypy, pytest, acceptance tests, SBOM, SAST stub), version bump + changelog.
 - [x] Implement: Added Trivy security scanning to .github/workflows/acceptance.yml (matching svc-infra pattern).
 - [x] Tests: Verified unit tests pass (223 tests); CI workflow validates CRITICAL vulnerabilities.
-- [x] Docs: Updated docs/contributing.md with CI/CD quality gates section; documented SBOM, Trivy, and signing steps.
+- [x] Docs: Updated src/fin_infra/docs/contributing.md with CI/CD quality gates section; documented SBOM, Trivy, and signing steps.
 
 **Completion Summary**:
 - [x] **Gap identified**: fin-infra was missing Trivy security scanning (svc-infra had it)
@@ -1064,7 +1064,7 @@ Completed in follow-up iteration:
 - [x] Implement: compliance notes page + code comments marking PII boundaries (integrate with svc-infra.data).
 - [x] Implement: `add_compliance_tracking(app)` helper for compliance event logging (uses svc-infra)
 - [x] Tests: Verify PII boundaries and retention policies (11 new tests)
-- [x] Docs: docs/compliance.md (not a substitute for legal review) + svc-infra data lifecycle integration.
+- [x] Docs: src/fin_infra/docs/compliance.md (not a substitute for legal review) + svc-infra data lifecycle integration.
 
 **Completion Summary**:
 - [x] **ADR 0011**: Created comprehensive compliance posture ADR with:
@@ -1074,7 +1074,7 @@ Completed in follow-up iteration:
   - Recommended retention periods (7 years transactions, 90 days tokens, 2 years credit reports)
   - PII marking convention (`# PII: ...` comments)
   - Compliance event schema (banking/credit/brokerage data access, token lifecycle, erasure)
-- [x] **docs/compliance.md**: Created 400+ line compliance guide with:
+- [x] **src/fin_infra/docs/compliance.md**: Created 400+ line compliance guide with:
   - PII classification and storage requirements
   - Vendor ToS detailed requirements (Plaid, Teller, Alpha Vantage)
   - Data lifecycle management (retention policies + erasure plans using svc-infra.data)
@@ -1142,7 +1142,7 @@ Completed in follow-up iteration:
   - `TestExperianProvider` (4 tests): Initialization, get_credit_score, get_credit_report, subscribe_to_changes
   - `TestEasyCredit` (7 tests): Default provider, explicit provider, config, instance passthrough, unknown provider, Equifax/TransUnion not implemented
   - `TestAddCreditMonitoring` (5 tests): Wiring, custom prefix, endpoint tests (score, report, subscribe)
-- [x] **docs/credit.md**: Created 400+ line comprehensive guide:
+- [x] **src/fin_infra/docs/credit.md**: Created 400+ line comprehensive guide:
   - Overview and quick start (zero-config, FastAPI, full report)
   - Data models with examples (CreditScore, CreditReport, CreditAccount, CreditInquiry, PublicRecord)
   - Bureau comparison table (Experian v1 vs Equifax/TransUnion v2)
@@ -1175,7 +1175,7 @@ Completed in follow-up iteration:
 
 **Deliverables**:
 - [x] **Research (API credentials)**:
-  - [x] Sign up for Experian Developer Portal - **DOCUMENTED** (see docs/experian-api-research.md)
+  - [x] Sign up for Experian Developer Portal - **DOCUMENTED** (see src/fin_infra/docs/experian-api-research.md)
   - [x] Obtain sandbox API key and client ID - **DOCUMENTED** (process + required vars)
   - [x] Review Experian API documentation (Connect API) - **COMPLETE** (endpoints, auth, responses)
   - [x] Test sandbox endpoints with curl/Postman - **DOCUMENTED** (example requests/responses)
@@ -1306,9 +1306,9 @@ Completed in follow-up iteration:
   - [~] Set up cost alerts if bureau API spend exceeds budget - **DEFERRED** (production monitoring, not v1)
   - [x] Document cost per user per month - **COMPLETE** (comparison table in docs)
 - [x] **Docs (Update documentation)**:
-  - [x] Create Experian API research document - **COMPLETE** (docs/experian-api-research.md, 250+ lines)
-  - [x] Create Section 13.5 progress tracker - **COMPLETE** (docs/section-13.5-progress.md)
-  - [x] Update `docs/credit.md` with real API integration examples - **COMPLETE** (OAuth flow, API calls, error handling)
+  - [x] Create Experian API research document - **COMPLETE** (src/fin_infra/docs/experian-api-research.md, 250+ lines)
+  - [x] Create Section 13.5 progress tracker - **COMPLETE** (src/fin_infra/docs/section-13.5-progress.md)
+  - [x] Update `src/fin_infra/docs/credit.md` with real API integration examples - **COMPLETE** (OAuth flow, API calls, error handling)
   - [x] Add Experian API setup guide (credentials, sandbox vs production) - **COMPLETE** (environment variables section)
   - [x] Add cache configuration guide (Redis setup, TTL tuning) - **COMPLETE** (cost optimization section with TTL comparison)
   - [x] Add webhook subscription examples (cURL, SDK) - **COMPLETE** (subscribe, verify signatures, test fire examples)
@@ -1324,16 +1324,16 @@ Completed in follow-up iteration:
   - [x] Classification: Type A (financial-specific tax data APIs)
   - [x] Justification: Tax form retrieval (1099s, W-2s) and crypto tax reporting are financial domain-specific; svc-infra provides retention/erasure for metadata only
   - [x] Reuse plan: Use svc-infra.data (RetentionPolicy, ErasurePlan) for tax document metadata lifecycle (7-year retention per IRS), svc-infra.jobs for annual tax form pulls, svc-infra.db for storing document references (URLs/paths), fin-infra implements PDF parsing and provider integrations (TaxBit, IRS)
-- [x] Research: TaxBit API (crypto tax reporting), IRS e-Services (transcript retrieval), 1099/W-2 formats. - **COMPLETE** (docs/research/tax-providers.md - 450+ lines comprehensive research)
+- [x] Research: TaxBit API (crypto tax reporting), IRS e-Services (transcript retrieval), 1099/W-2 formats. - **COMPLETE** (src/fin_infra/docs/research/tax-providers.md - 450+ lines comprehensive research)
   - **TaxBit**: $50-$200/month + $1-$5/user for crypto tax (Form 8949, 1099-B, 1099-MISC); OAuth 2.0, 100 req/min; industry standard
   - **IRS e-Services**: FREE but 6-8 weeks registration (EFIN, PKI certs, IP whitelist); W-2/1099 transcripts via XML; requires taxpayer consent
   - **Recommended**: IRS for traditional forms (free, official), TaxBit for crypto (if budget allows), Plaid fallback (W-2 only, $0.04/verification)
   - **Tax Forms**: W-2 (wages), 1099-INT (interest), 1099-DIV (dividends), 1099-B (capital gains), 1099-MISC (staking/airdrops) - all PDF with standardized IRS layouts
-- [x] Research: Document parsing libraries for PDF tax forms (pdfplumber, PyPDF2). - **COMPLETE** (docs/research/tax-providers.md)
+- [x] Research: Document parsing libraries for PDF tax forms (pdfplumber, PyPDF2). - **COMPLETE** (src/fin_infra/docs/research/tax-providers.md)
   - **pdfplumber** (RECOMMENDED): 5.9k stars, Apache 2.0, excellent table extraction (tax forms are tables), coordinate-based field extraction, OCR support for scanned forms
   - **PyPDF2**: 7.8k stars, BSD, fast but poor table extraction (unsuitable for W-2/1099 parsing)
   - **Decision**: Use pdfplumber for W-2/1099 parsing (table-based layout), pytesseract for OCR (scanned forms), reportlab for PDF generation (mock data)
-- [x] Design: TaxDocument, TaxForm1099, TaxFormW2, CryptoTaxReport DTOs; tax provider interface. (ADR-0013) - **COMPLETE** (docs/adr/0013-tax-integration.md - 650+ lines)
+- [x] Design: TaxDocument, TaxForm1099, TaxFormW2, CryptoTaxReport DTOs; tax provider interface. (ADR-0013) - **COMPLETE** (src/fin_infra/docs/adr/0013-tax-integration.md - 650+ lines)
   - **TaxProvider ABC**: get_tax_documents(), get_tax_document(), download_document(), calculate_crypto_gains(), calculate_tax_liability()
   - **Data Models**: TaxDocument (base), TaxFormW2 (20 boxes), TaxForm1099INT (interest), TaxForm1099DIV (dividends), TaxForm1099B (capital gains), TaxForm1099MISC (staking/airdrops), CryptoTaxReport (gains summary), TaxLiability (tax calculation)
   - **Providers**: IRS e-Services (v2, free but 6-8 weeks registration), TaxBit (v2, $50-$200/month + per-user), MockTaxProvider (v1)
@@ -1367,7 +1367,7 @@ Completed in follow-up iteration:
   - **Total**: 341 unit tests passing (22 new + 319 existing), 4 skipped (intentional)
 - [x] Verify: Tax form parsing accuracy on sample PDFs - **SKIPPED FOR V1** (MockTaxProvider uses pre-typed Pydantic models; PDF parsing planned for v2 with pdfplumber when IRS/TaxBit providers are implemented)
 - [x] Verify: `easy_tax()` works with sandbox credentials from env - **COMPLETE** (7 unit tests covering env auto-detection logic; IRS/TaxBit providers raise NotImplementedError with helpful guidance)
-- [x] Docs: docs/tax.md with provider comparison + easy_tax usage + document parsing + crypto tax reporting + svc-infra integration. - **COMPLETE** (src/fin_infra/docs/tax-data.md - 650+ lines)
+- [x] Docs: src/fin_infra/docs/tax.md with provider comparison + easy_tax usage + document parsing + crypto tax reporting + svc-infra integration. - **COMPLETE** (src/fin_infra/docs/tax-data.md - 650+ lines)
   - **Sections**: Quick start (mock/FastAPI/production), form descriptions (W-2/1099-INT/DIV/B/MISC), crypto calculations (FIFO/LIFO/HIFO), document management (7-year retention), provider comparison (Mock/IRS/TaxBit), FastAPI routes (4 endpoints), environment variables, integration patterns (svc-infra data lifecycle/jobs/webhooks), testing examples, error handling
   - **Cross-references**: ADR 0017, banking.md, brokerage.md, svc-infra data-lifecycle.md/webhooks.md
 
@@ -1445,7 +1445,7 @@ Completed in follow-up iteration:
   - [ ] Verify W-2/1099 data matches IRS sandbox test data
   - [ ] Verify consent flow redirects to IRS correctly
   - [ ] Verify certificate rotation works (expire test cert, verify renewal)
-- [ ] Docs: Update docs/tax-data.md with IRS setup guide
+- [ ] Docs: Update src/fin_infra/docs/tax-data.md with IRS setup guide
   - [ ] Add "IRS e-Services Setup" section with registration steps
   - [ ] Document EFIN application process (Form 8633, 6-8 weeks)
   - [ ] Document PKI certificate purchase ($200-$500/year)
@@ -1510,7 +1510,7 @@ Completed in follow-up iteration:
   - [ ] Verify crypto gains calculation matches manual calculation
   - [ ] Verify Form 8949 PDF has correct data
   - [ ] Verify webhook notifications work (async calculation)
-- [ ] Docs: Update docs/tax-data.md with TaxBit setup guide
+- [ ] Docs: Update src/fin_infra/docs/tax-data.md with TaxBit setup guide
   - [ ] Add "TaxBit Setup" section with signup process
   - [ ] Document pricing tiers (Starter/Growth/Enterprise)
   - [ ] Document OAuth client credentials flow
@@ -1541,7 +1541,7 @@ Completed in follow-up iteration:
   - [ ] Error monitoring (svc-infra.obs for alerts)
   - [ ] 7-year retention policy enforced (svc-infra.data)
 - [ ] Docs: Migration guide from v1 (mock) to v2 (real)
-  - [ ] Add "Upgrading to Real Providers" section in docs/tax-data.md
+  - [ ] Add "Upgrading to Real Providers" section in src/fin_infra/docs/tax-data.md
   - [ ] Document env variable changes (add IRS_EFIN, TAXBIT_CLIENT_ID)
   - [ ] Document testing strategy (unit → acceptance → production)
   - [ ] Document cost estimates (IRS $200-500/year, TaxBit $50-200/month + per-user)
@@ -1554,7 +1554,7 @@ Completed in follow-up iteration:
   - [x] Classification: Type A (financial-specific transaction categorization) - **CONFIRMED**
   - [x] Justification: Merchant-to-category mapping (Starbucks→Coffee Shops, Shell→Gas Stations, Netflix→Streaming Services) is financial domain-specific; svc-infra provides no ML infrastructure
   - [x] Reuse plan: Use svc-infra.cache for category prediction caching (TTL 24h), svc-infra.jobs for nightly batch categorization of new transactions, svc-infra.db for user category override storage, fin-infra implements ML model + rule engine
-- [x] Research: Transaction categorization approaches (rule-based, ML); category taxonomies (Plaid, MX, custom). - **COMPLETE** (docs/research/transaction-categorization.md - 800+ lines comprehensive research)
+- [x] Research: Transaction categorization approaches (rule-based, ML); category taxonomies (Plaid, MX, custom). - **COMPLETE** (src/fin_infra/docs/research/transaction-categorization.md - 800+ lines comprehensive research)
   - **Approaches**: Rule-based (85-95% accuracy, fast, deterministic), ML (90-98% accuracy, handles variants, requires training data), Hybrid (recommended: rules + Naive Bayes fallback)
   - **Taxonomies**: Plaid (900+ categories, too granular), MX (50-100 categories, user-friendly), Personal Capital (50-60 categories, proven). **Decision**: Start with MX-style 50-60 categories.
   - **Hybrid Flow**: Exact match (O(1)) → regex patterns (O(n), n=1000) → ML fallback (for unknown merchants)
@@ -1564,7 +1564,7 @@ Completed in follow-up iteration:
   - **Training Data**: Synthetic (50k+ hardcoded pairs, cold start), User-labeled (active learning, improves over time), Plaid public dataset (1M+ transactions, best quality)
   - **Normalization**: String cleaning (lowercase, remove noise), fuzzy matching (RapidFuzz Levenshtein distance), Plaid Entity API ($0.01/lookup, paid)
   - **Decision**: sklearn MultinomialNB with TfidfVectorizer (5MB model, bundle in package, no GPU required)
-- [x] Design: TransactionCategory, CategoryRule, CategoryPrediction DTOs; categorizer interface. (ADR-0018) - **COMPLETE** (docs/adr/0018-transaction-categorization.md - 700+ lines)
+- [x] Design: TransactionCategory, CategoryRule, CategoryPrediction DTOs; categorizer interface. (ADR-0018) - **COMPLETE** (src/fin_infra/docs/adr/0018-transaction-categorization.md - 700+ lines)
   - **DTOs**: TransactionCategory (name, parent, keywords, examples), CategoryRule (pattern, category, is_regex, priority), CategoryPrediction (merchant_name, normalized_name, category, confidence, method, alternatives)
   - **Categorizer Interface**: `categorize(merchant_name) → (category, confidence)`, `normalize_merchant()`, `add_rule()`, `add_override()`
   - **Hybrid Architecture**: Layer 1 (exact dict, O(1), 85-90% coverage) → Layer 2 (regex patterns, O(n), 5-10% coverage) → Layer 3 (Naive Bayes ML, 5% coverage)
@@ -1606,7 +1606,7 @@ Completed in follow-up iteration:
 - [x] **DONE**: Verify: `easy_categorization()` loads model without external dependencies
   - Tested with `enable_ml=False` (default): Uses rules only, no sklearn required ✅
   - ML support: Lazy-loaded when `enable_ml=True` (requires scikit-learn)
-- [x] **DONE**: Docs: docs/categorization.md with taxonomy reference + easy_categorization usage + custom rules + svc-infra caching integration.
+- [x] **DONE**: Docs: src/fin_infra/docs/categorization.md with taxonomy reference + easy_categorization usage + custom rules + svc-infra caching integration.
   - 6,800-line comprehensive documentation with taxonomy (56 categories), quick start, API reference (3 endpoints), advanced usage (custom rules, batch, alternatives, stats), svc-infra integration (cache, DB, jobs), configuration, performance benchmarks (96-98% accuracy), troubleshooting, testing (98% coverage), and V2 LLM roadmap ✅
 
 #### V2 Phase: LLM Integration (ai-infra)
@@ -1679,7 +1679,7 @@ Completed in follow-up iteration:
   - [ ] Compare: Hybrid vs sklearn-only accuracy (target: 95%+ hybrid vs 90% sklearn)
   - [ ] Cost analysis: Measure actual API costs (target: <$0.0001/transaction with caching)
   - [ ] A/B test: Run 10% of users with LLM layer, 90% without → measure accuracy delta
-- [ ] Docs: Update docs/categorization.md with LLM integration
+- [ ] Docs: Update src/fin_infra/docs/categorization.md with LLM integration
   - [ ] Add "LLM-Powered Categorization" section
   - [ ] Document few-shot prompt engineering (examples, system prompt)
   - [ ] Document cost analysis (API costs, caching strategy, budget caps)
@@ -1699,7 +1699,7 @@ Completed in follow-up iteration:
   - [x] Classification: Type A (financial-specific recurring payment detection) - **CONFIRMED**
   - [x] Justification: Subscription/bill detection (Netflix, rent, utilities) is financial domain-specific; svc-infra provides job scheduling infrastructure but no pattern detection algorithms
   - [x] Reuse plan: Use svc-infra.jobs for daily detection runs (scheduler.add_task for nightly batch processing), svc-infra.cache for detected subscriptions (cache_read/cache_write decorators, 24h-7d TTL), svc-infra.webhooks for subscription change alerts (add_webhooks for notification dispatch)
-- [x] Research: Recurring transaction patterns (monthly, bi-weekly, quarterly); amount variance tolerance. - **COMPLETE** (docs/research/recurring-transaction-detection.md - 15,000+ words comprehensive research)
+- [x] Research: Recurring transaction patterns (monthly, bi-weekly, quarterly); amount variance tolerance. - **COMPLETE** (src/fin_infra/docs/research/recurring-transaction-detection.md - 15,000+ words comprehensive research)
   - [x] Pattern types: Fixed amount 85% coverage (Netflix $15.99, ±2% or ±$0.50), variable amount 10% (utilities $45-65, ±10-30%), irregular 5% (annual subscriptions)
   - [x] Cadence detection: Monthly (28-32 days), bi-weekly (13-15 days), quarterly (85-95 days), annual (360-370 days) with median-based algorithm + std dev confidence
   - [x] Merchant normalization: Preprocessing pipeline (lowercase → remove special chars → remove store numbers → strip legal entities) + RapidFuzz fuzzy matching (80%+ similarity threshold)
@@ -1708,7 +1708,7 @@ Completed in follow-up iteration:
   - [x] Date clustering: 3+ transactions within ±7 days across months (catches 95% of recurring patterns, allows slight day-of-month variation)
   - [x] Merchant consistency: RapidFuzz token_sort_ratio ≥80% OR Levenshtein distance ≤3 (handles "NETFLIX.COM" vs "Netflix Inc", "Starbucks #123" vs "Starbucks #456")
   - [x] False positive target: <5% with prevention strategies (reject <3 occurrences, high variance, generic merchants like "ATM", "Payment")
-- [x] Design: RecurringTransaction, SubscriptionDetection, BillPrediction DTOs; detection algorithm. (ADR-0019) - **COMPLETE** (docs/adr/0019-recurring-transaction-detection.md - 400+ lines)
+- [x] Design: RecurringTransaction, SubscriptionDetection, BillPrediction DTOs; detection algorithm. (ADR-0019) - **COMPLETE** (src/fin_infra/docs/adr/0019-recurring-transaction-detection.md - 400+ lines)
   - [x] RecurringPattern: merchant_name, normalized_merchant, pattern_type (fixed/variable/irregular), cadence, amount/amount_range, occurrence_count, next_expected_date, confidence, reasoning
   - [x] SubscriptionDetection: pattern (RecurringPattern), historical_transactions (IDs), detected_at, user_confirmed, user_id
   - [x] BillPrediction: merchant_name, expected_date, expected_amount/expected_range, confidence, cadence
@@ -1766,7 +1766,7 @@ Completed in follow-up iteration:
   - [x] Default amount_tolerance=0.02 (2% variance) refined from 0.05 after research
   - [x] Default date_tolerance_days=7 (±1 week) validated in date clustering tests
   - [x] Parameter validation tests confirm: min_occurrences ≥ 2, amount_tolerance 0.0-1.0, date_tolerance_days ≥ 0
-- [x] Docs: docs/recurring-detection.md with algorithm explanation + easy_recurring_detection usage + tuning parameters + svc-infra job integration. - **COMPLETE** (~7,000 lines comprehensive guide)
+- [x] Docs: src/fin_infra/docs/recurring-detection.md with algorithm explanation + easy_recurring_detection usage + tuning parameters + svc-infra job integration. - **COMPLETE** (~7,000 lines comprehensive guide)
   - [x] Algorithm explanation: 3-layer detection (fixed → variable → irregular) with detailed criteria, examples, and output formats
   - [x] Quick start with easy_recurring_detection() (4 examples: default, FastAPI, strict, lenient)
   - [x] API reference: 4 endpoints (POST /detect, GET /subscriptions, GET /predictions, GET /stats) with curl examples
@@ -1851,7 +1851,7 @@ Completed in follow-up iteration:
   - [ ] Measure cache hit rate (target: 95% for merchant normalization)
   - [ ] Measure effective cost per user per month (target: <$0.001)
   - [ ] A/B test: Run 10% of users with LLM, 90% without → measure accuracy delta
-- [ ] Docs: Update docs/recurring-detection.md with LLM section
+- [ ] Docs: Update src/fin_infra/docs/recurring-detection.md with LLM section
   - [ ] Add "LLM Enhancement (V2)" section after pattern-based detection
   - [ ] Document merchant normalization with few-shot examples
   - [ ] Document variable amount detection for utilities (seasonal patterns)
@@ -1865,7 +1865,7 @@ Completed in follow-up iteration:
 #### V1 Phase: Basic Net Worth Calculation & Snapshots
 **Goal**: Calculate net worth from banking/brokerage/crypto providers with daily snapshots
 
-- [x] **Research (svc-infra check)**: **COMPLETE** (docs/research/net-worth-tracking.md - 18,000+ words comprehensive research)
+- [x] **Research (svc-infra check)**: **COMPLETE** (src/fin_infra/docs/research/net-worth-tracking.md - 18,000+ words comprehensive research)
   - [x] Check svc-infra for time-series data storage (historical net worth) - **FOUND** (svc-infra.db with SQLAlchemy models for snapshot storage, retention policies)
   - [x] Review svc-infra.jobs for daily net worth snapshots - **FOUND** (scheduler.add_task() with 86400s interval for daily runs)
   - [x] Classification: Type A (financial-specific net worth calculation) - **CONFIRMED**
@@ -1881,16 +1881,21 @@ Completed in follow-up iteration:
   - [x] Change triggers: Significant change detection (>5% OR >$10,000 configurable) triggers extra snapshot + webhook alert via svc-infra.webhooks (event: net_worth.significant_change)
   - [x] Retention policy: Keep daily for 90 days, weekly for 1 year, monthly for 10 years (automated cleanup job)
   - [x] Snapshot compression: Store only changed fields (delta encoding) for space efficiency; use JSONB for flexible asset/liability breakdown
-- [ ] Design: NetWorthSnapshot, AssetAllocation, LiabilityBreakdown DTOs; aggregator interface. (ADR-0020)
-  - [ ] NetWorthSnapshot: total_net_worth, total_assets, total_liabilities, asset_breakdown, liability_breakdown, snapshot_date, change_from_previous (amount + percent)
-  - [ ] AssetAllocation: cash, investments, real_estate, vehicles, other (with sub-categories)
-  - [ ] LiabilityBreakdown: credit_cards, mortgages, loans, lines_of_credit (with balances + interest rates)
-  - [ ] AssetDetail: account_id, provider, type, balance, currency, market_value (for stocks/crypto), last_updated
-  - [ ] Aggregator interface: get_all_accounts(), calculate_net_worth(), create_snapshot()
-- [ ] Design: Easy builder signature: `easy_net_worth(banking=None, brokerage=None, crypto=None, **config)` with aggregation strategy
-  - [ ] Accepts provider instances or uses defaults (easy_banking, easy_brokerage, easy_crypto)
-  - [ ] Config: base_currency (default: USD), snapshot_schedule (default: daily at midnight), change_threshold (default: 5% or $10k)
-  - [ ] Returns NetWorthTracker with all providers wired
+- [x] Design: NetWorthSnapshot, AssetAllocation, LiabilityBreakdown DTOs; aggregator interface. (ADR-0020) - **COMPLETE** (src/fin_infra/docs/adr/0020-net-worth-tracking.md - 620+ lines)
+  - [x] NetWorthSnapshot: total_net_worth, total_assets, total_liabilities, asset_breakdown (6 categories), liability_breakdown (6 categories), snapshot_date, change_from_previous (amount + percent), user_id, created_at, base_currency
+  - [x] AssetAllocation: cash, investments, crypto, real_estate, vehicles, other_assets (with percentages)
+  - [x] LiabilityBreakdown: credit_cards, mortgages, auto_loans, student_loans, personal_loans, lines_of_credit (with percentages)
+  - [x] AssetDetail: account_id, provider, account_type (enum), name, balance, currency, market_value, cost_basis, gain_loss, last_updated
+  - [x] LiabilityDetail: account_id, provider, liability_type (enum), name, balance, currency, interest_rate, minimum_payment, due_date, last_updated
+  - [x] Enums: AssetCategory (CASH, INVESTMENTS, CRYPTO, REAL_ESTATE, VEHICLES, OTHER), LiabilityCategory (CREDIT_CARD, MORTGAGE, AUTO_LOAN, STUDENT_LOAN, PERSONAL_LOAN, LINE_OF_CREDIT)
+  - [x] API models: NetWorthRequest (force_refresh, include_breakdown), NetWorthResponse (snapshot + allocation + breakdown + details + processing_time_ms), SnapshotHistoryRequest (days, granularity), SnapshotHistoryResponse (snapshots list + count + date range)
+  - [x] Aggregator interface: aggregate_net_worth(user_id) async, parallel provider calls with error handling, currency normalization, market value calculation
+- [x] Design: Easy builder signature: `easy_net_worth(banking=None, brokerage=None, crypto=None, market=None, **config)` with aggregation strategy - **COMPLETE**
+  - [x] Accepts provider instances: banking (BankingProvider), brokerage (BrokerageProvider), crypto (CryptoProvider), market (MarketProvider for quotes)
+  - [x] Config: base_currency (default: "USD"), snapshot_schedule (default: "daily"), change_threshold_percent (default: 0.05 = 5%), change_threshold_amount (default: 10000.0)
+  - [x] Validation: At least one provider required (banking, brokerage, or crypto)
+  - [x] Returns NetWorthTracker with configured aggregator + calculator
+  - [x] FastAPI integration: add_net_worth_tracking(app, tracker=None, prefix="/net-worth", include_in_schema=True) returns NetWorthTracker
 - [ ] Implement: net_worth/aggregator.py (multi-provider balance aggregation); historical snapshot storage.
   - [ ] NetWorthAggregator class: Fetches balances from all providers, normalizes currencies, calculates totals
   - [ ] get_current_net_worth(): Real-time calculation (cached 1h)
@@ -1935,7 +1940,7 @@ Completed in follow-up iteration:
   - [ ] Verify scheduler.add_task() called with 86400s interval
   - [ ] Verify snapshot stored at midnight UTC (configurable)
   - [ ] Verify retention policy applied (daily → weekly → monthly)
-- [ ] Docs: docs/net-worth.md with calculation methodology + easy_net_worth usage + historical tracking + svc-infra job/db integration.
+- [ ] Docs: src/fin_infra/docs/net-worth.md with calculation methodology + easy_net_worth usage + historical tracking + svc-infra job/db integration.
   - [ ] Overview: Net worth = assets - liabilities, multi-provider aggregation
   - [ ] Quick start: easy_net_worth() + add_net_worth_tracking(app)
   - [ ] Asset types: Cash, investments, real estate, vehicles, other (with examples)
@@ -2030,7 +2035,7 @@ Completed in follow-up iteration:
   - [ ] Conversation cache: 1-day TTL, 10-turn limit (~$0.002/conversation)
   - [ ] Goal tracking: Weekly check-ins (~$0.0005/week = $0.002/user/month)
   - [ ] **Total**: <$0.10/user/month with LLM enabled (acceptable for premium tier)
-- [ ] Docs: Update docs/net-worth.md with LLM section
+- [ ] Docs: Update src/fin_infra/docs/net-worth.md with LLM section
   - [ ] Add "LLM Insights (V2)" section after V1 calculation methodology
   - [ ] Document insights generation: wealth trends, debt reduction, goal recommendations, asset allocation advice
   - [ ] Document conversation API: multi-turn Q&A with context, follow-up questions, safety filters
@@ -2056,21 +2061,21 @@ Completed in follow-up iteration:
 - [ ] Design: analytics module surface (returns, risk, factor-ish metrics; frontier/HRP optional).
 - [ ] Implement: analytics/portfolio.py + examples.
 - [ ] Tests: reproducibility (seeded), unit for metrics.
-- [ ] Docs: docs/analytics.md.
+- [ ] Docs: src/fin_infra/docs/analytics.md.
 
 ### 20. Statements & OCR (import)
 - [ ] Research: CoinGecko/CCXT statement gaps; Ocrolus/Veryfi vs Tesseract.
 - [ ] Design: document ingestion pipeline; schema for transactions.
 - [ ] Implement: imports/statements/* + pluggable parser interface.
 - [ ] Tests: sample PDFs; redaction.
-- [ ] Docs: docs/imports.md.
+- [ ] Docs: src/fin_infra/docs/imports.md.
 
 ### 21. Identity/KYC (Stripe Identity)
 - [ ] Research: free allowances; required verifications.
 - [ ] Design: provider interface IdentityProvider.
 - [ ] Implement: providers/identity/stripe_identity.py (start/verify/status).
 - [ ] Tests: mocked integration; rate limits.
-- [ ] Docs: docs/identity.md.
+- [ ] Docs: src/fin_infra/docs/identity.md.
 
 ### 22. Payments
 - [~] **REUSE svc-infra**: Payment infrastructure via `svc_infra.billing` and `svc_infra.apf_payments`
@@ -2091,7 +2096,7 @@ Completed in follow-up iteration:
 - [ ] Design: calendar abstraction; localized formatting.
 - [ ] Implement: calendars/* + i18n helpers.
 - [ ] Tests: open/closed behavior, holiday rules.
-- [ ] Docs: docs/time-and-calendars.md.
+- [ ] Docs: src/fin_infra/docs/time-and-calendars.md.
 
 ⸻
 
@@ -2393,7 +2398,7 @@ All must-haves now include:
   - [ ] All endpoints with request/response examples
   - [ ] Authentication flow (if using svc-infra auth)
   - [ ] Rate limits and error handling
-- [ ] `docs/ARCHITECTURE.md`: Design decisions
+- [ ] `src/fin_infra/docs/ARCHITECTURE.md`: Design decisions
   - [ ] Why fin-infra + svc-infra separation
   - [ ] Provider selection rationale
   - [ ] Caching strategies
