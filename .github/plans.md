@@ -1689,6 +1689,10 @@ Completed in follow-up iteration:
   - [ ] Add troubleshooting section (LLM rate limits, timeout handling, cost overruns)
 
 ### 16. Recurring Transaction Detection (pattern-based)
+
+#### V1 Phase: Pattern-Based Detection (Traditional ML)
+**Goal**: Detect recurring transactions (subscriptions, bills) using time-series pattern matching
+
 - [ ] **Research (svc-infra check)**:
   - [ ] Check svc-infra for time-series pattern detection
   - [ ] Review svc-infra.jobs for scheduled detection jobs
@@ -1696,16 +1700,143 @@ Completed in follow-up iteration:
   - [ ] Justification: Subscription/bill detection (Netflix, rent, utilities) is financial domain
   - [ ] Reuse plan: Use svc-infra.jobs for daily detection runs, svc-infra.cache for detected subscriptions, svc-infra.webhooks for subscription change alerts
 - [ ] Research: Recurring transaction patterns (monthly, bi-weekly, quarterly); amount variance tolerance.
+  - [ ] Pattern types: Fixed amount (Netflix $15.99), variable amount (utilities $45-65), irregular (annual subscriptions)
+  - [ ] Cadence detection: Monthly, bi-weekly, quarterly, annual
+  - [ ] Merchant normalization: Fuzzy matching (RapidFuzz) for "NETFLIX.COM" vs "Netflix Inc"
 - [ ] Research: Subscription detection heuristics (fixed amount ±5%, merchant name consistency, date clustering).
-- [ ] Design: RecurringTransaction, SubscriptionDetection, BillPrediction DTOs; detection algorithm. (ADR-0015)
+  - [ ] Fixed amount: ±5% variance (handles minor price changes)
+  - [ ] Date clustering: 3+ transactions within ±7 days across months
+  - [ ] Merchant consistency: Levenshtein distance < 3 or 80%+ similarity
+  - [ ] False positive target: <5%
+- [ ] Design: RecurringTransaction, SubscriptionDetection, BillPrediction DTOs; detection algorithm. (ADR-0019)
+  - [ ] RecurringTransaction: merchant, amount_range, cadence, confidence, next_expected_date
+  - [ ] SubscriptionDetection: detected_at, pattern_type, historical_transactions
+  - [ ] BillPrediction: next_date, expected_amount, confidence
 - [ ] Design: Easy builder signature: `easy_recurring_detection(**config)` with sensitivity tuning
+  - [ ] `easy_recurring_detection(min_occurrences=3, amount_tolerance=0.05, date_tolerance_days=7, **config)`
+  - [ ] Returns configured RecurringDetector
 - [ ] Implement: recurring/detector.py (time-series pattern matching); subscription tracker.
+  - [ ] PatternDetector class: Analyze transaction history for recurring patterns
+  - [ ] 3-layer detection: Fixed amount → Variable amount → Irregular
+  - [ ] Date clustering algorithm: Group by merchant + detect cadence
+  - [ ] Statistics tracking: total_detected, false_positives, confidence_distribution
+- [ ] Implement: recurring/models.py (Pydantic models for DTOs)
+  - [ ] RecurringPattern, RecurringTransaction, SubscriptionDetection, BillPrediction
+  - [ ] Pydantic V2 (ConfigDict, not class Config)
+- [ ] Implement: recurring/normalizer.py (fuzzy merchant name matching)
+  - [ ] FuzzyMatcher class with RapidFuzz
+  - [ ] Normalize merchant names: lowercase, strip special chars, remove legal entities
+  - [ ] Cache normalized names (svc-infra.cache, 1-week TTL)
 - [ ] Implement: `easy_recurring_detection()` one-liner that returns configured RecurringDetector
+  - [ ] Validate config parameters (min_occurrences ≥ 2, amount_tolerance 0-1.0)
+  - [ ] Create detector with sensible defaults
 - [ ] Implement: `add_recurring_detection(app)` for FastAPI integration (uses svc-infra app)
+  - [ ] POST /recurring/detect - Detect patterns in transaction list
+  - [ ] GET /recurring/subscriptions - List detected subscriptions
+  - [ ] GET /recurring/predictions - Predict next bills
+  - [ ] Use svc-infra dual routers (user_router for authenticated endpoints)
+  - [ ] Call add_prefixed_docs() for landing page card
 - [ ] Tests: mock transactions → subscription detection (Netflix monthly, rent fixed); false positive rate < 5%.
+  - [ ] test_fixed_amount_detection(): Netflix $15.99 monthly (3+ months) → detected
+  - [ ] test_variable_amount_detection(): Utility bills $45-65 → detected with range
+  - [ ] test_date_clustering(): Transactions on 15th ±3 days → monthly cadence
+  - [ ] test_merchant_normalization(): "NETFLIX.COM" and "Netflix Inc" → same merchant
+  - [ ] test_false_positives(): Random one-off transactions → not recurring
+  - [ ] test_cadence_detection(): Monthly, bi-weekly, quarterly patterns
 - [ ] Verify: Detection works across multiple transaction cadences (monthly, bi-weekly, quarterly)
+  - [ ] Test with 100 real transaction histories
+  - [ ] Accuracy: 85%+ for fixed subscriptions (Netflix, Spotify)
+  - [ ] Accuracy: 70%+ for variable bills (utilities, phone)
 - [ ] Verify: `easy_recurring_detection()` provides sensible defaults for tolerance thresholds
+  - [ ] Default min_occurrences=3 (catches most subscriptions)
+  - [ ] Default amount_tolerance=0.05 (5% variance)
+  - [ ] Default date_tolerance_days=7 (±1 week)
 - [ ] Docs: docs/recurring-detection.md with algorithm explanation + easy_recurring_detection usage + tuning parameters + svc-infra job integration.
+  - [ ] Algorithm explanation: 3-layer detection (fixed → variable → irregular)
+  - [ ] Quick start with easy_recurring_detection()
+  - [ ] API reference (3 endpoints)
+  - [ ] Configuration tuning guide (sensitivity parameters)
+  - [ ] svc-infra integration (jobs for daily detection, webhooks for alerts)
+
+#### V2 Phase: LLM Enhancement (ai-infra)
+**Goal**: Use LLM for merchant normalization, variable amount detection, and natural language insights
+
+- [ ] **Research (ai-infra check)**:
+  - [ ] Check ai-infra.llm for structured output with Pydantic schemas
+  - [ ] Review few-shot prompting best practices for merchant normalization
+  - [ ] Classification: Type A (recurring detection is financial-specific, LLM is general AI)
+  - [ ] Justification: Use ai-infra for LLM calls, fin-infra for financial prompts and domain logic
+  - [ ] Reuse plan: CoreLLM for inference, structured output for Pydantic validation, svc-infra.cache for merchant normalization (1-week TTL)
+- [ ] Research: Merchant name normalization with LLM (few-shot vs fine-tuning)
+  - [ ] Zero-shot accuracy: 70-80% (poor for edge cases like "SQ *COFFEE SHOP")
+  - [ ] Few-shot accuracy: 90-95% (10-20 examples per merchant type)
+  - [ ] Fine-tuning: 95-98% (requires 10k+ labeled pairs, overkill for this use case)
+  - [ ] **Decision**: Few-shot with 20 examples (streaming, utilities, groceries, subscriptions, transport, dining)
+- [ ] Research: Variable amount detection (LLM vs statistical methods)
+  - [ ] Statistical (mean ± 2 std dev): Works for normal distributions, fails for seasonal patterns
+  - [ ] LLM: Understands semantic variance (utility bills seasonal, gym fees fixed, phone bills with overage)
+  - [ ] **Decision**: Hybrid - statistical for initial filter, LLM for edge cases (>20% variance)
+- [ ] Research: Cost analysis for LLM-enhanced detection
+  - [ ] Merchant normalization: $0.00003/merchant (1K tokens) × 95% cache hit → $0.0000015 effective
+  - [ ] Variable detection: $0.0001/detection (run only for ambiguous cases, ~10% of transactions)
+  - [ ] Insights generation: $0.0002/user/month (on-demand via API endpoint)
+  - [ ] **Total**: <$0.001/user/month with aggressive caching
+- [ ] Design: LLM-enhanced recurring detection architecture (ADR-0020)
+  - [ ] Layer 1: Pattern-based detection (existing, fast, 80% coverage)
+  - [ ] Layer 2: LLM merchant normalization (for grouped detection across name variants)
+  - [ ] Layer 3: LLM variable amount detection (for utilities/variable subscriptions with semantic understanding)
+  - [ ] Layer 4: LLM insights generation (on-demand via API endpoint, natural language summaries)
+- [ ] Design: Easy builder signature update
+  - [ ] `easy_recurring_detection(enable_llm=False, llm_provider="google", **config)`
+  - [ ] Default: LLM disabled (backward compatible, no API costs)
+  - [ ] When enabled: Uses ai-infra.llm with structured output
+  - [ ] Multi-provider support: Google Gemini (default), OpenAI, Anthropic
+- [ ] Implement: recurring/normalizers.py (LLM-based merchant normalization)
+  - [ ] MerchantNormalizer class with CoreLLM + structured output
+  - [ ] Few-shot prompt template (20 examples: "NFLX*SUB"→"Netflix", "SQ *CAFE"→"Square Cafe", etc.)
+  - [ ] Structured output: MerchantNormalized(normalized_name, merchant_type, confidence)
+  - [ ] Cache normalized names (svc-infra.cache, 1-week TTL, 95% hit rate expected)
+  - [ ] Fallback to fuzzy matching if LLM fails or disabled
+- [ ] Implement: recurring/detectors_llm.py Layer 3 (LLM variable detection)
+  - [ ] VariableDetector class for ambiguous patterns
+  - [ ] Call LLM only for transactions with >20% amount variance (edge cases)
+  - [ ] Structured output: RecurringPattern(is_recurring, cadence, expected_range, reasoning)
+  - [ ] Few-shot examples: Utility bills with seasonal patterns, phone bills with overage charges
+  - [ ] Update detector.py to use LLM for edge cases (when statistical methods fail)
+- [ ] Implement: recurring/insights.py (natural language summaries)
+  - [ ] SubscriptionInsightsGenerator with CoreLLM
+  - [ ] Generate monthly summary: total spend, top subscriptions, consolidation recommendations
+  - [ ] Example: "You have 5 streaming subscriptions totaling $64.95/month. Consider Disney+ bundle to save $30/month."
+  - [ ] API endpoint: GET /recurring/insights (on-demand, not automatic)
+  - [ ] Cache insights (svc-infra.cache, 1-day TTL)
+- [ ] Tests: Unit tests (mocked CoreLLM responses)
+  - [ ] test_merchant_normalizer(): "NFLX*SUB" → MerchantNormalized("Netflix", "streaming", 0.95)
+  - [ ] test_variable_detector(): Utility bills → RecurringPattern(is_recurring=True, expected_range=(45, 70), reasoning="seasonal")
+  - [ ] test_insights_generator(): 5 subscriptions → summary + top 3 + recommendations
+  - [ ] test_llm_fallback(): LLM disabled → uses fuzzy matching (no LLM calls)
+  - [ ] test_caching(): Verify merchant normalization cached (1-week TTL, 95% hit rate)
+- [ ] Tests: Acceptance tests (real LLM API calls, marked @pytest.mark.acceptance)
+  - [ ] test_google_gemini_normalization(): Real API call with 20 test merchant names
+  - [ ] test_variable_detection_accuracy(): Test with 100 real utility transactions (accuracy target: 88%+)
+  - [ ] test_insights_generation(): Generate insights for test user's 10 subscriptions
+  - [ ] Skip if GOOGLE_API_KEY not set in environment
+- [ ] Verify: LLM enhancement improves detection accuracy
+  - [ ] Baseline (pattern-only): 85% accuracy, 8% false positives
+  - [ ] With LLM: Target 92%+ accuracy, <5% false positives
+  - [ ] Variable detection: 70% → 88% for utility bills with seasonal patterns
+  - [ ] Merchant grouping: 80% → 95% (handles name variants)
+- [ ] Verify: Cost stays under budget with caching
+  - [ ] Measure cache hit rate (target: 95% for merchant normalization)
+  - [ ] Measure effective cost per user per month (target: <$0.001)
+  - [ ] A/B test: Run 10% of users with LLM, 90% without → measure accuracy delta
+- [ ] Docs: Update docs/recurring-detection.md with LLM section
+  - [ ] Add "LLM Enhancement (V2)" section after pattern-based detection
+  - [ ] Document merchant normalization with few-shot examples
+  - [ ] Document variable amount detection for utilities (seasonal patterns)
+  - [ ] Document insights API with usage examples (GET /recurring/insights)
+  - [ ] Add cost analysis table (Google Gemini vs OpenAI vs Anthropic)
+  - [ ] Add enable_llm=True configuration guide with provider selection
+  - [ ] Add troubleshooting section (LLM rate limits, timeout handling, cost overruns)
 
 ### 17. Net Worth Tracking (aggregated holdings)
 - [ ] **Research (svc-infra check)**:
