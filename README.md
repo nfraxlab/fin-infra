@@ -136,15 +136,6 @@ sum(rate(http_server_requests_total{route=~".*\\|financial"}[5m]))
 See [Observability Guide](src/fin_infra/docs/observability.md) for more details.
 
 ## Architecture Overview
-add_market_data(app, provider="alphavantage")
-
-# Now routes are automatically classified:
-# GET /banking/accounts → route_class="financial" in metrics
-# GET /market/quote/AAPL → route_class="financial" in metrics
-# GET /health → route_class="public" in metrics
-```
-
-## Architecture Overview
 
 ```
 fin-infra/
@@ -207,20 +198,33 @@ make accept    # Acceptance tests
 make test      # All tests
 ```
 
-## Acceptance tests and CI
-- Acceptance tests are marked with `@pytest.mark.acceptance` and are excluded by default.
-- To run locally, export any required API keys (only Alpha Vantage is needed by default):
-  - `ALPHAVANTAGE_API_KEY` – required for Alpha Vantage market data tests.
-- Run: `poetry run pytest -q -m acceptance`.
+## Acceptance Tests and CI
 
-### GitHub Actions secrets
+Acceptance tests are marked with `@pytest.mark.acceptance` and are excluded by default.
+
+### Running locally
+
+Export any required API keys (only Alpha Vantage is needed by default):
+- `ALPHAVANTAGE_API_KEY` – required for Alpha Vantage market data tests
+
+Run acceptance tests:
+```bash
+poetry run pytest -q -m acceptance
+```
+
+### GitHub Actions Secrets
+
 The acceptance workflow in `.github/workflows/acceptance.yml` expects:
-- `ALPHAVANTAGE_API_KEY` – add it under Repository Settings → Secrets and variables → Actions → New repository secret.
+- `ALPHAVANTAGE_API_KEY` – add it under Repository Settings → Secrets and variables → Actions → New repository secret
 
-If the secret isn’t configured, acceptance tests will still run and CoinGecko tests (public) will pass, but Alpha Vantage tests will be skipped.
+If the secret isn't configured, acceptance tests will still run and CoinGecko tests (public) will pass, but Alpha Vantage tests will be skipped.
 
 ## Contributing
+
 - Keep APIs small and typed. Prefer Pydantic models for IO boundaries.
 - Add or update tests for any behavior changes. Keep `pytest` passing and `mypy` clean.
+- See [Contributing Guide](src/fin_infra/docs/contributing.md) for detailed development workflow.
 
-License: MIT
+## License
+
+MIT
