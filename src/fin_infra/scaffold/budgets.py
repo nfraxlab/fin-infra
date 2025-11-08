@@ -131,16 +131,20 @@ def _generate_substitutions(
         
         # Conditional arguments for functions
         "tenant_arg": ", tenant_id: str" if include_tenant else "",
-        "tenant_default": ", tenant_id=None" if include_tenant else "",
+        "tenant_arg_unique_index": ', tenant_field="tenant_id"' if include_tenant else "",
+        "tenant_default": '"tenant_id"' if include_tenant else "None",
         "tenant_arg_type": ", tenant_id: Optional[str] = None" if include_tenant else "",
+        "tenant_arg_type_comma": ", tenant_id: Optional[str] = None" if include_tenant else "",
         "tenant_arg_val": ", tenant_id=tenant_id" if include_tenant else "",
+        "tenant_doc": "        tenant_id: Optional tenant identifier for filtering\n" if include_tenant else "",
         
         # Conditional query filters
         "tenant_filter": _tenant_filter() if include_tenant else "",
         "soft_delete_filter": _soft_delete_filter() if include_soft_delete else "",
+        "soft_delete_default": "False" if include_soft_delete else "None",
         
         # Conditional soft delete logic
-        "soft_delete_logic": _soft_delete_logic() if include_soft_delete else "",
+        "soft_delete_logic": _soft_delete_logic() if include_soft_delete else _soft_delete_hard_delete_fallback(),
         
         # Conditional schema fields
         "tenant_field_create": _tenant_field_schema_create() if include_tenant else "",
@@ -185,24 +189,15 @@ def _soft_delete_filter() -> str:
 
 def _soft_delete_logic() -> str:
     """Generate soft delete implementation for repository."""
-    return """
-        if soft:
-            # Soft delete: set deleted_at timestamp
+    return """            # Soft delete: set deleted_at timestamp
             await self.update(budget_id, {"deleted_at": datetime.now(timezone.utc)}, tenant_id)
-        else:
-            # Hard delete: actually remove from database
-            stmt = select(Budget).where(Budget.id == budget_id)
-            if tenant_id is not None:
-                stmt = stmt.where(Budget.tenant_id == tenant_id)
-            
-            result = await self.session.execute(stmt)
-            budget = result.scalar_one_or_none()
-            
-            if not budget:
-                raise ValueError(f"Budget {budget_id} not found")
-            
+"""
+
+
+def _soft_delete_hard_delete_fallback() -> str:
+    """Generate hard delete when soft delete is not enabled."""
+    return """            # Hard delete only (soft delete not enabled)
             await self.session.delete(budget)
-            await self.session.flush()
 """
 
 

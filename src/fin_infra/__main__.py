@@ -1,10 +1,15 @@
+"""fin-infra CLI entrypoint.
+
+Run with: python -m fin_infra or fin-infra (if installed)
+"""
 from __future__ import annotations
 
-from loguru import logger
+from fin_infra.cli import app
 
 
 def main() -> None:
-    logger.info("fin-infra CLI coming soon. Try the README Quickstart in Python for now.")
+    """Main CLI entrypoint."""
+    app()
 
 
 if __name__ == "__main__":

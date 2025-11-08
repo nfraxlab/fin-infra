@@ -89,7 +89,7 @@ ${tenant_field}${soft_delete_field}    # extensible metadata
 # Budgets are unique by (user_id, name) or (tenant_id, user_id, name) if multi-tenant
 for _ix in make_unique_sql_indexes(
     ${Entity},
-    unique_ci=["user_id", "name"]${tenant_arg}
+    unique_ci=["user_id", "name"]${tenant_arg_unique_index}
 ):
     pass
 

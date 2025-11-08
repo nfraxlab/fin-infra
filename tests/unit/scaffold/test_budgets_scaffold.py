@@ -34,10 +34,12 @@ class TestGenerateSubstitutions:
         assert subs["tenant_field"] == ""
         assert subs["soft_delete_field"] == ""
         assert subs["tenant_arg"] == ""
-        assert subs["tenant_default"] == ""
+        assert subs["tenant_arg_unique_index"] == ""
+        assert subs["tenant_default"] == "None"  # None when tenant disabled
         assert subs["tenant_filter"] == ""
         assert subs["soft_delete_filter"] == ""
-        assert subs["soft_delete_logic"] == ""
+        # When soft delete disabled, uses hard delete fallback
+        assert "Hard delete only" in subs["soft_delete_logic"] or "session.delete" in subs["soft_delete_logic"]
     
     def test_substitutions_with_tenant(self):
         """Test substitutions with tenant flag enabled."""
@@ -45,7 +47,8 @@ class TestGenerateSubstitutions:
         
         assert "tenant_id" in subs["tenant_field"]
         assert subs["tenant_arg"] == ", tenant_id: str"
-        assert subs["tenant_default"] == ", tenant_id=None"
+        assert subs["tenant_arg_unique_index"] == ', tenant_field="tenant_id"'
+        assert subs["tenant_default"] == '"tenant_id"'  # String "tenant_id" when enabled
         assert "tenant_id" in subs["tenant_filter"]
     
     def test_substitutions_with_soft_delete(self):
@@ -100,12 +103,12 @@ class TestHelperFunctions:
         assert "is_(None)" in filter_code
     
     def test_soft_delete_logic_contains_conditional(self):
-        """Test _soft_delete_logic() returns conditional soft/hard delete."""
+        """Test _soft_delete_logic() returns soft delete implementation (update with deleted_at)."""
         logic = _soft_delete_logic()
-        assert "if soft:" in logic
         assert "deleted_at" in logic
-        assert "else:" in logic
-        assert "delete" in logic
+        assert "datetime.now" in logic
+        # Soft delete uses update, not session.delete
+        assert "update" in logic
     
     def test_tenant_field_schema_create(self):
         """Test _tenant_field_schema_create() returns Pydantic field."""
