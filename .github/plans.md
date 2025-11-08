@@ -613,12 +613,15 @@ def add_capability(
    - **Total projections tests: 49 tests (30+19) all passing in 0.06s**
    - Verify in coverage analysis: Closes "Growth Projections" gap (currently 20% coverage)
 
-8. [ ] **Create easy_analytics() builder** (FILE: `src/fin_infra/analytics/ease.py`)
-   - [ ] Function: `easy_analytics() -> AnalyticsEngine`
-   - [ ] Configure caching (use svc-infra cache for expensive calculations)
-   - [ ] Configure dependencies (banking, brokerage, categorization, recurring, net_worth modules)
-   - [ ] Sensible defaults (30-day periods, net savings definition, SPY benchmark)
-   - [ ] Return configured AnalyticsEngine instance
+8. [x] **Create easy_analytics() builder** ✅ COMPLETE (FILE: `src/fin_infra/analytics/ease.py`)
+   - [x] Function: `easy_analytics() -> AnalyticsEngine` ✅
+   - [x] AnalyticsEngine class with 8 methods (cash_flow, savings_rate, spending_insights, spending_advice, portfolio_metrics, benchmark_comparison, net_worth_projection, compound_interest) ✅
+   - [x] Configure dependencies (banking, brokerage, categorization, recurring, net_worth, market providers) ✅
+   - [x] Sensible defaults (30-day periods, NET savings definition, SPY benchmark, 3600s cache TTL) ✅
+   - [x] Return configured AnalyticsEngine instance ✅
+   - [x] Unit tests: `tests/unit/analytics/test_ease.py` (27 tests passing in 0.26s) ✅
+   - [x] Integration tests: `tests/integration/analytics/test_ease_integration.py` (12 tests passing in 0.04s) ✅
+   - [x] **TOTAL: 315 analytics tests passing in 0.41s** ✅
 
 9. [ ] **Create add_analytics() FastAPI helper** (FILE: `src/fin_infra/analytics/add.py`)
    - [ ] Use svc-infra `user_router` (MANDATORY - see Router & API Standards section)
