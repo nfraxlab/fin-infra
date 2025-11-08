@@ -39,7 +39,7 @@ class TrendDirection(str, Enum):
 
 class CashFlowAnalysis(BaseModel):
     """Cash flow analysis result.
-    
+
     Keyword-only args for cache key stability.
     """
 
@@ -60,7 +60,7 @@ class CashFlowAnalysis(BaseModel):
 
 class SavingsRateData(BaseModel):
     """Savings rate calculation result.
-    
+
     Keyword-only args for cache key stability.
     """
 
@@ -89,7 +89,7 @@ class SpendingAnomaly(BaseModel):
 
 class SpendingInsight(BaseModel):
     """Spending insights and patterns.
-    
+
     Keyword-only args for cache key stability.
     """
 
@@ -113,7 +113,7 @@ class SpendingInsight(BaseModel):
 
 class PersonalizedSpendingAdvice(BaseModel):
     """LLM-generated personalized spending advice.
-    
+
     Uses ai-infra CoreLLM for structured output generation.
     """
 
@@ -149,7 +149,7 @@ class AssetAllocation(BaseModel):
 
 class PortfolioMetrics(BaseModel):
     """Portfolio performance metrics.
-    
+
     Keyword-only args for cache key stability.
     """
 
@@ -171,7 +171,7 @@ class PortfolioMetrics(BaseModel):
 
 class BenchmarkComparison(BaseModel):
     """Portfolio performance vs benchmark.
-    
+
     Keyword-only args for cache key stability.
     """
 
@@ -200,7 +200,7 @@ class Scenario(BaseModel):
 
 class GrowthProjection(BaseModel):
     """Net worth growth projection with scenarios.
-    
+
     Keyword-only args for cache key stability.
     """
 
