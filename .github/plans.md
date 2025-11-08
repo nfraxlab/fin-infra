@@ -859,15 +859,18 @@ def add_capability(
 
 **Budgets Module Completion Checklist** (MANDATORY before marking module complete):
 
-- [x] **Testing Requirements**: ✅
+- [x] **Testing Requirements**: ✅ **COMPLETE**
   - [x] Unit tests: `tests/unit/budgets/test_tracker.py` (25 tests passing)
   - [x] Unit tests: `tests/unit/budgets/test_alerts.py` (15 tests passing)
   - [x] Unit tests: `tests/unit/budgets/test_templates.py` (24 tests passing)
   - [x] Unit tests: `tests/unit/budgets/test_ease.py` (27 tests passing)
   - [x] Unit tests: `tests/unit/budgets/test_add.py` (21 tests passing)
-  - [ ] Integration tests: `tests/integration/test_budgets_api.py` (✅ Created 17 tests, requires aiosqlite dependency - TODO: Install aiosqlite or adjust for acceptance tests only)
-  - [ ] Acceptance tests: `tests/acceptance/test_budgets.py` (TODO: Create acceptance test with real DB)
+  - [x] Integration tests: `tests/integration/test_budgets_api.py` (17 tests passing) ✅
+  - [x] Acceptance tests: `tests/acceptance/test_budgets_acceptance.py` (7 tests passing) ✅
   - [x] Router tests: Verified plain APIRouter usage (apps add auth separately)
+  - [x] Total: 136 tests passing (112 unit + 17 integration + 7 acceptance)
+  - [x] Dependencies: aiosqlite ^0.21.0 added for async SQLite testing
+  - [x] In-memory persistence: BudgetTracker uses `_budgets` dict storage (Task 13 scope)
   - [x] OpenAPI tests: add_prefixed_docs() called, `/budgets/docs` and `/budgets/openapi.json` registered
   - [x] Coverage: ✅ **88% coverage** (112 tests passed in 1.28s) - Exceeds 80% target
 
