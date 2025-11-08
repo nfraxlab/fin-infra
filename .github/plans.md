@@ -702,14 +702,22 @@ def add_capability(
     - [x] Create `src/fin_infra/budgets/add.py` (placeholder for Task 17)
     - [x] Verify in coverage analysis: Addresses "Budgets Module (New Domain)" recommendation
 
-12. [ ] **Define Pydantic models** (`src/fin_infra/budgets/models.py`)
-    - [ ] `BudgetType` enum: `personal`, `household`, `business`, `project`, `custom`
-    - [ ] `BudgetPeriod` enum: `weekly`, `biweekly`, `monthly`, `quarterly`, `yearly`
-    - [ ] `Budget` model (id, user_id, name, type, period, categories, start_date, end_date, rollover_enabled)
-    - [ ] `BudgetCategory` model (category_name, budgeted_amount, spent_amount, remaining_amount, percent_used)
-    - [ ] `BudgetProgress` model (budget_id, current_period, categories, total_budgeted, total_spent, total_remaining)
-    - [ ] `BudgetAlert` model (budget_id, category, type, threshold, message, triggered_at)
-    - [ ] `BudgetTemplate` model (name, type, categories, description)
+12. [x] **Define Pydantic models** (`src/fin_infra/budgets/models.py`)
+    - [x] `BudgetType` enum: `personal`, `household`, `business`, `project`, `custom`
+    - [x] `BudgetPeriod` enum: `weekly`, `biweekly`, `monthly`, `quarterly`, `yearly`
+    - [x] `Budget` model (id, user_id, name, type, period, categories, start_date, end_date, rollover_enabled, created_at, updated_at)
+    - [x] `BudgetCategory` model (category_name, budgeted_amount, spent_amount, remaining_amount, percent_used)
+    - [x] `BudgetProgress` model (budget_id, current_period, categories, total_budgeted, total_spent, total_remaining, percent_used, period_days_elapsed, period_days_total)
+    - [x] `BudgetAlert` model (budget_id, category, alert_type, threshold, message, triggered_at, severity)
+    - [x] `BudgetTemplate` model (name, type, categories, description, is_custom)
+    - [x] BONUS: `AlertType` enum (`overspending`, `approaching_limit`, `unusual_spending`)
+    - [x] BONUS: `AlertSeverity` enum (`info`, `warning`, `critical`)
+    - [x] All models have comprehensive docstrings with use cases
+    - [x] All models have Pydantic Field validation (ge, min_length, max_length)
+    - [x] All models have Config with json_schema_extra examples
+    - [x] All models have full type annotations for mypy
+    - [x] Verified with mypy (no type errors)
+    - [x] Verified with ruff format + ruff check (all passing)
 
 13. [ ] **Implement budget tracker** (FILE: `src/fin_infra/budgets/tracker.py`)
     - [ ] Class: `BudgetTracker` with methods:
