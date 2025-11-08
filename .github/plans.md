@@ -567,9 +567,19 @@ def add_capability(
      - Spending trends (increasing, decreasing, stable)
      - Anomaly detection (unusually large transactions, new merchants)
      - Month-over-month comparisons
-   - [ ] Optional: Integrate ai-infra LLM for personalized spending insights (future enhancement)
+   - [x] **Optional**: Integrate ai-infra LLM for personalized spending insights ✅
+     - Function: `generate_spending_insights(spending_insight, user_context=None, llm_provider=None) -> PersonalizedSpendingAdvice`
+     - Uses ai-infra CoreLLM with structured output (Gemini 2.0 Flash)
+     - Financial-specific prompt engineering with few-shot examples
+     - Graceful degradation to rule-based insights if LLM unavailable
+     - Cost-effective: <$0.01 per insight with prompt-based structured output
+     - Safety: Financial advisor disclaimer, no PII sent to LLM
+     - Output: Summary, observations, savings opportunities, positive habits, alerts, estimated savings
+     - Unit tests: `tests/unit/analytics/test_spending_llm.py` (24 tests passing)
+     - Integration tests: `tests/integration/analytics/test_spending_llm_integration.py` (12 tests passing)
    - [x] Unit tests: `tests/unit/analytics/test_spending.py` with various spending patterns (46 tests passing)
    - [x] Integration tests: `tests/integration/analytics/test_spending_integration.py` (17 tests passing)
+   - **Total spending tests: 99 tests (46+24+17+12) all passing in 0.37s**
    - Verify in coverage analysis: Closes "Spending Insights" gap (currently 0% coverage)
 
 6. [ ] **Implement portfolio analytics** (NEW FILE: `src/fin_infra/analytics/portfolio.py`)

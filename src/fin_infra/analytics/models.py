@@ -111,6 +111,32 @@ class SpendingInsight(BaseModel):
     total_spending: float = Field(..., description="Total spending for period")
 
 
+class PersonalizedSpendingAdvice(BaseModel):
+    """LLM-generated personalized spending advice.
+    
+    Uses ai-infra CoreLLM for structured output generation.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    summary: str = Field(..., description="Overall spending summary in 1-2 sentences")
+    key_observations: list[str] = Field(
+        ..., description="3-5 key observations about spending patterns"
+    )
+    savings_opportunities: list[str] = Field(
+        ..., description="Specific recommendations to reduce spending"
+    )
+    positive_habits: list[str] = Field(
+        default_factory=list, description="Good spending habits to maintain"
+    )
+    alerts: list[str] = Field(
+        default_factory=list, description="Urgent spending issues requiring attention"
+    )
+    estimated_monthly_savings: Optional[float] = Field(
+        None, description="Potential monthly savings if recommendations followed"
+    )
+
+
 class AssetAllocation(BaseModel):
     """Asset allocation breakdown."""
 
