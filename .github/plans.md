@@ -547,8 +547,8 @@ def add_capability(
    - [ ] Integration tests: Real banking + categorization modules
    - Verify in coverage analysis: Closes "Cash Flow Analysis" gap (currently 0% coverage)
 
-4. [ ] **Implement savings rate calculation** (NEW FILE: `src/fin_infra/analytics/savings.py`)
-   - [ ] Function: `calculate_savings_rate(user_id, period="monthly", definition="net") -> SavingsRateData`
+4. [x] **Implement savings rate calculation** (NEW FILE: `src/fin_infra/analytics/savings.py`)
+   - [x] Function: `calculate_savings_rate(user_id, period="monthly", definition="net") -> SavingsRateData`
      - Support periods: weekly, monthly, quarterly, yearly
      - Support definitions:
        - `gross`: (Income - Expenses) / Income
@@ -556,7 +556,7 @@ def add_capability(
        - `discretionary`: (Income - Fixed Expenses) / Income
      - Track over time (historical savings rates)
      - Calculate trends (improving, declining, stable)
-   - [ ] Unit tests: `tests/unit/analytics/test_savings.py` with various scenarios
+   - [x] Unit tests: `tests/unit/analytics/test_savings.py` with various scenarios (24 tests passing)
    - [ ] Integration tests: With cash flow module
    - Verify in coverage analysis: Closes "Savings Rate Calculation" gap (currently 0% coverage)
 
