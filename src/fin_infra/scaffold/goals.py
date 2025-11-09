@@ -32,7 +32,7 @@ def _generate_substitutions(
 ) -> Dict[str, str]:
     """
     Generate template substitutions for goals domain.
-    
+
     Returns dict with 17 variables used across all templates:
     - Core (3): Entity, entity, table_name
     - Tenant (9): tenant_field, tenant_arg, tenant_arg_unique_index, tenant_arg_type,
@@ -41,11 +41,11 @@ def _generate_substitutions(
     - Soft delete (4): soft_delete_field, soft_delete_filter, soft_delete_logic,
                        soft_delete_default
     - Schema (3): tenant_field_create, tenant_field_update, tenant_field_read
-    
+
     Args:
         include_tenant: If True, generate tenant_id field patterns
         include_soft_delete: If True, generate deleted_at field patterns
-    
+
     Returns:
         Dict mapping variable names to their substitution values
     """
@@ -57,49 +57,53 @@ def _generate_substitutions(
 
     # Tenant patterns (10 variables)
     if include_tenant:
-        subs["tenant_field"] = '\n    tenant_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)'
-        subs["tenant_arg"] = ', tenant_id: str'
+        subs["tenant_field"] = (
+            "\n    tenant_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)"
+        )
+        subs["tenant_arg"] = ", tenant_id: str"
         subs["tenant_arg_unique_index"] = ', tenant_field="tenant_id"'
-        subs["tenant_arg_type"] = 'tenant_id: str'
-        subs["tenant_arg_type_comma"] = ',\n        tenant_id: str'
-        subs["tenant_arg_val"] = ', tenant_id=tenant_id'
+        subs["tenant_arg_type"] = "tenant_id: str"
+        subs["tenant_arg_type_comma"] = ",\n        tenant_id: str"
+        subs["tenant_arg_val"] = ", tenant_id=tenant_id"
         subs["tenant_dict_assign"] = '\n        data["tenant_id"] = tenant_id'
-        subs["tenant_doc"] = '\n        tenant_id: Tenant identifier for multi-tenant applications.'
-        subs["tenant_filter"] = '.where(Goal.tenant_id == tenant_id)'
-        subs["tenant_field_create"] = '\n    tenant_id: str'
-        subs["tenant_field_update"] = ''  # tenant_id immutable after creation
-        subs["tenant_field_read"] = '\n    tenant_id: str'
+        subs["tenant_doc"] = "\n        tenant_id: Tenant identifier for multi-tenant applications."
+        subs["tenant_filter"] = ".where(Goal.tenant_id == tenant_id)"
+        subs["tenant_field_create"] = "\n    tenant_id: str"
+        subs["tenant_field_update"] = ""  # tenant_id immutable after creation
+        subs["tenant_field_read"] = "\n    tenant_id: str"
     else:
-        subs["tenant_field"] = ''
-        subs["tenant_arg"] = ''
-        subs["tenant_arg_unique_index"] = ''
-        subs["tenant_arg_type"] = ''
-        subs["tenant_arg_type_comma"] = ''
-        subs["tenant_arg_val"] = ''
-        subs["tenant_dict_assign"] = ''
-        subs["tenant_doc"] = ''
-        subs["tenant_filter"] = ''
-        subs["tenant_field_create"] = ''
-        subs["tenant_field_update"] = ''
-        subs["tenant_field_read"] = ''
+        subs["tenant_field"] = ""
+        subs["tenant_arg"] = ""
+        subs["tenant_arg_unique_index"] = ""
+        subs["tenant_arg_type"] = ""
+        subs["tenant_arg_type_comma"] = ""
+        subs["tenant_arg_val"] = ""
+        subs["tenant_dict_assign"] = ""
+        subs["tenant_doc"] = ""
+        subs["tenant_filter"] = ""
+        subs["tenant_field_create"] = ""
+        subs["tenant_field_update"] = ""
+        subs["tenant_field_read"] = ""
 
     # Soft delete patterns (4 variables)
     if include_soft_delete:
-        subs["soft_delete_field"] = '\n    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)'
-        subs["soft_delete_filter"] = '.where(Goal.deleted_at.is_(None))'
-        subs["soft_delete_logic"] = '''
+        subs["soft_delete_field"] = (
+            "\n    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)"
+        )
+        subs["soft_delete_filter"] = ".where(Goal.deleted_at.is_(None))"
+        subs["soft_delete_logic"] = """
         # Soft delete
         goal.deleted_at = datetime.now(timezone.utc)
-        await session.commit()'''
-        subs["soft_delete_default"] = 'True'
+        await session.commit()"""
+        subs["soft_delete_default"] = "True"
     else:
-        subs["soft_delete_field"] = ''
-        subs["soft_delete_filter"] = ''
-        subs["soft_delete_logic"] = '''
+        subs["soft_delete_field"] = ""
+        subs["soft_delete_filter"] = ""
+        subs["soft_delete_logic"] = """
         # Hard delete
         await session.delete(goal)
-        await session.commit()'''
-        subs["soft_delete_default"] = 'False'
+        await session.commit()"""
+        subs["soft_delete_default"] = "False"
 
     return subs
 
@@ -111,19 +115,19 @@ def _generate_init_content(
 ) -> str:
     """
     Generate __init__.py content with re-exports.
-    
+
     Args:
         models_file: Filename of models file (e.g., "goal.py")
         schemas_file: Filename of schemas file (e.g., "goal_schemas.py")
         repo_file: Filename of repository file (optional)
-    
+
     Returns:
         Python code for __init__.py with imports and __all__
     """
     # Extract module names (remove .py extension)
     models_module = models_file.replace(".py", "")
     schemas_module = schemas_file.replace(".py", "")
-    
+
     exports = [
         "Goal",
         "create_goal_service",
@@ -132,29 +136,31 @@ def _generate_init_content(
         "GoalCreate",
         "GoalUpdate",
     ]
-    
+
     lines = [
         '"""Goal persistence layer (generated by fin-infra scaffold)."""',
         "",
         f"from .{models_module} import Goal, create_goal_service",
         f"from .{schemas_module} import GoalBase, GoalRead, GoalCreate, GoalUpdate",
     ]
-    
+
     if repo_file:
         repo_module = repo_file.replace(".py", "")
         lines.append(f"from .{repo_module} import GoalRepository")
         exports.append("GoalRepository")
-    
-    lines.extend([
-        "",
-        "__all__ = [",
-    ])
-    
+
+    lines.extend(
+        [
+            "",
+            "__all__ = [",
+        ]
+    )
+
     for export in exports:
         lines.append(f'    "{export}",')
-    
+
     lines.append("]")
-    
+
     return "\n".join(lines) + "\n"
 
 
@@ -170,13 +176,13 @@ def scaffold_goals_core(
 ) -> Dict[str, Any]:
     """
     Scaffold goals domain files: models, schemas, repository (optional), and __init__.py.
-    
+
     Generates production-ready code from templates in fin_infra.goals.scaffold_templates:
     - models.py.tmpl → Goal model with progress tracking, status, priority, milestones
     - schemas.py.tmpl → GoalBase, GoalCreate, GoalUpdate, GoalRead with status validation
     - repository.py.tmpl → GoalRepository with CRUD + domain methods (get_active, update_progress)
     - README.md → Complete usage guide with examples
-    
+
     Args:
         dest_dir: Destination directory (will be created if missing)
         include_tenant: Add tenant_id field for multi-tenancy
@@ -186,10 +192,10 @@ def scaffold_goals_core(
         models_filename: Output filename for models (default "goal.py")
         schemas_filename: Output filename for schemas (default "goal_schemas.py")
         repository_filename: Output filename for repository (default "goal_repository.py")
-    
+
     Returns:
         Dict with "files" key containing list of {"path": str, "action": "wrote"|"skipped"}
-        
+
     Example:
         >>> from pathlib import Path
         >>> from fin_infra.scaffold.goals import scaffold_goals_core
@@ -220,13 +226,15 @@ def scaffold_goals_core(
     models_content = render_template("fin_infra.goals.scaffold_templates", "models.py.tmpl", subs)
     schemas_content = render_template("fin_infra.goals.scaffold_templates", "schemas.py.tmpl", subs)
     readme_content = render_template("fin_infra.goals.scaffold_templates", "README.md", subs)
-    
+
     if with_repository:
-        repository_content = render_template("fin_infra.goals.scaffold_templates", "repository.py.tmpl", subs)
+        repository_content = render_template(
+            "fin_infra.goals.scaffold_templates", "repository.py.tmpl", subs
+        )
 
     # Track all file operations
     files = []
-    
+
     # Render and write models
     models_result = write(dest_dir / models_filename, models_content, overwrite=overwrite)
     files.append(models_result)

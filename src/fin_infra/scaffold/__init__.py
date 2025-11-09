@@ -5,7 +5,7 @@ and repository implementations from templates for different financial domains.
 
 Typical usage:
     from fin_infra.scaffold.budgets import scaffold_budgets_core
-    
+
     result = scaffold_budgets_core(
         dest_dir=Path("app/models"),
         include_tenant=True,
