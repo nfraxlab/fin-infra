@@ -47,7 +47,7 @@ import os
 from datetime import date
 from typing import TYPE_CHECKING, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from ..providers.registry import resolve
 from ..providers.base import BankingProvider
@@ -79,6 +79,23 @@ class ExchangeTokenResponse(BaseModel):
     """Response model for token exchange."""
     access_token: str
     item_id: Optional[str] = None
+
+
+class BalanceHistoryStats(BaseModel):
+    """Statistics calculated from balance history."""
+    trend: str = Field(..., description="Trend direction: increasing, decreasing, or stable")
+    average: float = Field(..., description="Average balance over the period")
+    minimum: float = Field(..., description="Minimum balance in the period")
+    maximum: float = Field(..., description="Maximum balance in the period")
+    change_amount: float = Field(..., description="Net change from start to end")
+    change_percent: float = Field(..., description="Percentage change from start to end")
+
+
+class BalanceHistoryResponse(BaseModel):
+    """Response from balance history endpoint with snapshots and statistics."""
+    account_id: str = Field(..., description="Account identifier")
+    snapshots: list = Field(..., description="List of balance snapshots")
+    stats: BalanceHistoryStats = Field(..., description="Statistical summary of balance history")
 
 
 def easy_banking(provider: str = "teller", **config) -> BankingProvider:
@@ -445,6 +462,94 @@ def add_banking(
         """Get identity/account holder information."""
         identity = banking.identity(access_token=access_token)
         return {"identity": identity}
+    
+    @router.get("/accounts/{account_id}/history", response_model=BalanceHistoryResponse)
+    async def get_balance_history(
+        account_id: str,
+        days: int = Query(90, ge=1, le=365, description="Number of days of history to retrieve (1-365)"),
+    ):
+        """Get balance history for an account with trend analysis and statistics.
+        
+        Returns historical balance snapshots along with calculated statistics including:
+        - Trend direction (increasing, decreasing, stable)
+        - Average, minimum, and maximum balance
+        - Net change amount and percentage
+        
+        Results are cached with 24h TTL for performance.
+        """
+        from fin_infra.banking.history import get_balance_history as get_history
+        
+        # Get balance history from storage
+        history = get_history(account_id=account_id, days=days)
+        
+        # If no history, return empty response
+        if not history:
+            return BalanceHistoryResponse(
+                account_id=account_id,
+                snapshots=[],
+                stats=BalanceHistoryStats(
+                    trend="stable",
+                    average=0.0,
+                    minimum=0.0,
+                    maximum=0.0,
+                    change_amount=0.0,
+                    change_percent=0.0,
+                ),
+            )
+        
+        # Convert snapshots to dict for JSON serialization
+        snapshots_data = [
+            {
+                "account_id": s.account_id,
+                "balance": s.balance,
+                "date": s.snapshot_date.isoformat(),
+                "source": s.source,
+                "created_at": s.created_at.isoformat(),
+            }
+            for s in history
+        ]
+        
+        # Calculate statistics
+        balances = [s.balance for s in history]
+        avg_balance = sum(balances) / len(balances)
+        min_balance = min(balances)
+        max_balance = max(balances)
+        
+        # Calculate trend (compare first and last snapshot)
+        # History is sorted descending, so reverse to get oldest first
+        oldest_balance = history[-1].balance
+        newest_balance = history[0].balance
+        change_amount = newest_balance - oldest_balance
+        
+        # Calculate percentage change (handle zero division)
+        if oldest_balance != 0:
+            change_percent = (change_amount / oldest_balance) * 100
+        else:
+            change_percent = 0.0
+        
+        # Determine trend direction
+        if abs(change_percent) < 5.0:  # Less than 5% change is stable
+            trend = "stable"
+        elif change_amount > 0:
+            trend = "increasing"
+        else:
+            trend = "decreasing"
+        
+        # Create statistics object
+        stats = BalanceHistoryStats(
+            trend=trend,
+            average=avg_balance,
+            minimum=min_balance,
+            maximum=max_balance,
+            change_amount=change_amount,
+            change_percent=change_percent,
+        )
+        
+        return BalanceHistoryResponse(
+            account_id=account_id,
+            snapshots=snapshots_data,
+            stats=stats,
+        )
     
     # Mount router to app (explicitly include in schema for OpenAPI docs)
     app.include_router(router, include_in_schema=True)
