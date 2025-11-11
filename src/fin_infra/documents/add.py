@@ -144,8 +144,12 @@ def add_documents(
         Examples:
             >>> GET /documents/doc_abc123
         """
-        # TODO: Implement get document metadata (Task 38)
-        raise NotImplementedError("Get document not yet implemented")
+        from .storage import get_document as get_doc_metadata
+
+        doc = get_doc_metadata(document_id)
+        if not doc:
+            raise ValueError(f"Document not found: {document_id}")
+        return doc
 
     # Route 3: List user's documents
     @router.get("/list")
