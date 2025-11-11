@@ -29,6 +29,7 @@ Alpha. Core functionality is stable, but the surface is intentionally small whil
 | **Persistence** | **Scaffold models/schemas/repositories, svc-infra integration, multi-tenancy, soft delete** | **[Persistence Guide](src/fin_infra/docs/persistence.md)** |
 | **Analytics** | **Cash flow, savings rate, spending insights, portfolio metrics, projections** | **[Analytics](src/fin_infra/docs/analytics.md)** |
 | **Budgets** | **Multi-type budget tracking with templates, alerts, and progress monitoring** | **[Budget Management](src/fin_infra/docs/budgets.md)** |
+| **Documents** | **Tax forms, bank statements, receipts with OCR extraction and AI analysis** | **[Document Management](src/fin_infra/docs/documents.md)** |
 | Banking | Account aggregation, transactions, statements | [Banking](src/fin_infra/docs/banking.md) |
 | Market Data | Stocks, crypto, forex quotes and historical data | [Market Data](src/fin_infra/docs/market-data.md) |
 | Credit Scores | Credit reports and monitoring | [Credit](src/fin_infra/docs/credit.md) |
