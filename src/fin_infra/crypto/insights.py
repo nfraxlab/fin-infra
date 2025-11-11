@@ -103,11 +103,10 @@ async def generate_crypto_insights(
 
     # Rule-based insights (no LLM needed for basic patterns)
     insights.extend(_generate_allocation_insights(user_id, holdings, total_crypto_value))
-    
+
     # Type narrow: ensure Decimal for total_portfolio_value
     portfolio_val: Decimal = (
-        total_portfolio_value if isinstance(total_portfolio_value, Decimal) 
-        else total_crypto_value
+        total_portfolio_value if isinstance(total_portfolio_value, Decimal) else total_crypto_value
     )
     insights.extend(_generate_performance_insights(user_id, holdings, portfolio_val))
 

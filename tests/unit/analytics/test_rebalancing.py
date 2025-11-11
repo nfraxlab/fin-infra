@@ -1,9 +1,7 @@
 """Unit tests for portfolio rebalancing engine."""
 
-from datetime import datetime, timedelta
 from decimal import Decimal
 
-import pytest
 
 from fin_infra.analytics.rebalancing import (
     RebalancingPlan,
@@ -19,18 +17,24 @@ def make_position(
     market_value: float | Decimal,
     cost_basis: float | Decimal | None = None,
     account_id: str = "acc1",
-    **kwargs
+    **kwargs,
 ) -> Position:
     """Helper to create Position with all required fields."""
     qty_decimal = Decimal(str(qty))
     market_value_decimal = Decimal(str(market_value))
-    cost_basis_decimal = Decimal(str(cost_basis)) if cost_basis is not None else market_value_decimal * Decimal("0.8")
-    
+    cost_basis_decimal = (
+        Decimal(str(cost_basis))
+        if cost_basis is not None
+        else market_value_decimal * Decimal("0.8")
+    )
+
     current_price = market_value_decimal / qty_decimal if qty_decimal != 0 else Decimal("0")
     avg_entry_price = cost_basis_decimal / qty_decimal if qty_decimal != 0 else Decimal("0")
     unrealized_pl = market_value_decimal - cost_basis_decimal
-    unrealized_plpc = (unrealized_pl / cost_basis_decimal * 100) if cost_basis_decimal != 0 else Decimal("0")
-    
+    unrealized_plpc = (
+        (unrealized_pl / cost_basis_decimal * 100) if cost_basis_decimal != 0 else Decimal("0")
+    )
+
     return Position(
         symbol=symbol,
         qty=qty_decimal,
@@ -42,7 +46,7 @@ def make_position(
         unrealized_pl=unrealized_pl,
         unrealized_plpc=unrealized_plpc,
         account_id=account_id,
-        **{k: v for k, v in kwargs.items() if k not in ["side", "account_id"]}
+        **{k: v for k, v in kwargs.items() if k not in ["side", "account_id"]},
     )
 
 
@@ -160,7 +164,9 @@ class TestGenerateRebalancingPlan:
         ]
         target = {"stocks": Decimal("60"), "bonds": Decimal("40")}
         position_accounts = {"VTI": "acc1", "BND": "acc1"}
-        plan = generate_rebalancing_plan("user_123", positions, target, position_accounts=position_accounts)
+        plan = generate_rebalancing_plan(
+            "user_123", positions, target, position_accounts=position_accounts
+        )
 
         # Should generate sell stocks, buy bonds
         assert len(plan.trades) > 0
@@ -182,7 +188,9 @@ class TestGenerateRebalancingPlan:
         ]
         target = {"stocks": Decimal("60"), "bonds": Decimal("40")}
         position_accounts = {"VTI": "acc1", "BND": "acc1"}
-        plan = generate_rebalancing_plan("user_123", positions, target, position_accounts=position_accounts)
+        plan = generate_rebalancing_plan(
+            "user_123", positions, target, position_accounts=position_accounts
+        )
 
         # Should generate buy stocks, sell bonds
         assert len(plan.trades) > 0
@@ -194,14 +202,20 @@ class TestGenerateRebalancingPlan:
     def test_tax_advantaged_account_no_tax_impact(self):
         """Test that trades in IRAs have no tax impact."""
         positions = [
-            make_position("VTI", qty=100, market_value=20000, cost_basis=15000, account_id="ira_acc"),
+            make_position(
+                "VTI", qty=100, market_value=20000, cost_basis=15000, account_id="ira_acc"
+            ),
         ]
         target = {"stocks": Decimal("0"), "bonds": Decimal("100")}
         position_accounts = {"VTI": "ira_acc"}
         account_types = {"ira_acc": "ira"}
 
         plan = generate_rebalancing_plan(
-            "user_123", positions, target, position_accounts=position_accounts, account_types=account_types
+            "user_123",
+            positions,
+            target,
+            position_accounts=position_accounts,
+            account_types=account_types,
         )
 
         # Should have no tax impact (IRA is tax-advantaged)
@@ -214,14 +228,20 @@ class TestGenerateRebalancingPlan:
     def test_taxable_account_with_gains(self):
         """Test that sells in taxable accounts generate tax impact."""
         positions = [
-            make_position("VTI", qty=100, market_value=20000, cost_basis=15000, account_id="taxable_acc"),
+            make_position(
+                "VTI", qty=100, market_value=20000, cost_basis=15000, account_id="taxable_acc"
+            ),
         ]
         target = {"stocks": Decimal("0"), "bonds": Decimal("100")}
         position_accounts = {"VTI": "taxable_acc"}
         account_types = {"taxable_acc": "taxable"}
 
         plan = generate_rebalancing_plan(
-            "user_123", positions, target, position_accounts=position_accounts, account_types=account_types
+            "user_123",
+            positions,
+            target,
+            position_accounts=position_accounts,
+            account_types=account_types,
         )
 
         # Should have tax impact for selling gains
@@ -242,7 +262,11 @@ class TestGenerateRebalancingPlan:
         commission = Decimal("7")
 
         plan = generate_rebalancing_plan(
-            "user_123", positions, target, position_accounts=position_accounts, commission_per_trade=commission
+            "user_123",
+            positions,
+            target,
+            position_accounts=position_accounts,
+            commission_per_trade=commission,
         )
 
         # Should have transaction costs
@@ -263,7 +287,11 @@ class TestGenerateRebalancingPlan:
         min_trade = Decimal("500")  # Skip trades under $500
 
         plan = generate_rebalancing_plan(
-            "user_123", positions, target, position_accounts=position_accounts, min_trade_value=min_trade
+            "user_123",
+            positions,
+            target,
+            position_accounts=position_accounts,
+            min_trade_value=min_trade,
         )
 
         # Should skip small trades
@@ -278,7 +306,9 @@ class TestGenerateRebalancingPlan:
         target = {"stocks": Decimal("60"), "bonds": Decimal("40")}
         position_accounts = {"VTI": "acc1"}
 
-        plan = generate_rebalancing_plan("user_123", positions, target, position_accounts=position_accounts)
+        plan = generate_rebalancing_plan(
+            "user_123", positions, target, position_accounts=position_accounts
+        )
 
         # Should have recommendations
         assert len(plan.recommendations) > 0
@@ -286,14 +316,20 @@ class TestGenerateRebalancingPlan:
     def test_warnings_for_high_tax_impact(self):
         """Test warnings generated for high tax impact."""
         positions = [
-            make_position("VTI", qty=1000, market_value=200000, cost_basis=100000, account_id="taxable_acc"),
+            make_position(
+                "VTI", qty=1000, market_value=200000, cost_basis=100000, account_id="taxable_acc"
+            ),
         ]
         target = {"stocks": Decimal("0"), "bonds": Decimal("100")}
         position_accounts = {"VTI": "taxable_acc"}
         account_types = {"taxable_acc": "taxable"}
 
         plan = generate_rebalancing_plan(
-            "user_123", positions, target, position_accounts=position_accounts, account_types=account_types
+            "user_123",
+            positions,
+            target,
+            position_accounts=position_accounts,
+            account_types=account_types,
         )
 
         # Should have high tax impact warning
@@ -303,14 +339,13 @@ class TestGenerateRebalancingPlan:
     def test_warnings_for_many_trades(self):
         """Test warnings for large number of trades."""
         # Create many small positions
-        positions = [
-            make_position(f"STOCK{i}", qty=10, market_value=1000)
-            for i in range(15)
-        ]
+        positions = [make_position(f"STOCK{i}", qty=10, market_value=1000) for i in range(15)]
         target = {"stocks": Decimal("50"), "other": Decimal("50")}
         position_accounts = {f"STOCK{i}": "acc1" for i in range(15)}
 
-        plan = generate_rebalancing_plan("user_123", positions, target, position_accounts=position_accounts)
+        plan = generate_rebalancing_plan(
+            "user_123", positions, target, position_accounts=position_accounts
+        )
 
         # Should warn about many trades
         many_trades_warnings = [w for w in plan.warnings if "trades" in w.lower()]
@@ -333,7 +368,9 @@ class TestGenerateRebalancingPlan:
         }
         position_accounts = {"VTI": "acc1", "BND": "acc1", "VXUS": "acc1", "VNQ": "acc1"}
 
-        plan = generate_rebalancing_plan("user_123", positions, target, position_accounts=position_accounts)
+        plan = generate_rebalancing_plan(
+            "user_123", positions, target, position_accounts=position_accounts
+        )
 
         # Should generate trades for multiple asset classes
         asset_classes = set()
@@ -358,7 +395,9 @@ class TestGenerateRebalancingPlan:
         target = {"stocks": Decimal("50"), "bonds": Decimal("50")}
         position_accounts = {"VTI": "acc1"}
 
-        plan = generate_rebalancing_plan("user_123", positions, target, position_accounts=position_accounts)
+        plan = generate_rebalancing_plan(
+            "user_123", positions, target, position_accounts=position_accounts
+        )
 
         # All trades should have reasoning with symbol
         for trade in plan.trades:
@@ -371,7 +410,9 @@ class TestTaxEfficiencySorting:
     def test_prefer_tax_advantaged_accounts(self):
         """Test that tax-advantaged positions are sold first."""
         positions = [
-            make_position("VTI", qty=50, market_value=10000, cost_basis=8000, account_id="taxable_acc"),
+            make_position(
+                "VTI", qty=50, market_value=10000, cost_basis=8000, account_id="taxable_acc"
+            ),
             make_position("VOO", qty=50, market_value=10000, cost_basis=8000, account_id="ira_acc"),
         ]
         target = {"stocks": Decimal("0"), "bonds": Decimal("100")}
@@ -379,7 +420,11 @@ class TestTaxEfficiencySorting:
         account_types = {"taxable_acc": "taxable", "ira_acc": "ira"}
 
         plan = generate_rebalancing_plan(
-            "user_123", positions, target, position_accounts=position_accounts, account_types=account_types
+            "user_123",
+            positions,
+            target,
+            position_accounts=position_accounts,
+            account_types=account_types,
         )
 
         # Should prioritize selling from IRA (no tax impact)
@@ -399,7 +444,9 @@ class TestTaxEfficiencySorting:
         target = {"stocks": Decimal("50"), "bonds": Decimal("50")}
         position_accounts = {"VTI": "acc1", "VOO": "acc1"}
 
-        plan = generate_rebalancing_plan("user_123", positions, target, position_accounts=position_accounts)
+        plan = generate_rebalancing_plan(
+            "user_123", positions, target, position_accounts=position_accounts
+        )
 
         # If selling stocks, should prefer VTI (loss position) over VOO (gain)
         # This is implicit in the sorting logic
@@ -430,7 +477,9 @@ class TestEdgeCases:
         position_accounts = {"VTI": "acc1"}
 
         # Should handle without crashing
-        plan = generate_rebalancing_plan("user_123", positions, target, position_accounts=position_accounts)
+        plan = generate_rebalancing_plan(
+            "user_123", positions, target, position_accounts=position_accounts
+        )
         assert plan is not None
 
     def test_unknown_asset_class(self):
@@ -454,7 +503,9 @@ class TestEdgeCases:
         target = {"stocks": Decimal("50"), "bonds": Decimal("50")}
         position_accounts = {"VTI": "acc1"}
 
-        plan = generate_rebalancing_plan("user_123", positions, target, position_accounts=position_accounts)
+        plan = generate_rebalancing_plan(
+            "user_123", positions, target, position_accounts=position_accounts
+        )
 
         # Should handle fractional quantities
         for trade in plan.trades:

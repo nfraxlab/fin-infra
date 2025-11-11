@@ -8,7 +8,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .taxonomy import Category, CategoryGroup
+from .taxonomy import Category
 
 
 class CategorizationMethod(str, Enum):
@@ -79,7 +79,9 @@ class CategoryOverride(BaseModel):
     merchant_name: str = Field(..., description="Merchant name (normalized)")
     category: Category = Field(..., description="User-assigned category")
     created_at: datetime = Field(default_factory=datetime.utcnow, description="Creation timestamp")
-    updated_at: datetime = Field(default_factory=datetime.utcnow, description="Last update timestamp")
+    updated_at: datetime = Field(
+        default_factory=datetime.utcnow, description="Last update timestamp"
+    )
 
     model_config = ConfigDict(
         json_schema_extra={

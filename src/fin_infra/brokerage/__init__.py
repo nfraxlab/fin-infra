@@ -13,6 +13,7 @@ Quick start (PAPER TRADING):
     >>> account = broker.get_account()
     >>> positions = broker.positions()
 """
+
 from __future__ import annotations
 
 import os
@@ -29,6 +30,7 @@ from decimal import Decimal
 # Request model for order submission (used by add_brokerage FastAPI routes)
 class OrderRequest(BaseModel):
     """Order submission request."""
+
     symbol: str = Field(description="Trading symbol (e.g., AAPL)")
     qty: Decimal = Field(description="Order quantity")
     side: Literal["buy", "sell"] = Field(description="Order side")
@@ -46,50 +48,50 @@ def easy_brokerage(
     **config,
 ) -> BrokerageProvider:
     """Create a brokerage provider with paper/live trading support.
-    
+
     ⚠️ **SAFETY**: Defaults to paper trading mode. Live trading requires explicit mode="live".
-    
+
     Auto-detects provider based on environment variables:
     1. If ALPACA_API_KEY and ALPACA_API_SECRET are set → Alpaca
     2. Otherwise → Raises error (credentials required)
-    
+
     Args:
         provider: Provider name ("alpaca"). If None, defaults to alpaca.
         mode: Trading mode - "paper" (default, safe) or "live" (real money)
         **config: Provider-specific configuration
                  - alpaca: api_key, api_secret, base_url
-    
+
     Returns:
         Configured BrokerageProvider instance
-    
+
     Raises:
         ValueError: Invalid provider or missing required configuration
         ImportError: Provider library not installed
-    
+
     Examples:
         Paper trading (safe default):
             >>> broker = easy_brokerage()  # Paper mode by default
             >>> broker = easy_brokerage(mode="paper")  # Explicit
             >>> account = broker.get_account()
-        
+
         Live trading (REQUIRES EXPLICIT OPT-IN):
             >>> broker = easy_brokerage(mode="live")  # WARNING: Real money!
             >>> # Only use live mode in production with proper safeguards
-        
+
         With explicit credentials:
             >>> broker = easy_brokerage(
             ...     api_key="YOUR_KEY",
             ...     api_secret="YOUR_SECRET",
             ...     mode="paper"
             ... )
-        
+
         Integration with svc-infra:
             >>> from svc_infra.jobs.easy import easy_jobs
             >>> from fin_infra.brokerage import easy_brokerage
-            >>> 
+            >>>
             >>> broker = easy_brokerage(mode="paper")
             >>> worker, scheduler = easy_jobs(app)
-            >>> 
+            >>>
             >>> @worker.task
             >>> async def daily_rebalance():
             >>>     positions = broker.positions()
@@ -98,33 +100,30 @@ def easy_brokerage(
     """
     # Default to alpaca
     provider_name: str = (provider or "alpaca").lower()
-    
+
     # Create provider instance
     if provider_name == "alpaca":
         from ..providers.brokerage.alpaca import AlpacaBrokerage
-        
+
         # Get credentials from config or environment
         api_key = config.get("api_key") or os.getenv("ALPACA_API_KEY")
         api_secret = config.get("api_secret") or os.getenv("ALPACA_API_SECRET")
-        
+
         if not api_key or not api_secret:
             raise ValueError(
                 "Alpaca credentials required. "
                 "Provide api_key and api_secret, or set ALPACA_API_KEY and ALPACA_API_SECRET env vars."
             )
-        
+
         return AlpacaBrokerage(
             api_key=api_key,
             api_secret=api_secret,
             mode=mode,
             base_url=config.get("base_url"),
         )
-    
+
     else:
-        raise ValueError(
-            f"Unknown brokerage provider: {provider_name}. "
-            f"Supported: alpaca"
-        )
+        raise ValueError(f"Unknown brokerage provider: {provider_name}. " f"Supported: alpaca")
 
 
 def add_brokerage(
@@ -133,75 +132,75 @@ def add_brokerage(
     provider: str | BrokerageProvider | None = None,
     mode: Literal["paper", "live"] = "paper",
     prefix: str = "/brokerage",
-    **config
+    **config,
 ) -> BrokerageProvider:
     """Wire brokerage provider to FastAPI app with routes and safety checks.
-    
+
     ⚠️ **TRADING WARNING**: This mounts trading API endpoints.
     Always use paper trading mode for development.
     Live trading requires explicit mode="live" and proper safeguards.
-    
+
     This helper mounts brokerage endpoints to your FastAPI application with
     integration with svc-infra for logging and error handling.
-    
+
     Mounted Routes:
         GET  {prefix}/account
             Get account information (buying power, cash, portfolio value)
-        
+
         GET  {prefix}/positions
             List all open positions
-        
+
         GET  {prefix}/positions/{symbol}
             Get position for a specific symbol
-        
+
         POST {prefix}/orders
             Submit a new order
             Body: {symbol, qty, side, type, time_in_force, limit_price?, stop_price?}
-        
+
         GET  {prefix}/orders
             List orders (query: status, limit)
-        
+
         GET  {prefix}/orders/{order_id}
             Get order by ID
-        
+
         DELETE {prefix}/orders/{order_id}
             Cancel an order
-        
+
         DELETE {prefix}/positions/{symbol}
             Close a position
-        
+
         GET  {prefix}/portfolio/history
             Get portfolio history (query: period, timeframe)
-    
+
     Args:
         app: FastAPI application instance (from svc-infra easy_service_app)
         provider: Provider name or instance. If None, uses easy_brokerage() defaults.
         mode: Trading mode - "paper" (default, safe) or "live" (real money)
         prefix: URL prefix for brokerage routes (default: "/brokerage")
         **config: Additional provider configuration
-    
+
     Returns:
         Configured BrokerageProvider instance (stored on app.state.brokerage_provider)
-    
+
     Examples:
         Minimal setup (paper trading):
             >>> from svc_infra.api.fastapi.ease import easy_service_app
             >>> from fin_infra.brokerage import add_brokerage
-            >>> 
+            >>>
             >>> app = easy_service_app(name="TradingAPI")
             >>> broker = add_brokerage(app, mode="paper")  # Safe paper trading
-        
+
         Full integration:
             >>> from svc_infra.api.fastapi.ease import easy_service_app
             >>> from svc_infra.logging import setup_logging
             >>> from svc_infra.obs import add_observability
             >>> from fin_infra.brokerage import add_brokerage
-            >>> 
+            >>>
             >>> setup_logging(level="INFO", fmt="json")
             >>> app = easy_service_app(name="TradingAPI")
             >>> add_observability(app)
             >>> broker = add_brokerage(app, mode="paper")
-        
+
         Live trading (REQUIRES EXPLICIT OPT-IN):
             >>> # WARNING: Real money at risk!
             >>> broker = add_brokerage(app, mode="live")
@@ -210,7 +209,7 @@ def add_brokerage(
     from svc_infra.api.fastapi.dual.public import public_router
     from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
     from fastapi import HTTPException, Query
-    
+
     # Initialize provider if string or None
     if isinstance(provider, str):
         brokerage_provider = easy_brokerage(provider=provider, mode=mode, **config)
@@ -218,15 +217,15 @@ def add_brokerage(
         brokerage_provider = easy_brokerage(mode=mode, **config)
     else:
         brokerage_provider = provider
-    
+
     # Create router - use public_router for API access
     # Note: Production apps should add auth middleware or override dependencies for security
     router = public_router(prefix=prefix, tags=["Brokerage"])
-    
+
     @router.get("/account")
     async def get_account():
         """Get trading account information.
-        
+
         Returns account details including buying power, cash, portfolio value, etc.
         """
         try:
@@ -234,11 +233,11 @@ def add_brokerage(
             return account
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error fetching account: {str(e)}")
-    
+
     @router.get("/positions")
     async def list_positions():
         """List all open positions.
-        
+
         Returns list of positions with symbol, quantity, P/L, etc.
         """
         try:
@@ -246,11 +245,11 @@ def add_brokerage(
             return {"positions": positions, "count": len(positions)}
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error fetching positions: {str(e)}")
-    
+
     @router.get("/positions/{symbol}")
     async def get_position(symbol: str):
         """Get position for a specific symbol.
-        
+
         Args:
             symbol: Trading symbol (e.g., AAPL)
         """
@@ -258,12 +257,14 @@ def add_brokerage(
             position = brokerage_provider.get_position(symbol)
             return position
         except Exception as e:
-            raise HTTPException(status_code=404, detail=f"Position not found for {symbol}: {str(e)}")
-    
+            raise HTTPException(
+                status_code=404, detail=f"Position not found for {symbol}: {str(e)}"
+            )
+
     @router.delete("/positions/{symbol}")
     async def close_position(symbol: str):
         """Close a position (market sell/cover).
-        
+
         Args:
             symbol: Trading symbol to close
         """
@@ -272,11 +273,11 @@ def add_brokerage(
             return {"message": f"Closing position for {symbol}", "order": order}
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Error closing position: {str(e)}")
-    
+
     @router.post("/orders")
     async def submit_order(order_request: OrderRequest):
         """Submit a new order.
-        
+
         ⚠️ **TRADING WARNING**: This endpoint executes real trades in live mode.
         """
         try:
@@ -293,14 +294,14 @@ def add_brokerage(
             return order
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Error submitting order: {str(e)}")
-    
+
     @router.get("/orders")
     async def list_orders(
         status: str = Query("open", description="Filter by status: open, closed, all"),
-        limit: int = Query(50, ge=1, le=500, description="Max orders to return")
+        limit: int = Query(50, ge=1, le=500, description="Max orders to return"),
     ):
         """List orders.
-        
+
         Args:
             status: Filter by status (open, closed, all)
             limit: Max number of orders to return
@@ -310,11 +311,11 @@ def add_brokerage(
             return {"orders": orders, "count": len(orders)}
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error fetching orders: {str(e)}")
-    
+
     @router.get("/orders/{order_id}")
     async def get_order(order_id: str):
         """Get order by ID.
-        
+
         Args:
             order_id: Order ID
         """
@@ -323,11 +324,11 @@ def add_brokerage(
             return order
         except Exception as e:
             raise HTTPException(status_code=404, detail=f"Order not found: {str(e)}")
-    
+
     @router.delete("/orders/{order_id}")
     async def cancel_order(order_id: str):
         """Cancel an order.
-        
+
         Args:
             order_id: Order ID to cancel
         """
@@ -336,14 +337,14 @@ def add_brokerage(
             return {"message": f"Order {order_id} canceled successfully"}
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Error canceling order: {str(e)}")
-    
+
     @router.get("/portfolio/history")
     async def get_portfolio_history(
         period: str = Query("1M", description="Time period: 1D, 1W, 1M, 3M, 1Y, all"),
-        timeframe: str = Query("1D", description="Bar timeframe: 1Min, 5Min, 15Min, 1H, 1D")
+        timeframe: str = Query("1D", description="Bar timeframe: 1Min, 5Min, 15Min, 1H, 1D"),
     ):
         """Get portfolio value history.
-        
+
         Args:
             period: Time period (1D, 1W, 1M, 3M, 1Y, all)
             timeframe: Bar timeframe (1Min, 5Min, 15Min, 1H, 1D)
@@ -352,16 +353,18 @@ def add_brokerage(
             history = brokerage_provider.get_portfolio_history(period=period, timeframe=timeframe)
             return history
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error fetching portfolio history: {str(e)}")
-    
+            raise HTTPException(
+                status_code=500, detail=f"Error fetching portfolio history: {str(e)}"
+            )
+
     # Watchlist routes
     @router.post("/watchlists")
     async def create_watchlist(
         name: str = Query(..., description="Watchlist name"),
-        symbols: list[str] = Query(default=[], description="Initial symbols")
+        symbols: list[str] = Query(default=[], description="Initial symbols"),
     ):
         """Create a new watchlist.
-        
+
         Args:
             name: Watchlist name
             symbols: Optional list of symbols to add initially
@@ -371,7 +374,7 @@ def add_brokerage(
             return watchlist
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Error creating watchlist: {str(e)}")
-    
+
     @router.get("/watchlists")
     async def list_watchlists():
         """List all watchlists."""
@@ -380,11 +383,11 @@ def add_brokerage(
             return {"watchlists": watchlists, "count": len(watchlists)}
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error fetching watchlists: {str(e)}")
-    
+
     @router.get("/watchlists/{watchlist_id}")
     async def get_watchlist(watchlist_id: str):
         """Get a watchlist by ID.
-        
+
         Args:
             watchlist_id: Watchlist ID
         """
@@ -393,11 +396,11 @@ def add_brokerage(
             return watchlist
         except Exception as e:
             raise HTTPException(status_code=404, detail=f"Watchlist not found: {str(e)}")
-    
+
     @router.delete("/watchlists/{watchlist_id}")
     async def delete_watchlist(watchlist_id: str):
         """Delete a watchlist.
-        
+
         Args:
             watchlist_id: Watchlist ID
         """
@@ -406,14 +409,13 @@ def add_brokerage(
             return {"message": f"Watchlist {watchlist_id} deleted successfully"}
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Error deleting watchlist: {str(e)}")
-    
+
     @router.post("/watchlists/{watchlist_id}/symbols")
     async def add_to_watchlist(
-        watchlist_id: str,
-        symbol: str = Query(..., description="Symbol to add")
+        watchlist_id: str, symbol: str = Query(..., description="Symbol to add")
     ):
         """Add a symbol to a watchlist.
-        
+
         Args:
             watchlist_id: Watchlist ID
             symbol: Symbol to add
@@ -423,11 +425,11 @@ def add_brokerage(
             return watchlist
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Error adding symbol: {str(e)}")
-    
+
     @router.delete("/watchlists/{watchlist_id}/symbols/{symbol}")
     async def remove_from_watchlist(watchlist_id: str, symbol: str):
         """Remove a symbol from a watchlist.
-        
+
         Args:
             watchlist_id: Watchlist ID
             symbol: Symbol to remove
@@ -437,10 +439,10 @@ def add_brokerage(
             return watchlist
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Error removing symbol: {str(e)}")
-    
+
     # Mount router
     app.include_router(router, include_in_schema=True)
-    
+
     # Register scoped docs for landing page card
     add_prefixed_docs(
         app,
@@ -449,11 +451,11 @@ def add_brokerage(
         auto_exclude_from_root=True,
         visible_envs=None,  # Show in all environments
     )
-    
+
     # Store provider on app state
     app.state.brokerage_provider = brokerage_provider
     app.state.brokerage_mode = mode  # Store mode for safety checks
-    
+
     return brokerage_provider
 
 

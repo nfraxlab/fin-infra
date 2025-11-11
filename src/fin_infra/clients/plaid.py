@@ -20,5 +20,7 @@ class PlaidClient(BankingClient):
     async def get_accounts(self, user_id: str) -> Sequence[Account]:  # pragma: no cover - stub
         return []
 
-    async def get_transactions(self, account_id: str, *, start: str | None = None, end: str | None = None):  # pragma: no cover - stub
+    async def get_transactions(
+        self, account_id: str, *, start: str | None = None, end: str | None = None
+    ):  # pragma: no cover - stub
         return []

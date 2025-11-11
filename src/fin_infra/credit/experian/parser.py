@@ -28,10 +28,10 @@ from fin_infra.models.credit import (
 
 def _parse_date(value: str | None) -> date | None:
     """Parse ISO date string to date object.
-    
+
     Args:
         value: ISO date string (YYYY-MM-DD) or None
-        
+
     Returns:
         date object or None
     """
@@ -58,9 +58,11 @@ def _parse_decimal(value: str | int | float | None) -> Decimal | None:
         return Decimal(str(value))
     except (ValueError, TypeError, InvalidOperation):
         return None
+
+
 def parse_credit_score(data: dict[str, Any], *, user_id: str) -> CreditScore:
     """Parse Experian credit score response to CreditScore model.
-    
+
     Expected Experian API response:
     {
       "creditProfile": {
@@ -71,14 +73,14 @@ def parse_credit_score(data: dict[str, Any], *, user_id: str) -> CreditScore:
         "scoreChange": 15
       }
     }
-    
+
     Args:
         data: Experian API response dict
         user_id: User identifier
-        
+
     Returns:
         CreditScore Pydantic model
-        
+
     Example:
         >>> data = {"creditProfile": {"score": 735, "scoreModel": "FICO 8", ...}}
         >>> score = parse_credit_score(data, user_id="user123")
@@ -99,7 +101,7 @@ def parse_credit_score(data: dict[str, Any], *, user_id: str) -> CreditScore:
 
 def parse_account(account_data: dict[str, Any]) -> CreditAccount:
     """Parse Experian tradeline (credit account) to CreditAccount model.
-    
+
     Expected Experian tradeline format:
     {
       "accountId": "acc_123",
@@ -113,10 +115,10 @@ def parse_account(account_data: dict[str, Any]) -> CreditAccount:
       "lastPaymentDate": "2025-01-01",
       "monthlyPayment": "150.00"
     }
-    
+
     Args:
         account_data: Experian tradeline dict
-        
+
     Returns:
         CreditAccount Pydantic model
     """
@@ -136,7 +138,7 @@ def parse_account(account_data: dict[str, Any]) -> CreditAccount:
 
 def parse_inquiry(inquiry_data: dict[str, Any]) -> CreditInquiry:
     """Parse Experian inquiry to CreditInquiry model.
-    
+
     Expected Experian inquiry format:
     {
       "inquiryId": "inq_123",
@@ -145,10 +147,10 @@ def parse_inquiry(inquiry_data: dict[str, Any]) -> CreditInquiry:
       "inquiryDate": "2025-01-01",
       "purpose": "credit_card_application"
     }
-    
+
     Args:
         inquiry_data: Experian inquiry dict
-        
+
     Returns:
         CreditInquiry Pydantic model
     """
@@ -163,7 +165,7 @@ def parse_inquiry(inquiry_data: dict[str, Any]) -> CreditInquiry:
 
 def parse_public_record(record_data: dict[str, Any]) -> PublicRecord:
     """Parse Experian public record to PublicRecord model.
-    
+
     Expected Experian public record format:
     {
       "recordId": "rec_123",
@@ -173,10 +175,10 @@ def parse_public_record(record_data: dict[str, Any]) -> PublicRecord:
       "amount": "50000.00",
       "courtName": "U.S. Bankruptcy Court"
     }
-    
+
     Args:
         record_data: Experian public record dict
-        
+
     Returns:
         PublicRecord Pydantic model
     """
@@ -192,7 +194,7 @@ def parse_public_record(record_data: dict[str, Any]) -> PublicRecord:
 
 def parse_credit_report(data: dict[str, Any], *, user_id: str) -> CreditReport:
     """Parse Experian full credit report to CreditReport model.
-    
+
     Expected Experian API response:
     {
       "creditProfile": {
@@ -203,14 +205,14 @@ def parse_credit_report(data: dict[str, Any], *, user_id: str) -> CreditReport:
         "consumerStatements": [...]
       }
     }
-    
+
     Args:
         data: Experian API response dict
         user_id: User identifier
-        
+
     Returns:
         CreditReport Pydantic model with all credit data
-        
+
     Example:
         >>> data = await client.get_credit_report("user123")
         >>> report = parse_credit_report(data, user_id="user123")
@@ -222,19 +224,13 @@ def parse_credit_report(data: dict[str, Any], *, user_id: str) -> CreditReport:
     score = parse_credit_score(data, user_id=user_id)
 
     # Parse accounts (tradelines)
-    accounts = [
-        parse_account(acc) for acc in profile.get("tradelines", [])
-    ]
+    accounts = [parse_account(acc) for acc in profile.get("tradelines", [])]
 
     # Parse inquiries
-    inquiries = [
-        parse_inquiry(inq) for inq in profile.get("inquiries", [])
-    ]
+    inquiries = [parse_inquiry(inq) for inq in profile.get("inquiries", [])]
 
     # Parse public records
-    public_records = [
-        parse_public_record(rec) for rec in profile.get("publicRecords", [])
-    ]
+    public_records = [parse_public_record(rec) for rec in profile.get("publicRecords", [])]
 
     # Consumer statements (free-text explanations from user)
     consumer_statements = profile.get("consumerStatements", [])

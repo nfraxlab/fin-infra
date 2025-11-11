@@ -7,7 +7,6 @@ import pytest
 from fin_infra.analytics.scenarios import (
     ScenarioDataPoint,
     ScenarioRequest,
-    ScenarioResult,
     ScenarioType,
     model_scenario,
 )
@@ -86,7 +85,7 @@ def test_scenario_basic_savings():
     assert result.user_id == "user_123"
     assert result.scenario_type == ScenarioType.SAVINGS_GOAL
     assert len(result.projections) == 6  # Year 0-5
-    
+
     # After 5 years: 500 * 12 * 5 = 30,000
     assert result.final_balance == Decimal("30000")
     assert result.total_contributions == Decimal("30000")
@@ -110,7 +109,7 @@ def test_scenario_with_starting_balance():
     assert result.final_balance > Decimal("10000")
     assert result.total_contributions == Decimal("0")
     assert result.total_growth > Decimal("0")
-    
+
     # 10-year compound growth at 10%: ~2.59x
     # 10000 * (1.1)^10 ≈ 25,937
     assert result.final_balance > Decimal("25000")
@@ -133,14 +132,14 @@ def test_scenario_retirement_projection():
     result = model_scenario(req)
 
     assert len(result.projections) == 36  # Year 0-35
-    
+
     # Check age progression
     assert result.projections[0].age == 30
     assert result.projections[35].age == 65
-    
+
     # Should have substantial growth
     assert result.final_balance > Decimal("1000000")
-    
+
     # Real value should be less than nominal due to inflation
     final_projection = result.projections[-1]
     assert final_projection.real_value < final_projection.balance
@@ -163,7 +162,7 @@ def test_scenario_target_amount_reached():
     # Should reach target before 10 years
     assert result.years_to_target is not None
     assert result.years_to_target < 10
-    
+
     # Balance at target year should be >= target
     target_year_balance = result.projections[result.years_to_target].balance
     assert target_year_balance >= req.target_amount
@@ -226,11 +225,11 @@ def test_scenario_inflation_adjustment():
 
     # Final nominal balance should be ~2x starting
     assert result.final_balance > Decimal("190000")
-    
+
     # Real value should be less due to inflation
     final_projection = result.projections[-1]
     assert final_projection.real_value < final_projection.balance
-    
+
     # Real value should be ~1.5x starting (7% growth - 3% inflation ≈ 4% real)
     assert final_projection.real_value > Decimal("140000")
 
@@ -250,12 +249,12 @@ def test_scenario_compound_growth():
 
     # Total contributions: 500 * 12 * 20 = 120,000
     assert result.total_contributions == Decimal("120000")
-    
+
     # Starting: 10,000
     # Total money in: 130,000
     # With compound growth, final should be much higher
     assert result.final_balance > Decimal("300000")
-    
+
     # Growth should be substantial
     assert result.total_growth > Decimal("170000")
 
@@ -275,7 +274,7 @@ def test_scenario_zero_contributions():
 
     assert result.total_contributions == Decimal("0")
     assert result.final_balance > req.starting_amount
-    
+
     # Should have warning about no contributions
     assert any("no ongoing contributions" in w.lower() for w in result.warnings)
 
@@ -296,7 +295,7 @@ def test_scenario_recommendations_shortfall():
 
     # Should have shortfall
     assert result.final_balance < req.target_amount
-    
+
     # Should have recommendation about shortfall
     assert len(result.recommendations) > 0
     assert any("shortfall" in r.lower() for r in result.recommendations)
@@ -318,7 +317,7 @@ def test_scenario_recommendations_on_track():
 
     # Should exceed target
     assert result.final_balance > req.target_amount
-    
+
     # Should have positive recommendation
     assert len(result.recommendations) > 0
     assert any("on track" in r.lower() or "exceed" in r.lower() for r in result.recommendations)
@@ -374,7 +373,7 @@ def test_scenario_savings_goal_timeline():
     # Should reach target
     assert result.years_to_target is not None
     assert result.years_to_target <= 5
-    
+
     # Should have recommendation about timeline
     assert any("reach" in r.lower() for r in result.recommendations)
 
@@ -393,7 +392,7 @@ def test_scenario_all_projections_have_data():
     result = model_scenario(req)
 
     assert len(result.projections) == 11  # Year 0-10
-    
+
     for i, projection in enumerate(result.projections):
         assert projection.year == i
         assert projection.balance >= Decimal("0")

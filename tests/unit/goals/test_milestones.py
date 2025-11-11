@@ -16,7 +16,6 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from fin_infra.goals import (
-    GoalType,
     create_goal,
 )
 from fin_infra.goals.milestones import (
@@ -455,7 +454,9 @@ def test_get_milestone_progress_goal_not_found():
 # ============================================================================
 
 
-@pytest.mark.skip(reason="AsyncClient not imported in milestones.py - webhook integration not testable yet")
+@pytest.mark.skip(
+    reason="AsyncClient not imported in milestones.py - webhook integration not testable yet"
+)
 @pytest.mark.asyncio
 async def test_trigger_milestone_notification_success(sample_goal):
     """Test trigger_milestone_notification sends webhook."""
@@ -488,7 +489,9 @@ async def test_trigger_milestone_notification_success(sample_goal):
         assert call_args[1]["json"]["milestone_amount"] == 12500.0
 
 
-@pytest.mark.skip(reason="AsyncClient not imported in milestones.py - webhook integration not testable yet")
+@pytest.mark.skip(
+    reason="AsyncClient not imported in milestones.py - webhook integration not testable yet"
+)
 @pytest.mark.asyncio
 async def test_trigger_milestone_notification_handles_error(sample_goal):
     """Test trigger_milestone_notification handles webhook errors gracefully."""

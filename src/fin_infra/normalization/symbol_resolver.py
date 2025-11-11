@@ -161,9 +161,7 @@ class SymbolResolver:
             return normalized
 
         # No provider-specific mapping, return as-is
-        logger.debug(
-            f"No provider mapping for {symbol} on {provider}, returning as-is"
-        )
+        logger.debug(f"No provider mapping for {symbol} on {provider}, returning as-is")
         return symbol.upper()
 
     async def get_metadata(self, ticker: str) -> SymbolMetadata:
@@ -184,9 +182,7 @@ class SymbolResolver:
 
         if not metadata:
             # Return minimal metadata
-            logger.warning(
-                f"Metadata not found for {ticker}, returning minimal info"
-            )
+            logger.warning(f"Metadata not found for {ticker}, returning minimal info")
             return SymbolMetadata(
                 ticker=ticker_upper,
                 name=ticker_upper,

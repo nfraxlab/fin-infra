@@ -118,9 +118,9 @@ class TestProviderRegistry:
         # Each domain should have a default
         for domain, default_name in DEFAULT_PROVIDERS.items():
             provider_key = f"{domain}:{default_name}"
-            assert provider_key in PROVIDER_MODULES, (
-                f"Default provider '{provider_key}' not found in PROVIDER_MODULES"
-            )
+            assert (
+                provider_key in PROVIDER_MODULES
+            ), f"Default provider '{provider_key}' not found in PROVIDER_MODULES"
 
     def test_provider_modules_format(self):
         """Test provider module mappings have correct format."""
@@ -134,9 +134,9 @@ class TestProviderRegistry:
             assert name, f"Empty name in provider key '{key}'"
 
             # Module path should be valid Python identifier
-            assert module_path.startswith("fin_infra.providers."), (
-                f"Module path '{module_path}' should start with 'fin_infra.providers.'"
-            )
+            assert module_path.startswith(
+                "fin_infra.providers."
+            ), f"Module path '{module_path}' should start with 'fin_infra.providers.'"
 
     def test_cache_functionality(self):
         """Test provider instance caching."""
@@ -248,14 +248,15 @@ class TestProviderRegistryErrorHandling:
         # Should resolve to default provider (teller for banking)
         # Banking default is now "teller" which exists, so it should succeed
         provider = registry.resolve("banking", name=None)
-        
+
         # Should be a TellerClient instance
         from fin_infra.providers.banking.teller_client import TellerClient
+
         assert isinstance(provider, TellerClient)
-        
+
         # Test with a domain that has no implementation yet (should fail)
         with pytest.raises(ProviderNotFoundError) as exc_info:
             registry.resolve("market", name=None)  # Default is alphavantage which doesn't exist yet
-        
+
         error_msg = str(exc_info.value)
         assert "alphavantage" in error_msg.lower() or "Failed to import" in error_msg

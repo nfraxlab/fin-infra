@@ -17,7 +17,7 @@ from .models import (
     CategorizationResponse,
     CategoryStats,
 )
-from .taxonomy import Category, CategoryGroup, count_categories, get_all_categories
+from .taxonomy import CategoryGroup, count_categories, get_all_categories
 from . import rules
 
 
@@ -145,9 +145,15 @@ def add_categorization(
         return [
             {
                 "name": cat.value,
-                "group": get_category_metadata(cat).group.value if get_category_metadata(cat) else None,
-                "display_name": get_category_metadata(cat).display_name if get_category_metadata(cat) else cat.value,
-                "description": get_category_metadata(cat).description if get_category_metadata(cat) else None,
+                "group": get_category_metadata(cat).group.value
+                if get_category_metadata(cat)
+                else None,
+                "display_name": get_category_metadata(cat).display_name
+                if get_category_metadata(cat)
+                else cat.value,
+                "description": get_category_metadata(cat).description
+                if get_category_metadata(cat)
+                else None,
             }
             for cat in categories
         ]

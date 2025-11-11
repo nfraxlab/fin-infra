@@ -241,7 +241,9 @@ def add_goals(
 
     @router.get("", response_model=List[dict])
     async def list_goals_endpoint(
-        user_id: Optional[str] = Query(None, description="User identifier (optional, returns all if not provided)"),
+        user_id: Optional[str] = Query(
+            None, description="User identifier (optional, returns all if not provided)"
+        ),
         goal_type: Optional[str] = Query(None, description="Filter by goal type"),
         status_filter: Optional[str] = Query(None, alias="status", description="Filter by status"),
     ) -> List[dict]:
@@ -281,6 +283,7 @@ def add_goals(
         else:
             # Return all goals with optional type/status filters
             from fin_infra.goals.management import _GOALS_STORE
+
             results = []
             for goal in _GOALS_STORE.values():
                 if goal_type and goal["type"] != goal_type:

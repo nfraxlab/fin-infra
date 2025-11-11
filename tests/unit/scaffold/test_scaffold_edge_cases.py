@@ -6,9 +6,7 @@ Tests error handling, invalid inputs, and boundary conditions.
 
 import pytest
 import tempfile
-import shutil
 from pathlib import Path
-from unittest.mock import patch, MagicMock
 
 from fin_infra.scaffold.budgets import scaffold_budgets_core
 from fin_infra.scaffold.goals import scaffold_goals_core
@@ -32,13 +30,13 @@ class TestInvalidInputs:
                 dest_dir=tmpdir,
                 include_tenant="yes",  # type: ignore - truthy
             )
-            
+
             scaffold_budgets_core(
                 dest_dir=tmpdir,
                 include_soft_delete=1,  # type: ignore - truthy
                 overwrite=True,
             )
-            
+
             scaffold_budgets_core(
                 dest_dir=tmpdir,
                 with_repository="no",  # type: ignore - truthy (non-empty string)
@@ -50,14 +48,14 @@ class TestInvalidInputs:
         with tempfile.TemporaryDirectory() as tmpdir:
             # Create path with non-existent parent
             dest_dir = Path(tmpdir) / "nonexistent" / "parent" / "budgets"
-            
+
             # Should succeed by creating parents
             scaffold_budgets_core(dest_dir=str(dest_dir))
-            
+
             # Verify directory was created
             assert dest_dir.exists()
             assert dest_dir.is_dir()
-            
+
             # Verify files were created
             assert (dest_dir / "budget.py").exists()
 
@@ -66,10 +64,10 @@ class TestInvalidInputs:
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "readonly"
             dest_dir.mkdir()
-            
+
             # Make directory read-only
             dest_dir.chmod(0o444)
-            
+
             try:
                 # Should raise PermissionError or OSError
                 with pytest.raises((PermissionError, OSError)):
@@ -86,10 +84,10 @@ class TestFileOverwrite:
         """Test that overwrite=False succeeds when files exist (current behavior)."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             # Create files first time
             scaffold_budgets_core(dest_dir=str(dest_dir))
-            
+
             # Try to create again without overwrite flag - currently succeeds
             # (Implementation doesn't check overwrite=False strictly)
             scaffold_budgets_core(dest_dir=str(dest_dir), overwrite=False)
@@ -98,18 +96,18 @@ class TestFileOverwrite:
         """Test that overwrite=True allows overwriting existing files."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             # Create files first time
             scaffold_budgets_core(dest_dir=str(dest_dir))
-            
+
             # Modify a file
             budget_file = dest_dir / "budget.py"
             original_content = budget_file.read_text()
             budget_file.write_text("# Modified content")
-            
+
             # Overwrite should succeed
             scaffold_budgets_core(dest_dir=str(dest_dir), overwrite=True)
-            
+
             # Verify file was overwritten
             new_content = budget_file.read_text()
             assert new_content == original_content
@@ -119,14 +117,14 @@ class TestFileOverwrite:
         """Test behavior when overwrite fails mid-operation."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             # Create files first time
             scaffold_budgets_core(dest_dir=str(dest_dir))
-            
+
             # Make one file read-only
             schemas_file = dest_dir / "budget_schemas.py"
             schemas_file.chmod(0o444)
-            
+
             try:
                 # Attempt overwrite should fail
                 with pytest.raises((PermissionError, OSError)):
@@ -143,37 +141,39 @@ class TestConditionalFieldGeneration:
         """Test that tenant fields are NOT generated when flag is False."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             # Scaffold without tenant
             scaffold_budgets_core(
                 dest_dir=str(dest_dir),
                 include_tenant=False,
             )
-            
+
             # Read model file
             model_file = dest_dir / "budget.py"
             content = model_file.read_text()
-            
+
             # Verify NO tenant_id FIELD (may be mentioned in comments)
             # Check for actual field definition
             assert "tenant_id: Mapped[str]" not in content
-            assert 'mapped_column(String(255), nullable=False, index=True)  # tenant_id' not in content
+            assert (
+                "mapped_column(String(255), nullable=False, index=True)  # tenant_id" not in content
+            )
 
     def test_soft_delete_fields_absent_when_flag_false(self):
         """Test that soft delete fields are NOT generated when flag is False."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             # Scaffold without soft delete
             scaffold_budgets_core(
                 dest_dir=str(dest_dir),
                 include_soft_delete=False,
             )
-            
+
             # Read model file
             model_file = dest_dir / "budget.py"
             content = model_file.read_text()
-            
+
             # Verify NO deleted_at field
             assert "deleted_at" not in content.lower()
 
@@ -181,17 +181,17 @@ class TestConditionalFieldGeneration:
         """Test that repository is NOT generated when flag is False."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             # Scaffold without repository
             scaffold_budgets_core(
                 dest_dir=str(dest_dir),
                 with_repository=False,
             )
-            
+
             # Verify repository file does NOT exist
             repo_file = dest_dir / "budget_repository.py"
             assert not repo_file.exists()
-            
+
             # Verify __init__.py does NOT import repository
             init_file = dest_dir / "__init__.py"
             content = init_file.read_text()
@@ -201,7 +201,7 @@ class TestConditionalFieldGeneration:
         """Test that all flags false generates minimal code."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             # Scaffold with all flags false
             scaffold_budgets_core(
                 dest_dir=str(dest_dir),
@@ -209,11 +209,11 @@ class TestConditionalFieldGeneration:
                 include_soft_delete=False,
                 with_repository=False,
             )
-            
+
             # Verify only 3 files (model, schemas, __init__)
             files = list(dest_dir.glob("*.py"))
             assert len(files) == 3
-            
+
             # Verify file names
             file_names = {f.name for f in files}
             assert file_names == {"budget.py", "budget_schemas.py", "__init__.py"}
@@ -222,17 +222,21 @@ class TestConditionalFieldGeneration:
 class TestAllDomains:
     """Test all domains handle edge cases consistently."""
 
-    @pytest.mark.parametrize("scaffold_func,domain", [
-        (scaffold_budgets_core, "budgets"),
-        (scaffold_goals_core, "goals"),
-        (scaffold_net_worth_core, "net_worth"),
-    ])
+    @pytest.mark.parametrize(
+        "scaffold_func,domain",
+        [
+            (scaffold_budgets_core, "budgets"),
+            (scaffold_goals_core, "goals"),
+            (scaffold_net_worth_core, "net_worth"),
+        ],
+    )
     def test_empty_dest_dir_string(self, scaffold_func, domain):
         """Test handling of empty dest_dir string creates files in current directory."""
         # Empty string creates files in current directory (valid Python behavior)
         # Use temp directory to avoid polluting workspace
         with tempfile.TemporaryDirectory() as tmpdir:
             import os
+
             old_cwd = os.getcwd()
             try:
                 os.chdir(tmpdir)
@@ -241,11 +245,14 @@ class TestAllDomains:
             finally:
                 os.chdir(old_cwd)
 
-    @pytest.mark.parametrize("scaffold_func,domain", [
-        (scaffold_budgets_core, "budgets"),
-        (scaffold_goals_core, "goals"),
-        (scaffold_net_worth_core, "net_worth"),
-    ])
+    @pytest.mark.parametrize(
+        "scaffold_func,domain",
+        [
+            (scaffold_budgets_core, "budgets"),
+            (scaffold_goals_core, "goals"),
+            (scaffold_net_worth_core, "net_worth"),
+        ],
+    )
     def test_whitespace_only_dest_dir(self, scaffold_func, domain):
         """Test handling of whitespace-only dest_dir."""
         # Whitespace creates directory with whitespace name (valid)
@@ -254,16 +261,19 @@ class TestAllDomains:
             scaffold_func(dest_dir=str(dest_dir))
             assert dest_dir.exists()
 
-    @pytest.mark.parametrize("scaffold_func,domain", [
-        (scaffold_budgets_core, "budgets"),
-        (scaffold_goals_core, "goals"),
-        (scaffold_net_worth_core, "net_worth"),
-    ])
+    @pytest.mark.parametrize(
+        "scaffold_func,domain",
+        [
+            (scaffold_budgets_core, "budgets"),
+            (scaffold_goals_core, "goals"),
+            (scaffold_net_worth_core, "net_worth"),
+        ],
+    )
     def test_all_flags_true_generates_full_code(self, scaffold_func, domain):
         """Test that all flags true generates complete code."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / domain
-            
+
             # Scaffold with all flags true
             scaffold_func(
                 dest_dir=str(dest_dir),
@@ -271,11 +281,11 @@ class TestAllDomains:
                 include_soft_delete=True,
                 with_repository=True,
             )
-            
+
             # Verify 4 files created
             files = list(dest_dir.glob("*.py"))
             assert len(files) == 4
-            
+
             # Verify repository exists
             repo_files = list(dest_dir.glob("*repository.py"))
             assert len(repo_files) == 1
@@ -288,13 +298,13 @@ class TestFileContent:
         """Test that generated files contain no placeholder text."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             scaffold_budgets_core(dest_dir=str(dest_dir))
-            
+
             # Read all files
             for py_file in dest_dir.glob("*.py"):
                 content = py_file.read_text()
-                
+
                 # Check for common placeholders
                 assert "TODO" not in content
                 assert "FIXME" not in content
@@ -307,9 +317,9 @@ class TestFileContent:
         """Test that generated files have no syntax errors."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             scaffold_budgets_core(dest_dir=str(dest_dir))
-            
+
             # Compile all files
             for py_file in dest_dir.glob("*.py"):
                 # Should not raise SyntaxError
@@ -319,14 +329,14 @@ class TestFileContent:
         """Test that generated files use consistent indentation."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             scaffold_budgets_core(dest_dir=str(dest_dir))
-            
+
             # Check each file
             for py_file in dest_dir.glob("*.py"):
                 content = py_file.read_text()
                 lines = content.split("\n")
-                
+
                 for line in lines:
                     if line.strip():  # Skip empty lines
                         # Check that indentation is spaces, not tabs
@@ -341,22 +351,22 @@ class TestFileContent:
         """Test that generated files have proper imports."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             scaffold_budgets_core(dest_dir=str(dest_dir))
-            
+
             # Check model file imports
             model_file = dest_dir / "budget.py"
             content = model_file.read_text()
-            
+
             # Should have SQLAlchemy imports
             assert "from sqlalchemy" in content
             # ModelBase import may be via from svc_infra or direct
             assert "ModelBase" in content or "Base" in content
-            
+
             # Check schemas file imports
             schemas_file = dest_dir / "budget_schemas.py"
             content = schemas_file.read_text()
-            
+
             # Should have Pydantic imports
             assert "from pydantic import" in content or "import pydantic" in content
 
@@ -368,12 +378,12 @@ class TestCustomFilenames:
         """Test that custom models filename works."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             scaffold_budgets_core(
                 dest_dir=str(dest_dir),
                 models_filename="custom_budget.py",
             )
-            
+
             # Verify custom filename exists
             assert (dest_dir / "custom_budget.py").exists()
             # Verify default filename does NOT exist
@@ -383,12 +393,12 @@ class TestCustomFilenames:
         """Test that custom schemas filename works."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             scaffold_budgets_core(
                 dest_dir=str(dest_dir),
                 schemas_filename="custom_schemas.py",
             )
-            
+
             # Verify custom filename exists
             assert (dest_dir / "custom_schemas.py").exists()
             # Verify default filename does NOT exist
@@ -398,12 +408,12 @@ class TestCustomFilenames:
         """Test that custom repository filename works."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             scaffold_budgets_core(
                 dest_dir=str(dest_dir),
                 repository_filename="custom_repo.py",
             )
-            
+
             # Verify custom filename exists
             assert (dest_dir / "custom_repo.py").exists()
             # Verify default filename does NOT exist
@@ -413,14 +423,14 @@ class TestCustomFilenames:
         """Test that all custom filenames work together."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             scaffold_budgets_core(
                 dest_dir=str(dest_dir),
                 models_filename="my_model.py",
                 schemas_filename="my_schemas.py",
                 repository_filename="my_repo.py",
             )
-            
+
             # Verify all custom filenames exist
             files = {f.name for f in dest_dir.glob("*.py")}
             assert files == {"my_model.py", "my_schemas.py", "my_repo.py", "__init__.py"}
@@ -433,15 +443,15 @@ class TestErrorMessages:
         """Test that scaffold can overwrite files when flag is set."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             # Create files first time
             scaffold_budgets_core(dest_dir=str(dest_dir))
-            
+
             # Modify a file
             budget_file = dest_dir / "budget.py"
             original_content = budget_file.read_text()
             budget_file.write_text("# Modified")
-            
+
             # Overwrite should restore original
             scaffold_budgets_core(dest_dir=str(dest_dir), overwrite=True)
             new_content = budget_file.read_text()
@@ -453,7 +463,7 @@ class TestErrorMessages:
             dest_dir = Path(tmpdir) / "readonly"
             dest_dir.mkdir()
             dest_dir.chmod(0o444)
-            
+
             try:
                 with pytest.raises((PermissionError, OSError)):
                     scaffold_budgets_core(dest_dir=str(dest_dir))

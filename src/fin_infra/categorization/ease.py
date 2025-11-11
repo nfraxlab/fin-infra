@@ -54,7 +54,7 @@ def easy_categorization(
         enable_ml: Enable sklearn ML fallback (Layer 3)
         confidence_threshold: Minimum sklearn confidence before trying LLM (0-1)
         model_path: Path to custom sklearn model
-        
+
         llm_provider: LLM provider ("google", "openai", "anthropic", "none")
         llm_model: Model name override (default varies by provider)
         llm_confidence_threshold: Minimum LLM confidence (0-1)
@@ -109,14 +109,13 @@ def easy_categorization(
     # Initialize LLM categorizer if needed
     llm_categorizer = None
     enable_llm = model in ["llm", "hybrid"] and llm_provider != "none"
-    
+
     if enable_llm:
         if LLMCategorizer is None:
             raise ImportError(
-                "LLM support requires ai-infra package. "
-                "Install with: pip install ai-infra"
+                "LLM support requires ai-infra package. " "Install with: pip install ai-infra"
             )
-        
+
         # Map provider names to ai-infra provider format
         provider_map = {
             "google": "google_genai",
@@ -129,7 +128,7 @@ def easy_categorization(
                 f"Unsupported LLM provider: {llm_provider}. "
                 f"Use 'google', 'openai', or 'anthropic'."
             )
-        
+
         # Default models per provider
         default_models = {
             "google": "gemini-2.0-flash-exp",
@@ -137,7 +136,7 @@ def easy_categorization(
             "anthropic": "claude-3-5-haiku-20241022",
         }
         model_name = llm_model or default_models[llm_provider]
-        
+
         llm_categorizer = LLMCategorizer(
             provider=ai_infra_provider,
             model_name=model_name,

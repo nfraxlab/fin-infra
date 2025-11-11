@@ -4,7 +4,7 @@ Unit tests for recurring transaction detection.
 Tests cover:
 - Merchant normalization
 - Fixed amount detection
-- Variable amount detection  
+- Variable amount detection
 - Irregular/annual detection
 - Date clustering
 - False positive filtering
@@ -112,7 +112,7 @@ class TestFixedAmountDetection:
         # Create 6 months of Netflix charges
         transactions = []
         base_date = datetime(2025, 1, 15)
-        
+
         for i in range(6):
             date = base_date + timedelta(days=30 * i)
             transactions.append(
@@ -123,13 +123,13 @@ class TestFixedAmountDetection:
                     date=date,
                 )
             )
-        
+
         detector = PatternDetector()
         patterns = detector.detect(transactions)
-        
+
         assert len(patterns) == 1
         pattern = patterns[0]
-        
+
         assert pattern.pattern_type == PatternType.FIXED
         assert pattern.cadence == CadenceType.MONTHLY
         assert pattern.amount == 15.99
@@ -140,7 +140,7 @@ class TestFixedAmountDetection:
         """Should detect Spotify monthly subscription."""
         transactions = []
         base_date = datetime(2025, 1, 1)
-        
+
         for i in range(4):
             date = base_date + timedelta(days=30 * i)
             transactions.append(
@@ -151,10 +151,10 @@ class TestFixedAmountDetection:
                     date=date,
                 )
             )
-        
+
         detector = PatternDetector()
         patterns = detector.detect(transactions)
-        
+
         assert len(patterns) == 1
         assert patterns[0].pattern_type == PatternType.FIXED
         assert patterns[0].amount == 9.99
@@ -165,10 +165,10 @@ class TestFixedAmountDetection:
             Transaction("1", "Netflix", 15.99, datetime(2025, 1, 15)),
             Transaction("2", "Netflix", 15.99, datetime(2025, 2, 15)),
         ]
-        
+
         detector = PatternDetector(min_occurrences=3)
         patterns = detector.detect(transactions)
-        
+
         assert len(patterns) == 0
 
 
@@ -180,7 +180,7 @@ class TestVariableAmountDetection:
         transactions = []
         base_date = datetime(2025, 1, 20)
         amounts = [52.34, 68.12, 45.90, 59.45, 55.20, 63.80]  # 10-30% variance
-        
+
         for i, amount in enumerate(amounts):
             date = base_date + timedelta(days=30 * i)
             transactions.append(
@@ -191,13 +191,13 @@ class TestVariableAmountDetection:
                     date=date,
                 )
             )
-        
+
         detector = PatternDetector()
         patterns = detector.detect(transactions)
-        
+
         assert len(patterns) == 1
         pattern = patterns[0]
-        
+
         assert pattern.pattern_type == PatternType.VARIABLE
         assert pattern.cadence == CadenceType.MONTHLY
         assert pattern.amount_range is not None
@@ -208,7 +208,7 @@ class TestVariableAmountDetection:
         transactions = []
         base_date = datetime(2025, 1, 5)
         amounts = [60.00, 60.00, 85.50, 60.00, 72.30]  # Some months with overages
-        
+
         for i, amount in enumerate(amounts):
             date = base_date + timedelta(days=30 * i)
             transactions.append(
@@ -219,10 +219,10 @@ class TestVariableAmountDetection:
                     date=date,
                 )
             )
-        
+
         detector = PatternDetector()
         patterns = detector.detect(transactions)
-        
+
         assert len(patterns) == 1
         assert patterns[0].pattern_type == PatternType.VARIABLE
 
@@ -237,13 +237,13 @@ class TestIrregularDetection:
             Transaction("2", "Amazon Prime Annual", 139.00, datetime(2024, 11, 15)),
             Transaction("3", "Amazon Prime Annual", 139.00, datetime(2025, 11, 15)),
         ]
-        
+
         detector = PatternDetector(min_occurrences=2)
         patterns = detector.detect(transactions)
-        
+
         assert len(patterns) == 1
         pattern = patterns[0]
-        
+
         assert pattern.pattern_type == PatternType.IRREGULAR
         assert pattern.cadence == CadenceType.ANNUAL
         assert pattern.amount == 139.00
@@ -253,7 +253,7 @@ class TestIrregularDetection:
         """Should detect quarterly subscription."""
         transactions = []
         base_date = datetime(2025, 1, 1)
-        
+
         for i in range(4):
             date = base_date + timedelta(days=90 * i)
             transactions.append(
@@ -264,10 +264,10 @@ class TestIrregularDetection:
                     date=date,
                 )
             )
-        
+
         detector = PatternDetector()
         patterns = detector.detect(transactions)
-        
+
         assert len(patterns) == 1
         assert patterns[0].cadence == CadenceType.QUARTERLY
 
@@ -283,10 +283,10 @@ class TestDateClustering:
             Transaction("3", "Netflix", 15.99, datetime(2025, 3, 15)),
             Transaction("4", "Netflix", 15.99, datetime(2025, 4, 15)),
         ]
-        
+
         detector = PatternDetector()
         patterns = detector.detect(transactions)
-        
+
         assert len(patterns) == 1
         assert patterns[0].cadence == CadenceType.MONTHLY
         assert patterns[0].date_std_dev < 2  # Very consistent
@@ -299,10 +299,10 @@ class TestDateClustering:
             Transaction("3", "Spotify", 9.99, datetime(2025, 3, 2)),
             Transaction("4", "Spotify", 9.99, datetime(2025, 4, 1)),
         ]
-        
+
         detector = PatternDetector(date_tolerance_days=7)
         patterns = detector.detect(transactions)
-        
+
         assert len(patterns) == 1
         assert patterns[0].cadence == CadenceType.MONTHLY
 
@@ -310,7 +310,7 @@ class TestDateClustering:
         """Should detect bi-weekly pattern."""
         transactions = []
         base_date = datetime(2025, 1, 1)
-        
+
         for i in range(6):
             date = base_date + timedelta(days=14 * i)
             transactions.append(
@@ -321,10 +321,10 @@ class TestDateClustering:
                     date=date,
                 )
             )
-        
+
         detector = PatternDetector()
         patterns = detector.detect(transactions)
-        
+
         assert len(patterns) == 1
         assert patterns[0].cadence == CadenceType.BIWEEKLY
 
@@ -339,17 +339,17 @@ class TestFalsePositiveFiltering:
             Transaction("2", "Target", 32.18, datetime(2025, 2, 5)),
             Transaction("3", "Target", 67.89, datetime(2025, 3, 22)),
         ]
-        
+
         detector = PatternDetector()
         patterns = detector.detect(transactions)
-        
+
         assert len(patterns) == 0  # Should filter out due to inconsistency
 
     def test_generic_merchant_filtered(self):
         """Should filter out generic merchants."""
         transactions = []
         base_date = datetime(2025, 1, 1)
-        
+
         for i in range(4):
             date = base_date + timedelta(days=30 * i)
             transactions.append(
@@ -360,10 +360,10 @@ class TestFalsePositiveFiltering:
                     date=date,
                 )
             )
-        
+
         detector = PatternDetector()
         patterns = detector.detect(transactions)
-        
+
         # Should be filtered as generic merchant
         assert len(patterns) == 0
 
@@ -378,10 +378,10 @@ class TestMerchantGrouping:
             Transaction("2", "Netflix Inc", 15.99, datetime(2025, 2, 15)),
             Transaction("3", "NFLX*SUBSCRIPTION", 15.99, datetime(2025, 3, 15)),
         ]
-        
+
         detector = PatternDetector()
         patterns = detector.detect(transactions)
-        
+
         assert len(patterns) == 1  # All grouped as one pattern
         assert patterns[0].normalized_merchant == "netflix"
 
@@ -392,10 +392,10 @@ class TestMerchantGrouping:
             Transaction("2", "Starbucks #67890", 5.75, datetime(2025, 1, 12)),
             Transaction("3", "STARBUCKS COFFEE #11111", 5.75, datetime(2025, 1, 19)),
         ]
-        
+
         detector = PatternDetector(min_occurrences=3, date_tolerance_days=10)
         patterns = detector.detect(transactions)
-        
+
         # Note: Weekly Starbucks might not be detected as recurring (too frequent)
         # But merchant normalization should group them
         assert all(p.normalized_merchant == "starbucks" for p in patterns)
@@ -407,7 +407,7 @@ class TestEasyBuilder:
     def test_default_configuration(self):
         """Should create detector with default parameters."""
         detector = easy_recurring_detection()
-        
+
         assert detector.detector.min_occurrences == 3
         assert detector.detector.amount_tolerance == 0.02
         assert detector.detector.date_tolerance_days == 7
@@ -419,7 +419,7 @@ class TestEasyBuilder:
             amount_tolerance=0.01,
             date_tolerance_days=3,
         )
-        
+
         assert detector.detector.min_occurrences == 4
         assert detector.detector.amount_tolerance == 0.01
         assert detector.detector.date_tolerance_days == 3
@@ -455,11 +455,11 @@ class TestDetectorStats:
             Transaction("5", "PG&E", 65.00, datetime(2025, 2, 20)),
             Transaction("6", "PG&E", 55.00, datetime(2025, 3, 20)),
         ]
-        
+
         detector = PatternDetector()
         patterns = detector.detect(transactions)
         stats = detector.get_stats()
-        
+
         assert stats["total_detected"] == 2
         assert stats["fixed_patterns"] >= 1
         assert stats["variable_patterns"] >= 0
@@ -472,7 +472,7 @@ class TestConfidenceScoring:
         """Fixed patterns with many occurrences should have high confidence."""
         transactions = []
         base_date = datetime(2025, 1, 15)
-        
+
         for i in range(12):  # Full year
             date = base_date + timedelta(days=30 * i)
             transactions.append(
@@ -483,10 +483,10 @@ class TestConfidenceScoring:
                     date=date,
                 )
             )
-        
+
         detector = PatternDetector()
         patterns = detector.detect(transactions)
-        
+
         assert len(patterns) == 1
         assert patterns[0].confidence >= 0.95  # Very high confidence
 
@@ -495,7 +495,7 @@ class TestConfidenceScoring:
         # Create variable pattern
         transactions_variable = []
         base_date = datetime(2025, 1, 20)
-        
+
         for i in range(6):
             amount = 50.00 + (i % 3) * 10.00  # Varies between 50-70
             date = base_date + timedelta(days=30 * i)
@@ -507,7 +507,7 @@ class TestConfidenceScoring:
                     date=date,
                 )
             )
-        
+
         # Create fixed pattern
         transactions_fixed = []
         for i in range(6):
@@ -520,11 +520,11 @@ class TestConfidenceScoring:
                     date=date,
                 )
             )
-        
+
         detector = PatternDetector()
         patterns_var = detector.detect(transactions_variable)
         patterns_fix = detector.detect(transactions_fixed)
-        
+
         if patterns_var and patterns_fix:
             assert patterns_fix[0].confidence > patterns_var[0].confidence
 
@@ -539,10 +539,10 @@ class TestReasoningGeneration:
             Transaction("2", "Netflix", 15.99, datetime(2025, 2, 15)),
             Transaction("3", "Netflix", 15.99, datetime(2025, 3, 15)),
         ]
-        
+
         detector = PatternDetector()
         patterns = detector.detect(transactions)
-        
+
         assert len(patterns) == 1
         assert patterns[0].reasoning is not None
         assert "15.99" in patterns[0].reasoning
@@ -555,10 +555,10 @@ class TestReasoningGeneration:
             Transaction("2", "Utility", 65.00, datetime(2025, 2, 20)),
             Transaction("3", "Utility", 55.00, datetime(2025, 3, 20)),
         ]
-        
+
         detector = PatternDetector()
         patterns = detector.detect(transactions)
-        
+
         if patterns:
             assert patterns[0].reasoning is not None
             assert "variance" in patterns[0].reasoning.lower()

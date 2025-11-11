@@ -10,7 +10,7 @@ For production, use the real ExperianProvider from experian/provider.py.
 
 Example:
     >>> from fin_infra.credit.mock import MockExperianProvider
-    >>> 
+    >>>
     >>> provider = MockExperianProvider()
     >>> score = provider.get_credit_score("user123")
     >>> print(score.score)  # 735 (mock data)
@@ -31,15 +31,15 @@ from fin_infra.providers.base import CreditProvider
 
 class MockExperianProvider(CreditProvider):
     """Mock Experian provider for development (v1).
-    
+
     Returns hardcoded credit data without making real API calls.
     Useful for local development and unit testing.
-    
+
     Args:
         api_key: Ignored (no API calls made)
         environment: Ignored (no API calls made)
         **config: Ignored
-        
+
     Example:
         >>> provider = MockExperianProvider()
         >>> score = provider.get_credit_score("user123")
@@ -59,11 +59,11 @@ class MockExperianProvider(CreditProvider):
 
     def get_credit_score(self, user_id: str, **kwargs) -> CreditScore:
         """Return mock credit score.
-        
+
         Args:
             user_id: User identifier
             **kwargs: Ignored
-            
+
         Returns:
             Mock CreditScore (FICO 8 score 735)
         """
@@ -85,11 +85,11 @@ class MockExperianProvider(CreditProvider):
 
     def get_credit_report(self, user_id: str, **kwargs) -> CreditReport:
         """Return mock credit report.
-        
+
         Args:
             user_id: User identifier
             **kwargs: Ignored
-            
+
         Returns:
             Mock CreditReport with 3 accounts, 2 inquiries
         """
@@ -164,12 +164,12 @@ class MockExperianProvider(CreditProvider):
 
     def subscribe_to_changes(self, user_id: str, webhook_url: str, **kwargs) -> str:
         """Return mock subscription ID.
-        
+
         Args:
             user_id: User identifier
             webhook_url: Ignored
             **kwargs: Ignored
-            
+
         Returns:
             Mock subscription ID
         """

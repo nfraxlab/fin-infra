@@ -11,18 +11,18 @@ Features:
 
 Example:
     >>> from fin_infra.credit.experian import ExperianProvider
-    >>> 
+    >>>
     >>> provider = ExperianProvider(
     ...     api_key="your_api_key",
     ...     client_id="your_client_id",
     ...     client_secret="your_client_secret",
     ...     environment="sandbox"
     ... )
-    >>> 
+    >>>
     >>> # Get credit score
     >>> score = await provider.get_credit_score("user123")
     >>> print(score.score)  # Real FICO score from Experian
-    >>> 
+    >>>
     >>> # Get full report
     >>> report = await provider.get_credit_report("user123")
     >>> print(len(report.accounts))  # Real credit accounts
@@ -40,13 +40,13 @@ from fin_infra.settings import Settings
 
 class ExperianProvider(CreditProvider):
     """Experian credit bureau provider with real API integration.
-    
+
     v2 Implementation:
     - Real Experian API calls (sandbox or production)
     - OAuth 2.0 authentication
     - Automatic retries and error handling
     - FCRA compliance headers
-    
+
     Args:
         client_id: Experian API client ID (required)
         client_secret: Experian API client secret (required)
@@ -54,25 +54,25 @@ class ExperianProvider(CreditProvider):
         environment: "sandbox" or "production" (default: sandbox)
         base_url: Override base URL (optional, auto-detected from environment)
         **config: Additional configuration
-        
+
     Environment Variables:
         EXPERIAN_CLIENT_ID: Client ID for Experian API
         EXPERIAN_CLIENT_SECRET: Client secret for Experian API
         EXPERIAN_API_KEY: API key (if required)
         EXPERIAN_ENVIRONMENT: "sandbox" or "production" (default: sandbox)
         EXPERIAN_BASE_URL: Override base URL
-        
+
     Example:
         >>> # From environment variables
         >>> provider = ExperianProvider()
-        >>> 
+        >>>
         >>> # Explicit credentials
         >>> provider = ExperianProvider(
         ...     client_id="your_client_id",
         ...     client_secret="your_client_secret",
         ...     environment="sandbox"
         ... )
-        >>> 
+        >>>
         >>> # Get credit score
         >>> score = await provider.get_credit_score("user123")
     """
@@ -89,7 +89,7 @@ class ExperianProvider(CreditProvider):
     ):
         # Load from environment if not provided
         settings = Settings()
-        
+
         self.client_id = client_id or getattr(settings, "experian_client_id", None)
         self.client_secret = client_secret or getattr(settings, "experian_client_secret", None)
         self.api_key = api_key or getattr(settings, "experian_api_key", None)
@@ -141,21 +141,21 @@ class ExperianProvider(CreditProvider):
 
     async def get_credit_score(self, user_id: str, **kwargs) -> CreditScore:
         """Retrieve current credit score for a user from Experian API.
-        
+
         Makes real API call to Experian. Uses FCRA-compliant permissible purpose.
-        
+
         Args:
             user_id: User identifier (SSN hash or internal ID)
             **kwargs: Additional parameters
                 - permissible_purpose: FCRA purpose (default: "account_review")
-            
+
         Returns:
             CreditScore with real FICO score from Experian
-            
+
         Raises:
             ExperianAPIError: If API call fails
             ExperianNotFoundError: If user not found in bureau
-            
+
         Example:
             >>> provider = ExperianProvider()
             >>> score = await provider.get_credit_score("user123")
@@ -174,21 +174,21 @@ class ExperianProvider(CreditProvider):
 
     async def get_credit_report(self, user_id: str, **kwargs) -> CreditReport:
         """Retrieve full credit report for a user from Experian API.
-        
+
         Makes real API call to Experian. Includes FCRA-required permissible purpose header.
-        
+
         Args:
             user_id: User identifier (SSN hash or internal ID)
             **kwargs: Additional parameters
                 - permissible_purpose: FCRA purpose (default: "account_review")
-                
+
         Returns:
             CreditReport with real credit data from Experian
-            
+
         Raises:
             ExperianAPIError: If API call fails
             ExperianNotFoundError: If user not found in bureau
-            
+
         Example:
             >>> provider = ExperianProvider()
             >>> report = await provider.get_credit_report("user123")
@@ -208,20 +208,20 @@ class ExperianProvider(CreditProvider):
 
     async def subscribe_to_changes(self, user_id: str, webhook_url: str, **kwargs) -> str:
         """Subscribe to credit score change notifications from Experian.
-        
+
         Creates webhook subscription in Experian system. Experian will POST to webhook_url
         when credit changes occur.
-        
+
         Args:
             user_id: User identifier
             webhook_url: URL to receive webhook notifications
             **kwargs: Additional parameters
                 - events: List of event types (default: score_change, new_inquiry, new_account)
                 - signature_key: Webhook signature key for verification
-                
+
         Returns:
             Subscription ID from Experian
-            
+
         Example:
             >>> provider = ExperianProvider()
             >>> sub_id = await provider.subscribe_to_changes(

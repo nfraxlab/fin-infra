@@ -57,11 +57,11 @@ def mock_llm():
     """Mock ai-infra CoreLLM."""
     llm = MagicMock()
     llm.model = "gemini-2.0-flash-exp"
-    
+
     # Mock response
     mock_response = MagicMock()
     mock_response.content = "Your crypto portfolio shows strong Bitcoin allocation. Consider diversifying into Ethereum and stablecoins to reduce volatility risk. Not financial advice - consult a certified advisor."
-    
+
     llm.achat = AsyncMock(return_value=mock_response)
     return llm
 
@@ -138,11 +138,11 @@ async def test_generate_insights_high_concentration(btc_holding):
     insights = await generate_crypto_insights("user_123", [btc_holding])
 
     assert len(insights) >= 1
-    
+
     # Find allocation insight
     alloc_insights = [i for i in insights if i.category == "allocation"]
     assert len(alloc_insights) == 1
-    
+
     insight = alloc_insights[0]
     assert insight.symbol == "BTC"
     assert insight.priority == "high"
@@ -175,7 +175,7 @@ async def test_generate_insights_significant_gains(btc_holding):
     # Find opportunity insight
     opp_insights = [i for i in insights if i.category == "opportunity"]
     assert len(opp_insights) == 1
-    
+
     insight = opp_insights[0]
     assert insight.symbol == "BTC"
     assert insight.priority == "medium"
@@ -192,7 +192,7 @@ async def test_generate_insights_significant_losses(eth_holding):
     # Find risk insight
     risk_insights = [i for i in insights if i.category == "risk"]
     assert len(risk_insights) == 1
-    
+
     insight = risk_insights[0]
     assert insight.symbol == "ETH"
     assert insight.priority == "high"
@@ -207,18 +207,18 @@ async def test_generate_insights_with_llm(btc_holding, mock_llm):
 
     # Should have rule-based insights + 1 LLM insight
     assert len(insights) >= 2
-    
+
     # Find LLM insight
     llm_insights = [i for i in insights if "AI Portfolio" in i.title]
     assert len(llm_insights) == 1
-    
+
     insight = llm_insights[0]
     assert insight.category == "performance"
     assert insight.priority == "medium"
     assert "diversif" in insight.description.lower()
     assert insight.metadata["source"] == "ai-infra-llm"
     assert insight.metadata["model"] == "gemini-2.0-flash-exp"
-    
+
     # Verify LLM was called with correct prompt
     mock_llm.achat.assert_called_once()
     call_args = mock_llm.achat.call_args
@@ -233,7 +233,7 @@ async def test_generate_insights_with_llm(btc_holding, mock_llm):
 async def test_generate_insights_with_total_portfolio_value(btc_holding, eth_holding):
     """Test insights with total portfolio value context."""
     total_portfolio = Decimal("100000")  # Crypto is 42.5%
-    
+
     insights = await generate_crypto_insights(
         "user_123",
         [btc_holding, eth_holding],
@@ -257,7 +257,7 @@ async def test_generate_insights_llm_failure_graceful(btc_holding):
 
     # Should have rule-based insights (allocation, performance)
     assert len(insights) >= 1
-    
+
     # Should NOT have LLM insights
     llm_insights = [i for i in insights if "AI Portfolio" in i.title]
     assert len(llm_insights) == 0
@@ -269,7 +269,7 @@ async def test_generate_insights_multiple_holdings_all_categories(btc_holding, e
     # Modify holdings for diverse insights
     btc_holding.current_price = Decimal("60000")  # Large gain
     btc_holding.market_value = Decimal("30000")
-    
+
     insights = await generate_crypto_insights("user_123", [btc_holding, eth_holding])
 
     # Should have multiple insight types

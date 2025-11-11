@@ -17,61 +17,68 @@ def app():
     """Create FastAPI app with document routes (no auth for testing)."""
     from svc_infra.api.fastapi.dual.public import public_router
     from fin_infra.documents.ease import easy_documents
-    
+
     app = FastAPI()
     manager = easy_documents(storage_path="/tmp/test_documents")
-    
+
     # Create router WITHOUT auth for integration testing
     router = public_router(prefix="/documents", tags=["Documents"])
-    
+
     # Route 1: Upload document
     @router.post("/upload")
     async def upload_document(request: dict):
         from fin_infra.documents.models import DocumentType
+
         user_id = request["user_id"]
         file = request["file"]
         document_type = request["document_type"]
         filename = request["filename"]
         metadata = request.get("metadata")
-        
+
         doc_type = DocumentType(document_type)
         file_bytes = file.encode() if isinstance(file, str) else file
         return manager.upload(user_id, file_bytes, doc_type, filename, metadata)
-    
+
     # Route 2: List documents (MUST come before /{document_id} to avoid path conflict)
     @router.get("/list")
     async def list_documents(user_id: str, type: Optional[str] = None, year: Optional[int] = None):
         from fin_infra.documents.storage import list_documents as list_docs
+
         return list_docs(user_id, type=type, year=year)
-    
+
     # Route 3: Get document
     @router.get("/{document_id}")
     async def get_document(document_id: str):
         from fin_infra.documents.storage import get_document as get_doc
+
         doc = get_doc(document_id)
         if doc is None:
             raise ValueError(f"Document {document_id} not found")
         return doc
-    
+
     # Route 4: Delete document
     @router.delete("/{document_id}")
     async def delete_document(document_id: str):
         manager.delete(document_id)
         return {"message": "Document deleted successfully"}
-    
+
     # Route 5: Extract text (OCR)
     @router.post("/{document_id}/ocr")
-    async def extract_text(document_id: str, provider: Optional[str] = None, force_refresh: bool = False):
-        return manager.extract_text(document_id, provider=provider or "tesseract", force_refresh=force_refresh)
-    
+    async def extract_text(
+        document_id: str, provider: Optional[str] = None, force_refresh: bool = False
+    ):
+        return manager.extract_text(
+            document_id, provider=provider or "tesseract", force_refresh=force_refresh
+        )
+
     # Route 6: Analyze document
     @router.post("/{document_id}/analyze")
     async def analyze_document(document_id: str, force_refresh: bool = False):
         return manager.analyze(document_id, force_refresh=force_refresh)
-    
+
     app.include_router(router)
     app.state.document_manager = manager
-    
+
     yield app
     # Cleanup
     clear_storage()
@@ -89,7 +96,7 @@ class TestDocumentsAPI:
     def test_add_documents_mounts_routes(self, app):
         """Test that add_documents mounts all expected routes."""
         routes = [route.path for route in app.routes]
-        
+
         # Check for document routes (with and without trailing slash due to dual router)
         assert any("/documents/upload" in route for route in routes)
         assert any("/documents/list" in route for route in routes)

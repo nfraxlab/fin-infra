@@ -10,8 +10,6 @@ Note: Tests mock svc-infra cache decorator to avoid Redis dependency.
 Uses pytest-asyncio for async tests and unittest.mock for HTTP mocking.
 """
 
-import asyncio
-from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, Mock, patch
 
 import httpx
@@ -42,7 +40,7 @@ class TestExperianAuthManager:
 
     async def asyncTearDown(self):
         """Clear cache after each test."""
-        from svc_infra.cache.tags import invalidate_tags
+
         await invalidate_tags("oauth:experian")
 
     def test_auth_manager_initialization(self):
@@ -174,6 +172,7 @@ class TestExperianAuthManager:
 
         # Decode and verify
         import base64
+
         encoded = headers["Authorization"].replace("Basic ", "")
         decoded = base64.b64decode(encoded).decode()
         assert decoded == "my_client:my_secret"
@@ -188,7 +187,9 @@ class TestExperianAuthManager:
         )
 
         # Mock the invalidate_tags function
-        with patch("fin_infra.credit.experian.auth.invalidate_tags", new=AsyncMock()) as mock_invalidate:
+        with patch(
+            "fin_infra.credit.experian.auth.invalidate_tags", new=AsyncMock()
+        ) as mock_invalidate:
             await auth.invalidate()
 
         # Verify invalidate_tags was called with correct tag

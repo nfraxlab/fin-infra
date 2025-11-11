@@ -291,14 +291,14 @@ class TestAddCredit:
     # def test_get_credit_score_endpoint(self):
     #     """Test POST /credit/score endpoint."""
     #     from svc_infra.api.fastapi.dual.protected import RequireUser
-    #     
+    #
     #     app = FastAPI()
     #     add_credit(app)
-    #     
+    #
     #     # Mock the RequireUser dependency
     #     async def mock_require_user():
     #         return {"user_id": "test_user"}
-    #     
+    #
     #     app.dependency_overrides[RequireUser] = mock_require_user
     #     client = TestClient(app)
     #
@@ -313,14 +313,14 @@ class TestAddCredit:
     # def test_get_credit_report_endpoint(self):
     #     """Test POST /credit/report endpoint."""
     #     from svc_infra.api.fastapi.dual.protected import RequireUser
-    #     
+    #
     #     app = FastAPI()
     #     add_credit(app)
-    #     
+    #
     #     # Mock the RequireUser dependency
     #     async def mock_require_user():
     #         return {"user_id": "test_user"}
-    #     
+    #
     #     app.dependency_overrides[RequireUser] = mock_require_user
     #     client = TestClient(app)
     #
@@ -345,8 +345,8 @@ class TestAddCredit:
             json={
                 "topic": "credit.score_changed",
                 "url": "https://example.com/webhook",
-                "secret": "test_secret"
-            }
+                "secret": "test_secret",
+            },
         )
         # This will succeed or fail based on webhook implementation
         # Just verify the route exists

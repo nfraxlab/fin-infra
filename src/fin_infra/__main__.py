@@ -2,6 +2,7 @@
 
 Run with: python -m fin_infra or fin-infra (if installed)
 """
+
 from __future__ import annotations
 
 from fin_infra.cli import app

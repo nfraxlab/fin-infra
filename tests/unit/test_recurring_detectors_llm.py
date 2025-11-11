@@ -12,7 +12,6 @@ from fin_infra.recurring.detectors_llm import (
     VariableDetectorLLM,
     VariableRecurringPattern,
     VARIABLE_DETECTION_SYSTEM_PROMPT,
-    VARIABLE_DETECTION_USER_PROMPT,
 )
 
 
@@ -135,7 +134,9 @@ class TestVariableDetectorLLM:
         assert messages[0]["content"] == VARIABLE_DETECTION_SYSTEM_PROMPT
         assert messages[1]["role"] == "user"
         assert "City Electric" in messages[1]["content"]
-        assert "45.5" in messages[1]["content"] or "52.3" in messages[1]["content"]  # Float amounts, not dollar strings
+        assert (
+            "45.5" in messages[1]["content"] or "52.3" in messages[1]["content"]
+        )  # Float amounts, not dollar strings
 
     @pytest.mark.asyncio
     async def test_detect_phone_overage_spikes(self, detector, mock_llm):
@@ -292,7 +293,10 @@ class TestVariableDetectorLLM:
         # Verify fallback result
         assert result.is_recurring is False
         assert result.confidence == 0.5
-        assert "budget exceeded" in result.reasoning.lower() or "unavailable" in result.reasoning.lower()
+        assert (
+            "budget exceeded" in result.reasoning.lower()
+            or "unavailable" in result.reasoning.lower()
+        )
 
     @pytest.mark.asyncio
     async def test_budget_exceeded_when_daily_limit_hit(self, detector, mock_llm):
@@ -418,13 +422,13 @@ class TestVariableDetectorLLM:
         # Verify user prompt
         call_args = detector.llm.achat.call_args
         user_message = call_args.kwargs["messages"][1]["content"]
-        
+
         # Should contain merchant name
         assert "Test Merchant" in user_message
-        
+
         # Should contain amounts (floats without trailing zeros: 50.0, 55.0)
         assert "50.0" in user_message or "50.00" in user_message
         assert "55.0" in user_message or "55.00" in user_message
-        
+
         # Should contain date pattern
         assert "Monthly" in user_message

@@ -10,10 +10,10 @@ This provides Redis persistence, distributed caching, and monitoring.
 
 Example:
     >>> from svc_infra.cache import init_cache
-    >>> 
+    >>>
     >>> # Initialize cache once at startup
     >>> init_cache(url="redis://localhost:6379", prefix="finapp")
-    >>> 
+    >>>
     >>> auth = ExperianAuthManager(
     ...     client_id="your_client_id",
     ...     client_secret="your_client_secret",
@@ -36,16 +36,16 @@ from svc_infra.cache.tags import invalidate_tags
 
 class ExperianAuthManager:
     """Manages OAuth 2.0 tokens for Experian API.
-    
+
     Uses client credentials flow to obtain access tokens. Tokens are cached
     via svc-infra cache (Redis) with 1 hour TTL.
-    
+
     Architecture:
     - Uses svc_infra.cache.cache_read decorator for automatic caching
     - Cache key: "oauth_token:experian:{base_url_hash}"
     - Cache TTL: 3600 seconds (1 hour)
     - Cache backend: Redis (via svc-infra)
-    
+
     Args:
         client_id: Experian API client ID
         client_secret: Experian API client secret
@@ -68,19 +68,19 @@ class ExperianAuthManager:
 
     async def get_token(self) -> str:
         """Get valid access token from cache or fetch new one.
-        
+
         Uses svc-infra cache decorator. On cache miss, fetches new token from
         Experian OAuth endpoint. Token is cached for 1 hour (3600s).
-        
+
         Cache key includes client_id to ensure different auth managers don't
         share tokens across different credentials.
-        
+
         Returns:
             Valid OAuth 2.0 access token
-            
+
         Raises:
             httpx.HTTPStatusError: If token acquisition fails
-            
+
         Example:
             >>> token = await auth.get_token()
             >>> headers = {"Authorization": f"Bearer {token}"}
@@ -95,10 +95,10 @@ class ExperianAuthManager:
     )
     async def _get_token_cached(self, *, client_id: str) -> str:
         """Cached token getter (internal method).
-        
+
         Args:
             client_id: Client ID for cache key
-            
+
         Returns:
             Access token string
         """
@@ -107,15 +107,15 @@ class ExperianAuthManager:
 
     async def _fetch_token(self) -> str:
         """Acquire new access token from Experian OAuth endpoint.
-        
+
         Uses client credentials flow:
         1. Encode client_id:client_secret as base64
         2. POST to /oauth2/v1/token with grant_type=client_credentials
         3. Extract access_token from response
-        
+
         Returns:
             Access token string
-        
+
         Raises:
             httpx.HTTPStatusError: If token request fails (401, 500, etc.)
         """
@@ -145,10 +145,10 @@ class ExperianAuthManager:
 
     async def invalidate(self) -> None:
         """Invalidate cached token (force refresh on next get_token call).
-        
+
         Uses svc-infra cache tag invalidation to clear all tokens with tag
         "oauth:experian". Useful when token is rejected by API.
-        
+
         Example:
             >>> try:
             ...     await client.get("/endpoint")

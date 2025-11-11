@@ -170,58 +170,130 @@ EXACT_RULES: dict[str, Category] = {
 }
 
 # Normalize keys (lowercase, remove special chars)
-EXACT_RULES_NORMALIZED = {
-    _normalize_merchant(k): v for k, v in EXACT_RULES.items()
-}
+EXACT_RULES_NORMALIZED = {_normalize_merchant(k): v for k, v in EXACT_RULES.items()}
 
 
 # ===== REGEX RULES (Pattern Matching) =====
 
 REGEX_RULES: list[CategoryRule] = [
     # Coffee shops (various formats)
-    CategoryRule(pattern=r".*starbucks.*", category=Category.VAR_COFFEE_SHOPS, is_regex=True, priority=10),
-    CategoryRule(pattern=r".*sbux.*", category=Category.VAR_COFFEE_SHOPS, is_regex=True, priority=10),
-    CategoryRule(pattern=r".*peets.*", category=Category.VAR_COFFEE_SHOPS, is_regex=True, priority=10),
-    CategoryRule(pattern=r".*dunkin.*", category=Category.VAR_COFFEE_SHOPS, is_regex=True, priority=10),
+    CategoryRule(
+        pattern=r".*starbucks.*", category=Category.VAR_COFFEE_SHOPS, is_regex=True, priority=10
+    ),
+    CategoryRule(
+        pattern=r".*sbux.*", category=Category.VAR_COFFEE_SHOPS, is_regex=True, priority=10
+    ),
+    CategoryRule(
+        pattern=r".*peets.*", category=Category.VAR_COFFEE_SHOPS, is_regex=True, priority=10
+    ),
+    CategoryRule(
+        pattern=r".*dunkin.*", category=Category.VAR_COFFEE_SHOPS, is_regex=True, priority=10
+    ),
     # Fast food
-    CategoryRule(pattern=r".*mcdonald.*", category=Category.VAR_FAST_FOOD, is_regex=True, priority=10),
-    CategoryRule(pattern=r".*taco bell.*", category=Category.VAR_FAST_FOOD, is_regex=True, priority=10),
-    CategoryRule(pattern=r".*burger king.*", category=Category.VAR_FAST_FOOD, is_regex=True, priority=10),
-    CategoryRule(pattern=r".*subway.*", category=Category.VAR_FAST_FOOD, is_regex=True, priority=10),
+    CategoryRule(
+        pattern=r".*mcdonald.*", category=Category.VAR_FAST_FOOD, is_regex=True, priority=10
+    ),
+    CategoryRule(
+        pattern=r".*taco bell.*", category=Category.VAR_FAST_FOOD, is_regex=True, priority=10
+    ),
+    CategoryRule(
+        pattern=r".*burger king.*", category=Category.VAR_FAST_FOOD, is_regex=True, priority=10
+    ),
+    CategoryRule(
+        pattern=r".*subway.*", category=Category.VAR_FAST_FOOD, is_regex=True, priority=10
+    ),
     # Groceries
-    CategoryRule(pattern=r".*whole foods.*", category=Category.VAR_GROCERIES, is_regex=True, priority=10),
-    CategoryRule(pattern=r".*trader joe.*", category=Category.VAR_GROCERIES, is_regex=True, priority=10),
-    CategoryRule(pattern=r".*safeway.*", category=Category.VAR_GROCERIES, is_regex=True, priority=10),
-    CategoryRule(pattern=r".*kroger.*", category=Category.VAR_GROCERIES, is_regex=True, priority=10),
-    CategoryRule(pattern=r".*costco.*", category=Category.VAR_GROCERIES, is_regex=True, priority=10),
+    CategoryRule(
+        pattern=r".*whole foods.*", category=Category.VAR_GROCERIES, is_regex=True, priority=10
+    ),
+    CategoryRule(
+        pattern=r".*trader joe.*", category=Category.VAR_GROCERIES, is_regex=True, priority=10
+    ),
+    CategoryRule(
+        pattern=r".*safeway.*", category=Category.VAR_GROCERIES, is_regex=True, priority=10
+    ),
+    CategoryRule(
+        pattern=r".*kroger.*", category=Category.VAR_GROCERIES, is_regex=True, priority=10
+    ),
+    CategoryRule(
+        pattern=r".*costco.*", category=Category.VAR_GROCERIES, is_regex=True, priority=10
+    ),
     # Gas stations (with common patterns like "CHEVRON #12345")
-    CategoryRule(pattern=r".*chevron.*", category=Category.VAR_GAS_FUEL, is_regex=True, priority=10),
+    CategoryRule(
+        pattern=r".*chevron.*", category=Category.VAR_GAS_FUEL, is_regex=True, priority=10
+    ),
     CategoryRule(pattern=r".*shell.*", category=Category.VAR_GAS_FUEL, is_regex=True, priority=10),
-    CategoryRule(pattern=r".*76\s*(gas|fuel)?.*", category=Category.VAR_GAS_FUEL, is_regex=True, priority=10),
+    CategoryRule(
+        pattern=r".*76\s*(gas|fuel)?.*", category=Category.VAR_GAS_FUEL, is_regex=True, priority=10
+    ),
     CategoryRule(pattern=r".*arco.*", category=Category.VAR_GAS_FUEL, is_regex=True, priority=10),
     CategoryRule(pattern=r".*exxon.*", category=Category.VAR_GAS_FUEL, is_regex=True, priority=10),
     # Rideshare (common patterns)
-    CategoryRule(pattern=r"uber\s*trip", category=Category.VAR_RIDESHARE, is_regex=True, priority=10),
-    CategoryRule(pattern=r"lyft\s*ride", category=Category.VAR_RIDESHARE, is_regex=True, priority=10),
+    CategoryRule(
+        pattern=r"uber\s*trip", category=Category.VAR_RIDESHARE, is_regex=True, priority=10
+    ),
+    CategoryRule(
+        pattern=r"lyft\s*ride", category=Category.VAR_RIDESHARE, is_regex=True, priority=10
+    ),
     # Subscriptions (with common prefixes)
-    CategoryRule(pattern=r"netflix\.com", category=Category.FIXED_SUBSCRIPTIONS, is_regex=True, priority=10),
-    CategoryRule(pattern=r"nflx.*", category=Category.FIXED_SUBSCRIPTIONS, is_regex=True, priority=10),
-    CategoryRule(pattern=r"spotify.*", category=Category.FIXED_SUBSCRIPTIONS, is_regex=True, priority=10),
-    CategoryRule(pattern=r".*amazon prime.*", category=Category.FIXED_SUBSCRIPTIONS, is_regex=True, priority=10),
-    CategoryRule(pattern=r".*disney\s*plus.*", category=Category.FIXED_SUBSCRIPTIONS, is_regex=True, priority=10),
-    CategoryRule(pattern=r".*hbo\s*max.*", category=Category.FIXED_SUBSCRIPTIONS, is_regex=True, priority=10),
+    CategoryRule(
+        pattern=r"netflix\.com", category=Category.FIXED_SUBSCRIPTIONS, is_regex=True, priority=10
+    ),
+    CategoryRule(
+        pattern=r"nflx.*", category=Category.FIXED_SUBSCRIPTIONS, is_regex=True, priority=10
+    ),
+    CategoryRule(
+        pattern=r"spotify.*", category=Category.FIXED_SUBSCRIPTIONS, is_regex=True, priority=10
+    ),
+    CategoryRule(
+        pattern=r".*amazon prime.*",
+        category=Category.FIXED_SUBSCRIPTIONS,
+        is_regex=True,
+        priority=10,
+    ),
+    CategoryRule(
+        pattern=r".*disney\s*plus.*",
+        category=Category.FIXED_SUBSCRIPTIONS,
+        is_regex=True,
+        priority=10,
+    ),
+    CategoryRule(
+        pattern=r".*hbo\s*max.*", category=Category.FIXED_SUBSCRIPTIONS, is_regex=True, priority=10
+    ),
     # Online shopping (AMZN variants)
-    CategoryRule(pattern=r"amzn.*", category=Category.VAR_SHOPPING_ONLINE, is_regex=True, priority=10),
-    CategoryRule(pattern=r"amazon\.com.*", category=Category.VAR_SHOPPING_ONLINE, is_regex=True, priority=10),
+    CategoryRule(
+        pattern=r"amzn.*", category=Category.VAR_SHOPPING_ONLINE, is_regex=True, priority=10
+    ),
+    CategoryRule(
+        pattern=r"amazon\.com.*", category=Category.VAR_SHOPPING_ONLINE, is_regex=True, priority=10
+    ),
     # Utilities (common patterns)
-    CategoryRule(pattern=r".*pg\s*&?\s*e.*", category=Category.FIXED_UTILITIES_ELECTRIC, is_regex=True, priority=10),
-    CategoryRule(pattern=r".*pacific\s*gas.*", category=Category.FIXED_UTILITIES_ELECTRIC, is_regex=True, priority=10),
+    CategoryRule(
+        pattern=r".*pg\s*&?\s*e.*",
+        category=Category.FIXED_UTILITIES_ELECTRIC,
+        is_regex=True,
+        priority=10,
+    ),
+    CategoryRule(
+        pattern=r".*pacific\s*gas.*",
+        category=Category.FIXED_UTILITIES_ELECTRIC,
+        is_regex=True,
+        priority=10,
+    ),
     # Transfers (common keywords)
-    CategoryRule(pattern=r".*transfer.*", category=Category.SAVINGS_TRANSFER, is_regex=True, priority=20),
-    CategoryRule(pattern=r".*savings.*", category=Category.SAVINGS_TRANSFER, is_regex=True, priority=20),
+    CategoryRule(
+        pattern=r".*transfer.*", category=Category.SAVINGS_TRANSFER, is_regex=True, priority=20
+    ),
+    CategoryRule(
+        pattern=r".*savings.*", category=Category.SAVINGS_TRANSFER, is_regex=True, priority=20
+    ),
     # Payroll (common patterns)
-    CategoryRule(pattern=r".*payroll.*", category=Category.INCOME_PAYCHECK, is_regex=True, priority=10),
-    CategoryRule(pattern=r".*direct\s*dep.*", category=Category.INCOME_PAYCHECK, is_regex=True, priority=10),
+    CategoryRule(
+        pattern=r".*payroll.*", category=Category.INCOME_PAYCHECK, is_regex=True, priority=10
+    ),
+    CategoryRule(
+        pattern=r".*direct\s*dep.*", category=Category.INCOME_PAYCHECK, is_regex=True, priority=10
+    ),
 ]
 
 # Compile regex patterns for performance

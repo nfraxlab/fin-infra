@@ -18,19 +18,22 @@ from fin_infra.scaffold.net_worth import scaffold_net_worth_core
 class TestScaffoldCompileWorkflow:
     """Test scaffold → compile workflow."""
 
-    @pytest.mark.parametrize("scaffold_func,domain,entity", [
-        (scaffold_budgets_core, "budgets", "Budget"),
-        (scaffold_goals_core, "goals", "Goal"),
-        (scaffold_net_worth_core, "net_worth", "NetWorthSnapshot"),
-    ])
+    @pytest.mark.parametrize(
+        "scaffold_func,domain,entity",
+        [
+            (scaffold_budgets_core, "budgets", "Budget"),
+            (scaffold_goals_core, "goals", "Goal"),
+            (scaffold_net_worth_core, "net_worth", "NetWorthSnapshot"),
+        ],
+    )
     def test_scaffold_then_compile(self, scaffold_func, domain, entity):
         """Test that scaffolded files compile successfully."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / domain
-            
+
             # Scaffold files
             scaffold_func(dest_dir=str(dest_dir))
-            
+
             # Compile all Python files
             for py_file in dest_dir.glob("*.py"):
                 result = subprocess.run(
@@ -40,11 +43,14 @@ class TestScaffoldCompileWorkflow:
                 )
                 assert result.returncode == 0, f"Compilation failed for {py_file}: {result.stderr}"
 
-    @pytest.mark.parametrize("scaffold_func,domain", [
-        (scaffold_budgets_core, "budgets"),
-        (scaffold_goals_core, "goals"),
-        (scaffold_net_worth_core, "net_worth"),
-    ])
+    @pytest.mark.parametrize(
+        "scaffold_func,domain",
+        [
+            (scaffold_budgets_core, "budgets"),
+            (scaffold_goals_core, "goals"),
+            (scaffold_net_worth_core, "net_worth"),
+        ],
+    )
     def test_all_flag_combinations_compile(self, scaffold_func, domain):
         """Test that all flag combinations produce compilable code."""
         flag_combinations = [
@@ -57,11 +63,14 @@ class TestScaffoldCompileWorkflow:
             (False, True, True),
             (True, True, True),
         ]
-        
+
         for include_tenant, include_soft_delete, with_repository in flag_combinations:
             with tempfile.TemporaryDirectory() as tmpdir:
-                dest_dir = Path(tmpdir) / f"{domain}_{include_tenant}_{include_soft_delete}_{with_repository}"
-                
+                dest_dir = (
+                    Path(tmpdir)
+                    / f"{domain}_{include_tenant}_{include_soft_delete}_{with_repository}"
+                )
+
                 # Scaffold with flags
                 scaffold_func(
                     dest_dir=str(dest_dir),
@@ -69,7 +78,7 @@ class TestScaffoldCompileWorkflow:
                     include_soft_delete=include_soft_delete,
                     with_repository=with_repository,
                 )
-                
+
                 # Compile all files
                 for py_file in dest_dir.glob("*.py"):
                     result = subprocess.run(
@@ -86,39 +95,54 @@ class TestScaffoldCompileWorkflow:
 
 class TestScaffoldImportWorkflow:
     """Test scaffold → import workflow.
-    
+
     Note: Import tests are skipped because generated __init__.py files
     reference non-existent create_*_service functions. This is a known
     issue with the scaffold generators that should be fixed separately.
     For now, we verify file structure and compilation only.
     """
 
-    @pytest.mark.skip(reason="Generated __init__.py references non-existent create_*_service functions")
-    @pytest.mark.parametrize("scaffold_func,domain,entity", [
-        (scaffold_budgets_core, "budgets", "Budget"),
-        (scaffold_goals_core, "goals", "Goal"),
-        (scaffold_net_worth_core, "net_worth", "NetWorthSnapshot"),
-    ])
+    @pytest.mark.skip(
+        reason="Generated __init__.py references non-existent create_*_service functions"
+    )
+    @pytest.mark.parametrize(
+        "scaffold_func,domain,entity",
+        [
+            (scaffold_budgets_core, "budgets", "Budget"),
+            (scaffold_goals_core, "goals", "Goal"),
+            (scaffold_net_worth_core, "net_worth", "NetWorthSnapshot"),
+        ],
+    )
     def test_scaffold_then_import_model(self, scaffold_func, domain, entity):
         """Test that scaffolded models can be imported."""
         pass  # Skipped - see class docstring
 
-    @pytest.mark.skip(reason="Generated __init__.py references non-existent create_*_service functions")
-    @pytest.mark.parametrize("scaffold_func,domain", [
-        (scaffold_budgets_core, "budgets"),
-        (scaffold_goals_core, "goals"),
-        (scaffold_net_worth_core, "net_worth"),
-    ])
+    @pytest.mark.skip(
+        reason="Generated __init__.py references non-existent create_*_service functions"
+    )
+    @pytest.mark.parametrize(
+        "scaffold_func,domain",
+        [
+            (scaffold_budgets_core, "budgets"),
+            (scaffold_goals_core, "goals"),
+            (scaffold_net_worth_core, "net_worth"),
+        ],
+    )
     def test_scaffold_then_import_schemas(self, scaffold_func, domain):
         """Test that scaffolded schemas can be imported."""
         pass  # Skipped - see class docstring
 
-    @pytest.mark.skip(reason="Generated __init__.py references non-existent create_*_service functions")
-    @pytest.mark.parametrize("scaffold_func,domain", [
-        (scaffold_budgets_core, "budgets"),
-        (scaffold_goals_core, "goals"),
-        (scaffold_net_worth_core, "net_worth"),
-    ])
+    @pytest.mark.skip(
+        reason="Generated __init__.py references non-existent create_*_service functions"
+    )
+    @pytest.mark.parametrize(
+        "scaffold_func,domain",
+        [
+            (scaffold_budgets_core, "budgets"),
+            (scaffold_goals_core, "goals"),
+            (scaffold_net_worth_core, "net_worth"),
+        ],
+    )
     def test_scaffold_with_repository_imports(self, scaffold_func, domain):
         """Test that scaffolded repository can be imported when flag is set."""
         pass  # Skipped - see class docstring
@@ -126,17 +150,22 @@ class TestScaffoldImportWorkflow:
 
 class TestScaffoldInstantiateWorkflow:
     """Test scaffold → instantiate workflow.
-    
+
     Note: Instantiation tests are skipped because they depend on imports,
     which fail due to __init__.py referencing non-existent functions.
     """
 
-    @pytest.mark.skip(reason="Generated __init__.py references non-existent create_*_service functions")
-    @pytest.mark.parametrize("scaffold_func,domain,entity", [
-        (scaffold_budgets_core, "budgets", "Budget"),
-        (scaffold_goals_core, "goals", "Goal"),
-        (scaffold_net_worth_core, "net_worth", "NetWorthSnapshot"),
-    ])
+    @pytest.mark.skip(
+        reason="Generated __init__.py references non-existent create_*_service functions"
+    )
+    @pytest.mark.parametrize(
+        "scaffold_func,domain,entity",
+        [
+            (scaffold_budgets_core, "budgets", "Budget"),
+            (scaffold_goals_core, "goals", "Goal"),
+            (scaffold_net_worth_core, "net_worth", "NetWorthSnapshot"),
+        ],
+    )
     def test_scaffold_then_instantiate_schemas(self, scaffold_func, domain, entity):
         """Test that scaffolded Pydantic schemas can be instantiated."""
         pass  # Skipped - see class docstring
@@ -152,7 +181,7 @@ class TestAllFlagCombinations:
         """Test all flag combinations for budgets."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "budgets"
-            
+
             # Scaffold with flags
             scaffold_budgets_core(
                 dest_dir=str(dest_dir),
@@ -160,17 +189,17 @@ class TestAllFlagCombinations:
                 include_soft_delete=include_soft_delete,
                 with_repository=with_repository,
             )
-            
+
             # Verify files created
             assert (dest_dir / "budget.py").exists()
             assert (dest_dir / "budget_schemas.py").exists()
             assert (dest_dir / "__init__.py").exists()
-            
+
             if with_repository:
                 assert (dest_dir / "budget_repository.py").exists()
             else:
                 assert not (dest_dir / "budget_repository.py").exists()
-            
+
             # Compile all files
             for py_file in dest_dir.glob("*.py"):
                 compile(py_file.read_text(), str(py_file), "exec")
@@ -182,7 +211,7 @@ class TestAllFlagCombinations:
         """Test all flag combinations for goals."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "goals"
-            
+
             # Scaffold with flags
             scaffold_goals_core(
                 dest_dir=str(dest_dir),
@@ -190,17 +219,17 @@ class TestAllFlagCombinations:
                 include_soft_delete=include_soft_delete,
                 with_repository=with_repository,
             )
-            
+
             # Verify files created
             assert (dest_dir / "goal.py").exists()
             assert (dest_dir / "goal_schemas.py").exists()
             assert (dest_dir / "__init__.py").exists()
-            
+
             if with_repository:
                 assert (dest_dir / "goal_repository.py").exists()
             else:
                 assert not (dest_dir / "goal_repository.py").exists()
-            
+
             # Compile all files
             for py_file in dest_dir.glob("*.py"):
                 compile(py_file.read_text(), str(py_file), "exec")
@@ -212,7 +241,7 @@ class TestAllFlagCombinations:
         """Test all flag combinations for net worth."""
         with tempfile.TemporaryDirectory() as tmpdir:
             dest_dir = Path(tmpdir) / "net_worth"
-            
+
             # Scaffold with flags
             scaffold_net_worth_core(
                 dest_dir=str(dest_dir),
@@ -220,17 +249,17 @@ class TestAllFlagCombinations:
                 include_soft_delete=include_soft_delete,
                 with_repository=with_repository,
             )
-            
+
             # Verify files created
             assert (dest_dir / "net_worth_snapshot.py").exists()
             assert (dest_dir / "net_worth_snapshot_schemas.py").exists()
             assert (dest_dir / "__init__.py").exists()
-            
+
             if with_repository:
                 assert (dest_dir / "net_worth_snapshot_repository.py").exists()
             else:
                 assert not (dest_dir / "net_worth_snapshot_repository.py").exists()
-            
+
             # Compile all files
             for py_file in dest_dir.glob("*.py"):
                 compile(py_file.read_text(), str(py_file), "exec")

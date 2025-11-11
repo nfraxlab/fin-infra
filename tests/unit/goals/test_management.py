@@ -15,8 +15,6 @@ from datetime import datetime, timedelta
 import pytest
 
 from fin_infra.goals import (
-    GoalStatus,
-    GoalType,
     create_goal,
     delete_goal,
     get_goal,
@@ -374,11 +372,12 @@ def test_update_goal_updates_timestamp(sample_deadline):
     )
 
     original_updated_at = goal["updated_at"]
-    
+
     # Wait a moment to ensure timestamp changes
     import time
+
     time.sleep(0.01)
-    
+
     updated = update_goal(goal["id"], updates={"name": "New Name"})
     assert updated["updated_at"] > original_updated_at
 
@@ -510,7 +509,7 @@ def test_get_goal_progress_date_arithmetic():
 
     # Should not raise ValueError about month out of range
     progress = get_goal_progress(goal["id"])
-    
+
     assert progress["projected_completion_date"] is not None
     assert isinstance(progress["projected_completion_date"], datetime)
 

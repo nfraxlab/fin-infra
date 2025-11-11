@@ -1,4 +1,5 @@
 """Test app to verify landing page cards for banking and market data."""
+
 from svc_infra.api.fastapi.ease import easy_service_app
 from fin_infra.banking import add_banking
 from fin_infra.markets import add_market_data
@@ -14,6 +15,7 @@ market = add_market_data(app, provider="yahoo")
 
 if __name__ == "__main__":
     import uvicorn
+
     print("\n🚀 Starting test server...")
     print("📍 Landing page with cards: http://localhost:8000/")
     print("📊 Banking docs: http://localhost:8000/banking/docs")

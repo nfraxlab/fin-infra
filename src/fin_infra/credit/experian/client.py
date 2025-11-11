@@ -38,33 +38,36 @@ class ExperianAPIError(Exception):
 
 class ExperianRateLimitError(ExperianAPIError):
     """Raised when rate limit is exceeded (429)."""
+
     pass
 
 
 class ExperianAuthError(ExperianAPIError):
     """Raised when authentication fails (401)."""
+
     pass
 
 
 class ExperianNotFoundError(ExperianAPIError):
     """Raised when user not found in bureau (404)."""
+
     pass
 
 
 class ExperianClient:
     """HTTP client for Experian Consumer Services API.
-    
+
     Handles:
     - OAuth token injection
     - Automatic retries (rate limit, server errors)
     - Error response parsing
     - FCRA compliance headers
-    
+
     Args:
         base_url: Experian API base URL (sandbox or production)
         auth_manager: ExperianAuthManager instance
         timeout: Request timeout in seconds (default: 10.0)
-        
+
     Example:
         >>> auth = ExperianAuthManager(client_id="...", client_secret="...", base_url="...")
         >>> client = ExperianClient(base_url="...", auth_manager=auth)
@@ -114,23 +117,23 @@ class ExperianClient:
         **kwargs,
     ) -> dict[str, Any]:
         """Make authenticated HTTP request to Experian API.
-        
+
         Automatically:
         - Injects OAuth token
         - Adds FCRA compliance headers (if permissible_purpose provided)
         - Retries on rate limit (429) or server error (500, 503)
         - Parses error responses
-        
+
         Args:
             method: HTTP method (GET, POST, etc.)
             path: API endpoint path (e.g., "/credit/v2/scores/user123")
             headers: Additional headers
             permissible_purpose: FCRA permissible purpose (required for credit reports)
             **kwargs: Additional httpx request kwargs
-            
+
         Returns:
             Parsed JSON response
-            
+
         Raises:
             ExperianAuthError: Authentication failed (401)
             ExperianRateLimitError: Rate limit exceeded (429)
@@ -196,14 +199,14 @@ class ExperianClient:
         permissible_purpose: str = "account_review",
     ) -> dict[str, Any]:
         """Fetch credit score from Experian API.
-        
+
         Args:
             user_id: User identifier (SSN hash or internal ID)
             permissible_purpose: FCRA permissible purpose (default: account_review)
-            
+
         Returns:
             Experian API response with credit score data
-            
+
         Example:
             >>> data = await client.get_credit_score("user123")
             >>> print(data["creditProfile"]["score"])  # 735
@@ -221,16 +224,16 @@ class ExperianClient:
         permissible_purpose: str = "account_review",
     ) -> dict[str, Any]:
         """Fetch full credit report from Experian API.
-        
+
         FCRA Compliance: Permissible purpose header is REQUIRED.
-        
+
         Args:
             user_id: User identifier (SSN hash or internal ID)
             permissible_purpose: FCRA permissible purpose (account_review, credit_application, etc.)
-            
+
         Returns:
             Experian API response with full credit report
-            
+
         Example:
             >>> data = await client.get_credit_report("user123", permissible_purpose="credit_application")
             >>> print(data["creditProfile"]["tradelines"])  # Credit accounts
@@ -250,16 +253,16 @@ class ExperianClient:
         signature_key: str | None = None,
     ) -> dict[str, Any]:
         """Subscribe to credit change webhooks.
-        
+
         Args:
             user_id: User identifier
             callback_url: Webhook URL to receive notifications
             events: Event types to subscribe to (default: score_change, new_inquiry, new_account)
             signature_key: Webhook signature key for verification
-            
+
         Returns:
             Subscription response with subscription_id
-            
+
         Example:
             >>> data = await client.subscribe_to_changes(
             ...     "user123",

@@ -18,7 +18,7 @@ FCRA Compliance:
 - Provide adverse action notices if applicable
 """
 
-from datetime import date, datetime
+from datetime import date
 from decimal import Decimal
 from typing import Literal
 
@@ -27,7 +27,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class CreditScore(BaseModel):
     """Credit score from a bureau.
-    
+
     Attributes:
         user_id: User identifier
         score: Credit score (300-850 for FICO, 300-850 for VantageScore)
@@ -36,7 +36,7 @@ class CreditScore(BaseModel):
         score_date: Date score was calculated
         factors: List of factors affecting score (positive/negative)
         change: Change since last pull (+/- points), None if first pull
-        
+
     Example:
         >>> score = CreditScore(
         ...     user_id="user123",
@@ -52,9 +52,7 @@ class CreditScore(BaseModel):
     user_id: str = Field(..., description="User identifier")
     score: int = Field(..., ge=300, le=850, description="Credit score (300-850)")  # PII: score
     score_model: str = Field(..., description="Scoring model (FICO 8, VantageScore 3.0, etc.)")
-    bureau: Literal["experian", "equifax", "transunion"] = Field(
-        ..., description="Credit bureau"
-    )
+    bureau: Literal["experian", "equifax", "transunion"] = Field(..., description="Credit bureau")
     score_date: date = Field(..., description="Date score was calculated")
     factors: list[str] = Field(default_factory=list, description="Factors affecting score")
     change: int | None = Field(None, description="Change since last pull (+/- points)")
@@ -80,7 +78,7 @@ class CreditScore(BaseModel):
 
 class CreditAccount(BaseModel):
     """Credit account (tradeline) from credit report.
-    
+
     Attributes:
         account_id: Unique account identifier
         account_type: Type of account
@@ -92,7 +90,7 @@ class CreditAccount(BaseModel):
         opened_date: Date account was opened
         last_payment_date: Date of last payment
         monthly_payment: Monthly payment amount (for installment loans)
-        
+
     Example:
         >>> account = CreditAccount(
         ...     account_id="acc123",
@@ -144,14 +142,14 @@ class CreditAccount(BaseModel):
 
 class CreditInquiry(BaseModel):
     """Credit inquiry (hard/soft pull) from credit report.
-    
+
     Attributes:
         inquiry_id: Unique inquiry identifier
         inquiry_type: Type of inquiry
         inquirer_name: Name of entity that pulled credit
         inquiry_date: Date of inquiry
         purpose: Purpose of inquiry (optional)
-        
+
     Example:
         >>> inquiry = CreditInquiry(
         ...     inquiry_id="inq123",
@@ -166,15 +164,18 @@ class CreditInquiry(BaseModel):
     inquiry_type: Literal["hard", "soft"] = Field(..., description="Type of inquiry")
     inquirer_name: str = Field(..., description="Name of entity that pulled credit")
     inquiry_date: date = Field(..., description="Date of inquiry")
-    purpose: Literal[
-        "credit_card_application",
-        "mortgage",
-        "auto_loan",
-        "personal_loan",
-        "employment_check",
-        "account_review",
-        "other",
-    ] | None = Field(None, description="Purpose of inquiry")
+    purpose: (
+        Literal[
+            "credit_card_application",
+            "mortgage",
+            "auto_loan",
+            "personal_loan",
+            "employment_check",
+            "account_review",
+            "other",
+        ]
+        | None
+    ) = Field(None, description="Purpose of inquiry")
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -191,7 +192,7 @@ class CreditInquiry(BaseModel):
 
 class PublicRecord(BaseModel):
     """Public record (bankruptcy, lien, judgment) from credit report.
-    
+
     Attributes:
         record_id: Unique record identifier
         record_type: Type of public record
@@ -199,7 +200,7 @@ class PublicRecord(BaseModel):
         status: Status of record
         amount: Amount (if applicable)
         court: Court name (if applicable)
-        
+
     Example:
         >>> record = PublicRecord(
         ...     record_id="rec123",
@@ -238,7 +239,7 @@ class PublicRecord(BaseModel):
 
 class CreditReport(BaseModel):
     """Full credit report from a bureau.
-    
+
     Attributes:
         user_id: User identifier
         bureau: Credit bureau
@@ -248,7 +249,7 @@ class CreditReport(BaseModel):
         inquiries: List of credit inquiries
         public_records: List of public records
         consumer_statements: List of consumer statements (disputes, etc.)
-        
+
     Example:
         >>> report = CreditReport(
         ...     user_id="user123",
@@ -263,16 +264,12 @@ class CreditReport(BaseModel):
     """
 
     user_id: str = Field(..., description="User identifier")
-    bureau: Literal["experian", "equifax", "transunion"] = Field(
-        ..., description="Credit bureau"
-    )
+    bureau: Literal["experian", "equifax", "transunion"] = Field(..., description="Credit bureau")
     report_date: date = Field(..., description="Date report was generated")
     score: CreditScore = Field(..., description="Credit score")
     accounts: list[CreditAccount] = Field(default_factory=list, description="Credit accounts")
     inquiries: list[CreditInquiry] = Field(default_factory=list, description="Credit inquiries")
-    public_records: list[PublicRecord] = Field(
-        default_factory=list, description="Public records"
-    )
+    public_records: list[PublicRecord] = Field(default_factory=list, description="Public records")
     consumer_statements: list[str] = Field(
         default_factory=list, description="Consumer statements (disputes, etc.)"
     )

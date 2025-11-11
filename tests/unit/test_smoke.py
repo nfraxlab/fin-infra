@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+
 def test_imports_and_version() -> None:
     import fin_infra
 

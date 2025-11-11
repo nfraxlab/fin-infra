@@ -197,7 +197,7 @@ class BudgetTracker:
         # Then wire CRUD with svc-infra: add_sql_resources(app, [SqlResource(model=Budget, ...)])
         # See docs/persistence.md for full guide.
         # In-memory storage used here for testing/examples.
-        
+
         # In-memory storage (Task 13 scope)
         self._budgets[budget.id] = budget
 
@@ -232,7 +232,7 @@ class BudgetTracker:
         # See docs/persistence.md for query patterns.
         # In-memory storage used here for testing/examples.
         #     return list(result.scalars().all())
-        
+
         # In-memory storage (Task 13 scope)
         budgets = [b for b in self._budgets.values() if b.user_id == user_id]
         if type:
@@ -261,7 +261,7 @@ class BudgetTracker:
         # Generate with: fin-infra scaffold budgets --dest-dir app/models/
         # See docs/persistence.md for repository patterns.
         # In-memory storage used here for testing/examples.
-        
+
         # In-memory storage (Task 13 scope)
         budget = self._budgets.get(budget_id)
         if not budget:
@@ -306,18 +306,18 @@ class BudgetTracker:
         # Generate with: fin-infra scaffold budgets --dest-dir app/models/
         # See docs/persistence.md for update patterns.
         # In-memory storage used here for testing/examples.
-        
+
         # In-memory storage (Task 13 scope)
         budget = self._budgets.get(budget_id)
         if not budget:
             raise ValueError(f"Budget not found: {budget_id}")
-        
+
         # Update budget fields
         for key, value in updates.items():
             if hasattr(budget, key):
                 setattr(budget, key, value)
         budget.updated_at = datetime.now()
-        
+
         return budget
 
     async def delete_budget(self, budget_id: str) -> None:
@@ -342,7 +342,7 @@ class BudgetTracker:
         # Supports soft delete if --include-soft-delete flag used during scaffold.
         # See docs/persistence.md for delete patterns.
         # In-memory storage used here for testing/examples.
-        
+
         # In-memory storage (Task 13 scope)
         if budget_id not in self._budgets:
             raise ValueError(f"Budget not found: {budget_id}")

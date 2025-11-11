@@ -223,9 +223,7 @@ class CurrencyConverter:
                 converted = await self.convert(amount, from_currency, to_currency)
                 results[from_currency] = converted
             except (CurrencyNotSupportedError, ExchangeRateAPIError) as e:
-                logger.warning(
-                    f"Failed to convert {from_currency} to {to_currency}: {e}"
-                )
+                logger.warning(f"Failed to convert {from_currency} to {to_currency}: {e}")
                 results[from_currency] = amount  # Return original on error
 
         return results

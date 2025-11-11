@@ -4,7 +4,6 @@ Unit tests for recurring/insights.py (Layer 5 - LLM subscription insights genera
 Tests subscription insights generation with mocked CoreLLM responses.
 """
 
-import hashlib
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -13,7 +12,6 @@ from fin_infra.recurring.insights import (
     SubscriptionInsights,
     SubscriptionInsightsGenerator,
     INSIGHTS_GENERATION_SYSTEM_PROMPT,
-    INSIGHTS_GENERATION_USER_PROMPT,
 )
 
 
@@ -63,8 +61,7 @@ class TestSubscriptionInsights:
         SubscriptionInsights(
             summary="test",
             top_subscriptions=[
-                {"merchant": f"Sub{i}", "amount": 10.0, "cadence": "monthly"}
-                for i in range(5)
+                {"merchant": f"Sub{i}", "amount": 10.0, "cadence": "monthly"} for i in range(5)
             ],
             recommendations=[],
             total_monthly_cost=50.0,
@@ -77,8 +74,7 @@ class TestSubscriptionInsights:
             SubscriptionInsights(
                 summary="test",
                 top_subscriptions=[
-                    {"merchant": f"Sub{i}", "amount": 10.0, "cadence": "monthly"}
-                    for i in range(6)
+                    {"merchant": f"Sub{i}", "amount": 10.0, "cadence": "monthly"} for i in range(6)
                 ],
                 recommendations=[],
                 total_monthly_cost=60.0,
@@ -168,7 +164,9 @@ class TestSubscriptionInsightsGenerator:
         assert len(result.recommendations) == 3
         assert result.total_monthly_cost == 64.95
         assert result.potential_savings == 29.98
-        assert "Disney+" in result.recommendations[0] or "bundle" in result.recommendations[0].lower()
+        assert (
+            "Disney+" in result.recommendations[0] or "bundle" in result.recommendations[0].lower()
+        )
 
         # Verify LLM was called with correct parameters
         generator.llm.achat.assert_called_once()
@@ -363,8 +361,7 @@ class TestSubscriptionInsightsGenerator:
         mock_response.structured = SubscriptionInsights(
             summary="Test",
             top_subscriptions=[
-                {"merchant": f"Sub{i}", "amount": 10.0 + i, "cadence": "monthly"}
-                for i in range(5)
+                {"merchant": f"Sub{i}", "amount": 10.0 + i, "cadence": "monthly"} for i in range(5)
             ],
             recommendations=[],
             total_monthly_cost=70.0,
@@ -374,8 +371,7 @@ class TestSubscriptionInsightsGenerator:
 
         # 10 subscriptions
         subscriptions = [
-            {"merchant": f"Sub{i}", "amount": 10.0 + i, "cadence": "monthly"}
-            for i in range(10)
+            {"merchant": f"Sub{i}", "amount": 10.0 + i, "cadence": "monthly"} for i in range(10)
         ]
 
         result = await generator.generate(subscriptions)

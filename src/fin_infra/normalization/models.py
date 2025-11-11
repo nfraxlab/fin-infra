@@ -17,9 +17,7 @@ class SymbolMetadata(BaseModel):
     sector: Optional[str] = Field(None, description="Business sector")
     industry: Optional[str] = Field(None, description="Industry classification")
     market_cap: Optional[float] = Field(None, description="Market capitalization in USD")
-    asset_type: str = Field(
-        default="stock", description="Asset type: stock, etf, crypto, forex"
-    )
+    asset_type: str = Field(default="stock", description="Asset type: stock, etf, crypto, forex")
 
 
 class ExchangeRate(BaseModel):

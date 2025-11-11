@@ -6,8 +6,6 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from fin_infra.tax import add_tax_data
-from fin_infra.tax.tlh import TLHOpportunity
 
 
 # ============================================================================
@@ -21,35 +19,35 @@ def app():
     from svc_infra.api.fastapi.dual.public import public_router
     from fin_infra.tax import easy_tax
     from fin_infra.tax.tlh import find_tlh_opportunities, simulate_tlh_scenario
-    
+
     app = FastAPI()
-    
+
     # Initialize provider
     tax_provider = easy_tax(provider="mock")
-    
+
     # Create router WITHOUT auth for testing
     router = public_router(prefix="/tax", tags=["Tax Data"])
-    
+
     # Define routes manually (same as add.py but with public_router)
     from fin_infra.tax.add import CryptoGainsRequest, TaxLiabilityRequest, TLHScenarioRequest
-    
+
     @router.get("/documents")
     async def get_tax_documents(user_id: str, tax_year: int):
         return await tax_provider.get_tax_documents(user_id, tax_year)
-    
+
     @router.get("/documents/{document_id}")
     async def get_tax_document(document_id: str):
         return await tax_provider.get_tax_document(document_id)
-    
+
     @router.post("/crypto-gains")
     async def calculate_crypto_gains(request: CryptoGainsRequest):
         return await tax_provider.calculate_crypto_gains(
             user_id=request.user_id,
             transactions=request.transactions,
             tax_year=request.tax_year,
-            cost_basis_method=request.cost_basis_method
+            cost_basis_method=request.cost_basis_method,
         )
-    
+
     @router.post("/tax-liability")
     async def calculate_tax_liability(request: TaxLiabilityRequest):
         return await tax_provider.calculate_tax_liability(
@@ -58,9 +56,9 @@ def app():
             deductions=request.deductions,
             filing_status=request.filing_status,
             tax_year=request.tax_year,
-            state=request.state
+            state=request.state,
         )
-    
+
     @router.get("/tlh-opportunities")
     async def get_tlh_opportunities(
         user_id: str,
@@ -76,7 +74,7 @@ def app():
             tax_rate=tax_rate,
         )
         return opportunities
-    
+
     @router.post("/tlh-scenario")
     async def simulate_tlh_scenario_endpoint(request: TLHScenarioRequest):
         scenario = simulate_tlh_scenario(
@@ -84,10 +82,10 @@ def app():
             tax_rate=request.tax_rate,
         )
         return scenario
-    
+
     app.include_router(router)
     app.state.tax_provider = tax_provider
-    
+
     return app
 
 
@@ -143,9 +141,7 @@ def test_get_tlh_opportunities_with_defaults(client):
 
 def test_get_tlh_opportunities_custom_params(client):
     """Test TLH opportunities with custom parameters."""
-    response = client.get(
-        "/tax/tlh-opportunities?user_id=test_user&min_loss=500&tax_rate=0.20"
-    )
+    response = client.get("/tax/tlh-opportunities?user_id=test_user&min_loss=500&tax_rate=0.20")
 
     assert response.status_code == 200
     opportunities = response.json()
