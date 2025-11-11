@@ -27,9 +27,11 @@ Alpha. Core functionality is stable, but the surface is intentionally small whil
 | Getting Started | Overview and installation | [Getting Started](src/fin_infra/docs/getting-started.md) |
 | **API Integration** | **Building fintech APIs with fin-infra + svc-infra** | **[API Guide](src/fin_infra/docs/api.md)** |
 | **Persistence** | **Scaffold models/schemas/repositories, svc-infra integration, multi-tenancy, soft delete** | **[Persistence Guide](src/fin_infra/docs/persistence.md)** |
-| **Analytics** | **Cash flow, savings rate, spending insights, portfolio metrics, projections** | **[Analytics](src/fin_infra/docs/analytics.md)** |
+| **Analytics** | **Cash flow, savings rate, spending insights, portfolio metrics, rebalancing, scenario modeling** | **[Analytics](src/fin_infra/docs/analytics.md)** |
 | **Budgets** | **Multi-type budget tracking with templates, alerts, and progress monitoring** | **[Budget Management](src/fin_infra/docs/budgets.md)** |
 | **Documents** | **Tax forms, bank statements, receipts with OCR extraction and AI analysis** | **[Document Management](src/fin_infra/docs/documents.md)** |
+| **Insights** | **Unified insights feed with priority-based aggregation from multiple sources** | **[Insights Feed](src/fin_infra/docs/insights.md)** |
+| **Crypto** | **Crypto market data, portfolio tracking, and AI-powered insights** | **[Crypto](src/fin_infra/docs/crypto.md)** |
 | Banking | Account aggregation, transactions, statements | [Banking](src/fin_infra/docs/banking.md) |
 | Market Data | Stocks, crypto, forex quotes and historical data | [Market Data](src/fin_infra/docs/market-data.md) |
 | Credit Scores | Credit reports and monitoring | [Credit](src/fin_infra/docs/credit.md) |
