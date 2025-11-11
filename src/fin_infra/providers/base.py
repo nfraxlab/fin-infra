@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Iterable, Any, Sequence
-from datetime import datetime
+from typing import Iterable, Sequence
 
 from ..models import Quote, Candle
 
@@ -13,7 +12,9 @@ class MarketDataProvider(ABC):
         pass
 
     @abstractmethod
-    def history(self, symbol: str, *, period: str = "1mo", interval: str = "1d") -> Sequence[Candle]:
+    def history(
+        self, symbol: str, *, period: str = "1mo", interval: str = "1d"
+    ) -> Sequence[Candle]:
         pass
 
 
@@ -105,8 +106,6 @@ class TaxProvider(ABC):
         pass
 
     @abstractmethod
-    def calculate_crypto_gains(
-        self, transactions: list[dict], **kwargs
-    ) -> dict:
+    def calculate_crypto_gains(self, transactions: list[dict], **kwargs) -> dict:
         """Calculate capital gains from crypto transactions."""
         pass

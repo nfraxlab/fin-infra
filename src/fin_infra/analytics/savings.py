@@ -21,7 +21,6 @@ Examples:
     >>> result = await calculate_savings_rate("user123", period="monthly", definition="discretionary")
 """
 
-
 from fin_infra.analytics.models import (
     Period,
     SavingsDefinition,

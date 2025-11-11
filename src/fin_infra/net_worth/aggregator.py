@@ -36,7 +36,6 @@ from typing import Any
 
 from fin_infra.net_worth.calculator import (
     calculate_asset_allocation,
-    calculate_change,
     calculate_liability_breakdown,
     calculate_net_worth,
 )
@@ -52,14 +51,14 @@ from fin_infra.net_worth.models import (
 class NetWorthAggregator:
     """
     Aggregates net worth from multiple financial providers.
-    
+
     **Features**:
     - Multi-provider support (banking, brokerage, crypto)
     - Parallel account fetching (faster performance)
     - Graceful error handling (continue if one provider fails)
     - Currency normalization (all → base currency)
     - Market value calculation (stocks/crypto)
-    
+
     **Example**:
     ```python
     aggregator = NetWorthAggregator(
@@ -68,14 +67,14 @@ class NetWorthAggregator:
         crypto_provider=crypto,
         base_currency="USD"
     )
-    
+
     snapshot = await aggregator.aggregate_net_worth("user_123")
     print(f"Assets: ${snapshot.total_assets:,.2f}")
     print(f"Liabilities: ${snapshot.total_liabilities:,.2f}")
     print(f"Net Worth: ${snapshot.total_net_worth:,.2f}")
     ```
     """
-    
+
     def __init__(
         self,
         banking_provider: Any = None,
@@ -86,14 +85,14 @@ class NetWorthAggregator:
     ):
         """
         Initialize aggregator with providers.
-        
+
         Args:
             banking_provider: Banking provider (Plaid/Teller)
             brokerage_provider: Brokerage provider (Alpaca)
             crypto_provider: Crypto provider (CCXT)
             market_provider: Market data provider (Alpha Vantage)
             base_currency: Base currency for normalization (default: USD)
-        
+
         Raises:
             ValueError: If no providers specified
         """
@@ -102,13 +101,11 @@ class NetWorthAggregator:
         self.crypto_provider = crypto_provider
         self.market_provider = market_provider
         self.base_currency = base_currency
-        
+
         # Validate at least one provider
         if not any([banking_provider, brokerage_provider, crypto_provider]):
-            raise ValueError(
-                "At least one provider required (banking, brokerage, or crypto)"
-            )
-    
+            raise ValueError("At least one provider required (banking, brokerage, or crypto)")
+
     async def aggregate_net_worth(
         self,
         user_id: str,
@@ -116,10 +113,10 @@ class NetWorthAggregator:
     ) -> NetWorthSnapshot:
         """
         Aggregate net worth from all providers.
-        
+
         Fetches balances from all configured providers in parallel,
         calculates totals, and returns a complete snapshot.
-        
+
         **Example**:
         ```python
         snapshot = await aggregator.aggregate_net_worth(
@@ -127,11 +124,11 @@ class NetWorthAggregator:
             access_token="plaid_token_abc"
         )
         ```
-        
+
         Args:
             user_id: User identifier
             access_token: Provider access token (for banking/brokerage)
-        
+
         Returns:
             NetWorthSnapshot with complete financial picture
         """
@@ -140,18 +137,18 @@ class NetWorthAggregator:
             user_id=user_id,
             access_token=access_token,
         )
-        
+
         # Calculate net worth
         total_net_worth = calculate_net_worth(
             assets=assets_list,
             liabilities=liabilities_list,
             base_currency=self.base_currency,
         )
-        
+
         # Calculate breakdowns
         asset_allocation = calculate_asset_allocation(assets_list)
         liability_breakdown = calculate_liability_breakdown(liabilities_list)
-        
+
         # Create snapshot
         snapshot = NetWorthSnapshot(
             id=str(uuid.uuid4()),
@@ -180,9 +177,9 @@ class NetWorthAggregator:
             base_currency=self.base_currency,
             created_at=datetime.utcnow(),
         )
-        
+
         return snapshot
-    
+
     async def _fetch_all_accounts(
         self,
         user_id: str,
@@ -190,49 +187,49 @@ class NetWorthAggregator:
     ) -> tuple[list[AssetDetail], list[LiabilityDetail], list[str]]:
         """
         Fetch accounts from all providers in parallel.
-        
+
         Returns:
             Tuple of (assets, liabilities, providers_used)
         """
         tasks = []
         providers_used = []
-        
+
         # Banking provider (cash + credit cards + loans)
         if self.banking_provider:
             tasks.append(self._fetch_banking_accounts(user_id, access_token))
             providers_used.append("banking")
-        
+
         # Brokerage provider (stock holdings)
         if self.brokerage_provider:
             tasks.append(self._fetch_brokerage_accounts(user_id, access_token))
             providers_used.append("brokerage")
-        
+
         # Crypto provider (wallet balances)
         if self.crypto_provider:
             tasks.append(self._fetch_crypto_accounts(user_id))
             providers_used.append("crypto")
-        
+
         # Execute all tasks in parallel
         results = await asyncio.gather(*tasks, return_exceptions=True)
-        
+
         # Aggregate results (skip failed providers)
         all_assets = []
         all_liabilities = []
         actual_providers = []
-        
+
         for i, result in enumerate(results):
             if isinstance(result, Exception):
                 # Log error but continue (graceful degradation)
                 print(f"Provider {providers_used[i]} failed: {result}")
                 continue
-            
+
             assets, liabilities = result
             all_assets.extend(assets)
             all_liabilities.extend(liabilities)
             actual_providers.append(providers_used[i])
-        
+
         return all_assets, all_liabilities, actual_providers
-    
+
     async def _fetch_banking_accounts(
         self,
         user_id: str,
@@ -240,7 +237,7 @@ class NetWorthAggregator:
     ) -> tuple[list[AssetDetail], list[LiabilityDetail]]:
         """
         Fetch banking accounts (cash + credit cards + loans).
-        
+
         Returns:
             Tuple of (assets, liabilities)
         """
@@ -248,18 +245,18 @@ class NetWorthAggregator:
             # For now, return empty if no token
             # TODO: Implement token storage/retrieval
             return [], []
-        
+
         # Fetch accounts from banking provider
         # This is a placeholder - actual implementation depends on provider
         accounts = await self.banking_provider.get_accounts(access_token)
-        
+
         assets = []
         liabilities = []
-        
+
         for account in accounts:
             account_type = account.get("type", "").lower()
             balance = account.get("balance", 0.0)
-            
+
             # Categorize account
             if account_type in ["checking", "savings", "money_market"]:
                 # Asset: Cash account
@@ -310,7 +307,7 @@ class NetWorthAggregator:
                     liability_type = LiabilityCategory.AUTO_LOAN
                 else:
                     liability_type = LiabilityCategory.PERSONAL_LOAN
-                
+
                 liabilities.append(
                     LiabilityDetail(
                         account_id=account["id"],
@@ -323,9 +320,9 @@ class NetWorthAggregator:
                         last_updated=datetime.utcnow(),
                     )
                 )
-        
+
         return assets, liabilities
-    
+
     async def _fetch_brokerage_accounts(
         self,
         user_id: str,
@@ -333,36 +330,36 @@ class NetWorthAggregator:
     ) -> tuple[list[AssetDetail], list[LiabilityDetail]]:
         """
         Fetch brokerage accounts (stock holdings + cash).
-        
+
         Returns:
             Tuple of (assets, liabilities)
         """
         # Placeholder implementation
         # Actual implementation depends on brokerage provider API
-        
+
         # Get account info from brokerage
         # account = await self.brokerage_provider.get_account()
-        
+
         # For now, return empty
         # TODO: Implement actual brokerage integration
         return [], []
-    
+
     async def _fetch_crypto_accounts(
         self,
         user_id: str,
     ) -> tuple[list[AssetDetail], list[LiabilityDetail]]:
         """
         Fetch crypto accounts (wallet + exchange balances).
-        
+
         Returns:
             Tuple of (assets, liabilities)
         """
         # Placeholder implementation
         # Actual implementation depends on crypto provider API
-        
+
         # Get balances from crypto provider
         # balances = await self.crypto_provider.get_balances()
-        
+
         # For now, return empty
         # TODO: Implement actual crypto integration
         return [], []

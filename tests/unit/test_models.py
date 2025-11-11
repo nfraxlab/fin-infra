@@ -121,12 +121,8 @@ class TestTransactionModel:
 
     def test_transaction_negative_amounts(self):
         """Test transactions support negative amounts (debits)."""
-        debit = Transaction(
-            id="txn_d1", account_id="acc_1", date=date.today(), amount=-100.0
-        )
-        credit = Transaction(
-            id="txn_c1", account_id="acc_1", date=date.today(), amount=100.0
-        )
+        debit = Transaction(id="txn_d1", account_id="acc_1", date=date.today(), amount=-100.0)
+        credit = Transaction(id="txn_c1", account_id="acc_1", date=date.today(), amount=100.0)
         assert debit.amount < 0
         assert credit.amount > 0
 
@@ -283,9 +279,7 @@ class TestModelIntegration:
         timestamp = datetime(2025, 11, 4, 14, 0, 0)
         ts_ms = int(timestamp.timestamp() * 1000)
 
-        quote = Quote(
-            symbol=symbol, price=Decimal("150.0"), currency="USD", as_of=timestamp
-        )
+        quote = Quote(symbol=symbol, price=Decimal("150.0"), currency="USD", as_of=timestamp)
 
         candle = Candle(
             ts=ts_ms,

@@ -147,7 +147,9 @@ class AnalyticsEngine:
             definition = self.default_savings_definition
 
         # Convert enum to string if needed (calculate_savings_rate accepts strings)
-        definition_str = definition.value if isinstance(definition, SavingsDefinition) else definition
+        definition_str = (
+            definition.value if isinstance(definition, SavingsDefinition) else definition
+        )
 
         return await calculate_savings_rate(
             user_id,

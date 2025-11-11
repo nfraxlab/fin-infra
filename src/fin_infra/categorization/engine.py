@@ -52,7 +52,7 @@ class CategorizationEngine:
         enable_llm: bool = False,
         confidence_threshold: float = 0.6,
         model_path: Optional[Path] = None,
-        llm_categorizer: Optional['LLMCategorizer'] = None,
+        llm_categorizer: Optional["LLMCategorizer"] = None,
     ):
         self.enable_ml = enable_ml
         self.enable_llm = enable_llm
@@ -72,7 +72,7 @@ class CategorizationEngine:
             "llm_predictions": 0,
             "fallback": 0,
         }
-        
+
         logger.info(
             f"CategorizationEngine initialized: ml={enable_ml}, llm={enable_llm}, "
             f"threshold={confidence_threshold}"
@@ -137,7 +137,7 @@ class CategorizationEngine:
                 if ml_result.confidence >= self.confidence_threshold:
                     self.stats["ml_predictions"] += 1
                     return ml_result
-                
+
                 # Low confidence - try Layer 4 (LLM) if enabled
                 if self.enable_llm and self.llm_categorizer:
                     logger.debug(
@@ -149,7 +149,7 @@ class CategorizationEngine:
                             merchant_name=merchant_name,
                             user_id=user_id,
                         )
-                        
+
                         # Convert LLM CategoryPrediction to our CategoryPrediction
                         self.stats["llm_predictions"] += 1
                         return CategoryPrediction(

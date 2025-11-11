@@ -30,6 +30,7 @@ FastAPI Integration:
     >>> # GET /recurring/subscriptions
     >>> # GET /recurring/predictions
     >>> # GET /recurring/stats
+    >>> # GET /recurring/summary
 """
 
 from .add import add_recurring_detection
@@ -44,6 +45,12 @@ from .models import (
     RecurringPattern,
     SubscriptionDetection,
     SubscriptionStats,
+)
+from .summary import (
+    CancellationOpportunity,
+    RecurringItem,
+    RecurringSummary,
+    get_recurring_summary,
 )
 from .normalizer import (
     FuzzyMatcher,
@@ -66,9 +73,14 @@ __all__ = [
     "DetectionRequest",
     "DetectionResponse",
     "SubscriptionStats",
+    "RecurringSummary",
+    "RecurringItem",
+    "CancellationOpportunity",
     # Enums
     "CadenceType",
     "PatternType",
+    # Functions
+    "get_recurring_summary",
     # Utilities
     "normalize_merchant",
     "get_canonical_merchant",

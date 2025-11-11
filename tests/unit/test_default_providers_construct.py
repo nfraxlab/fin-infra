@@ -9,7 +9,7 @@ def test_default_providers_construct():
     """Test that providers can be constructed with minimal required params."""
     # AlphaVantage requires API key (pass test key)
     assert AlphaVantageMarketData(api_key="test_key") is not None
-    
+
     # These don't require API keys for construction
     assert CoinGeckoCryptoData() is not None
     assert TellerClient() is not None

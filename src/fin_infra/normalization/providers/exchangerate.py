@@ -26,7 +26,7 @@ class ExchangeRateClient:
             api_key: API key (optional, uses env var EXCHANGE_RATE_API_KEY if not provided)
         """
         self.api_key = api_key or os.getenv("EXCHANGE_RATE_API_KEY")
-        
+
         # Free tier: 1,500 requests/month without API key
         # Paid tier: Higher limits with API key
         if self.api_key:
@@ -93,32 +93,28 @@ class ExchangeRateClient:
             ExchangeRateAPIError: If API request fails
         """
         if date and not self.api_key:
-            raise ExchangeRateAPIError(
-                "Historical rates require API key (paid tier)"
-            )
+            raise ExchangeRateAPIError("Historical rates require API key (paid tier)")
 
         try:
             if date and self.api_key:
                 # Historical rate (paid tier only)
                 date_str = date.strftime("%Y-%m-%d")
                 url = f"{self.base_url}/history/{from_currency}/{date_str}"
-                
+
                 async with httpx.AsyncClient(timeout=10.0) as client:
                     response = await client.get(url)
                     response.raise_for_status()
                     data = response.json()
-                    
+
                     if data.get("result") != "success":
                         raise ExchangeRateAPIError(
                             f"API returned error: {data.get('error-type', 'unknown')}"
                         )
-                    
+
                     rate = data["conversion_rates"].get(to_currency)
                     if rate is None:
-                        raise ExchangeRateAPIError(
-                            f"Currency {to_currency} not found in response"
-                        )
-                    
+                        raise ExchangeRateAPIError(f"Currency {to_currency} not found in response")
+
                     return ExchangeRate(
                         from_currency=from_currency,
                         to_currency=to_currency,
@@ -129,12 +125,10 @@ class ExchangeRateClient:
                 # Current rate
                 rates = await self.get_rates(from_currency)
                 rate = rates.get(to_currency)
-                
+
                 if rate is None:
-                    raise ExchangeRateAPIError(
-                        f"Currency {to_currency} not supported"
-                    )
-                
+                    raise ExchangeRateAPIError(f"Currency {to_currency} not supported")
+
                 return ExchangeRate(
                     from_currency=from_currency,
                     to_currency=to_currency,
@@ -164,12 +158,12 @@ class ExchangeRateClient:
                     response = await client.get(url)
                     response.raise_for_status()
                     data = response.json()
-                    
+
                     if data.get("result") != "success":
                         raise ExchangeRateAPIError(
                             f"API returned error: {data.get('error-type', 'unknown')}"
                         )
-                    
+
                     # Returns list of [code, name] pairs
                     return [code for code, _name in data["supported_codes"]]
             else:

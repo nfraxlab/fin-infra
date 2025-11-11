@@ -44,7 +44,7 @@ class ${Entity}Repository:
     
     async def create(
         self,
-        snapshot: ${Entity}Create${tenant_arg_type_comma}
+        snapshot: ${Entity}Create${tenant_arg_type_comma},
     ) -> ${Entity}Read:
         """Create a new net worth snapshot.
         
@@ -59,8 +59,7 @@ class ${Entity}Repository:
         """
         # Map Pydantic to SQLAlchemy
         data = _map_snapshot_fields(snapshot.model_dump(exclude_unset=True, by_alias=True))
-        data["id"] = str(uuid4())
-${tenant_arg_val}
+        data["id"] = str(uuid4())${tenant_dict_assign}
         
         db_snapshot = ${Entity}Model(**data)
         self.session.add(db_snapshot)
@@ -71,7 +70,7 @@ ${tenant_arg_val}
     
     async def get(
         self,
-        snapshot_id: str${tenant_arg_type_comma}
+        snapshot_id: str${tenant_arg_type_comma},
     ) -> Optional[${Entity}Read]:
         """Get a snapshot by ID.
         
@@ -90,16 +89,16 @@ ${tenant_arg_val}
     
     async def list(
         self,
-        user_id: str,
+        user_id: str${tenant_arg_type_comma},
         start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None${tenant_arg_type_comma}
+        end_date: Optional[datetime] = None,
     ) -> List[${Entity}Read]:
         """List snapshots for a user with optional date range filter.
         
         Args:
-            user_id: User identifier
+            user_id: User identifier${tenant_doc}
             start_date: Optional start date (inclusive)
-            end_date: Optional end date (inclusive)${tenant_doc}
+            end_date: Optional end date (inclusive)
         
         Returns:
             List of snapshots, ordered by snapshot_date (newest first)
@@ -121,8 +120,8 @@ ${tenant_arg_val}
     
     async def delete(
         self,
-        snapshot_id: str${tenant_arg_type_comma}
-        soft: bool = ${soft_delete_default}
+        snapshot_id: str${tenant_arg_type_comma},
+        soft: bool = ${soft_delete_default},
     ) -> None:
         """Delete a snapshot (for corrections only).
         
@@ -150,7 +149,7 @@ ${tenant_arg_val}
     
     async def get_latest(
         self,
-        user_id: str${tenant_arg_type_comma}
+        user_id: str${tenant_arg_type_comma},
     ) -> Optional[${Entity}Read]:
         """Get the most recent snapshot for a user.
         
@@ -175,7 +174,7 @@ ${tenant_arg_val}
     async def get_by_date(
         self,
         user_id: str,
-        snapshot_date: date${tenant_arg_type_comma}
+        snapshot_date: date${tenant_arg_type_comma},
     ) -> Optional[${Entity}Read]:
         """Get snapshot for a specific date.
         
@@ -209,7 +208,7 @@ ${tenant_arg_val}
         self,
         user_id: str,
         start_date: date,
-        end_date: date${tenant_arg_type_comma}
+        end_date: date${tenant_arg_type_comma},
     ) -> List[${Entity}Read]:
         """Get snapshots within a date range (time series data).
         
@@ -241,14 +240,14 @@ ${tenant_arg_val}
     
     async def get_trend(
         self,
-        user_id: str,
-        months: int = 12${tenant_arg_type_comma}
+        user_id: str${tenant_arg_type_comma},
+        months: int = 12,
     ) -> List[${Entity}Read]:
         """Get snapshots for the last N months (trend analysis).
         
         Args:
-            user_id: User identifier
-            months: Number of months to look back (default: 12)${tenant_doc}
+            user_id: User identifier${tenant_doc}
+            months: Number of months to look back (default: 12)
         
         Returns:
             List of snapshots from last N months, ordered by date (oldest to newest)
@@ -274,7 +273,7 @@ ${tenant_arg_val}
         self,
         user_id: str,
         start_date: date,
-        end_date: date${tenant_arg_type_comma}
+        end_date: date${tenant_arg_type_comma},
     ) -> Dict[str, Any]:
         """Calculate net worth growth metrics between two dates.
         

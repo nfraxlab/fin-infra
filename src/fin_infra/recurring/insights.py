@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from typing import Any, Optional, TYPE_CHECKING
+from typing import Any, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -366,9 +366,7 @@ class SubscriptionInsightsGenerator:
 
         subscriptions_json = json.dumps(subscriptions, indent=2)
 
-        user_prompt = INSIGHTS_GENERATION_USER_PROMPT.format(
-            subscriptions_json=subscriptions_json
-        )
+        user_prompt = INSIGHTS_GENERATION_USER_PROMPT.format(subscriptions_json=subscriptions_json)
 
         response = await self.llm.achat(
             provider=self.provider,

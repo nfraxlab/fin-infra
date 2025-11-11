@@ -9,27 +9,26 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from fin_infra.budgets.add import add_budgets
-from fin_infra.budgets.models import BudgetType, BudgetPeriod
 
 
 @pytest.fixture
 def app():
     """Create FastAPI app with budgets endpoints."""
     from fin_infra.budgets.ease import easy_budgets
-    
+
     app = FastAPI(title="Test Budgets API")
-    
+
     # Create tracker with in-memory SQLite
     # BudgetTracker uses internal dict storage (_budgets) so no actual DB needed
     db_url = "sqlite+aiosqlite:///:memory:"
-    
+
     # Add budgets with explicit tracker creation
     tracker = easy_budgets(db_url=db_url)
-    
+
     # Mount endpoints
-    from fin_infra.budgets.add import add_budgets
+
     add_budgets(app, tracker=tracker)
-    
+
     yield app
 
 
@@ -45,7 +44,7 @@ def test_add_budgets_helper(app):
     # Check tracker stored on app state
     assert hasattr(app.state, "budget_tracker")
     assert app.state.budget_tracker is not None
-    
+
     # Check routes exist
     routes = [route.path for route in app.routes]
     assert "/budgets" in routes or "/budgets/" in routes
@@ -71,12 +70,12 @@ def test_create_budget_endpoint(client):
         "start_date": datetime.now().isoformat(),
         "rollover_enabled": False,
     }
-    
+
     response = client.post("/budgets", json=budget_data)
-    
+
     assert response.status_code == 200
     data = response.json()
-    
+
     # Validate response structure
     assert data["user_id"] == "user_123"
     assert data["name"] == "November Budget"
@@ -102,10 +101,10 @@ def test_list_budgets_endpoint(client):
         "start_date": datetime.now().isoformat(),
     }
     client.post("/budgets", json=budget_data)
-    
+
     # List budgets for this user
     response = client.get("/budgets?user_id=user_456")
-    
+
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
@@ -132,13 +131,13 @@ def test_list_budgets_with_type_filter(client):
         "categories": {"Operating": 5000.00},
         "start_date": datetime.now().isoformat(),
     }
-    
+
     client.post("/budgets", json=personal_budget)
     client.post("/budgets", json=business_budget)
-    
+
     # Filter by type
     response = client.get("/budgets?user_id=user_789&type=personal")
-    
+
     assert response.status_code == 200
     data = response.json()
     assert all(b["type"] == "personal" for b in data)
@@ -158,10 +157,10 @@ def test_get_budget_endpoint(client):
     }
     create_response = client.post("/budgets", json=budget_data)
     budget_id = create_response.json()["id"]
-    
+
     # Get the budget
     response = client.get(f"/budgets/{budget_id}")
-    
+
     assert response.status_code == 200
     data = response.json()
     assert data["id"] == budget_id
@@ -171,7 +170,7 @@ def test_get_budget_endpoint(client):
 def test_get_budget_not_found(client):
     """Test GET /budgets/{budget_id} with non-existent ID."""
     response = client.get("/budgets/bud_nonexistent")
-    
+
     assert response.status_code == 404
     assert "not found" in response.json()["detail"].lower()
 
@@ -190,14 +189,14 @@ def test_update_budget_endpoint(client):
     }
     create_response = client.post("/budgets", json=budget_data)
     budget_id = create_response.json()["id"]
-    
+
     # Update the budget
     updates = {
         "name": "Updated Name",
         "categories": {"Food": 600.00, "Transport": 200.00},
     }
     response = client.patch(f"/budgets/{budget_id}", json=updates)
-    
+
     assert response.status_code == 200
     data = response.json()
     assert data["name"] == "Updated Name"
@@ -208,14 +207,14 @@ def test_update_budget_endpoint(client):
 def test_update_budget_not_found(client):
     """Test PATCH /budgets/{budget_id} with non-existent ID."""
     response = client.patch("/budgets/bud_nonexistent", json={"name": "New Name"})
-    
+
     assert response.status_code == 404
 
 
 def test_update_budget_no_updates(client):
     """Test PATCH /budgets/{budget_id} with no updates."""
     response = client.patch("/budgets/bud_123", json={})
-    
+
     assert response.status_code == 400
     assert "no updates" in response.json()["detail"].lower()
 
@@ -234,12 +233,12 @@ def test_delete_budget_endpoint(client):
     }
     create_response = client.post("/budgets", json=budget_data)
     budget_id = create_response.json()["id"]
-    
+
     # Delete the budget
     response = client.delete(f"/budgets/{budget_id}")
-    
+
     assert response.status_code == 204
-    
+
     # Verify it's gone
     get_response = client.get(f"/budgets/{budget_id}")
     assert get_response.status_code == 404
@@ -248,7 +247,7 @@ def test_delete_budget_endpoint(client):
 def test_delete_budget_not_found(client):
     """Test DELETE /budgets/{budget_id} with non-existent ID."""
     response = client.delete("/budgets/bud_nonexistent")
-    
+
     assert response.status_code == 404
 
 
@@ -269,13 +268,13 @@ def test_get_budget_progress_endpoint(client):
     }
     create_response = client.post("/budgets", json=budget_data)
     budget_id = create_response.json()["id"]
-    
+
     # Get progress
     response = client.get(f"/budgets/{budget_id}/progress")
-    
+
     assert response.status_code == 200
     data = response.json()
-    
+
     # Validate response structure
     assert data["budget_id"] == budget_id
     assert "current_period" in data
@@ -286,7 +285,7 @@ def test_get_budget_progress_endpoint(client):
     assert "percent_used" in data
     assert "period_days_elapsed" in data
     assert "period_days_total" in data
-    
+
     # Validate categories
     assert len(data["categories"]) == 2
     category_names = [c["category_name"] for c in data["categories"]]
@@ -297,7 +296,7 @@ def test_get_budget_progress_endpoint(client):
 def test_get_budget_progress_not_found(client):
     """Test GET /budgets/{budget_id}/progress with non-existent ID."""
     response = client.get("/budgets/bud_nonexistent/progress")
-    
+
     assert response.status_code == 404
 
 
@@ -305,21 +304,21 @@ def test_get_budget_progress_not_found(client):
 def test_list_templates_endpoint(client):
     """Test GET /budgets/templates/list endpoint."""
     response = client.get("/budgets/templates/list")
-    
+
     assert response.status_code == 200
     data = response.json()
-    
+
     # Validate response structure
     assert isinstance(data, dict)
     assert len(data) >= 5  # At least 5 templates
-    
+
     # Check specific templates exist (keys use underscores, not slashes/dashes)
     assert "50_30_20" in data
     assert "zero_based" in data
     assert "envelope" in data
     # Note: Actual template keys may differ from expected names
     # Check for at least some valid templates
-    
+
     # Validate template structure (use actual key from data)
     template = data["50_30_20"]
     assert "name" in template
@@ -339,18 +338,18 @@ def test_create_from_template_endpoint(client):
         "budget_name": "My 50/30/20 Budget",
         "start_date": datetime.now().isoformat(),
     }
-    
+
     response = client.post("/budgets/from-template", json=template_data)
-    
+
     assert response.status_code == 200
     data = response.json()
-    
+
     # Validate response
     assert data["user_id"] == "user_555"
     assert data["name"] == "My 50/30/20 Budget"
     assert data["type"] == "personal"
     assert "categories" in data
-    
+
     # Validate allocations (50/30/20 rule)
     categories = data["categories"]
     total_allocated = sum(categories.values())
@@ -364,9 +363,9 @@ def test_create_from_template_invalid_name(client):
         "template_name": "nonexistent-template",
         "total_income": 5000.00,
     }
-    
+
     response = client.post("/budgets/from-template", json=template_data)
-    
+
     assert response.status_code == 400
     # Error message contains template name and "not found"
     detail = response.json()["detail"].lower()
@@ -378,7 +377,7 @@ def test_create_from_template_invalid_name(client):
 def test_full_budget_workflow(client):
     """Test complete budget lifecycle: create → list → get → update → progress → delete."""
     user_id = "user_workflow"
-    
+
     # 1. Create budget
     budget_data = {
         "user_id": user_id,
@@ -396,34 +395,33 @@ def test_full_budget_workflow(client):
     create_response = client.post("/budgets", json=budget_data)
     assert create_response.status_code == 200
     budget_id = create_response.json()["id"]
-    
+
     # 2. List budgets
     list_response = client.get(f"/budgets?user_id={user_id}")
     assert list_response.status_code == 200
     assert len(list_response.json()) >= 1
-    
+
     # 3. Get single budget
     get_response = client.get(f"/budgets/{budget_id}")
     assert get_response.status_code == 200
     assert get_response.json()["name"] == "Workflow Test Budget"
-    
+
     # 4. Update budget
     update_response = client.patch(
-        f"/budgets/{budget_id}",
-        json={"name": "Updated Workflow Budget"}
+        f"/budgets/{budget_id}", json={"name": "Updated Workflow Budget"}
     )
     assert update_response.status_code == 200
     assert update_response.json()["name"] == "Updated Workflow Budget"
-    
+
     # 5. Get progress
     progress_response = client.get(f"/budgets/{budget_id}/progress")
     assert progress_response.status_code == 200
     assert progress_response.json()["budget_id"] == budget_id
-    
+
     # 6. Delete budget
     delete_response = client.delete(f"/budgets/{budget_id}")
     assert delete_response.status_code == 204
-    
+
     # 7. Verify deletion
     final_get = client.get(f"/budgets/{budget_id}")
     assert final_get.status_code == 404

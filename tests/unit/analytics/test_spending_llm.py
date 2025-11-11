@@ -4,8 +4,6 @@ Tests ai-infra integration for personalized spending advice generation.
 """
 
 import pytest
-from decimal import Decimal
-from datetime import date, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from fin_infra.analytics.models import (
@@ -50,7 +48,7 @@ async def test_generate_spending_insights_with_llm():
         period_days=30,
         total_spending=550.0,
     )
-    
+
     # Mock LLM response
     mock_response = {
         "summary": "Shopping spending has increased significantly this month.",
@@ -67,26 +65,26 @@ async def test_generate_spending_insights_with_llm():
         "alerts": ["Shopping category spending is 67% above normal"],
         "estimated_monthly_savings": 50.0,
     }
-    
+
     # Mock CoreLLM
     mock_llm = AsyncMock()
     mock_llm.achat = AsyncMock(return_value=mock_response)
-    
+
     # Generate insights
     advice = await generate_spending_insights(insight, llm_provider=mock_llm)
-    
+
     # Verify result
     assert isinstance(advice, PersonalizedSpendingAdvice)
     assert "Shopping" in advice.summary
     assert len(advice.key_observations) >= 3
     assert len(advice.savings_opportunities) >= 2
     assert advice.estimated_monthly_savings == 50.0
-    
+
     # Verify LLM was called correctly
     mock_llm.achat.assert_called_once()
     call_args = mock_llm.achat.call_args
     # Check keyword arguments
-    kwargs = call_args.kwargs if hasattr(call_args, 'kwargs') else call_args[1]
+    kwargs = call_args.kwargs if hasattr(call_args, "kwargs") else call_args[1]
     assert kwargs["output_schema"] == PersonalizedSpendingAdvice
     assert kwargs["output_method"] == "prompt"
     assert kwargs["provider"] == "google_genai"
@@ -104,13 +102,13 @@ async def test_generate_spending_insights_with_user_context():
         period_days=30,
         total_spending=700.0,
     )
-    
+
     user_context = {
         "monthly_income": 5000.0,
         "savings_goal": 1000.0,
         "budget_categories": {"Dining": 200.0, "Groceries": 400.0},
     }
-    
+
     mock_response = {
         "summary": "Dining spending is 100% over budget, impacting savings goal.",
         "key_observations": [
@@ -126,23 +124,23 @@ async def test_generate_spending_insights_with_user_context():
         "alerts": ["Dining budget exceeded by $200"],
         "estimated_monthly_savings": 200.0,
     }
-    
+
     mock_llm = AsyncMock()
     mock_llm.achat = AsyncMock(return_value=mock_response)
-    
+
     advice = await generate_spending_insights(
         insight,
         user_context=user_context,
         llm_provider=mock_llm,
     )
-    
+
     assert "budget" in advice.summary.lower()
     assert any("OVER BUDGET" in obs for obs in advice.key_observations)
     assert advice.estimated_monthly_savings == 200.0
-    
+
     # Verify prompt includes user context
     call_args = mock_llm.achat.call_args
-    kwargs = call_args.kwargs if hasattr(call_args, 'kwargs') else call_args[1]
+    kwargs = call_args.kwargs if hasattr(call_args, "kwargs") else call_args[1]
     user_message = kwargs["user_msg"]
     assert "Monthly Income: $5000" in user_message
     assert "Savings Goal: $1000" in user_message
@@ -160,12 +158,12 @@ async def test_generate_spending_insights_fallback_on_import_error():
         period_days=30,
         total_spending=150.0,
     )
-    
+
     # Mock ImportError for ai_infra.llm - need to patch the import itself
-    with patch.dict('sys.modules', {'ai_infra.llm': None}):
+    with patch.dict("sys.modules", {"ai_infra.llm": None}):
         # Force re-import to trigger ImportError
         advice = await generate_spending_insights(insight)
-        
+
         # Should return rule-based insights
         assert isinstance(advice, PersonalizedSpendingAdvice)
         assert advice.summary  # Has content
@@ -184,13 +182,13 @@ async def test_generate_spending_insights_fallback_on_llm_error():
         period_days=30,
         total_spending=200.0,
     )
-    
+
     # Mock LLM that raises exception
     mock_llm = AsyncMock()
     mock_llm.achat = AsyncMock(side_effect=Exception("API rate limit"))
-    
+
     advice = await generate_spending_insights(insight, llm_provider=mock_llm)
-    
+
     # Should fallback to rule-based
     assert isinstance(advice, PersonalizedSpendingAdvice)
     assert advice.summary
@@ -208,7 +206,7 @@ async def test_generate_spending_insights_handles_dict_response():
         period_days=30,
         total_spending=0.0,
     )
-    
+
     mock_response = {
         "summary": "Test summary",
         "key_observations": ["Observation 1"],
@@ -217,12 +215,12 @@ async def test_generate_spending_insights_handles_dict_response():
         "alerts": [],
         "estimated_monthly_savings": None,
     }
-    
+
     mock_llm = AsyncMock()
     mock_llm.achat = AsyncMock(return_value=mock_response)
-    
+
     advice = await generate_spending_insights(insight, llm_provider=mock_llm)
-    
+
     assert advice.summary == "Test summary"
     assert advice.key_observations == ["Observation 1"]
 
@@ -238,7 +236,7 @@ async def test_generate_spending_insights_handles_pydantic_response():
         period_days=30,
         total_spending=0.0,
     )
-    
+
     # Create mock Pydantic-like response
     mock_response = MagicMock()
     mock_response.model_dump.return_value = {
@@ -249,12 +247,12 @@ async def test_generate_spending_insights_handles_pydantic_response():
         "alerts": [],
         "estimated_monthly_savings": None,
     }
-    
+
     mock_llm = AsyncMock()
     mock_llm.achat = AsyncMock(return_value=mock_response)
-    
+
     advice = await generate_spending_insights(insight, llm_provider=mock_llm)
-    
+
     assert advice.summary == "Test summary"
 
 
@@ -269,21 +267,23 @@ async def test_generate_spending_insights_system_message():
         period_days=30,
         total_spending=0.0,
     )
-    
+
     mock_llm = AsyncMock()
-    mock_llm.achat = AsyncMock(return_value={
-        "summary": "Test",
-        "key_observations": ["Test"],
-        "savings_opportunities": ["Test"],
-    })
-    
+    mock_llm.achat = AsyncMock(
+        return_value={
+            "summary": "Test",
+            "key_observations": ["Test"],
+            "savings_opportunities": ["Test"],
+        }
+    )
+
     await generate_spending_insights(insight, llm_provider=mock_llm)
-    
+
     # Check system message
     call_args = mock_llm.achat.call_args
-    kwargs = call_args.kwargs if hasattr(call_args, 'kwargs') else call_args[1]
+    kwargs = call_args.kwargs if hasattr(call_args, "kwargs") else call_args[1]
     system_message = kwargs["system"]
-    
+
     assert "financial advisor" in system_message.lower()
     assert "not a substitute" in system_message.lower()
 
@@ -303,9 +303,9 @@ def test_build_spending_insights_prompt_basic():
         period_days=30,
         total_spending=430.0,
     )
-    
+
     prompt = _build_spending_insights_prompt(insight)
-    
+
     assert "Period: 30 days" in prompt
     assert "Total Spending: $430.00" in prompt
     assert "Amazon" in prompt
@@ -319,14 +319,17 @@ def test_build_spending_insights_prompt_with_trends():
     insight = SpendingInsight(
         top_merchants=[("Target", -100.0)],
         category_breakdown={"Shopping": 100.0},
-        spending_trends={"Shopping": TrendDirection.INCREASING, "Dining": TrendDirection.DECREASING},
+        spending_trends={
+            "Shopping": TrendDirection.INCREASING,
+            "Dining": TrendDirection.DECREASING,
+        },
         anomalies=[],
         period_days=30,
         total_spending=100.0,
     )
-    
+
     prompt = _build_spending_insights_prompt(insight)
-    
+
     assert "INCREASING SPENDING IN:" in prompt
     assert "Shopping" in prompt
 
@@ -340,7 +343,7 @@ def test_build_spending_insights_prompt_with_anomalies():
         deviation_percent=100.0,
         severity="severe",
     )
-    
+
     insight = SpendingInsight(
         top_merchants=[],
         category_breakdown={"Utilities": 200.0},
@@ -349,9 +352,9 @@ def test_build_spending_insights_prompt_with_anomalies():
         period_days=30,
         total_spending=200.0,
     )
-    
+
     prompt = _build_spending_insights_prompt(insight)
-    
+
     assert "SPENDING ANOMALIES:" in prompt
     assert "Utilities" in prompt
     assert "$200.00" in prompt
@@ -369,15 +372,15 @@ def test_build_spending_insights_prompt_with_user_context():
         period_days=30,
         total_spending=700.0,
     )
-    
+
     user_context = {
         "monthly_income": 5000.0,
         "savings_goal": 1000.0,
         "budget_categories": {"Dining": 200.0, "Groceries": 400.0},
     }
-    
+
     prompt = _build_spending_insights_prompt(insight, user_context)
-    
+
     assert "USER CONTEXT:" in prompt
     assert "Monthly Income: $5000.00" in prompt
     assert "Savings Goal: $1000.00" in prompt
@@ -396,9 +399,9 @@ def test_build_spending_insights_prompt_includes_examples():
         period_days=30,
         total_spending=0.0,
     )
-    
+
     prompt = _build_spending_insights_prompt(insight)
-    
+
     assert "FEW-SHOT EXAMPLES:" in prompt
     assert "Example 1" in prompt
     assert "Example 2" in prompt
@@ -418,7 +421,7 @@ def test_build_spending_insights_prompt_limits_anomalies():
         )
         for i in range(10)  # 10 anomalies
     ]
-    
+
     insight = SpendingInsight(
         top_merchants=[],
         category_breakdown={},
@@ -427,9 +430,9 @@ def test_build_spending_insights_prompt_limits_anomalies():
         period_days=30,
         total_spending=1000.0,
     )
-    
+
     prompt = _build_spending_insights_prompt(insight)
-    
+
     # Should only include first 3
     assert "Category0" in prompt
     assert "Category1" in prompt
@@ -453,9 +456,9 @@ def test_generate_rule_based_insights_basic():
         period_days=30,
         total_spending=350.0,
     )
-    
+
     advice = _generate_rule_based_insights(insight)
-    
+
     assert isinstance(advice, PersonalizedSpendingAdvice)
     assert advice.summary
     assert len(advice.key_observations) > 0
@@ -472,9 +475,9 @@ def test_generate_rule_based_insights_high_category_spending():
         period_days=30,
         total_spending=500.0,
     )
-    
+
     advice = _generate_rule_based_insights(insight)
-    
+
     # Should suggest reducing Dining since it's >30% of total
     assert any("Dining" in opp for opp in advice.savings_opportunities)
     assert advice.estimated_monthly_savings is not None
@@ -491,9 +494,9 @@ def test_generate_rule_based_insights_increasing_trends():
         period_days=30,
         total_spending=200.0,
     )
-    
+
     advice = _generate_rule_based_insights(insight)
-    
+
     assert any("Shopping" in obs and "trending up" in obs for obs in advice.key_observations)
 
 
@@ -507,9 +510,9 @@ def test_generate_rule_based_insights_decreasing_trends():
         period_days=30,
         total_spending=100.0,
     )
-    
+
     advice = _generate_rule_based_insights(insight)
-    
+
     assert len(advice.positive_habits) > 0
     assert any("Dining" in habit for habit in advice.positive_habits)
 
@@ -523,7 +526,7 @@ def test_generate_rule_based_insights_anomaly_alerts():
         deviation_percent=100.0,
         severity="severe",
     )
-    
+
     insight = SpendingInsight(
         top_merchants=[],
         category_breakdown={"Utilities": 200.0},
@@ -532,9 +535,9 @@ def test_generate_rule_based_insights_anomaly_alerts():
         period_days=30,
         total_spending=200.0,
     )
-    
+
     advice = _generate_rule_based_insights(insight)
-    
+
     assert len(advice.alerts) > 0
     assert any("Utilities" in alert for alert in advice.alerts)
     assert any("100%" in alert for alert in advice.alerts)
@@ -550,13 +553,13 @@ def test_generate_rule_based_insights_with_budget_context():
         period_days=30,
         total_spending=700.0,
     )
-    
+
     user_context = {
         "budget_categories": {"Dining": 200.0, "Groceries": 400.0},
     }
-    
+
     advice = _generate_rule_based_insights(insight, user_context)
-    
+
     # Should detect Dining over budget
     assert any("Dining" in opp and "budget" in opp for opp in advice.savings_opportunities)
     # Estimated savings should be at least the overage ($200)
@@ -573,9 +576,9 @@ def test_generate_rule_based_insights_default_content():
         period_days=30,
         total_spending=0.0,
     )
-    
+
     advice = _generate_rule_based_insights(insight)
-    
+
     # Should still provide useful content
     assert advice.summary
     assert len(advice.key_observations) > 0
@@ -588,7 +591,7 @@ def test_generate_rule_based_insights_limits_list_lengths():
     """Test rule limits observations and opportunities to 5 items."""
     # Create insight with many categories
     categories = {f"Category{i}": 100.0 for i in range(20)}
-    
+
     insight = SpendingInsight(
         top_merchants=[],
         category_breakdown=categories,
@@ -597,9 +600,9 @@ def test_generate_rule_based_insights_limits_list_lengths():
         period_days=30,
         total_spending=2000.0,
     )
-    
+
     advice = _generate_rule_based_insights(insight)
-    
+
     # Should limit to 5 items
     assert len(advice.key_observations) <= 5
     assert len(advice.savings_opportunities) <= 5
@@ -615,7 +618,7 @@ def test_generate_rule_based_insights_summary_prioritizes_alerts():
         deviation_percent=400.0,
         severity="severe",
     )
-    
+
     insight = SpendingInsight(
         top_merchants=[],
         category_breakdown={"Entertainment": 500.0},
@@ -624,8 +627,8 @@ def test_generate_rule_based_insights_summary_prioritizes_alerts():
         period_days=30,
         total_spending=500.0,
     )
-    
+
     advice = _generate_rule_based_insights(insight)
-    
+
     # Summary should mention alerts
     assert "alert" in advice.summary.lower()

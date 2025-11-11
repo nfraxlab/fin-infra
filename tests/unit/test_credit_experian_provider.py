@@ -13,9 +13,8 @@ Tests for ExperianProvider class:
 
 from datetime import date
 from decimal import Decimal
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import AsyncMock, patch
 
-import httpx
 import pytest
 
 from fin_infra.credit.experian.provider import ExperianProvider
@@ -66,7 +65,9 @@ class TestExperianProvider:
             }
         }
 
-        with patch.object(provider._client, "get_credit_score", new=AsyncMock(return_value=mock_response_data)):
+        with patch.object(
+            provider._client, "get_credit_score", new=AsyncMock(return_value=mock_response_data)
+        ):
             score = await provider.get_credit_score("user123")
 
         assert isinstance(score, CreditScore)
@@ -93,7 +94,9 @@ class TestExperianProvider:
             }
         }
 
-        with patch.object(provider._client, "get_credit_score", new=AsyncMock(return_value=mock_response_data)) as mock_get:
+        with patch.object(
+            provider._client, "get_credit_score", new=AsyncMock(return_value=mock_response_data)
+        ) as mock_get:
             await provider.get_credit_score("user123", permissible_purpose="account_review")
 
         mock_get.assert_called_once_with("user123", permissible_purpose="account_review")
@@ -137,7 +140,9 @@ class TestExperianProvider:
             }
         }
 
-        with patch.object(provider._client, "get_credit_report", new=AsyncMock(return_value=mock_response_data)):
+        with patch.object(
+            provider._client, "get_credit_report", new=AsyncMock(return_value=mock_response_data)
+        ):
             report = await provider.get_credit_report("user123")
 
         assert isinstance(report, CreditReport)
@@ -170,7 +175,9 @@ class TestExperianProvider:
             }
         }
 
-        with patch.object(provider._client, "get_credit_report", new=AsyncMock(return_value=mock_response_data)):
+        with patch.object(
+            provider._client, "get_credit_report", new=AsyncMock(return_value=mock_response_data)
+        ):
             report = await provider.get_credit_report("user123")
 
         assert isinstance(report, CreditReport)
@@ -192,7 +199,9 @@ class TestExperianProvider:
             "webhookUrl": "https://example.com/webhook",
         }
 
-        with patch.object(provider._client, "subscribe_to_changes", new=AsyncMock(return_value=mock_response_data)) as mock_sub:
+        with patch.object(
+            provider._client, "subscribe_to_changes", new=AsyncMock(return_value=mock_response_data)
+        ) as mock_sub:
             result = await provider.subscribe_to_changes(
                 "user123",
                 "https://example.com/webhook",
@@ -215,11 +224,17 @@ class TestExperianProvider:
             client_secret="test_secret",
         )
 
-        with patch.object(provider._client, "subscribe_to_changes", new=AsyncMock(return_value={"subscriptionId": "sub_123"})) as mock_sub:
+        with patch.object(
+            provider._client,
+            "subscribe_to_changes",
+            new=AsyncMock(return_value={"subscriptionId": "sub_123"}),
+        ) as mock_sub:
             await provider.subscribe_to_changes("user123", "https://example.com/webhook")
 
         # Should pass None for events and signature_key (client has default logic)
-        mock_sub.assert_called_once_with("user123", "https://example.com/webhook", events=None, signature_key=None)
+        mock_sub.assert_called_once_with(
+            "user123", "https://example.com/webhook", events=None, signature_key=None
+        )
 
     @pytest.mark.asyncio
     async def test_provider_propagates_client_errors(self):
@@ -231,7 +246,11 @@ class TestExperianProvider:
             client_secret="test_secret",
         )
 
-        with patch.object(provider._client, "get_credit_score", new=AsyncMock(side_effect=ExperianNotFoundError("User not found"))):
+        with patch.object(
+            provider._client,
+            "get_credit_score",
+            new=AsyncMock(side_effect=ExperianNotFoundError("User not found")),
+        ):
             with pytest.raises(ExperianNotFoundError, match="User not found"):
                 await provider.get_credit_score("nonexistent_user")
 
@@ -244,7 +263,9 @@ class TestExperianProvider:
         ) as provider:
             assert provider._client is not None
             mock_response = {"creditProfile": {"score": 700, "scoreModel": "FICO 8"}}
-            with patch.object(provider._client, "get_credit_score", new=AsyncMock(return_value=mock_response)):
+            with patch.object(
+                provider._client, "get_credit_score", new=AsyncMock(return_value=mock_response)
+            ):
                 score = await provider.get_credit_score("user123")
                 assert score.score == 700
 
@@ -272,7 +293,9 @@ class TestExperianProvider:
         # Mock response with minimal data
         mock_response_data = {"creditProfile": {}}
 
-        with patch.object(provider._client, "get_credit_score", new=AsyncMock(return_value=mock_response_data)):
+        with patch.object(
+            provider._client, "get_credit_score", new=AsyncMock(return_value=mock_response_data)
+        ):
             score = await provider.get_credit_score("user123")
 
         # Parser should default score to 300
@@ -303,7 +326,9 @@ class TestExperianProvider:
             }
         }
 
-        with patch.object(provider._client, "get_credit_report", new=AsyncMock(return_value=mock_response_data)):
+        with patch.object(
+            provider._client, "get_credit_report", new=AsyncMock(return_value=mock_response_data)
+        ):
             report = await provider.get_credit_report("user123")
 
         assert len(report.accounts) == 1

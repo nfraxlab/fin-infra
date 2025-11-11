@@ -214,9 +214,7 @@ class TestExperianClient:
         # Mock 401 response
         mock_response = Mock()
         mock_response.status_code = 401
-        mock_response.json.return_value = {
-            "error": {"message": "Invalid token"}
-        }
+        mock_response.json.return_value = {"error": {"message": "Invalid token"}}
 
         mock_error = httpx.HTTPStatusError(
             "Unauthorized",
@@ -245,9 +243,7 @@ class TestExperianClient:
 
         mock_response = Mock()
         mock_response.status_code = 404
-        mock_response.json.return_value = {
-            "error": {"message": "User not found"}
-        }
+        mock_response.json.return_value = {"error": {"message": "User not found"}}
 
         mock_error = httpx.HTTPStatusError(
             "Not Found",
@@ -274,9 +270,7 @@ class TestExperianClient:
 
         mock_response = Mock()
         mock_response.status_code = 429
-        mock_response.json.return_value = {
-            "error": {"message": "Rate limit exceeded"}
-        }
+        mock_response.json.return_value = {"error": {"message": "Rate limit exceeded"}}
 
         mock_error = httpx.HTTPStatusError(
             "Too Many Requests",
@@ -303,9 +297,7 @@ class TestExperianClient:
 
         mock_response = Mock()
         mock_response.status_code = 500
-        mock_response.json.return_value = {
-            "error": {"message": "Internal server error"}
-        }
+        mock_response.json.return_value = {"error": {"message": "Internal server error"}}
 
         mock_error = httpx.HTTPStatusError(
             "Internal Server Error",

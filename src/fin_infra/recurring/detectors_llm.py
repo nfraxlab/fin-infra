@@ -14,7 +14,7 @@ Only called for ambiguous patterns (20-40% variance, ~10% of patterns).
 from __future__ import annotations
 
 import logging
-from typing import Any, Optional, TYPE_CHECKING
+from typing import Any, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -195,9 +195,7 @@ class VariableDetectorLLM:
         self._monthly_cost = 0.0
         self._budget_exceeded = False
 
-        logger.info(
-            f"VariableDetectorLLM initialized: provider={provider}, model={model_name}"
-        )
+        logger.info(f"VariableDetectorLLM initialized: provider={provider}, model={model_name}")
 
     async def detect(
         self,
@@ -249,9 +247,7 @@ class VariableDetectorLLM:
             return result
 
         except Exception as e:
-            logger.error(
-                f"LLM variable detection failed for '{merchant_name}': {e}"
-            )
+            logger.error(f"LLM variable detection failed for '{merchant_name}': {e}")
             return VariableRecurringPattern(
                 is_recurring=False,
                 cadence=None,
@@ -298,9 +294,7 @@ class VariableDetectorLLM:
         if hasattr(response, "structured") and response.structured:
             return response.structured
         else:
-            raise ValueError(
-                f"LLM returned no structured output for '{merchant_name}'"
-            )
+            raise ValueError(f"LLM returned no structured output for '{merchant_name}'")
 
     def _update_budget(self, cost: float) -> None:
         """

@@ -119,9 +119,7 @@ class BillPrediction(BaseModel):
 
     merchant_name: str = Field(..., description="Merchant name")
     expected_date: datetime = Field(..., description="Expected charge date")
-    expected_amount: float | None = Field(
-        None, description="Expected amount (for fixed patterns)"
-    )
+    expected_amount: float | None = Field(None, description="Expected amount (for fixed patterns)")
     expected_range: tuple[float, float] | None = Field(
         None, description="Expected amount range (for variable patterns)"
     )
@@ -152,9 +150,7 @@ class DetectionRequest(BaseModel):
     min_confidence: float = Field(
         0.7, description="Minimum confidence threshold (0.0-1.0)", ge=0.0, le=1.0
     )
-    include_predictions: bool = Field(
-        False, description="Include predictions for next charges"
-    )
+    include_predictions: bool = Field(False, description="Include predictions for next charges")
 
     model_config = ConfigDict(
         json_schema_extra={

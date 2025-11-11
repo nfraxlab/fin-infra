@@ -20,7 +20,7 @@ from datetime import datetime, timedelta
 from typing import Any, Optional, TYPE_CHECKING
 
 from .models import CadenceType, PatternType, RecurringPattern
-from .normalizer import get_canonical_merchant, is_generic_merchant, normalize_merchant
+from .normalizer import get_canonical_merchant, is_generic_merchant
 
 if TYPE_CHECKING:
     from .normalizers import MerchantNormalizer
@@ -49,7 +49,7 @@ class PatternDetector:
     4-layer hybrid pattern detector for recurring transactions.
 
     Detects subscriptions and bills with multi-factor confidence scoring.
-    
+
     V2: Optional LLM enhancement for merchant normalization (Layer 2)
     and variable amount detection (Layer 4).
     """
@@ -140,9 +140,7 @@ class PatternDetector:
         # Sort by confidence (descending)
         return sorted(patterns, key=lambda x: x.confidence, reverse=True)
 
-    def _group_by_merchant(
-        self, transactions: list[Transaction]
-    ) -> dict[str, list[Transaction]]:
+    def _group_by_merchant(self, transactions: list[Transaction]) -> dict[str, list[Transaction]]:
         """Group transactions by normalized merchant name."""
         groups: dict[str, list[Transaction]] = defaultdict(list)
 
@@ -178,15 +176,13 @@ class PatternDetector:
             return None  # Not fixed amount
 
         # Calculate amount variance
-        amount_variance = (
-            statistics.stdev(amounts) / median_amount if len(amounts) > 1 else 0.0
-        )
+        amount_variance = statistics.stdev(amounts) / median_amount if len(amounts) > 1 else 0.0
 
         # Detect cadence
         cadence, date_std_dev = self._detect_cadence(sorted_txns)
         if not cadence:
             return None  # No regular cadence
-        
+
         # Skip quarterly/annual for fixed patterns (those are IRREGULAR)
         if cadence in [CadenceType.QUARTERLY, CadenceType.ANNUAL]:
             return None
@@ -262,7 +258,7 @@ class PatternDetector:
         cadence, date_std_dev = self._detect_cadence(sorted_txns)
         if not cadence:
             return None
-        
+
         # Skip quarterly/annual for variable patterns (those are IRREGULAR)
         if cadence in [CadenceType.QUARTERLY, CadenceType.ANNUAL]:
             return None
@@ -316,9 +312,7 @@ class PatternDetector:
         if not all(abs(amt - median_amount) <= tolerance for amt in amounts):
             return None
 
-        amount_variance = (
-            statistics.stdev(amounts) / median_amount if len(amounts) > 1 else 0.0
-        )
+        amount_variance = statistics.stdev(amounts) / median_amount if len(amounts) > 1 else 0.0
 
         # Detect cadence (quarterly or annual only)
         cadence, date_std_dev = self._detect_cadence(sorted_txns, irregular=True)
@@ -382,9 +376,7 @@ class PatternDetector:
 
         return None, 0.0
 
-    def _predict_next_date(
-        self, txns: list[Transaction], cadence: CadenceType
-    ) -> datetime:
+    def _predict_next_date(self, txns: list[Transaction], cadence: CadenceType) -> datetime:
         """Predict next expected transaction date based on cadence."""
         last_date = txns[-1].date
 
@@ -510,7 +502,7 @@ class RecurringDetector:
     High-level recurring transaction detector.
 
     Provides easy-to-use interface for detecting recurring patterns.
-    
+
     V2: Optional LLM enhancement for merchant normalization (Layer 2),
     variable amount detection (Layer 4), and insights generation (Layer 5).
     """
@@ -563,7 +555,9 @@ class RecurringDetector:
                     id=txn.get("id", ""),
                     merchant=txn["merchant"],
                     amount=float(txn["amount"]),
-                    date=txn["date"] if isinstance(txn["date"], datetime) else datetime.fromisoformat(txn["date"]),
+                    date=txn["date"]
+                    if isinstance(txn["date"], datetime)
+                    else datetime.fromisoformat(txn["date"]),
                 )
             )
 

@@ -2,6 +2,7 @@
 
 Provides command-line tools for fin-infra functionality.
 """
+
 import typer
 
 from .cmds import scaffold_cmds

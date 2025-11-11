@@ -24,7 +24,7 @@ from .models import (
 
 if TYPE_CHECKING:
     from fastapi import FastAPI
-    from .insights import SubscriptionInsights
+    from .detector import RecurringDetector
 
 
 def add_recurring_detection(
@@ -41,11 +41,12 @@ def add_recurring_detection(
     """
     Add recurring transaction detection endpoints to FastAPI app.
 
-    Mounts 5 endpoints:
+    Mounts 6 endpoints:
     - POST /recurring/detect - Detect patterns in transaction list
     - GET /recurring/subscriptions - List detected subscriptions (cached)
     - GET /recurring/predictions - Predict next bills
     - GET /recurring/stats - Subscription statistics
+    - GET /recurring/summary - Comprehensive recurring summary with cancellation opportunities
     - GET /recurring/insights - Natural language insights (V2, LLM-powered)
 
     Args:
@@ -79,6 +80,7 @@ def add_recurring_detection(
         >>> # GET /recurring/subscriptions
         >>> # GET /recurring/predictions
         >>> # GET /recurring/stats
+        >>> # GET /recurring/summary
         >>> # GET /recurring/insights (V2 only, requires enable_llm=True)
     """
     # Create detector with V2 parameters
@@ -129,8 +131,11 @@ def add_recurring_detection(
         """
         start_time = time.time()
 
-        # TODO: Get transactions from database (user-specific)
-        # For now, return empty result with structure
+        # Persistence: Applications own transaction storage.
+        # Transactions typically come from banking providers (Plaid, Teller, etc).
+        # Use fin-infra scaffold to generate transaction models if needed.
+        # See docs/persistence.md for transaction storage patterns.
+        # For now, return empty result with structure.
         # In production: transactions = get_user_transactions(user.id, days=request.days)
 
         transactions = []  # Placeholder
@@ -238,8 +243,108 @@ def add_recurring_detection(
 
         return stats
 
-    # Route 5: Get insights (V2, LLM-powered)
+    # Route 5: Get recurring summary
+    @router.get("/summary")
+    async def get_recurring_summary(
+        user_id: str,
+        category_map: Optional[dict[str, str]] = None,
+    ):
+        """
+        Get comprehensive recurring transaction summary.
+
+        Aggregates detected recurring patterns into a user-friendly summary with:
+        - Total monthly cost (all cadences normalized)
+        - Subscriptions vs recurring income
+        - Category-based grouping
+        - Cancellation opportunities (duplicate services, low-confidence subscriptions)
+
+        **Query Parameters:**
+        - `user_id`: User identifier (required)
+        - `category_map`: Optional custom category mapping (JSON object)
+
+        **Returns:**
+        RecurringSummary with:
+        - `total_monthly_cost`: Estimated monthly expense (all cadences normalized)
+        - `total_monthly_income`: Estimated monthly recurring income
+        - `subscriptions`: List of expense recurring items
+        - `recurring_income`: List of income recurring items
+        - `by_category`: Monthly cost grouped by category
+        - `cancellation_opportunities`: Cost-saving suggestions
+        - `generated_at`: Timestamp
+
+        **Example Response:**
+        ```json
+        {
+          "user_id": "user123",
+          "total_monthly_cost": 89.97,
+          "total_monthly_income": 500.00,
+          "subscriptions": [
+            {
+              "merchant_name": "Netflix",
+              "category": "Entertainment",
+              "amount": 15.99,
+              "cadence": "monthly",
+              "monthly_cost": 15.99,
+              "is_subscription": true,
+              "next_charge_date": "2025-12-15",
+              "confidence": 0.95
+            }
+          ],
+          "recurring_income": [
+            {
+              "merchant_name": "Employer Direct Deposit",
+              "category": "Income",
+              "amount": 2000.00,
+              "cadence": "biweekly",
+              "monthly_cost": 4333.33,
+              "is_subscription": false,
+              "next_charge_date": "2025-12-01",
+              "confidence": 0.98
+            }
+          ],
+          "by_category": {
+            "Entertainment": 31.98,
+            "Fitness": 29.99,
+            "Software": 19.99
+          },
+          "cancellation_opportunities": [
+            {
+              "merchant_name": "Hulu",
+              "reason": "You have multiple streaming services. Consider consolidating.",
+              "monthly_savings": 7.99,
+              "category": "Entertainment"
+            }
+          ],
+          "generated_at": "2025-11-10T14:30:00Z"
+        }
+        ```
+
+        **Caching:** Results cached for 24 hours (recommended in production)
+
+        **Performance:** <50ms typical response time with cached patterns
+        """
+        from .summary import get_recurring_summary
+
+        # Get detected patterns for user
+        transactions = []  # Placeholder - in production: get_user_transactions(user_id)
+        patterns = detector.detect_patterns(transactions)
+
+        # Generate summary
+        summary = get_recurring_summary(
+            user_id=user_id,
+            patterns=patterns,
+            category_map=category_map,
+        )
+
+        # TODO: Cache results for 24h
+        # cache_key = f"recurring_summary:{user_id}"
+        # set_cache(cache_key, summary, ttl=86400)
+
+        return summary
+
+    # Route 6: Get insights (V2, LLM-powered)
     if enable_llm and detector.insights_generator:
+
         @router.get("/insights")
         async def get_subscription_insights():
             """
@@ -424,17 +529,13 @@ def _calculate_stats(patterns: list[RecurringPattern]) -> SubscriptionStats:
                 monthly_total += pattern.amount / 12
 
     # Top merchants by amount
-    merchants_with_amount = [
-        (p.merchant_name, p.amount) for p in patterns if p.amount is not None
-    ]
+    merchants_with_amount = [(p.merchant_name, p.amount) for p in patterns if p.amount is not None]
     top_merchants = sorted(merchants_with_amount, key=lambda x: x[1], reverse=True)[:5]
 
     # Confidence distribution
     confidence_dist = {
         "high (0.85-1.0)": sum(1 for p in patterns if p.confidence >= 0.85),
-        "medium (0.70-0.84)": sum(
-            1 for p in patterns if 0.70 <= p.confidence < 0.85
-        ),
+        "medium (0.70-0.84)": sum(1 for p in patterns if 0.70 <= p.confidence < 0.85),
         "low (0.60-0.69)": sum(1 for p in patterns if 0.60 <= p.confidence < 0.70),
     }
 

@@ -11,7 +11,7 @@ Provides conversational interface for financial Q&A:
 - Natural dialogue (flexible responses, not forced JSON structure)
 
 **Design Choice**: Uses `CoreLLM.achat()` for natural conversation (NOT `with_structured_output()`).
-Conversation should be flexible and natural, not rigidly structured. Other modules (insights, 
+Conversation should be flexible and natural, not rigidly structured. Other modules (insights,
 categorization, goals) correctly use structured output because they need predictable schemas.
 
 Uses ai-infra CoreLLM for natural conversation.
@@ -21,7 +21,7 @@ Example:
     from ai_infra.llm import CoreLLM
     from svc_infra.cache import get_cache
     from fin_infra.conversation import FinancialPlanningConversation
-    
+
     llm = CoreLLM()
     cache = get_cache()
     conversation = FinancialPlanningConversation(
@@ -30,7 +30,7 @@ Example:
         provider="google",
         model_name="gemini-2.0-flash-exp"
     )
-    
+
     # Ask question
     response = await conversation.ask(
         user_id="user_123",
@@ -38,7 +38,7 @@ Example:
         current_net_worth=575000.0,
         goals=[{"type": "retirement", "target_amount": 2000000.0}]
     )
-    
+
     # Follow-up (remembers previous exchange)
     follow_up = await conversation.ask(
         user_id="user_123",
@@ -62,7 +62,7 @@ from pydantic import BaseModel, Field
 
 class Exchange(BaseModel):
     """Single conversation exchange (question + answer)."""
-    
+
     question: str = Field(..., description="User question")
     answer: str = Field(..., description="AI answer")
     timestamp: str = Field(..., description="ISO datetime of exchange")
@@ -71,21 +71,16 @@ class Exchange(BaseModel):
 class ConversationContext(BaseModel):
     """
     Conversation context (stored in svc-infra.cache with 24h TTL).
-    
+
     Stores last 10 exchanges, current net worth, and active goals.
     """
-    
+
     user_id: str = Field(..., description="User identifier")
     session_id: str = Field(..., description="Unique conversation session ID")
     current_net_worth: float = Field(..., description="Current net worth in USD")
-    goals: list[dict[str, Any]] = Field(
-        default_factory=list,
-        description="Active financial goals"
-    )
+    goals: list[dict[str, Any]] = Field(default_factory=list, description="Active financial goals")
     previous_exchanges: list[Exchange] = Field(
-        default_factory=list,
-        max_length=10,
-        description="Last 10 conversation exchanges"
+        default_factory=list, max_length=10, description="Last 10 conversation exchanges"
     )
     created_at: str = Field(..., description="ISO datetime when context created")
     expires_at: str = Field(..., description="ISO datetime when context expires (24h)")
@@ -94,28 +89,19 @@ class ConversationContext(BaseModel):
 class ConversationResponse(BaseModel):
     """
     LLM response to financial planning question.
-    
+
     Includes answer, follow-up suggestions, confidence score, and data sources.
     """
-    
-    answer: str = Field(
-        ...,
-        description="Detailed answer to user's question with specific advice"
-    )
+
+    answer: str = Field(..., description="Detailed answer to user's question with specific advice")
     follow_up_questions: list[str] = Field(
-        ...,
-        max_length=3,
-        description="Up to 3 suggested follow-up questions"
+        ..., max_length=3, description="Up to 3 suggested follow-up questions"
     )
     confidence: float = Field(
-        ...,
-        ge=0.0,
-        le=1.0,
-        description="Confidence score for this answer (0.0-1.0)"
+        ..., ge=0.0, le=1.0, description="Confidence score for this answer (0.0-1.0)"
     )
     sources: list[str] = Field(
-        ...,
-        description="Data sources used (e.g., 'current_net_worth', 'goal_retirement')"
+        ..., description="Data sources used (e.g., 'current_net_worth', 'goal_retirement')"
     )
 
 
@@ -136,13 +122,13 @@ SENSITIVE_PATTERNS = [
 def is_sensitive_question(question: str) -> bool:
     """
     Detect sensitive questions that should be refused.
-    
+
     Args:
         question: User question to check
-    
+
     Returns:
         True if question contains sensitive information patterns
-    
+
     Examples:
         >>> is_sensitive_question("What's my SSN?")
         True
@@ -200,19 +186,19 @@ Verify calculations independently. For personalized advice, consult a profession
 class FinancialPlanningConversation:
     """
     Multi-turn financial planning conversation with LLM.
-    
+
     Features:
     - Context management (10-turn history, 24h TTL)
     - Safety filters (refuses SSN, passwords, account numbers)
     - Personalized advice (uses net worth, goals, history)
     - Follow-up suggestions (proactive guidance)
-    
+
     Cost: ~$0.0054/conversation (10 turns with context caching)
-    
+
     Example:
         from ai_infra.llm import CoreLLM
         from svc_infra.cache import get_cache
-        
+
         llm = CoreLLM()
         cache = get_cache()
         conversation = FinancialPlanningConversation(
@@ -220,21 +206,21 @@ class FinancialPlanningConversation:
             cache=cache,
             provider="google"
         )
-        
+
         # First question
         response = await conversation.ask(
             user_id="user_123",
             question="How can I save more?",
             current_net_worth=575000.0
         )
-        
+
         # Follow-up (remembers previous exchange)
         follow_up = await conversation.ask(
             user_id="user_123",
             question="How do I refinance?"
         )
     """
-    
+
     def __init__(
         self,
         llm: Any,
@@ -244,7 +230,7 @@ class FinancialPlanningConversation:
     ):
         """
         Initialize conversation manager.
-        
+
         Args:
             llm: ai-infra CoreLLM instance
             cache: svc-infra cache instance (for context storage)
@@ -255,7 +241,7 @@ class FinancialPlanningConversation:
         self.cache = cache
         self.provider = provider
         self.model_name = model_name
-    
+
     async def ask(
         self,
         user_id: str,
@@ -266,22 +252,22 @@ class FinancialPlanningConversation:
     ) -> ConversationResponse:
         """
         Ask a financial planning question with conversational context.
-        
+
         Args:
             user_id: User identifier
             question: User's question
             current_net_worth: Current net worth (optional, uses cached if available)
             goals: Active financial goals (optional, uses cached if available)
             session_id: Conversation session ID (auto-generated if not provided)
-        
+
         Returns:
             ConversationResponse with answer, follow-ups, confidence, sources
-        
+
         Raises:
             ValueError: If question contains sensitive information
-        
+
         Cost: ~$0.0009/call (first turn), ~$0.0005/call (subsequent turns with cache)
-        
+
         Example:
             response = await conversation.ask(
                 user_id="user_123",
@@ -289,7 +275,7 @@ class FinancialPlanningConversation:
                 current_net_worth=575000.0,
                 goals=[{"type": "retirement", "target_amount": 2000000.0}]
             )
-            
+
             # Follow-up
             follow_up = await conversation.ask(
                 user_id="user_123",
@@ -307,20 +293,17 @@ class FinancialPlanningConversation:
                 ),
                 follow_up_questions=[],
                 confidence=1.0,
-                sources=["safety_filter"]
+                sources=["safety_filter"],
             )
-        
+
         # Load or create context
         context = await self._load_context(
-            user_id=user_id,
-            session_id=session_id,
-            current_net_worth=current_net_worth,
-            goals=goals
+            user_id=user_id, session_id=session_id, current_net_worth=current_net_worth, goals=goals
         )
-        
+
         # Build messages with conversation history
         messages = self._build_messages(context, question)
-        
+
         # Call LLM for natural conversation (NO structured output)
         # NOTE: Conversation should be flexible, not rigidly structured
         # We want natural dialogue, not forced JSON every time
@@ -331,32 +314,32 @@ class FinancialPlanningConversation:
             model_name=self.model_name,
             # NO output_schema - natural conversation
         )
-        
+
         # Parse response into ConversationResponse for internal use
         # (but LLM doesn't need to know about this structure)
         response = ConversationResponse(
             answer=response_text if isinstance(response_text, str) else str(response_text),
             follow_up_questions=[],  # TODO: Extract from response if formatted
             confidence=0.85,  # Default confidence for natural responses
-            sources=self._extract_sources_from_context(context)
+            sources=self._extract_sources_from_context(context),
         )
-        
+
         # Update context with new exchange
-        context.previous_exchanges.append(Exchange(
-            question=question,
-            answer=response.answer,
-            timestamp=datetime.utcnow().isoformat()
-        ))
-        
+        context.previous_exchanges.append(
+            Exchange(
+                question=question, answer=response.answer, timestamp=datetime.utcnow().isoformat()
+            )
+        )
+
         # Keep only last 10 exchanges (manage cache size)
         if len(context.previous_exchanges) > 10:
             context.previous_exchanges = context.previous_exchanges[-10:]
-        
+
         # Save updated context (24h TTL)
         await self._save_context(context)
-        
+
         return response
-    
+
     async def _load_context(
         self,
         user_id: str,
@@ -366,39 +349,39 @@ class FinancialPlanningConversation:
     ) -> ConversationContext:
         """
         Load conversation context from cache or create new.
-        
+
         Args:
             user_id: User identifier
             session_id: Session ID (generates new if None)
             current_net_worth: Override net worth (optional)
             goals: Override goals (optional)
-        
+
         Returns:
             ConversationContext (loaded or new)
         """
         # Generate session ID if not provided
         if session_id is None:
             session_id = str(uuid.uuid4())
-        
+
         # Try to load from cache
         cache_key = f"fin_infra:conversation:{user_id}:{session_id}"
         cached = await self.cache.get(cache_key)
-        
+
         if cached:
             context = ConversationContext.model_validate_json(cached)
-            
+
             # Update net worth/goals if provided
             if current_net_worth is not None:
                 context.current_net_worth = current_net_worth
             if goals is not None:
                 context.goals = goals
-            
+
             return context
-        
+
         # Create new context
         now = datetime.utcnow()
         expires_at = now + timedelta(hours=24)
-        
+
         return ConversationContext(
             user_id=user_id,
             session_id=session_id,
@@ -406,13 +389,13 @@ class FinancialPlanningConversation:
             goals=goals or [],
             previous_exchanges=[],
             created_at=now.isoformat(),
-            expires_at=expires_at.isoformat()
+            expires_at=expires_at.isoformat(),
         )
-    
+
     async def _save_context(self, context: ConversationContext):
         """
         Save conversation context to cache with 24h TTL.
-        
+
         Args:
             context: ConversationContext to save
         """
@@ -420,21 +403,17 @@ class FinancialPlanningConversation:
         await self.cache.set(
             cache_key,
             context.model_dump_json(),
-            ttl=86400  # 24 hours
+            ttl=86400,  # 24 hours
         )
-    
-    def _build_messages(
-        self,
-        context: ConversationContext,
-        question: str
-    ) -> list[dict[str, str]]:
+
+    def _build_messages(self, context: ConversationContext, question: str) -> list[dict[str, str]]:
         """
         Build LLM messages with conversation history and user context.
-        
+
         Args:
             context: ConversationContext with history
             question: Current user question
-        
+
         Returns:
             List of messages for LLM (system + user)
         """
@@ -442,36 +421,36 @@ class FinancialPlanningConversation:
         context_summary = f"""Current user context:
 - Net worth: ${context.current_net_worth:,.0f}
 - Active goals: {len(context.goals)}"""
-        
+
         if context.goals:
             context_summary += "\n  Goals:"
             for goal in context.goals[:3]:  # Max 3 goals
                 goal_type = goal.get("type", "unknown")
                 target = goal.get("target_amount", 0)
                 context_summary += f"\n  - {goal_type}: ${target:,.0f}"
-        
+
         # Build conversation history
         if context.previous_exchanges:
             context_summary += "\n\nPrevious conversation:"
             for exchange in context.previous_exchanges[-5:]:  # Last 5 exchanges
                 context_summary += f"\nQ: {exchange.question}"
                 context_summary += f"\nA: {exchange.answer[:100]}..."  # Truncate long answers
-        
+
         # Build system message
         system_message = CONVERSATION_SYSTEM_PROMPT + f"\n\n{context_summary}"
-        
+
         return [
             {"role": "system", "content": system_message},
-            {"role": "user", "content": question}
+            {"role": "user", "content": question},
         ]
-    
+
     def _extract_sources_from_context(self, context: ConversationContext) -> list[str]:
         """
         Extract data sources from conversation context.
-        
+
         Args:
             context: Current conversation context
-        
+
         Returns:
             List of data sources used (e.g., ["current_net_worth", "goals"])
         """
@@ -483,15 +462,15 @@ class FinancialPlanningConversation:
         if context.previous_exchanges:
             sources.append("conversation_history")
         return sources if sources else ["user_context"]
-    
+
     async def clear_session(self, user_id: str, session_id: str):
         """
         Clear conversation session from cache.
-        
+
         Args:
             user_id: User identifier
             session_id: Session ID to clear
-        
+
         Example:
             await conversation.clear_session("user_123", "session_abc")
         """

@@ -38,7 +38,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 try:
     from fin_infra.net_worth.insights import NetWorthInsightsGenerator
     from fin_infra.conversation.planning import FinancialPlanningConversation
-    from fin_infra.net_worth.goals import FinancialGoalTracker
+    from fin_infra.goals.management import FinancialGoalTracker
     from fin_infra.net_worth.models import NetWorthSnapshot
     from ai_infra.llm import CoreLLM
     from svc_infra.cache import init_cache

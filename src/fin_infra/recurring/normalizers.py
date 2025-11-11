@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from typing import Any, Optional, TYPE_CHECKING
+from typing import Any, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 

@@ -1,8 +1,6 @@
 import os
-import asyncio
 import pytest
 
-from typing import Any
 
 pytestmark = pytest.mark.acceptance
 
@@ -57,24 +55,24 @@ async def test_google_gemini_normalization() -> None:
 
     for merchant_name in MERCHANT_TEST_DATA:
         result = await normalizer.normalize(merchant_name)
-        
+
         # Basic validation
         assert hasattr(result, "canonical_name")
         assert hasattr(result, "confidence")
         assert hasattr(result, "merchant_type")
         assert hasattr(result, "reasoning")
-        
+
         # Track success metrics
         if result.canonical_name and len(result.canonical_name) > 0:
             successful_normalizations += 1
-        
+
         if result.confidence >= 0.8:
             high_confidence_count += 1
 
     # Quality checks
     success_rate = successful_normalizations / len(MERCHANT_TEST_DATA)
     high_conf_rate = high_confidence_count / len(MERCHANT_TEST_DATA)
-    
+
     assert success_rate >= 0.95, f"Success rate {success_rate:.2%} below 95% threshold"
     assert high_conf_rate >= 0.80, f"High confidence rate {high_conf_rate:.2%} below 80% threshold"
 
@@ -90,7 +88,7 @@ async def test_variable_detection_accuracy() -> None:
 
     detector = VariableDetectorLLM(
         provider="google",
-        model_name=os.getenv("FIN_INFRA_ACCEPTANCE_MODEL", "gemini-2.0-flash-exp")
+        model_name=os.getenv("FIN_INFRA_ACCEPTANCE_MODEL", "gemini-2.0-flash-exp"),
     )
 
     # Test cases: (merchant, amounts, date_pattern, expected_is_recurring)
@@ -99,14 +97,11 @@ async def test_variable_detection_accuracy() -> None:
         ("City Electric", [45.5, 52.3, 48.75, 54.2], "Monthly (15th ±3 days)", True),
         ("Gas Company", [45.0, 120.0, 115.0, 50.0], "Monthly (15th ±5 days)", True),
         ("Water Utility", [35.0, 38.0, 36.5, 37.0], "Monthly (1st ±2 days)", True),
-        
         # Phone bills with occasional spikes (should be recurring)
         ("T-Mobile", [50.0, 78.5, 50.0, 50.0], "Monthly (15th ±2 days)", True),
         ("AT&T", [65.0, 65.0, 92.0, 65.0], "Monthly (20th ±3 days)", True),
-        
         # Gym membership with fee waivers (should be recurring)
         ("Planet Fitness", [10.0, 10.0, 0.0, 10.0], "Monthly (1st ±1 day)", True),
-        
         # Random variance (should NOT be recurring)
         ("Random Store", [25.0, 150.0, 40.0, 200.0], "Monthly (15th ±10 days)", False),
         ("Coffee Shop", [4.5, 12.0, 3.0, 25.0], "Weekly (varying)", False),
@@ -117,11 +112,11 @@ async def test_variable_detection_accuracy() -> None:
 
     for merchant, amounts, date_pattern, expected_recurring in test_cases:
         result = await detector.detect(merchant, amounts, date_pattern)
-        
+
         # Basic validation
         assert hasattr(result, "is_recurring")
         assert hasattr(result, "confidence")
-        
+
         # Check accuracy
         if result.is_recurring == expected_recurring:
             correct_predictions += 1
@@ -172,7 +167,7 @@ async def test_insights_generation() -> None:
     assert len(result.summary) > 0, "Summary should not be empty"
     assert len(result.top_subscriptions) <= 5, "Should return max 5 top subscriptions"
     assert len(result.recommendations) <= 3, "Should return max 3 recommendations"
-    
+
     # Validate total cost calculation
     expected_total = sum(sub["amount"] for sub in subscriptions)
     assert abs(result.total_monthly_cost - expected_total) < 0.01, "Total cost mismatch"
@@ -197,7 +192,7 @@ async def test_cost_per_request() -> None:
     )
     detector = VariableDetectorLLM(
         provider="google",
-        model_name=os.getenv("FIN_INFRA_ACCEPTANCE_MODEL", "gemini-2.0-flash-exp")
+        model_name=os.getenv("FIN_INFRA_ACCEPTANCE_MODEL", "gemini-2.0-flash-exp"),
     )
     insights_gen = SubscriptionInsightsGenerator(
         provider="google",
@@ -208,13 +203,11 @@ async def test_cost_per_request() -> None:
     # Simulate typical user month: 5 normalizations, 2 variable detections, 1 insights
     for _ in range(5):
         await normalizer.normalize("NFLX*SUB")
-    
+
     for _ in range(2):
         await detector.detect("City Electric", [45.5, 52.3], "Monthly (15th)")
-    
-    await insights_gen.generate([
-        {"merchant": "Netflix", "amount": 15.99, "cadence": "monthly"}
-    ])
+
+    await insights_gen.generate([{"merchant": "Netflix", "amount": 15.99, "cadence": "monthly"}])
 
     # Get budget status
     norm_budget = normalizer.get_budget_status()
@@ -227,11 +220,13 @@ async def test_cost_per_request() -> None:
     assert ins_budget["daily_cost"] > 0, "Insights generator should track costs"
 
     # Total monthly cost (simulated user behavior)
-    total_monthly = norm_budget["monthly_cost"] + det_budget["monthly_cost"] + ins_budget["monthly_cost"]
-    
+    total_monthly = (
+        norm_budget["monthly_cost"] + det_budget["monthly_cost"] + ins_budget["monthly_cost"]
+    )
+
     # Annual cost estimate
     total_annual = total_monthly * 12
-    
+
     # Verify under budget (target <$0.003/user/year, allow up to $0.01 for acceptance test tolerance)
     assert total_annual < 0.01, f"Annual cost ${total_annual:.4f} exceeds $0.01 threshold"
 
@@ -267,16 +262,15 @@ async def test_accuracy_improvement() -> None:
     )
 
     correct_v2 = 0
-    
+
     for merchant_name, expected_canonical in test_cases:
         result = await normalizer.normalize(merchant_name)
-        
+
         # Check if canonical name contains expected term (case insensitive)
         if expected_canonical.lower() in result.canonical_name.lower():
             correct_v2 += 1
 
     v2_accuracy = correct_v2 / len(test_cases)
-    
+
     # V2 should achieve high accuracy on these variants
     assert v2_accuracy >= 0.80, f"V2 accuracy {v2_accuracy:.2%} below 80% threshold (92% ideal)"
-

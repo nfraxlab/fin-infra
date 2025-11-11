@@ -244,14 +244,14 @@ Use existing fin-infra modules:
 
 ```python
 from fin_infra.analytics.insights import generate_goal_insights
-from fin_infra.net_worth.goals import GoalTracker
+from fin_infra.goals.management import FinancialGoalTracker
 
 # Generate insights
 insights = await generate_goal_insights(user_id, goals)
 
-# Track net worth impact
-tracker = GoalTracker(session)
-await tracker.update_progress(goal_id, new_amount)
+# Track goal progress
+tracker = FinancialGoalTracker(llm=llm)
+validation = await tracker.validate_goal(goal_data)
 ```
 
 ## Example: Personal Finance App

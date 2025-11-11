@@ -29,65 +29,61 @@ from fin_infra.providers.base import TaxProvider
 
 class MockTaxProvider(TaxProvider):
     """Mock tax provider with hardcoded sample data.
-    
+
     Returns realistic tax documents for testing.
     No API keys or external dependencies required.
-    
+
     Supported forms:
         - W-2: Wage and Tax Statement
         - 1099-INT: Interest Income
         - 1099-DIV: Dividends and Distributions
         - 1099-B: Broker Transactions (crypto/stocks)
         - 1099-MISC: Miscellaneous Income (staking)
-    
+
     Example:
         >>> provider = MockTaxProvider()
         >>> documents = await provider.get_tax_documents("user_123", 2024)
         >>> w2 = [d for d in documents if d.form_type == "W2"][0]
         >>> print(w2.wages)  # 75000.00
     """
-    
+
     def __init__(self, **kwargs):
         """Initialize mock provider (no configuration needed)."""
         pass
-    
-    async def get_tax_forms(
-        self, user_id: str, tax_year: int, **kwargs
-    ) -> list[dict]:
+
+    async def get_tax_forms(self, user_id: str, tax_year: int, **kwargs) -> list[dict]:
         """Retrieve tax forms for a user and tax year (returns dict, not models).
-        
+
         This method satisfies the TaxProvider ABC interface.
         Use get_tax_documents() for typed models instead.
-        
+
         Args:
             user_id: User identifier
             tax_year: Tax year (e.g., 2024)
             **kwargs: Additional parameters (ignored)
-        
+
         Returns:
             List of tax forms as dicts
         """
         # Get typed documents
         documents = await self.get_tax_documents(user_id, tax_year)
-        
+
         # Convert to dicts
         return [doc.model_dump() for doc in documents]
-    
-    async def get_tax_documents(
-        self, user_id: str, tax_year: int, **kwargs
-    ) -> list[TaxDocument]:
+
+    async def get_tax_documents(self, user_id: str, tax_year: int, **kwargs) -> list[TaxDocument]:
         """Retrieve all tax documents for a user and tax year.
-        
+
         Returns hardcoded W-2, 1099-INT, 1099-DIV, 1099-B, 1099-MISC.
-        
+
         Args:
             user_id: User identifier
             tax_year: Tax year (e.g., 2024)
             **kwargs: Additional parameters (ignored)
-        
+
         Returns:
             List of tax documents (5 forms)
-        
+
         Example:
             >>> provider = MockTaxProvider()
             >>> docs = await provider.get_tax_documents("user_123", 2024)
@@ -118,7 +114,6 @@ class MockTaxProvider(TaxProvider):
                 created_at=datetime(tax_year, 1, 31, 10, 0, 0),
                 updated_at=datetime(tax_year, 1, 31, 10, 0, 0),
             ),
-            
             # 1099-INT: Interest income from savings
             TaxForm1099INT(
                 document_id=f"1099int_{tax_year}_{user_id}",
@@ -135,7 +130,6 @@ class MockTaxProvider(TaxProvider):
                 created_at=datetime(tax_year, 1, 31, 10, 0, 0),
                 updated_at=datetime(tax_year, 1, 31, 10, 0, 0),
             ),
-            
             # 1099-DIV: Dividend income from investments
             TaxForm1099DIV(
                 document_id=f"1099div_{tax_year}_{user_id}",
@@ -152,7 +146,6 @@ class MockTaxProvider(TaxProvider):
                 created_at=datetime(tax_year, 1, 31, 10, 0, 0),
                 updated_at=datetime(tax_year, 1, 31, 10, 0, 0),
             ),
-            
             # 1099-B: Crypto sale (long-term gain)
             TaxForm1099B(
                 document_id=f"1099b_{tax_year}_{user_id}",
@@ -172,7 +165,6 @@ class MockTaxProvider(TaxProvider):
                 created_at=datetime(tax_year, 1, 31, 10, 0, 0),
                 updated_at=datetime(tax_year, 1, 31, 10, 0, 0),
             ),
-            
             # 1099-MISC: Staking rewards
             TaxForm1099MISC(
                 document_id=f"1099misc_{tax_year}_{user_id}",
@@ -189,24 +181,22 @@ class MockTaxProvider(TaxProvider):
                 updated_at=datetime(tax_year, 1, 31, 10, 0, 0),
             ),
         ]
-        
+
         return documents
-    
-    async def get_tax_document(
-        self, document_id: str, **kwargs
-    ) -> TaxDocument:
+
+    async def get_tax_document(self, document_id: str, **kwargs) -> TaxDocument:
         """Retrieve a specific tax document by ID.
-        
+
         Args:
             document_id: Document identifier (e.g., "w2_2024_user_123")
             **kwargs: Additional parameters (ignored)
-        
+
         Returns:
             Tax document matching the ID
-        
+
         Raises:
             ValueError: If document_id not found
-        
+
         Example:
             >>> provider = MockTaxProvider()
             >>> doc = await provider.get_tax_document("w2_2024_user_123")
@@ -217,34 +207,32 @@ class MockTaxProvider(TaxProvider):
         parts = document_id.split("_")
         if len(parts) < 3:
             raise ValueError(f"Invalid document_id format: {document_id}")
-        
+
         # For form types with hyphens (1099-INT, etc.), need special handling
         # Example: "1099int_2024_user_123" or "w2_2024_user_123"
         # We'll just get all documents and search by ID
         tax_year = int(parts[1]) if parts[1].isdigit() else 2024
         user_id = "_".join(parts[2:]) if len(parts) > 2 else "unknown"
-        
+
         # Get all documents and filter by ID
         all_documents = await self.get_tax_documents(user_id, tax_year)
         matching = [d for d in all_documents if d.document_id == document_id]
-        
+
         if not matching:
             raise ValueError(f"Document not found: {document_id}")
-        
+
         return matching[0]
-    
-    async def download_document(
-        self, document_id: str, **kwargs
-    ) -> bytes:
+
+    async def download_document(self, document_id: str, **kwargs) -> bytes:
         """Download PDF bytes for a tax document.
-        
+
         Args:
             document_id: Document identifier
             **kwargs: Additional parameters (ignored)
-        
+
         Returns:
             PDF file bytes (mock: returns placeholder PDF)
-        
+
         Example:
             >>> provider = MockTaxProvider()
             >>> pdf_bytes = await provider.download_document("w2_2024_user_123")
@@ -253,21 +241,21 @@ class MockTaxProvider(TaxProvider):
         # Return minimal valid PDF (mock implementation)
         # In production, this would fetch from S3/GCS or generate on-the-fly
         return b"%PDF-1.4\n%Mock Tax Document PDF\n"
-    
+
     async def calculate_crypto_gains(
         self, user_id: str, transactions: list[dict], tax_year: int, **kwargs
     ) -> CryptoTaxReport:
         """Calculate capital gains for crypto transactions.
-        
+
         Args:
             user_id: User identifier
             transactions: List of crypto trades (dicts with symbol, date, quantity, price, etc.)
             tax_year: Tax year
             **kwargs: Additional parameters (cost_basis_method="FIFO", etc.)
-        
+
         Returns:
             Crypto tax report with gains/losses breakdown
-        
+
         Example:
             >>> provider = MockTaxProvider()
             >>> transactions = [
@@ -279,7 +267,7 @@ class MockTaxProvider(TaxProvider):
         """
         # Mock calculation (in production, this would use FIFO/LIFO/HIFO)
         cost_basis_method = kwargs.get("cost_basis_method", "FIFO")
-        
+
         # Hardcoded example report
         crypto_transactions = [
             CryptoTransaction(
@@ -309,17 +297,19 @@ class MockTaxProvider(TaxProvider):
                 holding_period="short_term",
             ),
         ]
-        
+
         # Calculate totals
         short_term = sum(
-            tx.gain_or_loss for tx in crypto_transactions
+            tx.gain_or_loss
+            for tx in crypto_transactions
             if tx.holding_period == "short_term" and tx.gain_or_loss
         )
         long_term = sum(
-            tx.gain_or_loss for tx in crypto_transactions
+            tx.gain_or_loss
+            for tx in crypto_transactions
             if tx.holding_period == "long_term" and tx.gain_or_loss
         )
-        
+
         return CryptoTaxReport(
             user_id=user_id,
             tax_year=tax_year,
@@ -331,13 +321,18 @@ class MockTaxProvider(TaxProvider):
             transactions=crypto_transactions,
             form_8949_data=None,  # Would be generated by TaxBit in production
         )
-    
+
     async def calculate_tax_liability(
-        self, user_id: str, income: Decimal, deductions: Decimal,
-        filing_status: str, tax_year: int, **kwargs
+        self,
+        user_id: str,
+        income: Decimal,
+        deductions: Decimal,
+        filing_status: str,
+        tax_year: int,
+        **kwargs,
     ) -> TaxLiability:
         """Estimate tax liability (basic calculation).
-        
+
         Args:
             user_id: User identifier
             income: Gross income
@@ -345,10 +340,10 @@ class MockTaxProvider(TaxProvider):
             filing_status: "single", "married_joint", etc.
             tax_year: Tax year
             **kwargs: Additional parameters (state="CA", etc.)
-        
+
         Returns:
             Tax liability estimate
-        
+
         Example:
             >>> provider = MockTaxProvider()
             >>> liability = await provider.calculate_tax_liability(
@@ -364,14 +359,14 @@ class MockTaxProvider(TaxProvider):
         # In production, would use actual IRS tax brackets
         taxable_income = income - deductions
         federal_tax = taxable_income * Decimal("0.15")
-        
+
         # State tax (if state provided)
         state = kwargs.get("state")
         state_tax = taxable_income * Decimal("0.05") if state else Decimal("0.00")
-        
+
         total_tax = federal_tax + state_tax
         effective_rate = (total_tax / income * 100) if income > 0 else Decimal("0.00")
-        
+
         return TaxLiability(
             user_id=user_id,
             tax_year=tax_year,

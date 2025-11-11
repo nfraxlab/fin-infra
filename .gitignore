@@ -71,3 +71,11 @@ secrets/
 .secrets/
 credentials/
 .credentials/
+
+# Scaffold test files (should only be in tests/ or examples/)
+/budget*.py
+/goal*.py
+/net_worth*.py
+/budgets/
+/goals/
+/net_worth/

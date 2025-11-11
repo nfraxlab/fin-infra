@@ -9,7 +9,6 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from fin_infra.analytics.add import add_analytics
-from fin_infra.analytics.models import SavingsDefinition
 
 
 @pytest.fixture
@@ -32,7 +31,7 @@ def test_add_analytics_helper(app):
     # Check analytics engine stored on app state
     assert hasattr(app.state, "analytics_engine")
     assert app.state.analytics_engine is not None
-    
+
     # Check routes exist
     routes = [route.path for route in app.routes]
     assert "/analytics/cash-flow" in routes or "/analytics/cash-flow/" in routes
@@ -60,7 +59,7 @@ def test_cash_flow_endpoint(client):
     assert "expenses_by_category" in data  # Fixed: expenses_by_category not expense_by_category
     assert "period_start" in data
     assert "period_end" in data
-    
+
     # Validate calculations
     assert data["net_cash_flow"] == data["income_total"] - data["expense_total"]
 
@@ -69,11 +68,11 @@ def test_cash_flow_with_custom_period(client):
     """Test cash flow with custom period."""
     start_date = (datetime.now() - timedelta(days=60)).isoformat()
     end_date = datetime.now().isoformat()
-    
+
     response = client.get(
         f"/analytics/cash-flow?user_id=test_user&start_date={start_date}&end_date={end_date}"
     )
-    
+
     assert response.status_code == 200
     data = response.json()
     assert "income_total" in data
@@ -82,7 +81,7 @@ def test_cash_flow_with_custom_period(client):
 def test_cash_flow_with_period_days(client):
     """Test cash flow with period_days parameter."""
     response = client.get("/analytics/cash-flow?user_id=test_user&period_days=90")
-    
+
     assert response.status_code == 200
     data = response.json()
     assert "income_total" in data
@@ -92,10 +91,10 @@ def test_cash_flow_with_period_days(client):
 def test_savings_rate_endpoint(client):
     """Test GET /analytics/savings-rate endpoint."""
     response = client.get("/analytics/savings-rate?user_id=test_user")
-    
+
     assert response.status_code == 200
     data = response.json()
-    
+
     # Validate response structure
     assert "savings_rate" in data
     assert "savings_amount" in data
@@ -104,7 +103,7 @@ def test_savings_rate_endpoint(client):
     assert "period" in data
     assert "definition" in data
     assert "trend" in data
-    
+
     # Validate savings rate is percentage
     assert 0 <= data["savings_rate"] <= 1
 
@@ -114,7 +113,7 @@ def test_savings_rate_with_definition(client):
     response = client.get(
         "/analytics/savings-rate?user_id=test_user&definition=gross&period=monthly"
     )
-    
+
     assert response.status_code == 200
     data = response.json()
     assert data["definition"] == "gross"
@@ -136,7 +135,7 @@ def test_spending_insights_endpoint(client):
     assert "anomalies" in data
     assert "period_days" in data
     assert "total_spending" in data
-    
+
     # Validate lists and dicts
     assert isinstance(data["top_merchants"], list)
     assert isinstance(data["category_breakdown"], dict)  # category_breakdown is a dict not list
@@ -147,7 +146,7 @@ def test_spending_insights_with_custom_period(client):
     response = client.get(
         "/analytics/spending-insights?user_id=test_user&period_days=60&include_trends=false"
     )
-    
+
     assert response.status_code == 200
     data = response.json()
     assert "top_merchants" in data
@@ -165,7 +164,7 @@ def test_spending_advice_endpoint(client):
     assert "key_observations" in data
     assert "savings_opportunities" in data
     assert "estimated_monthly_savings" in data
-    
+
     # Validate lists
     assert isinstance(data["key_observations"], list)
     assert isinstance(data["savings_opportunities"], list)
@@ -188,12 +187,14 @@ def test_portfolio_metrics_endpoint(client):
 
     # Validate allocation is list
     assert isinstance(data["allocation_by_asset_class"], list)
+
+
 def test_portfolio_metrics_with_accounts(client):
     """Test portfolio metrics with specific accounts."""
     response = client.get(
         "/analytics/portfolio?user_id=test_user&accounts=account1&accounts=account2"
     )
-    
+
     assert response.status_code == 200
     data = response.json()
     assert "total_value" in data
@@ -203,10 +204,10 @@ def test_portfolio_metrics_with_accounts(client):
 def test_benchmark_comparison_endpoint(client):
     """Test GET /analytics/performance endpoint."""
     response = client.get("/analytics/performance?user_id=test_user")
-    
+
     assert response.status_code == 200
     data = response.json()
-    
+
     # Validate response structure
     assert "portfolio_return" in data
     assert "benchmark_return" in data
@@ -218,10 +219,8 @@ def test_benchmark_comparison_endpoint(client):
 
 def test_benchmark_comparison_with_custom_benchmark(client):
     """Test benchmark comparison with custom benchmark."""
-    response = client.get(
-        "/analytics/performance?user_id=test_user&benchmark=VTI&period=1y"
-    )
-    
+    response = client.get("/analytics/performance?user_id=test_user&benchmark=VTI&period=1y")
+
     assert response.status_code == 200
     data = response.json()
     assert data["benchmark_symbol"] == "VTI"
@@ -247,7 +246,7 @@ def test_forecast_net_worth_endpoint(client):
     assert "years" in data  # Fixed: years not projection_years    # Validate scenarios
     assert isinstance(data["scenarios"], list)
     assert len(data["scenarios"]) == 3  # Conservative, Moderate, Aggressive
-    
+
     # Validate scenario structure
     for scenario in data["scenarios"]:
         assert "name" in scenario
@@ -274,6 +273,8 @@ def test_forecast_net_worth_with_custom_assumptions(client):
     assert response.status_code == 200
     data = response.json()
     assert data["years"] == 20  # Fixed: years not projection_years
+
+
 def test_forecast_net_worth_validation(client):
     """Test forecast validation (years must be 1-50)."""
     # Test years too high
@@ -281,7 +282,7 @@ def test_forecast_net_worth_validation(client):
         "user_id": "test_user",
         "years": 100,  # Invalid: max 50
     }
-    
+
     response = client.post("/analytics/forecast-net-worth", json=request_data)
     assert response.status_code == 422  # Validation error
 
@@ -290,7 +291,7 @@ def test_forecast_net_worth_validation(client):
 def test_missing_user_id(client):
     """Test error when user_id is missing."""
     response = client.get("/analytics/cash-flow")
-    
+
     # Should return 422 (validation error)
     assert response.status_code == 422
 
@@ -298,7 +299,7 @@ def test_missing_user_id(client):
 def test_invalid_period(client):
     """Test error with invalid period."""
     response = client.get("/analytics/savings-rate?user_id=test_user&period=invalid")
-    
+
     # Should handle gracefully (either 200 with default or 400/422)
     assert response.status_code in [200, 400, 422]
 
@@ -310,7 +311,7 @@ def test_multiple_concurrent_requests(client):
     response1 = client.get("/analytics/cash-flow?user_id=user1")
     response2 = client.get("/analytics/savings-rate?user_id=user2")
     response3 = client.get("/analytics/portfolio?user_id=user3")
-    
+
     assert response1.status_code == 200
     assert response2.status_code == 200
     assert response3.status_code == 200
@@ -320,13 +321,13 @@ def test_multiple_concurrent_requests(client):
 def test_openapi_schema(app):
     """Test that analytics endpoints are in OpenAPI schema."""
     from fastapi.openapi.utils import get_openapi
-    
+
     openapi_schema = get_openapi(
         title=app.title,
         version="1.0.0",
         routes=app.routes,
     )
-    
+
     # Check paths exist in schema
     assert "/analytics/cash-flow" in openapi_schema["paths"]
     assert "/analytics/savings-rate" in openapi_schema["paths"]
@@ -342,7 +343,7 @@ def test_custom_prefix():
     """Test add_analytics with custom prefix."""
     app = FastAPI()
     add_analytics(app, prefix="/custom-analytics")
-    
+
     routes = [route.path for route in app.routes]
     assert any("/custom-analytics/cash-flow" in route for route in routes)
 
@@ -351,11 +352,11 @@ def test_custom_prefix():
 def test_custom_provider():
     """Test add_analytics with pre-configured provider."""
     from fin_infra.analytics.ease import easy_analytics
-    
+
     app = FastAPI()
     custom_engine = easy_analytics(default_period_days=90)
     returned_engine = add_analytics(app, provider=custom_engine)
-    
+
     # Should return same instance
     assert returned_engine is custom_engine
     assert app.state.analytics_engine is custom_engine

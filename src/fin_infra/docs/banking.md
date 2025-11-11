@@ -817,6 +817,244 @@ except BankingProviderError as e:
     print(f"Error: {e.message}")
 ```
 
+## Transaction Filtering (Phase 2 Enhancement)
+
+The `/banking/transactions` endpoint now supports advanced filtering to reduce data transfer and improve user experience:
+
+### Available Filters
+
+```python
+from fin_infra.banking import add_banking
+
+# Mount banking API
+banking = add_banking(app)
+
+# Client makes request with filters:
+# GET /banking/transactions?
+#   access_token=<token>
+#   &start_date=2025-01-01
+#   &end_date=2025-01-31
+#   &min_amount=10.00
+#   &max_amount=100.00
+#   &merchant_name=starbucks
+#   &category=Food & Drink
+#   &account_id=acc_123
+#   &exclude_pending=true
+#   &sort_by=date
+#   &sort_order=desc
+#   &page=1
+#   &page_size=50
+```
+
+### Filter Parameters
+
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `min_amount` | float | Minimum transaction amount (absolute value) | `10.00` |
+| `max_amount` | float | Maximum transaction amount (absolute value) | `100.00` |
+| `start_date` | string | Start date (ISO 8601: YYYY-MM-DD) | `2025-01-01` |
+| `end_date` | string | End date (ISO 8601: YYYY-MM-DD) | `2025-01-31` |
+| `merchant_name` | string | Partial match on merchant name (case-insensitive) | `starbucks` |
+| `category` | string | Exact category match | `Food & Drink` |
+| `account_id` | string | Filter by specific account | `acc_123` |
+| `exclude_pending` | boolean | Exclude pending transactions | `true` |
+| `sort_by` | string | Sort field: `date`, `amount`, or `merchant` | `date` |
+| `sort_order` | string | Sort direction: `asc` or `desc` | `desc` |
+| `page` | integer | Page number (1-indexed) | `1` |
+| `page_size` | integer | Results per page (1-200, default 50) | `100` |
+
+### Example Usage
+
+```python
+from fastapi import FastAPI, Query
+from fin_infra.banking import easy_banking
+
+banking = easy_banking()
+
+@app.get("/transactions/filtered")
+async def get_filtered_transactions(
+    access_token: str = Query(...),
+    start_date: str = Query(...),
+    end_date: str = Query(...),
+    min_amount: float | None = Query(None),
+    category: str | None = Query(None),
+):
+    """Fetch transactions with filters"""
+    txns = banking.transactions(
+        access_token=access_token,
+        start_date=start_date,
+        end_date=end_date,
+        min_amount=min_amount,
+        category=category,
+    )
+    return {"transactions": txns, "count": len(txns)}
+```
+
+### Use Cases
+
+**1. Large Purchases Only**
+```
+GET /banking/transactions?min_amount=500&sort_by=amount&sort_order=desc
+```
+
+**2. Specific Merchant**
+```
+GET /banking/transactions?merchant_name=amazon&start_date=2025-01-01
+```
+
+**3. Budget Category Review**
+```
+GET /banking/transactions?category=Food & Drink&start_date=2025-01-01&end_date=2025-01-31
+```
+
+**4. Exclude Pending for Reports**
+```
+GET /banking/transactions?exclude_pending=true&sort_by=date
+```
+
+## Balance History Tracking (Phase 2 Enhancement)
+
+Track daily account balance snapshots for trend analysis, net worth tracking, and financial planning.
+
+### Core Functions
+
+```python
+from fin_infra.banking.history import track_balance, get_balance_history, BalanceHistory
+from datetime import date
+
+# Record a balance snapshot
+track_balance(
+    account_id="acc_123",
+    balance=5432.10,
+    date=date.today(),
+    currency="USD"
+)
+
+# Retrieve balance history
+history = get_balance_history(
+    account_id="acc_123",
+    start_date=date(2025, 1, 1),
+    end_date=date(2025, 1, 31)
+)
+
+for snapshot in history:
+    print(f"{snapshot.date}: ${snapshot.balance}")
+```
+
+### Balance History Model
+
+```python
+from pydantic import BaseModel
+from datetime import date
+
+class BalanceHistory(BaseModel):
+    account_id: str         # Account identifier
+    balance: float          # Account balance at snapshot time
+    date: date             # Snapshot date
+    currency: str          # Currency code (USD, EUR, etc.)
+```
+
+### FastAPI Endpoint
+
+The `/banking/balance-history` endpoint provides time-series balance data:
+
+```python
+# GET /banking/balance-history?account_id=acc_123&start_date=2025-01-01&end_date=2025-01-31
+
+# Response:
+{
+  "account_id": "acc_123",
+  "history": [
+    {"date": "2025-01-01", "balance": 5000.00, "currency": "USD"},
+    {"date": "2025-01-02", "balance": 4950.00, "currency": "USD"},
+    {"date": "2025-01-03", "balance": 5100.00, "currency": "USD"},
+    ...
+  ],
+  "count": 31
+}
+```
+
+### Use Cases
+
+**1. Net Worth Tracking**
+```python
+# Track balances across all accounts daily
+for account in accounts:
+    track_balance(
+        account_id=account.id,
+        balance=account.balance,
+        date=date.today(),
+        currency=account.currency
+    )
+
+# Generate net worth chart
+total_history = {}
+for account in accounts:
+    history = get_balance_history(account.id, start_date, end_date)
+    for snapshot in history:
+        total_history[snapshot.date] = total_history.get(snapshot.date, 0) + snapshot.balance
+```
+
+**2. Account Trend Analysis**
+```python
+# Identify accounts with declining balances
+history = get_balance_history("acc_123", start_date, end_date)
+trend = "increasing" if history[-1].balance > history[0].balance else "decreasing"
+change_pct = ((history[-1].balance - history[0].balance) / history[0].balance) * 100
+```
+
+**3. Cash Flow Insights**
+```python
+# Calculate average daily balance for interest/fee calculations
+history = get_balance_history("acc_123", start_date, end_date)
+avg_balance = sum(h.balance for h in history) / len(history)
+```
+
+### Production Considerations
+
+**Storage Backend**: The current implementation uses in-memory storage. For production:
+
+```python
+# Use svc-infra SQL for persistent storage
+from svc_infra.db.sql import add_sql_db
+
+# Add to your database models:
+class BalanceHistoryModel(Base):
+    __tablename__ = "balance_history"
+    
+    id = Column(Integer, primary_key=True)
+    account_id = Column(String, index=True)
+    balance = Column(Float)
+    date = Column(Date, index=True)
+    currency = Column(String)
+    
+    __table_args__ = (
+        Index('idx_account_date', 'account_id', 'date'),
+    )
+```
+
+**Automated Tracking**: Set up daily cron job:
+
+```python
+from svc_infra.jobs import easy_jobs
+
+# Schedule daily balance tracking
+worker, scheduler = easy_jobs(app)
+
+@scheduler.scheduled_job('cron', hour=2)  # 2 AM daily
+async def track_daily_balances():
+    """Record balance snapshots for all users"""
+    for user in users:
+        accounts = banking.accounts(user.access_token)
+        for account in accounts:
+            track_balance(
+                account_id=account.id,
+                balance=account.balance,
+                date=date.today(),
+                currency=account.currency
+            )
+```
+
 ## Best Practices
 
 1. **Secure Token Storage**: Store access tokens encrypted in your database
@@ -825,6 +1063,8 @@ except BankingProviderError as e:
 4. **Error Recovery**: Implement retry logic with exponential backoff
 5. **User Communication**: Clearly communicate when re-authentication is needed
 6. **Data Retention**: Follow provider guidelines for data retention and deletion
+7. **Balance History**: Track balances daily for trend analysis and net worth tracking
+8. **Transaction Filtering**: Use filters to reduce data transfer and improve performance
 
 ## Testing
 

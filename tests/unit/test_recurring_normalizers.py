@@ -13,7 +13,6 @@ from fin_infra.recurring.normalizers import (
     MerchantNormalized,
     MerchantNormalizer,
     MERCHANT_NORMALIZATION_SYSTEM_PROMPT,
-    MERCHANT_NORMALIZATION_USER_PROMPT,
 )
 
 

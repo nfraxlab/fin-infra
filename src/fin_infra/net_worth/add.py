@@ -36,17 +36,14 @@ tracker = add_net_worth_tracking(app)
 """
 
 from datetime import datetime, timedelta
-from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query
 
 from fin_infra.net_worth.ease import NetWorthTracker, easy_net_worth
 from fin_infra.net_worth.models import (
     ConversationResponse,
     GoalProgressResponse,
-    NetWorthRequest,
     NetWorthResponse,
-    SnapshotHistoryRequest,
     SnapshotHistoryResponse,
 )
 
@@ -59,54 +56,54 @@ def add_net_worth_tracking(
 ) -> NetWorthTracker:
     """
     Add net worth tracking endpoints to FastAPI app.
-    
+
     **Example - With Tracker**:
     ```python
     from fastapi import FastAPI
     from fin_infra.banking import easy_banking
     from fin_infra.net_worth import easy_net_worth, add_net_worth_tracking
-    
+
     app = FastAPI()
-    
+
     # Create providers + tracker
     banking = easy_banking(provider="plaid")
     tracker = easy_net_worth(banking=banking)
-    
+
     # Add endpoints
     add_net_worth_tracking(app, tracker=tracker)
     ```
-    
+
     **Example - Auto-wired** (no providers yet):
     ```python
     from fastapi import FastAPI
     from fin_infra.net_worth import add_net_worth_tracking
-    
+
     app = FastAPI()
-    
+
     # Add endpoints (tracker created with defaults)
     tracker = add_net_worth_tracking(app)
-    
+
     # Later: wire up providers
     from fin_infra.banking import easy_banking
     banking = easy_banking(provider="plaid")
     tracker.aggregator.banking_provider = banking
     ```
-    
+
     Args:
         app: FastAPI application instance
         tracker: NetWorthTracker instance (optional, will create default)
         prefix: URL prefix for endpoints (default: "/net-worth")
         include_in_schema: Include in OpenAPI schema (default: True)
-    
+
     Returns:
         NetWorthTracker instance (for programmatic access)
-    
+
     **Endpoints Added**:
     - `GET {prefix}/current` - Current net worth (cached 1h)
     - `GET {prefix}/snapshots` - Historical snapshots
     - `GET {prefix}/breakdown` - Asset/liability breakdown
     - `POST {prefix}/snapshot` - Force snapshot creation
-    
+
     **Authentication**:
     All endpoints require user authentication (svc-infra user_router).
     User ID extracted from JWT token automatically.
@@ -120,20 +117,22 @@ def add_net_worth_tracking(
             brokerage=None,
             crypto=None,
         )
-    
+
     # Store tracker on app state for access in routes
     app.state.net_worth_tracker = tracker
-    
+
     # Import svc-infra dual router (when available)
     # For now, use standard FastAPI router
     try:
         from svc_infra.api.fastapi.dual.protected import user_router
+
         router = user_router(prefix=prefix, tags=["Net Worth"])
     except ImportError:
         # Fallback to standard router if svc-infra not available
         from fastapi import APIRouter
+
         router = APIRouter(prefix=prefix, tags=["Net Worth"])
-    
+
     @router.get(
         "/current",
         response_model=NetWorthResponse,
@@ -148,12 +147,12 @@ def add_net_worth_tracking(
     ) -> NetWorthResponse:
         """
         Get current net worth.
-        
+
         **Example Request**:
         ```
         GET /net-worth/current?user_id=user_123&access_token=plaid_token_abc
         ```
-        
+
         **Example Response**:
         ```json
         {
@@ -175,32 +174,34 @@ def add_net_worth_tracking(
         ```
         """
         start_time = datetime.utcnow()
-        
+
         try:
             # Calculate net worth
             snapshot = await tracker.calculate_net_worth(
                 user_id=user_id,
                 access_token=access_token,
             )
-            
+
             # Calculate processing time
             processing_time = (datetime.utcnow() - start_time).total_seconds() * 1000
-            
+
             # Build response
             from fin_infra.net_worth.calculator import (
                 calculate_asset_allocation,
                 calculate_liability_breakdown,
             )
-            
+
             # Get asset details from snapshot (stored in aggregator)
-            # For now, create empty lists (TODO: store in snapshot)
+            # Persistence: Asset/liability details stored in snapshot JSON fields or separate tables.
+            # Generate with: fin-infra scaffold net_worth --dest-dir app/models/
+            # For now, create empty lists for testing/examples.
             asset_details = []
             liability_details = []
-            
+
             # Calculate breakdowns
             asset_allocation = calculate_asset_allocation(asset_details)
             liability_breakdown = calculate_liability_breakdown(liability_details)
-            
+
             return NetWorthResponse(
                 snapshot=snapshot,
                 asset_allocation=asset_allocation,
@@ -209,10 +210,10 @@ def add_net_worth_tracking(
                 liability_details=liability_details if include_breakdown else [],
                 processing_time_ms=int(processing_time),
             )
-        
+
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
-    
+
     @router.get(
         "/snapshots",
         response_model=SnapshotHistoryResponse,
@@ -230,12 +231,12 @@ def add_net_worth_tracking(
     ) -> SnapshotHistoryResponse:
         """
         Get historical snapshots.
-        
+
         **Example Request**:
         ```
         GET /net-worth/snapshots?user_id=user_123&days=90&granularity=daily
         ```
-        
+
         **Example Response**:
         ```json
         {
@@ -257,21 +258,21 @@ def add_net_worth_tracking(
                 days=days,
                 granularity=granularity,
             )
-            
+
             # Calculate date range
             end_date = datetime.utcnow()
             start_date = end_date - timedelta(days=days)
-            
+
             return SnapshotHistoryResponse(
                 snapshots=snapshots,
                 count=len(snapshots),
                 start_date=start_date,
                 end_date=end_date,
             )
-        
+
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
-    
+
     @router.get(
         "/breakdown",
         summary="Get Asset/Liability Breakdown",
@@ -283,9 +284,9 @@ def add_net_worth_tracking(
     ):
         """
         Get asset/liability breakdown.
-        
+
         Returns simplified breakdown for visualization (pie charts).
-        
+
         **Example Response**:
         ```json
         {
@@ -314,7 +315,7 @@ def add_net_worth_tracking(
                 user_id=user_id,
                 access_token=access_token,
             )
-            
+
             return {
                 "assets": {
                     "cash": snapshot.cash,
@@ -333,10 +334,10 @@ def add_net_worth_tracking(
                     "lines_of_credit": snapshot.lines_of_credit,
                 },
             }
-        
+
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
-    
+
     @router.post(
         "/snapshot",
         summary="Force Snapshot Creation",
@@ -348,15 +349,15 @@ def add_net_worth_tracking(
     ):
         """
         Force snapshot creation.
-        
+
         Creates snapshot immediately (bypasses schedule).
         Useful for testing or manual triggers.
-        
+
         **Example Request**:
         ```
         POST /net-worth/snapshot?user_id=user_123&access_token=plaid_token_abc
         ```
-        
+
         **Example Response**:
         ```json
         {
@@ -372,21 +373,21 @@ def add_net_worth_tracking(
                 user_id=user_id,
                 access_token=access_token,
             )
-            
+
             return {
                 "message": "Snapshot created successfully",
                 "snapshot_id": snapshot.id,
                 "net_worth": snapshot.total_net_worth,
                 "snapshot_date": snapshot.snapshot_date,
             }
-        
+
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
-    
+
     # ===========================
     # V2 LLM Endpoints (Optional)
     # ===========================
-    
+
     @router.get(
         "/insights",
         summary="Generate Financial Insights (V2)",
@@ -403,14 +404,14 @@ def add_net_worth_tracking(
     ):
         """
         Generate LLM-powered financial insights.
-        
+
         **Requires**: enable_llm=True in easy_net_worth()
-        
+
         **Example Request**:
         ```
         GET /net-worth/insights?user_id=user_123&type=wealth_trends&days=90
         ```
-        
+
         **Example Response**:
         ```json
         {
@@ -429,16 +430,16 @@ def add_net_worth_tracking(
                 status_code=503,
                 detail="LLM insights not enabled. Set enable_llm=True in easy_net_worth()",
             )
-        
+
         try:
             # Get snapshots
             snapshots = await tracker.get_snapshots(user_id=user_id, days=days)
-            
+
             if not snapshots:
                 raise HTTPException(
                     status_code=404, detail="No snapshots found. Create at least 1 snapshot first."
                 )
-            
+
             # Generate insights based on type
             if type == "wealth_trends":
                 insights = await tracker.insights_generator.analyze_wealth_trends(
@@ -459,14 +460,14 @@ def add_net_worth_tracking(
                     status_code=400,
                     detail=f"Invalid insight type: {type}. Must be: wealth_trends, debt_reduction, goal_recommendations, asset_allocation",
                 )
-            
+
             return insights.model_dump()
-        
+
         except HTTPException:
             raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
-    
+
     @router.post(
         "/conversation",
         response_model=ConversationResponse,
@@ -481,14 +482,14 @@ def add_net_worth_tracking(
     ) -> ConversationResponse:
         """
         Ask financial planning questions with multi-turn context.
-        
+
         **Requires**: enable_llm=True in easy_net_worth()
-        
+
         **Example Request**:
         ```
         POST /net-worth/conversation?user_id=user_123&question=How+can+I+save+more?
         ```
-        
+
         **Example Response**:
         ```json
         {
@@ -508,19 +509,17 @@ def add_net_worth_tracking(
                 status_code=503,
                 detail="LLM conversation not enabled. Set enable_llm=True in easy_net_worth()",
             )
-        
+
         try:
             # Get current snapshot for context
-            snapshot = await tracker.calculate_net_worth(
-                user_id=user_id, access_token=access_token
-            )
-            
+            snapshot = await tracker.calculate_net_worth(user_id=user_id, access_token=access_token)
+
             # Get goals for context (if goal_tracker available)
             goals = []
             if tracker.goal_tracker:
                 # TODO: Implement get_goals() method
                 pass
-            
+
             # Ask question with context
             response = await tracker.conversation.ask(
                 user_id=user_id,
@@ -529,7 +528,7 @@ def add_net_worth_tracking(
                 current_net_worth=snapshot.total_net_worth,
                 goals=goals,
             )
-            
+
             # Convert to API response format
             return ConversationResponse(
                 answer=response.answer,
@@ -537,12 +536,12 @@ def add_net_worth_tracking(
                 confidence=response.confidence,
                 sources=response.sources,
             )
-        
+
         except HTTPException:
             raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
-    
+
     @router.post(
         "/goals",
         summary="Create/Validate Financial Goal (V2)",
@@ -550,23 +549,29 @@ def add_net_worth_tracking(
     )
     async def create_goal(
         user_id: str = Query(..., description="User identifier"),
-        goal_type: str = Query(..., description="Goal type: retirement, home_purchase, debt_free, wealth_milestone"),
+        goal_type: str = Query(
+            ..., description="Goal type: retirement, home_purchase, debt_free, wealth_milestone"
+        ),
         target_amount: float = Query(..., gt=0, description="Target amount"),
         target_date: str | None = Query(None, description="Target date (YYYY-MM-DD)"),
-        target_age: int | None = Query(None, ge=18, le=120, description="Target age (for retirement)"),
-        current_age: int | None = Query(None, ge=18, le=120, description="Current age (for retirement)"),
+        target_age: int | None = Query(
+            None, ge=18, le=120, description="Target age (for retirement)"
+        ),
+        current_age: int | None = Query(
+            None, ge=18, le=120, description="Current age (for retirement)"
+        ),
         access_token: str | None = Query(None, description="Provider access token"),
     ):
         """
         Create and validate financial goal with LLM.
-        
+
         **Requires**: enable_llm=True in easy_net_worth()
-        
+
         **Example Request**:
         ```
         POST /net-worth/goals?user_id=user_123&goal_type=retirement&target_amount=2000000&target_age=65&current_age=35
         ```
-        
+
         **Example Response**:
         ```json
         {
@@ -585,39 +590,37 @@ def add_net_worth_tracking(
                 status_code=503,
                 detail="LLM goal tracking not enabled. Set enable_llm=True in easy_net_worth()",
             )
-        
+
         try:
             # Get current snapshot for context
-            snapshot = await tracker.calculate_net_worth(
-                user_id=user_id, access_token=access_token
-            )
-            
+            snapshot = await tracker.calculate_net_worth(user_id=user_id, access_token=access_token)
+
             # Build goal dict
             goal_data = {
                 "type": goal_type,
                 "target_amount": target_amount,
                 "current_amount": snapshot.total_net_worth,
             }
-            
+
             if target_date:
                 goal_data["target_date"] = target_date
             if target_age:
                 goal_data["target_age"] = target_age
             if current_age:
                 goal_data["current_age"] = current_age
-            
+
             # Validate goal with LLM
             validation = await tracker.goal_tracker.validate_goal_with_llm(
                 goal=goal_data, current_snapshot=snapshot
             )
-            
+
             return validation.model_dump()
-        
+
         except HTTPException:
             raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
-    
+
     @router.get(
         "/goals/{goal_id}/progress",
         response_model=GoalProgressResponse,
@@ -631,14 +634,14 @@ def add_net_worth_tracking(
     ) -> GoalProgressResponse:
         """
         Get goal progress with LLM recommendations.
-        
+
         **Requires**: enable_llm=True in easy_net_worth()
-        
+
         **Example Request**:
         ```
         GET /net-worth/goals/goal_abc123/progress?user_id=user_123
         ```
-        
+
         **Example Response**:
         ```json
         {
@@ -658,35 +661,35 @@ def add_net_worth_tracking(
                 status_code=503,
                 detail="LLM goal tracking not enabled. Set enable_llm=True in easy_net_worth()",
             )
-        
+
         try:
             # Get current snapshot
-            snapshot = await tracker.calculate_net_worth(
-                user_id=user_id, access_token=access_token
-            )
-            
+            snapshot = await tracker.calculate_net_worth(user_id=user_id, access_token=access_token)
+
             # Get historical snapshots for progress tracking
             snapshots = await tracker.get_snapshots(user_id=user_id, days=90)
-            
-            # TODO: Implement goal retrieval from database
-            # For now, return mock data
+
+            # Persistence: Goal retrieval via scaffolded goals repository.
+            # Generate with: fin-infra scaffold goals --dest-dir app/models/
+            # See docs/persistence.md for goal tracking patterns.
+            # For now, return mock data.
             raise HTTPException(
                 status_code=501,
                 detail="Goal progress tracking not fully implemented. Need goal persistence layer.",
             )
-        
+
         except HTTPException:
             raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
-    
+
     # Mount router
     app.include_router(router, include_in_schema=include_in_schema)
-    
+
     # Register scoped docs (when svc-infra available)
     try:
         from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
-        
+
         add_prefixed_docs(
             app,
             prefix=prefix,
@@ -698,5 +701,5 @@ def add_net_worth_tracking(
     except ImportError:
         # svc-infra not available, skip scoped docs
         pass
-    
+
     return tracker

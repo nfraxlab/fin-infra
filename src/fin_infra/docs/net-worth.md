@@ -1790,6 +1790,11 @@ async def create_snapshots():
 - [Crypto Integration](./crypto.md) - CCXT, CoinGecko for crypto balances
 - [Market Data](./market-data.md) - Alpha Vantage for stock quotes, exchange rates
 
+### Financial Planning
+- [Goal Management](./goals.md) - Track net worth milestones and wealth goals
+- [Budget Management](./budgets.md) - Link net worth to budget savings categories
+- [Analytics](./analytics.md) - Net worth trends, growth projections, and insights
+
 ### LLM Features (V2)
 - [ADR-0021: LLM Insights Architecture](./adr/0021-net-worth-llm-insights.md) - Design decisions for V2
 - [LLM Quality Review Guide](./testing/llm-quality-review.md) - Manual testing process (20 users, 4.0+ target)

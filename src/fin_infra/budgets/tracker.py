@@ -192,12 +192,12 @@ class BudgetTracker:
             updated_at=datetime.now(),
         )
 
-        # TODO: Store in SQL database (Task 13 scope: in-memory for now)
-        # async with self.session_maker() as session:
-        #     session.add(budget)
-        #     await session.commit()
-        #     await session.refresh(budget)
-        
+        # Persistence: Applications own database schema (fin-infra is a stateless library).
+        # Generate models/schemas/repository: fin-infra scaffold budgets --dest-dir app/models/
+        # Then wire CRUD with svc-infra: add_sql_resources(app, [SqlResource(model=Budget, ...)])
+        # See docs/persistence.md for full guide.
+        # In-memory storage used here for testing/examples.
+
         # In-memory storage (Task 13 scope)
         self._budgets[budget.id] = budget
 
@@ -227,14 +227,12 @@ class BudgetTracker:
             >>> personal = await tracker.get_budgets("user123", type="personal")
             >>> print(personal[0].name)  # "November 2025"
         """
-        # TODO: Query from SQL database (Task 13 scope: in-memory for now)
-        # async with self.session_maker() as session:
-        #     stmt = select(Budget).where(Budget.user_id == user_id)
-        #     if type:
-        #         stmt = stmt.where(Budget.type == type)
-        #     result = await session.execute(stmt)
+        # Persistence: Applications query via scaffolded repository or svc-infra SqlResource.
+        # Generate with: fin-infra scaffold budgets --dest-dir app/models/
+        # See docs/persistence.md for query patterns.
+        # In-memory storage used here for testing/examples.
         #     return list(result.scalars().all())
-        
+
         # In-memory storage (Task 13 scope)
         budgets = [b for b in self._budgets.values() if b.user_id == user_id]
         if type:
@@ -259,15 +257,11 @@ class BudgetTracker:
             >>> print(budget.name)  # "November 2025"
             >>> print(budget.categories)  # {"Groceries": 600.00, ...}
         """
-        # TODO: Query from SQL database (Task 13 scope: in-memory for now)
-        # async with self.session_maker() as session:
-        #     stmt = select(Budget).where(Budget.id == budget_id)
-        #     result = await session.execute(stmt)
-        #     budget = result.scalars().first()
-        #     if not budget:
-        #         raise ValueError(f"Budget not found: {budget_id}")
-        #     return budget
-        
+        # Persistence: Applications query via scaffolded repository.get(budget_id).
+        # Generate with: fin-infra scaffold budgets --dest-dir app/models/
+        # See docs/persistence.md for repository patterns.
+        # In-memory storage used here for testing/examples.
+
         # In-memory storage (Task 13 scope)
         budget = self._budgets.get(budget_id)
         if not budget:
@@ -308,33 +302,22 @@ class BudgetTracker:
             if any(amount < 0 for amount in updates["categories"].values()):
                 raise ValueError("Category amounts cannot be negative")
 
-        # TODO: Update in SQL database (Task 13 scope: in-memory for now)
-        # async with self.session_maker() as session:
-        #     stmt = select(Budget).where(Budget.id == budget_id)
-        #     result = await session.execute(stmt)
-        #     budget = result.scalars().first()
-        #     if not budget:
-        #         raise ValueError(f"Budget not found: {budget_id}")
-        #
-        #     for key, value in updates.items():
-        #         setattr(budget, key, value)
-        #     budget.updated_at = datetime.now()
-        #
-        #     await session.commit()
-        #     await session.refresh(budget)
-        #     return budget
-        
+        # Persistence: Applications update via scaffolded repository.update(budget_id, updates).
+        # Generate with: fin-infra scaffold budgets --dest-dir app/models/
+        # See docs/persistence.md for update patterns.
+        # In-memory storage used here for testing/examples.
+
         # In-memory storage (Task 13 scope)
         budget = self._budgets.get(budget_id)
         if not budget:
             raise ValueError(f"Budget not found: {budget_id}")
-        
+
         # Update budget fields
         for key, value in updates.items():
             if hasattr(budget, key):
                 setattr(budget, key, value)
         budget.updated_at = datetime.now()
-        
+
         return budget
 
     async def delete_budget(self, budget_id: str) -> None:
@@ -354,17 +337,12 @@ class BudgetTracker:
             >>> await tracker.delete_budget("abc-123")
             >>> # Budget and related data deleted
         """
-        # TODO: Delete from SQL database (Task 13 scope: in-memory for now)
-        # async with self.session_maker() as session:
-        #     stmt = select(Budget).where(Budget.id == budget_id)
-        #     result = await session.execute(stmt)
-        #     budget = result.scalars().first()
-        #     if not budget:
-        #         raise ValueError(f"Budget not found: {budget_id}")
-        #
-        #     await session.delete(budget)
-        #     await session.commit()
-        
+        # Persistence: Applications delete via scaffolded repository.delete(budget_id).
+        # Generate with: fin-infra scaffold budgets --dest-dir app/models/
+        # Supports soft delete if --include-soft-delete flag used during scaffold.
+        # See docs/persistence.md for delete patterns.
+        # In-memory storage used here for testing/examples.
+
         # In-memory storage (Task 13 scope)
         if budget_id not in self._budgets:
             raise ValueError(f"Budget not found: {budget_id}")

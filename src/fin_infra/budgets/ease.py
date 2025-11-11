@@ -107,7 +107,7 @@ def easy_budgets(
         "echo": echo,
         "connect_args": _get_connect_args(database_url),
     }
-    
+
     # Only add pool settings for non-SQLite databases
     if "sqlite" not in database_url.lower():
         engine_kwargs["pool_size"] = pool_size

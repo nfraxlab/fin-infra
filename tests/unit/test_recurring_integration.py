@@ -12,7 +12,6 @@ from datetime import datetime, timedelta
 import pytest
 
 from fin_infra.recurring.ease import easy_recurring_detection
-from fin_infra.recurring.detector import Transaction
 
 
 class TestLLMDisabled:
@@ -126,7 +125,7 @@ class TestBackwardCompatibility:
     def test_default_is_v1_behavior(self):
         """Test that default behavior is V1 (LLM disabled)."""
         detector = easy_recurring_detection()
-        
+
         # Should have no LLM components (V1 behavior)
         assert detector.detector.merchant_normalizer is None
         assert detector.detector.variable_detector_llm is None
@@ -139,7 +138,7 @@ class TestBackwardCompatibility:
             amount_tolerance=0.15,
             date_tolerance_days=5,
         )
-        
+
         # Verify V1 parameters are set
         assert detector.detector.min_occurrences == 2
         assert detector.detector.amount_tolerance == 0.15

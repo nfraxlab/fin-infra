@@ -30,32 +30,32 @@ from fin_infra.providers.base import TaxProvider
 
 class TaxBitProvider(TaxProvider):
     """TaxBit provider for crypto tax calculations (v2 - not yet implemented).
-    
+
     **Subscription Required**:
     - Base fee: $50-$200/month
     - Per-user fee: $1-$5/user
     - Total cost: $10k-$50k/month for 10,000 users
-    
+
     **Authentication**:
     - OAuth 2.0 with client credentials
     - Access token refresh every 24 hours
     - Rate limit: 100 requests/minute
-    
+
     **Environment Variables**:
     - TAXBIT_CLIENT_ID: OAuth client ID
     - TAXBIT_CLIENT_SECRET: OAuth client secret
     - TAXBIT_BASE_URL: API endpoint (default: https://api.taxbit.com)
-    
+
     **Supported Features**:
     - Form 8949: Sales and Other Dispositions of Capital Assets
     - 1099-B: Proceeds from Broker Transactions (crypto)
     - 1099-MISC: Staking rewards, airdrops
     - Capital gains/losses calculation (FIFO, LIFO, HIFO)
     - Cost basis tracking
-    
+
     **Not Supported**:
     - Traditional tax forms (W-2, 1099-INT/DIV) - use IRS provider
-    
+
     Example:
         >>> provider = TaxBitProvider(
         ...     client_id=os.getenv("TAXBIT_CLIENT_ID"),
@@ -63,22 +63,22 @@ class TaxBitProvider(TaxProvider):
         ... )
         >>> # Raises NotImplementedError until v2 implementation
     """
-    
+
     def __init__(
         self,
         client_id: str | None = None,
         client_secret: str | None = None,
         base_url: str = "https://api.taxbit.com",
-        **kwargs
+        **kwargs,
     ):
         """Initialize TaxBit provider.
-        
+
         Args:
             client_id: OAuth client ID (required)
             client_secret: OAuth client secret (required)
             base_url: TaxBit API endpoint (default: production)
             **kwargs: Additional configuration
-        
+
         Raises:
             NotImplementedError: TaxBit provider not yet implemented (v2)
         """
@@ -87,40 +87,37 @@ class TaxBitProvider(TaxProvider):
             "Visit https://taxbit.com/products/api for pricing. "
             "Use MockTaxProvider for testing or IRS for traditional forms (free)."
         )
-    
-    async def get_tax_forms(
-        self, user_id: str, tax_year: int, **kwargs
-    ) -> list[dict]:
+
+    async def get_tax_forms(self, user_id: str, tax_year: int, **kwargs) -> list[dict]:
         """Not implemented (v2)."""
         raise NotImplementedError("TaxBit provider not yet implemented")
-    
-    async def get_tax_documents(
-        self, user_id: str, tax_year: int, **kwargs
-    ) -> list[TaxDocument]:
+
+    async def get_tax_documents(self, user_id: str, tax_year: int, **kwargs) -> list[TaxDocument]:
         """Not implemented (v2)."""
         raise NotImplementedError("TaxBit provider not yet implemented")
-    
-    async def get_tax_document(
-        self, document_id: str, **kwargs
-    ) -> TaxDocument:
+
+    async def get_tax_document(self, document_id: str, **kwargs) -> TaxDocument:
         """Not implemented (v2)."""
         raise NotImplementedError("TaxBit provider not yet implemented")
-    
-    async def download_document(
-        self, document_id: str, **kwargs
-    ) -> bytes:
+
+    async def download_document(self, document_id: str, **kwargs) -> bytes:
         """Not implemented (v2)."""
         raise NotImplementedError("TaxBit provider not yet implemented")
-    
+
     async def calculate_crypto_gains(
         self, user_id: str, transactions: list[dict], tax_year: int, **kwargs
     ) -> CryptoTaxReport:
         """Not implemented (v2)."""
         raise NotImplementedError("TaxBit provider not yet implemented")
-    
+
     async def calculate_tax_liability(
-        self, user_id: str, income: Decimal, deductions: Decimal,
-        filing_status: str, tax_year: int, **kwargs
+        self,
+        user_id: str,
+        income: Decimal,
+        deductions: Decimal,
+        filing_status: str,
+        tax_year: int,
+        **kwargs,
     ) -> TaxLiability:
         """Not implemented (v2)."""
         raise NotImplementedError("TaxBit provider not yet implemented")

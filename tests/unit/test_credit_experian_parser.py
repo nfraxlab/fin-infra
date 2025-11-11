@@ -14,7 +14,6 @@ All tests use mock Experian API responses.
 from datetime import date
 from decimal import Decimal
 
-import pytest
 
 from fin_infra.credit.experian.parser import (
     _parse_date,
@@ -443,8 +442,7 @@ class TestParseCreditReport:
             "creditProfile": {
                 "score": 750,
                 "tradelines": [
-                    {"accountId": f"acc_{i}", "accountType": "credit_card"}
-                    for i in range(5)
+                    {"accountId": f"acc_{i}", "accountType": "credit_card"} for i in range(5)
                 ],
             }
         }

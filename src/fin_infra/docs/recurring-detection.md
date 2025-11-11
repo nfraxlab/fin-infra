@@ -1182,6 +1182,221 @@ for pattern in upcoming:
     print(f"  {pattern.next_expected_date.strftime('%Y-%m-%d')}: {pattern.merchant_name} ${pattern.amount}")
 ```
 
+## Recurring Summary (Phase 2 Enhancement)
+
+Generate aggregated insights about user's recurring spending patterns.
+
+### Summary Model
+
+```python
+from fin_infra.recurring.summary import RecurringSummary, get_recurring_summary
+
+# Generate summary from detected patterns
+summary = get_recurring_summary(user_id="user_123", patterns=patterns)
+
+print(summary.model_dump_json(indent=2))
+```
+
+**Response Structure:**
+```json
+{
+  "user_id": "user_123",
+  "total_monthly_cost": 145.97,
+  "total_monthly_income": 4333.33,
+  "subscriptions": [
+    {
+      "merchant_name": "Netflix",
+      "amount": 15.99,
+      "cadence": "monthly",
+      "monthly_cost": 15.99,
+      "category": "entertainment",
+      "confidence": 0.95,
+      "is_subscription": true
+    },
+    {
+      "merchant_name": "Costco Membership",
+      "amount": 60.00,
+      "cadence": "quarterly",
+      "monthly_cost": 20.00,
+      "category": "shopping",
+      "confidence": 0.88,
+      "is_subscription": false
+    }
+  ],
+  "recurring_income": [
+    {
+      "merchant_name": "Employer Direct Deposit",
+      "amount": 2000.00,
+      "cadence": "biweekly",
+      "monthly_cost": 4333.33,
+      "category": "income",
+      "confidence": 0.98,
+      "is_subscription": false
+    }
+  ],
+  "by_category": {
+    "entertainment": 25.98,
+    "shopping": 20.00,
+    "food_and_drink": 45.99
+  },
+  "cancellation_opportunities": [
+    {
+      "merchant_name": "Hulu",
+      "category": "entertainment",
+      "monthly_savings": 7.99,
+      "reason": "You have 3 streaming services. Consider consolidating to save money."
+    }
+  ],
+  "generated_at": "2025-01-23T10:30:00Z"
+}
+```
+
+### Cadence Normalization
+
+All recurring patterns are normalized to monthly equivalents for easy comparison:
+
+| Cadence | Formula | Example |
+|---------|---------|---------|
+| **Monthly** | amount × 1 | $15.99/mo → $15.99/mo |
+| **Quarterly** | amount × 4 / 12 | $60/qtr → $20/mo |
+| **Biweekly** | amount × 26 / 12 | $2000 biweekly → $4333.33/mo |
+| **Weekly** | amount × 52 / 12 | $100/week → $433.33/mo |
+| **Annual** | amount / 12 | $120/year → $10/mo |
+
+### FastAPI Endpoint
+
+```python
+# GET /recurring/summary?user_id=user_123
+
+# Response includes:
+# - Total monthly subscription cost
+# - Total monthly recurring income
+# - List of all subscriptions with monthly normalization
+# - Spending breakdown by category
+# - Cancellation opportunities (duplicate services, high-cost unused)
+```
+
+### Use Cases
+
+**1. Budget Dashboard**
+```python
+summary = get_recurring_summary(user_id, patterns)
+
+print(f"Monthly Subscriptions: ${summary.total_monthly_cost:.2f}")
+print(f"Monthly Income: ${summary.total_monthly_income:.2f}")
+print(f"Net Monthly: ${summary.total_monthly_income - summary.total_monthly_cost:.2f}")
+
+# Show category breakdown
+for category, cost in summary.by_category.items():
+    print(f"  {category}: ${cost:.2f}")
+```
+
+**2. Cancellation Recommendations**
+```python
+if summary.cancellation_opportunities:
+    print("💡 Potential Savings:")
+    for opp in summary.cancellation_opportunities:
+        print(f"  Cancel {opp.merchant_name}: Save ${opp.monthly_savings:.2f}/month")
+        print(f"    Reason: {opp.reason}")
+```
+
+**3. Spending Alerts**
+```python
+# Alert if subscription costs exceed threshold
+if summary.total_monthly_cost > 200:
+    send_alert(
+        user_id,
+        title="High Subscription Costs",
+        message=f"You're spending ${summary.total_monthly_cost:.2f}/month on subscriptions"
+    )
+
+# Alert if duplicate services detected
+if len(summary.cancellation_opportunities) > 0:
+    send_alert(
+        user_id,
+        title="Potential Savings",
+        message=f"Cancel {len(summary.cancellation_opportunities)} services to save money"
+    )
+```
+
+### Cancellation Opportunity Detection
+
+The summary automatically identifies potential savings:
+
+**Duplicate Streaming Services** (>2 detected):
+- Netflix + Hulu + Disney+ + HBO Max → Suggests canceling cheapest
+
+**High-Cost Subscriptions** (>$50/month):
+- Identifies subscriptions over $50/month for review
+
+**Unused Services** (low transaction count):
+- Detects subscriptions with <3 occurrences (might be unused)
+
+### Implementation Example
+
+```python
+from fin_infra.recurring import easy_recurring_detection, add_recurring_detection
+from fin_infra.recurring.summary import get_recurring_summary
+from fastapi import FastAPI, Query
+
+app = FastAPI()
+
+# Add recurring detection endpoints
+detector = add_recurring_detection(app, prefix="/recurring")
+
+# Custom summary endpoint
+@app.get("/recurring/summary")
+async def get_summary(user_id: str = Query(...)):
+    """Get recurring spending summary for user"""
+    
+    # Fetch transactions (from banking provider)
+    transactions = await get_user_transactions(user_id, days=180)
+    
+    # Detect patterns
+    patterns = detector.detect_patterns(transactions)
+    
+    # Generate summary
+    summary = get_recurring_summary(user_id, patterns)
+    
+    return summary
+```
+
+### Production Considerations
+
+**Caching**: Cache summaries for 24 hours (daily refresh):
+
+```python
+from svc_infra.cache import cache_read, cache_write, resource
+
+recurring = resource("recurring_summary", "user_id")
+
+@app.get("/recurring/summary")
+@recurring.cache_read(ttl=86400)  # 24 hours
+async def get_cached_summary(user_id: str):
+    transactions = await get_user_transactions(user_id, days=180)
+    patterns = detector.detect_patterns(transactions)
+    return get_recurring_summary(user_id, patterns)
+```
+
+**Background Processing**: Generate summaries overnight for all users:
+
+```python
+from svc_infra.jobs import easy_jobs
+
+worker, scheduler = easy_jobs(app)
+
+@scheduler.scheduled_job('cron', hour=3)  # 3 AM daily
+async def generate_all_summaries():
+    """Pre-generate summaries for all users"""
+    for user in users:
+        transactions = await get_user_transactions(user.id, days=180)
+        patterns = detector.detect_patterns(transactions)
+        summary = get_recurring_summary(user.id, patterns)
+        
+        # Cache for next day
+        await cache_summary(user.id, summary)
+```
+
 ## Related Documentation
 
 - [Transaction Categorization](categorization.md) - Categorize transactions by type

@@ -27,7 +27,9 @@ class CoinGeckoCryptoData(CryptoDataProvider):
             price = data.get(_to_cg_id(base), {}).get(quote.lower(), 0)
         except Exception:
             price = 0
-        return Quote(symbol=f"{base}/{quote}", price=Decimal(str(price)), as_of=datetime.now(timezone.utc))
+        return Quote(
+            symbol=f"{base}/{quote}", price=Decimal(str(price)), as_of=datetime.now(timezone.utc)
+        )
 
     def ohlcv(self, symbol_pair: str, timeframe: str = "1d", limit: int = 100) -> list[Candle]:
         # CoinGecko provides market_chart with daily data; map timeframe crudely
@@ -35,7 +37,9 @@ class CoinGeckoCryptoData(CryptoDataProvider):
         days = _tf_to_days(timeframe, limit)
         params: dict[str, str | int] = {"vs_currency": quote.lower(), "days": days}
         try:
-            r = httpx.get(f"{_BASE}/coins/{_to_cg_id(base)}/market_chart", params=params, timeout=20.0)
+            r = httpx.get(
+                f"{_BASE}/coins/{_to_cg_id(base)}/market_chart", params=params, timeout=20.0
+            )
             r.raise_for_status()
             prices = r.json().get("prices", [])
         except Exception:
@@ -44,7 +48,9 @@ class CoinGeckoCryptoData(CryptoDataProvider):
         for p in prices[:limit]:
             ts_ms = int(p[0])
             price = Decimal(str(p[1]))
-            out.append(Candle(ts=ts_ms, open=price, high=price, low=price, close=price, volume=Decimal(0)))
+            out.append(
+                Candle(ts=ts_ms, open=price, high=price, low=price, close=price, volume=Decimal(0))
+            )
         return out
 
 

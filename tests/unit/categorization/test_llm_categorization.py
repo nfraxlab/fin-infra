@@ -10,13 +10,14 @@ Tests LLMCategorizer with mocked ai-infra responses:
 """
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 from fin_infra.categorization import Category, CategorizationEngine, CategorizationMethod
 
 # LLM layer (skip tests if not available)
 try:
     from fin_infra.categorization.llm_layer import LLMCategorizer, CategoryPrediction
+
     HAS_LLM = True
 except ImportError:
     HAS_LLM = False
@@ -95,7 +96,7 @@ class TestLLMRetryLogic:
     async def test_llm_retry_on_transient_failure(self, mock_core_llm, mock_llm_response):
         """
         Test that LLM retries on transient failures.
-        
+
         NOTE: Retry logic is handled by ai-infra CoreLLM, not LLMCategorizer.
         This test verifies that CoreLLM.achat is called with retry config.
         """
@@ -242,7 +243,9 @@ class TestHybridWithLLM:
             mock_instance = AsyncMock()
             mock_llm.return_value = mock_instance
 
-            categorizer_llm = LLMCategorizer(provider="google_genai", model_name="gemini-2.0-flash-exp")
+            categorizer_llm = LLMCategorizer(
+                provider="google_genai", model_name="gemini-2.0-flash-exp"
+            )
             engine = CategorizationEngine(
                 enable_ml=False,
                 enable_llm=True,
@@ -265,7 +268,9 @@ class TestHybridWithLLM:
             mock_instance = AsyncMock()
             mock_llm.return_value = mock_instance
 
-            categorizer_llm = LLMCategorizer(provider="google_genai", model_name="gemini-2.0-flash-exp")
+            categorizer_llm = LLMCategorizer(
+                provider="google_genai", model_name="gemini-2.0-flash-exp"
+            )
             engine = CategorizationEngine(
                 enable_ml=False,
                 enable_llm=True,
@@ -289,7 +294,9 @@ class TestHybridWithLLM:
             mock_instance.achat.return_value = mock_llm_response
             mock_llm.return_value = mock_instance
 
-            categorizer_llm = LLMCategorizer(provider="google_genai", model_name="gemini-2.0-flash-exp")
+            categorizer_llm = LLMCategorizer(
+                provider="google_genai", model_name="gemini-2.0-flash-exp"
+            )
             engine = CategorizationEngine(
                 enable_ml=True,
                 enable_llm=True,
@@ -327,7 +334,9 @@ class TestHybridWithLLM:
             mock_instance.achat.side_effect = Exception("LLM API error")
             mock_llm.return_value = mock_instance
 
-            categorizer_llm = LLMCategorizer(provider="google_genai", model_name="gemini-2.0-flash-exp")
+            categorizer_llm = LLMCategorizer(
+                provider="google_genai", model_name="gemini-2.0-flash-exp"
+            )
             engine = CategorizationEngine(
                 enable_ml=True,
                 enable_llm=True,
@@ -365,7 +374,9 @@ class TestHybridWithLLM:
             mock_instance.achat.return_value = mock_llm_response
             mock_llm.return_value = mock_instance
 
-            categorizer_llm = LLMCategorizer(provider="google_genai", model_name="gemini-2.0-flash-exp")
+            categorizer_llm = LLMCategorizer(
+                provider="google_genai", model_name="gemini-2.0-flash-exp"
+            )
             engine = CategorizationEngine(
                 enable_ml=True,
                 enable_llm=True,

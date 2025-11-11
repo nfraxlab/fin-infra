@@ -19,7 +19,6 @@ Pydantic V2 models for net worth tracking.
 
 from datetime import datetime
 from enum import Enum
-from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field
 
@@ -27,7 +26,7 @@ from pydantic import BaseModel, ConfigDict, Field, computed_field
 class AssetCategory(str, Enum):
     """
     Asset category types for classification.
-    
+
     **Categories**:
     - CASH: Checking, savings, money market accounts (5-15% typical)
     - INVESTMENTS: Stocks, bonds, mutual funds, ETFs (60-80% typical)
@@ -48,7 +47,7 @@ class AssetCategory(str, Enum):
 class LiabilityCategory(str, Enum):
     """
     Liability category types for classification.
-    
+
     **Categories**:
     - CREDIT_CARD: Credit card balances (15-25% APR, pay off quickly)
     - MORTGAGE: Home loans (70-85% of liabilities, 3-7% APR)
@@ -69,9 +68,9 @@ class LiabilityCategory(str, Enum):
 class NetWorthSnapshot(BaseModel):
     """
     Net worth snapshot at a specific point in time.
-    
+
     **Formula**: Net Worth = Total Assets - Total Liabilities
-    
+
     **Example**:
     ```python
     snapshot = NetWorthSnapshot(
@@ -127,7 +126,9 @@ class NetWorthSnapshot(BaseModel):
     # Identifiers
     id: str = Field(..., description="Unique snapshot identifier (UUID)")
     user_id: str = Field(..., description="User identifier")
-    snapshot_date: datetime = Field(..., description="When snapshot was taken (typically midnight UTC)")
+    snapshot_date: datetime = Field(
+        ..., description="When snapshot was taken (typically midnight UTC)"
+    )
 
     # Totals
     total_net_worth: float = Field(..., description="Net worth = assets - liabilities")
@@ -146,9 +147,13 @@ class NetWorthSnapshot(BaseModel):
     cash: float = Field(0.0, ge=0, description="Cash accounts (checking, savings, money market)")
     investments: float = Field(0.0, ge=0, description="Investments (stocks, bonds, mutual funds)")
     crypto: float = Field(0.0, ge=0, description="Cryptocurrency holdings")
-    real_estate: float = Field(0.0, ge=0, description="Real estate value (primary + investment properties)")
+    real_estate: float = Field(
+        0.0, ge=0, description="Real estate value (primary + investment properties)"
+    )
     vehicles: float = Field(0.0, ge=0, description="Vehicle value (cars, boats, motorcycles)")
-    other_assets: float = Field(0.0, ge=0, description="Other assets (collectibles, precious metals)")
+    other_assets: float = Field(
+        0.0, ge=0, description="Other assets (collectibles, precious metals)"
+    )
 
     # Liability breakdown (6 categories)
     credit_cards: float = Field(0.0, ge=0, description="Credit card balances")
@@ -173,7 +178,7 @@ class NetWorthSnapshot(BaseModel):
 class AssetAllocation(BaseModel):
     """
     Asset allocation breakdown for visualization (pie charts).
-    
+
     **Example**:
     ```python
     allocation = AssetAllocation(
@@ -255,7 +260,7 @@ class AssetAllocation(BaseModel):
 class LiabilityBreakdown(BaseModel):
     """
     Liability breakdown for visualization (pie charts).
-    
+
     **Example**:
     ```python
     breakdown = LiabilityBreakdown(
@@ -300,31 +305,47 @@ class LiabilityBreakdown(BaseModel):
     @property
     def credit_cards_percentage(self) -> float:
         """Credit cards as percentage of total liabilities."""
-        return (self.credit_cards / self.total_liabilities * 100) if self.total_liabilities > 0 else 0.0
+        return (
+            (self.credit_cards / self.total_liabilities * 100)
+            if self.total_liabilities > 0
+            else 0.0
+        )
 
     @computed_field  # type: ignore[misc]
     @property
     def mortgages_percentage(self) -> float:
         """Mortgages as percentage of total liabilities."""
-        return (self.mortgages / self.total_liabilities * 100) if self.total_liabilities > 0 else 0.0
+        return (
+            (self.mortgages / self.total_liabilities * 100) if self.total_liabilities > 0 else 0.0
+        )
 
     @computed_field  # type: ignore[misc]
     @property
     def auto_loans_percentage(self) -> float:
         """Auto loans as percentage of total liabilities."""
-        return (self.auto_loans / self.total_liabilities * 100) if self.total_liabilities > 0 else 0.0
+        return (
+            (self.auto_loans / self.total_liabilities * 100) if self.total_liabilities > 0 else 0.0
+        )
 
     @computed_field  # type: ignore[misc]
     @property
     def student_loans_percentage(self) -> float:
         """Student loans as percentage of total liabilities."""
-        return (self.student_loans / self.total_liabilities * 100) if self.total_liabilities > 0 else 0.0
+        return (
+            (self.student_loans / self.total_liabilities * 100)
+            if self.total_liabilities > 0
+            else 0.0
+        )
 
     @computed_field  # type: ignore[misc]
     @property
     def personal_loans_percentage(self) -> float:
         """Personal loans as percentage of total liabilities."""
-        return (self.personal_loans / self.total_liabilities * 100) if self.total_liabilities > 0 else 0.0
+        return (
+            (self.personal_loans / self.total_liabilities * 100)
+            if self.total_liabilities > 0
+            else 0.0
+        )
 
     @computed_field  # type: ignore[misc]
     @property
@@ -340,7 +361,7 @@ class LiabilityBreakdown(BaseModel):
 class AssetDetail(BaseModel):
     """
     Individual asset account details.
-    
+
     **Example**:
     ```python
     detail = AssetDetail(
@@ -373,7 +394,9 @@ class AssetDetail(BaseModel):
     currency: str = Field("USD", description="Account currency")
     market_value: float | None = Field(None, ge=0, description="Market value (for stocks/crypto)")
     cost_basis: float | None = Field(None, ge=0, description="Original purchase price")
-    gain_loss: float | None = Field(None, description="Unrealized gain/loss (market_value - cost_basis)")
+    gain_loss: float | None = Field(
+        None, description="Unrealized gain/loss (market_value - cost_basis)"
+    )
     gain_loss_percentage: float | None = Field(
         None, description="Percentage gain/loss ((gain_loss / cost_basis) * 100)"
     )
@@ -383,7 +406,7 @@ class AssetDetail(BaseModel):
 class LiabilityDetail(BaseModel):
     """
     Individual liability account details.
-    
+
     **Example**:
     ```python
     detail = LiabilityDetail(
@@ -425,7 +448,7 @@ class LiabilityDetail(BaseModel):
 class NetWorthRequest(BaseModel):
     """
     Request to calculate current net worth.
-    
+
     **Example**:
     ```python
     request = NetWorthRequest(
@@ -437,18 +460,14 @@ class NetWorthRequest(BaseModel):
 
     model_config = ConfigDict(str_strip_whitespace=True)
 
-    force_refresh: bool = Field(
-        False, description="Skip cache and recalculate from providers"
-    )
-    include_breakdown: bool = Field(
-        True, description="Include asset/liability details in response"
-    )
+    force_refresh: bool = Field(False, description="Skip cache and recalculate from providers")
+    include_breakdown: bool = Field(True, description="Include asset/liability details in response")
 
 
 class NetWorthResponse(BaseModel):
     """
     Response with current net worth.
-    
+
     **Example**:
     ```python
     response = NetWorthResponse(
@@ -466,7 +485,9 @@ class NetWorthResponse(BaseModel):
 
     snapshot: NetWorthSnapshot = Field(..., description="Net worth snapshot")
     asset_allocation: AssetAllocation = Field(..., description="Asset breakdown by category")
-    liability_breakdown: LiabilityBreakdown = Field(..., description="Liability breakdown by category")
+    liability_breakdown: LiabilityBreakdown = Field(
+        ..., description="Liability breakdown by category"
+    )
     asset_details: list[AssetDetail] = Field(
         default_factory=list, description="Individual asset account details"
     )
@@ -479,7 +500,7 @@ class NetWorthResponse(BaseModel):
 class SnapshotHistoryRequest(BaseModel):
     """
     Request for historical snapshots.
-    
+
     **Example**:
     ```python
     request = SnapshotHistoryRequest(
@@ -502,7 +523,7 @@ class SnapshotHistoryRequest(BaseModel):
 class SnapshotHistoryResponse(BaseModel):
     """
     Response with historical snapshots.
-    
+
     **Example**:
     ```python
     response = SnapshotHistoryResponse(
@@ -516,9 +537,7 @@ class SnapshotHistoryResponse(BaseModel):
 
     model_config = ConfigDict(str_strip_whitespace=True)
 
-    snapshots: list[NetWorthSnapshot] = Field(
-        default_factory=list, description="List of snapshots"
-    )
+    snapshots: list[NetWorthSnapshot] = Field(default_factory=list, description="List of snapshots")
     count: int = Field(..., ge=0, description="Number of snapshots returned")
     start_date: datetime = Field(..., description="Earliest snapshot date")
     end_date: datetime = Field(..., description="Latest snapshot date")
@@ -532,7 +551,7 @@ class SnapshotHistoryResponse(BaseModel):
 class InsightsRequest(BaseModel):
     """
     Request for LLM-generated financial insights.
-    
+
     **Example**:
     ```python
     request = InsightsRequest(
@@ -557,7 +576,7 @@ class InsightsRequest(BaseModel):
 class ConversationRequest(BaseModel):
     """
     Request for multi-turn financial conversation.
-    
+
     **Example**:
     ```python
     request = ConversationRequest(
@@ -580,7 +599,7 @@ class ConversationRequest(BaseModel):
 class ConversationResponse(BaseModel):
     """
     Response from financial conversation.
-    
+
     **Example**:
     ```python
     response = ConversationResponse(
@@ -605,7 +624,7 @@ class ConversationResponse(BaseModel):
 class GoalCreateRequest(BaseModel):
     """
     Request to create/validate financial goal.
-    
+
     **Example**:
     ```python
     request = GoalCreateRequest(
@@ -631,7 +650,7 @@ class GoalCreateRequest(BaseModel):
 class GoalProgressResponse(BaseModel):
     """
     Response with goal progress report.
-    
+
     **Example**:
     ```python
     response = GoalProgressResponse(
@@ -654,6 +673,4 @@ class GoalProgressResponse(BaseModel):
     required_monthly_savings: float = Field(..., description="Required monthly savings")
     actual_monthly_savings: float = Field(..., description="Actual monthly savings")
     estimated_completion_date: str = Field(..., description="Estimated completion date")
-    recommendations: list[str] = Field(
-        default_factory=list, description="LLM recommendations"
-    )
+    recommendations: list[str] = Field(default_factory=list, description="LLM recommendations")

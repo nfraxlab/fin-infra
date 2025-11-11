@@ -42,7 +42,7 @@ class ${Entity}Repository:
     
     async def create(
         self,
-        ${entity}: ${Entity}Create${tenant_arg_type_comma}
+        ${entity}: ${Entity}Create${tenant_arg_type_comma},
     ) -> ${Entity}Read:
         """Create a new ${entity}.
         
@@ -57,8 +57,7 @@ class ${Entity}Repository:
         """
         # Map Pydantic to SQLAlchemy
         data = _map_${entity}_fields(${entity}.model_dump(exclude_unset=True, by_alias=True))
-        data["id"] = str(uuid4())
-${tenant_arg_val}
+        data["id"] = str(uuid4())${tenant_dict_assign}
         
         db_${entity} = ${Entity}Model(**data)
         self.session.add(db_${entity})
@@ -69,7 +68,7 @@ ${tenant_arg_val}
     
     async def get(
         self,
-        ${entity}_id: str${tenant_arg_type_comma}
+        ${entity}_id: str${tenant_arg_type_comma},
     ) -> Optional[${Entity}Read]:
         """Get a ${entity} by ID.
         
@@ -87,10 +86,10 @@ ${tenant_arg_val}
         return _to_pydantic(db_${entity}) if db_${entity} else None
     
     async def list(
-        self,
-        user_id: str,
-        status: Optional[str] = None,
-        category: Optional[str] = None${tenant_arg_type_comma}
+        self${tenant_arg_type_comma},
+        category: Optional[str] = None,
+        limit: int = 100,
+        offset: int = 0,
     ) -> List[${Entity}Read]:
         """List ${entity}s for a user with optional filters.
         
@@ -120,7 +119,7 @@ ${tenant_arg_val}
     async def update(
         self,
         ${entity}_id: str,
-        updates: ${Entity}Update${tenant_arg_type_comma}
+        updates: ${Entity}Update${tenant_arg_type_comma},
     ) -> ${Entity}Read:
         """Update a ${entity}.
         
@@ -154,8 +153,8 @@ ${tenant_arg_val}
     
     async def delete(
         self,
-        ${entity}_id: str${tenant_arg_type_comma}
-        soft: bool = ${soft_delete_default}
+        ${entity}_id: str${tenant_arg_type_comma},
+        soft: bool = ${soft_delete_default},
     ) -> None:
         """Delete a ${entity}.
         
@@ -181,7 +180,7 @@ ${tenant_arg_val}
     
     async def get_active(
         self,
-        user_id: str${tenant_arg_type_comma}
+        user_id: str${tenant_arg_type_comma},
     ) -> List[${Entity}Read]:
         """Get all active ${entity}s for a user.
         
@@ -195,8 +194,7 @@ ${tenant_arg_val}
     
     async def get_by_status(
         self,
-        user_id: str,
-        status: str${tenant_arg_type_comma}
+        status: str${tenant_arg_type_comma},
     ) -> List[${Entity}Read]:
         """Get ${entity}s by status.
         
@@ -210,9 +208,9 @@ ${tenant_arg_val}
         return await self.list(user_id, status=status${tenant_arg_val})
     
     async def get_by_priority(
-        self,
-        user_id: str,
-        min_priority: int = 1${tenant_arg_type_comma}
+        self${tenant_arg_type_comma},
+        min_priority: int = 1,
+        max_priority: Optional[int] = None,
     ) -> List[${Entity}Read]:
         """Get ${entity}s with priority >= min_priority.
         
@@ -238,7 +236,7 @@ ${tenant_arg_val}
     async def update_progress(
         self,
         ${entity}_id: str,
-        new_amount: Decimal${tenant_arg_type_comma}
+        new_amount: Decimal${tenant_arg_type_comma},
     ) -> ${Entity}Read:
         """Update goal progress (current_amount).
         

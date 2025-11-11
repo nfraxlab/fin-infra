@@ -93,6 +93,12 @@ non_interactive = true
 check_untyped_defs = false
 files = "src"
 exclude = '^(\.venv|venv|build|dist|node_modules|tests)/'
+plugins = ["pydantic.mypy"]
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

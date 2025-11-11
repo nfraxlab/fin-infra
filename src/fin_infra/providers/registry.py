@@ -11,7 +11,7 @@ Supports:
 from __future__ import annotations
 
 import importlib
-from typing import Any, Type, TypeVar
+from typing import Any, TypeVar
 
 from .base import (
     BankingProvider,
@@ -93,9 +93,7 @@ class ProviderRegistry:
     def __init__(self):
         self._cache: dict[str, Any] = {}
 
-    def resolve(
-        self, domain: str, name: str | None = None, **config
-    ) -> Any:
+    def resolve(self, domain: str, name: str | None = None, **config) -> Any:
         """
         Resolve and instantiate a provider.
 
@@ -120,9 +118,7 @@ class ProviderRegistry:
         if name is None:
             name = DEFAULT_PROVIDERS.get(domain)
             if name is None:
-                raise ProviderNotFoundError(
-                    f"No default provider configured for domain '{domain}'"
-                )
+                raise ProviderNotFoundError(f"No default provider configured for domain '{domain}'")
 
         # Check cache
         cache_key = f"{domain}:{name}"
@@ -166,9 +162,7 @@ class ProviderRegistry:
         try:
             instance = provider_class(**config)
         except Exception as e:
-            raise ProviderNotFoundError(
-                f"Failed to instantiate provider '{cache_key}': {e}"
-            ) from e
+            raise ProviderNotFoundError(f"Failed to instantiate provider '{cache_key}': {e}") from e
 
         # Cache instance
         self._cache[cache_key] = instance

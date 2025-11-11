@@ -1043,6 +1043,429 @@ analytics = add_analytics(app)
 
 ---
 
+## Portfolio Rebalancing
+
+**Status**: ✅ Production-ready (Phase 3)  
+**Module**: `fin_infra.analytics.rebalancing`
+
+### Overview
+
+Tax-efficient portfolio rebalancing engine with intelligent trade recommendations, capital gains optimization, and position-level account mapping.
+
+### Quick Start
+
+```python
+from fin_infra.analytics.rebalancing import generate_rebalancing_plan, Position
+
+# Define current portfolio positions
+positions = [
+    Position(
+        symbol="VTI",
+        quantity=100,
+        market_value=25000,
+        cost_basis=20000,
+        account="taxable_brokerage",
+    ),
+    Position(
+        symbol="BTC",
+        quantity=0.5,
+        market_value=25000,
+        cost_basis=15000,
+        account="coinbase",
+    ),
+]
+
+# Define target allocation
+target_allocation = {
+    "stocks": 0.60,   # 60% stocks
+    "crypto": 0.30,   # 30% crypto
+    "bonds": 0.10,    # 10% bonds
+}
+
+# Generate rebalancing plan
+plan = generate_rebalancing_plan(
+    user_id="user_123",
+    positions=positions,
+    target_allocation=target_allocation,
+    position_accounts={"VTI": "stocks", "BTC": "crypto"},
+    tax_lot_method="fifo",
+    commission_per_trade=0.0,
+)
+
+print(f"Total Rebalance Amount: ${plan.total_rebalance_amount:,.2f}")
+print(f"Estimated Tax Impact: ${plan.total_tax_impact:,.2f}")
+print(f"Trades: {len(plan.trades)}")
+
+for trade in plan.trades:
+    print(f"  {trade.action.upper()} {trade.quantity} {trade.symbol} @ ${trade.current_price:.2f}")
+```
+
+### API Reference
+
+#### `generate_rebalancing_plan()`
+
+**Parameters**:
+- `user_id` (str): User identifier
+- `positions` (list[Position]): Current portfolio positions
+- `target_allocation` (dict[str, float]): Target asset class allocation (values sum to 1.0)
+- `position_accounts` (dict[str, str] | None): Map symbols to asset classes (e.g., `{"VTI": "stocks", "BTC": "crypto"}`)
+  - **Required** if positions don't have asset class metadata
+  - Enables multi-asset-class portfolios (stocks + crypto + bonds)
+- `tax_lot_method` (str): "fifo" (default) or "lifo" for capital gains calculation
+- `commission_per_trade` (Decimal): Commission per trade (default: 0.0)
+
+**Returns**: `RebalancingPlan` with trades, tax impact, and recommendations
+
+#### `Position` Model
+
+```python
+Position(
+    symbol: str,                  # Ticker symbol
+    quantity: Decimal,            # Number of shares/units
+    market_value: Decimal,        # Current market value
+    cost_basis: Decimal,          # Original purchase price
+    account: str | None = None,   # Account name (optional)
+)
+```
+
+#### `RebalancingPlan` Model
+
+```python
+RebalancingPlan(
+    user_id: str,
+    target_allocation: dict[str, float],
+    current_allocation: dict[str, float],
+    projected_allocation: dict[str, float],
+    trades: list[Trade],
+    total_tax_impact: Decimal,
+    total_transaction_costs: Decimal,
+    total_rebalance_amount: Decimal,
+    recommendations: list[str],
+    warnings: list[str],
+)
+```
+
+### Examples
+
+**Example 1: Stock Portfolio Rebalancing**
+
+```python
+positions = [
+    Position(symbol="AAPL", quantity=50, market_value=10000, cost_basis=8000),
+    Position(symbol="MSFT", quantity=30, market_value=15000, cost_basis=12000),
+    Position(symbol="GOOGL", quantity=20, market_value=5000, cost_basis=6000),
+]
+
+target = {"stocks": 1.0}  # 100% stocks
+
+plan = generate_rebalancing_plan("user_123", positions, target)
+```
+
+**Example 2: Multi-Asset Portfolio (Stocks + Crypto + Bonds)**
+
+```python
+positions = [
+    Position(symbol="VTI", quantity=100, market_value=25000, cost_basis=20000),   # Stocks ETF
+    Position(symbol="BTC", quantity=0.5, market_value=25000, cost_basis=15000),   # Bitcoin
+    Position(symbol="AGG", quantity=50, market_value=5000, cost_basis=5000),      # Bonds ETF
+]
+
+target = {"stocks": 0.60, "crypto": 0.30, "bonds": 0.10}
+
+# Map symbols to asset classes (REQUIRED for multi-asset)
+position_accounts = {
+    "VTI": "stocks",
+    "BTC": "crypto",
+    "AGG": "bonds",
+}
+
+plan = generate_rebalancing_plan(
+    "user_123", positions, target, position_accounts=position_accounts
+)
+```
+
+**Example 3: Tax-Loss Harvesting (LIFO)**
+
+```python
+positions = [
+    Position(symbol="AAPL", quantity=100, market_value=8000, cost_basis=10000),  # $2k loss
+]
+
+target = {"stocks": 1.0}
+
+# Use LIFO to harvest losses
+plan = generate_rebalancing_plan(
+    "user_123", positions, target, tax_lot_method="lifo"
+)
+
+print(f"Tax Impact: ${plan.total_tax_impact:.2f}")  # Negative = tax savings
+```
+
+### Tax Optimization
+
+- **Capital Gains Calculation**: Uses FIFO or LIFO for tax lot selection
+- **Short-term vs Long-term**: Assumes 15% long-term capital gains rate
+- **Tax-Loss Harvesting**: Identifies positions with unrealized losses
+- **Transaction Cost Awareness**: Factors in commissions when recommending trades
+
+### Production Considerations
+
+1. **Cache Rebalancing Plans**: Plans are expensive to compute (use svc-infra cache, 1h TTL)
+2. **Review Before Executing**: Plans are recommendations, not automatic trades
+3. **Account for Fractional Shares**: Some brokerages allow fractional share trading
+4. **Multi-Account Support**: Use `position_accounts` parameter for cross-asset portfolios
+
+### Related Documentation
+
+- **[Portfolio Analytics](#portfolio-analytics)**: Performance metrics, benchmarks
+- **[Brokerage](./brokerage.md)**: Executing rebalancing trades
+- **[Tax](./tax.md)**: Tax-loss harvesting, capital gains tracking
+
+---
+
+## Scenario Modeling
+
+**Status**: ✅ Production-ready (Phase 3)  
+**Module**: `fin_infra.analytics.scenarios`
+
+### Overview
+
+Financial scenario modeling with compound interest projections for retirement planning, savings goals, debt payoff, college savings, home purchase, and investment growth.
+
+### Quick Start
+
+```python
+from fin_infra.analytics.scenarios import model_scenario, ScenarioRequest, ScenarioType
+
+# Model retirement scenario
+request = ScenarioRequest(
+    type=ScenarioType.RETIREMENT,
+    current_balance=50000,           # Current savings
+    monthly_contribution=2000,       # Monthly contribution
+    years=30,                        # 30 years to retirement
+    annual_return_rate=0.07,         # 7% annual return
+    inflation_rate=0.03,             # 3% inflation
+    goal_amount=1500000,             # Retirement goal
+)
+
+result = model_scenario(request)
+
+print(f"Final Balance: ${result.final_balance:,.2f}")
+print(f"Total Contributions: ${result.total_contributions:,.2f}")
+print(f"Total Growth: ${result.total_growth:,.2f}")
+print(f"Goal Achievement: {result.goal_achievement_pct:.1%}")
+
+# View yearly projections
+for point in result.data_points[:5]:  # First 5 years
+    print(f"Year {point.year}: ${point.balance:,.2f} (growth: ${point.growth:,.2f})")
+
+# AI-powered recommendations
+for rec in result.recommendations:
+    print(f"  💡 {rec}")
+
+# Risk warnings
+for warning in result.warnings:
+    print(f"  ⚠️ {warning}")
+```
+
+### Scenario Types
+
+#### 1. Retirement Planning
+
+```python
+request = ScenarioRequest(
+    type=ScenarioType.RETIREMENT,
+    current_balance=100000,
+    monthly_contribution=3000,
+    years=25,
+    annual_return_rate=0.08,
+    goal_amount=2000000,
+)
+
+result = model_scenario(request)
+print(f"Retirement goal: {result.goal_achievement_pct:.0%} achieved")
+```
+
+#### 2. Savings Goal
+
+```python
+request = ScenarioRequest(
+    type=ScenarioType.SAVINGS_GOAL,
+    current_balance=5000,
+    monthly_contribution=500,
+    years=5,
+    annual_return_rate=0.04,
+    goal_amount=35000,
+)
+
+result = model_scenario(request)
+print(f"Savings goal: ${result.final_balance:,.2f} (target: ${request.goal_amount:,.2f})")
+```
+
+#### 3. Debt Payoff
+
+```python
+request = ScenarioRequest(
+    type=ScenarioType.DEBT_PAYOFF,
+    current_balance=20000,           # Current debt
+    monthly_contribution=-800,       # Monthly payment (negative)
+    years=3,
+    annual_return_rate=-0.18,        # 18% APR (negative for debt)
+)
+
+result = model_scenario(request)
+print(f"Debt paid off in {result.years_to_goal:.1f} years")
+```
+
+#### 4. College Savings (529 Plan)
+
+```python
+request = ScenarioRequest(
+    type=ScenarioType.COLLEGE_SAVINGS,
+    current_balance=10000,
+    monthly_contribution=400,
+    years=15,
+    annual_return_rate=0.06,
+    goal_amount=100000,
+)
+
+result = model_scenario(request)
+print(f"College fund: ${result.final_balance:,.2f}")
+```
+
+#### 5. Home Purchase
+
+```python
+request = ScenarioRequest(
+    type=ScenarioType.HOME_PURCHASE,
+    current_balance=15000,
+    monthly_contribution=1200,
+    years=4,
+    annual_return_rate=0.02,         # Low-risk savings account
+    goal_amount=60000,               # 20% down payment
+)
+
+result = model_scenario(request)
+print(f"Down payment savings: ${result.final_balance:,.2f}")
+```
+
+#### 6. Investment Growth
+
+```python
+request = ScenarioRequest(
+    type=ScenarioType.INVESTMENT,
+    current_balance=25000,
+    monthly_contribution=1000,
+    years=20,
+    annual_return_rate=0.10,         # Aggressive growth
+    inflation_rate=0.03,
+)
+
+result = model_scenario(request)
+print(f"Investment value: ${result.final_balance:,.2f}")
+print(f"Inflation-adjusted: ${result.inflation_adjusted_final_balance:,.2f}")
+```
+
+### API Reference
+
+#### `model_scenario(request: ScenarioRequest) -> ScenarioResult`
+
+**Parameters**:
+- `request.type` (ScenarioType): Scenario type (retirement, savings_goal, debt_payoff, etc.)
+- `request.current_balance` (Decimal): Starting balance
+- `request.monthly_contribution` (Decimal): Monthly contribution (negative for debt payments)
+- `request.years` (int): Projection period in years
+- `request.annual_return_rate` (float): Annual return rate (0.07 = 7%)
+- `request.inflation_rate` (float): Annual inflation rate (0.03 = 3%, optional)
+- `request.goal_amount` (Decimal | None): Target goal amount (optional)
+
+**Returns**: `ScenarioResult` with projections, recommendations, and warnings
+
+#### `ScenarioResult` Model
+
+```python
+ScenarioResult(
+    type: ScenarioType,
+    current_balance: Decimal,
+    final_balance: Decimal,
+    total_contributions: Decimal,
+    total_growth: Decimal,
+    inflation_adjusted_final_balance: Decimal | None,
+    goal_amount: Decimal | None,
+    goal_achievement_pct: float,
+    years_to_goal: float | None,
+    data_points: list[ScenarioDataPoint],  # Yearly projections
+    recommendations: list[str],
+    warnings: list[str],
+)
+```
+
+#### `ScenarioDataPoint` Model
+
+```python
+ScenarioDataPoint(
+    year: int,
+    balance: Decimal,
+    contributions: Decimal,
+    growth: Decimal,
+    inflation_adjusted_balance: Decimal | None,
+)
+```
+
+### Compound Interest Formula
+
+Scenarios use the **future value of an annuity** formula:
+
+```
+FV = P(1+r)^n + PMT × [(1+r)^n - 1] / r
+```
+
+Where:
+- `P` = current_balance
+- `PMT` = monthly_contribution
+- `r` = monthly_return_rate (annual_return_rate / 12)
+- `n` = total_months (years × 12)
+
+### AI-Powered Recommendations
+
+The engine generates contextual recommendations based on:
+- **Goal achievement**: "On track to reach goal" vs "Increase contributions by $X"
+- **Contribution impact**: "Increasing contributions by $500/month adds $X to final balance"
+- **Return rate sensitivity**: "1% higher returns add $X over Y years"
+
+**Example Recommendations**:
+```
+✅ On track to reach your retirement goal
+💡 Increasing monthly contributions by $500 would add $180,000 to your final balance
+💡 If you can achieve 8% returns (vs 7%), you'd reach your goal 2.3 years earlier
+```
+
+### Warnings
+
+**Example Warnings**:
+```
+⚠️ Inflation will reduce purchasing power by 25% over 30 years
+⚠️ You're $250,000 short of your goal. Consider increasing contributions or extending timeline.
+⚠️ High return assumptions (10%+) may be unrealistic for conservative portfolios
+```
+
+### Production Considerations
+
+1. **Cache Scenarios**: Projections are deterministic (cache with 24h TTL)
+2. **Conservative Assumptions**: Use conservative return rates for planning
+3. **Inflation Awareness**: Always show inflation-adjusted values for long-term scenarios
+4. **Multiple Scenarios**: Show conservative/moderate/aggressive projections
+5. **Visual Charts**: Use `data_points` to render line charts (balance over time)
+
+### Related Documentation
+
+- **[Cash Flow Analysis](#cash-flow-analysis)**: Monthly contribution capacity
+- **[Goals](./goals.md)**: Goal tracking and progress monitoring
+- **[Net Worth](./net-worth.md)**: Current balance input
+- **[Portfolio Analytics](#portfolio-analytics)**: Historical return rates
+
+---
+
 ## FAQ
 
 **Q: Do I need ai-infra for analytics?**

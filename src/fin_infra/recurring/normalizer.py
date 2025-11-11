@@ -95,8 +95,7 @@ class FuzzyMatcher:
         """
         if not RAPIDFUZZ_AVAILABLE:
             raise ImportError(
-                "rapidfuzz is required for fuzzy matching. "
-                "Install with: pip install rapidfuzz"
+                "rapidfuzz is required for fuzzy matching. " "Install with: pip install rapidfuzz"
             )
         self.similarity_threshold = similarity_threshold
 
@@ -224,7 +223,13 @@ class FuzzyMatcher:
 # Note: All values should be in normalized form (lowercase, no special chars)
 # Use these exact strings after normalize_merchant() is applied
 KNOWN_MERCHANT_GROUPS = {
-    "netflix": ["netflix", "nflx", "nflx subscription", "netflix subscription", "netflix streaming"],
+    "netflix": [
+        "netflix",
+        "nflx",
+        "nflx subscription",
+        "netflix subscription",
+        "netflix streaming",
+    ],
     "spotify": ["spotify", "spotify usa", "spotify premium", "spotifyusa"],
     "amazon": [
         "amazon",

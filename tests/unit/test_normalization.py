@@ -1,12 +1,10 @@
 """Unit tests for normalization module."""
 
-from datetime import date as DateType
 
 import pytest
 
 from fin_infra.normalization import (
     CurrencyConverter,
-    CurrencyNotSupportedError,
     SymbolNotFoundError,
     SymbolResolver,
     easy_normalization,

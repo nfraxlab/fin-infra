@@ -27,7 +27,7 @@ from fin_infra.analytics.models import (
 def test_easy_analytics_default():
     """Test easy_analytics with default configuration."""
     analytics = easy_analytics()
-    
+
     assert isinstance(analytics, AnalyticsEngine)
     assert analytics.default_period_days == 30
     assert analytics.default_savings_definition == SavingsDefinition.NET
@@ -38,30 +38,28 @@ def test_easy_analytics_default():
 def test_easy_analytics_custom_period():
     """Test easy_analytics with custom period."""
     analytics = easy_analytics(default_period_days=90)
-    
+
     assert analytics.default_period_days == 90
 
 
 def test_easy_analytics_custom_benchmark():
     """Test easy_analytics with custom benchmark."""
     analytics = easy_analytics(default_benchmark="QQQ")
-    
+
     assert analytics.default_benchmark == "QQQ"
 
 
 def test_easy_analytics_custom_savings_definition():
     """Test easy_analytics with custom savings definition."""
-    analytics = easy_analytics(
-        default_savings_definition=SavingsDefinition.GROSS
-    )
-    
+    analytics = easy_analytics(default_savings_definition=SavingsDefinition.GROSS)
+
     assert analytics.default_savings_definition == SavingsDefinition.GROSS
 
 
 def test_easy_analytics_custom_cache_ttl():
     """Test easy_analytics with custom cache TTL."""
     analytics = easy_analytics(cache_ttl=7200)
-    
+
     assert analytics.cache_ttl == 7200
 
 
@@ -69,12 +67,12 @@ def test_easy_analytics_with_providers():
     """Test easy_analytics with provider injection."""
     mock_banking = object()
     mock_brokerage = object()
-    
+
     analytics = easy_analytics(
         banking_provider=mock_banking,
         brokerage_provider=mock_brokerage,
     )
-    
+
     assert analytics.banking_provider is mock_banking
     assert analytics.brokerage_provider is mock_brokerage
 
@@ -87,7 +85,7 @@ def test_easy_analytics_all_providers():
     mock_recurring = object()
     mock_net_worth = object()
     mock_market = object()
-    
+
     analytics = easy_analytics(
         banking_provider=mock_banking,
         brokerage_provider=mock_brokerage,
@@ -96,7 +94,7 @@ def test_easy_analytics_all_providers():
         net_worth_provider=mock_net_worth,
         market_provider=mock_market,
     )
-    
+
     assert analytics.banking_provider is mock_banking
     assert analytics.brokerage_provider is mock_brokerage
     assert analytics.categorization_provider is mock_categorization
@@ -117,7 +115,7 @@ def test_analytics_engine_initialization():
         default_benchmark="VTI",
         cache_ttl=1800,
     )
-    
+
     assert engine.default_period_days == 60
     assert engine.default_benchmark == "VTI"
     assert engine.cache_ttl == 1800
@@ -127,9 +125,9 @@ def test_analytics_engine_initialization():
 async def test_analytics_engine_cash_flow():
     """Test AnalyticsEngine.cash_flow() method."""
     analytics = easy_analytics()
-    
+
     result = await analytics.cash_flow("user123")
-    
+
     assert isinstance(result, CashFlowAnalysis)
     assert result.income_total >= 0
     assert result.expense_total >= 0
@@ -139,9 +137,9 @@ async def test_analytics_engine_cash_flow():
 async def test_analytics_engine_cash_flow_custom_period():
     """Test cash_flow with custom period."""
     analytics = easy_analytics(default_period_days=90)
-    
+
     result = await analytics.cash_flow("user123")
-    
+
     assert isinstance(result, CashFlowAnalysis)
 
 
@@ -149,16 +147,16 @@ async def test_analytics_engine_cash_flow_custom_period():
 async def test_analytics_engine_cash_flow_custom_dates():
     """Test cash_flow with custom date range."""
     analytics = easy_analytics()
-    
+
     end_date = datetime.now()
     start_date = end_date - timedelta(days=60)
-    
+
     result = await analytics.cash_flow(
         "user123",
         start_date=start_date,
         end_date=end_date,
     )
-    
+
     assert isinstance(result, CashFlowAnalysis)
 
 
@@ -166,9 +164,9 @@ async def test_analytics_engine_cash_flow_custom_dates():
 async def test_analytics_engine_savings_rate():
     """Test AnalyticsEngine.savings_rate() method."""
     analytics = easy_analytics()
-    
+
     result = await analytics.savings_rate("user123")
-    
+
     assert isinstance(result, SavingsRateData)
     assert isinstance(result.savings_rate, float)
 
@@ -177,12 +175,12 @@ async def test_analytics_engine_savings_rate():
 async def test_analytics_engine_savings_rate_custom_definition():
     """Test savings_rate with custom definition."""
     analytics = easy_analytics()
-    
+
     result = await analytics.savings_rate(
         "user123",
         definition=SavingsDefinition.GROSS,
     )
-    
+
     assert isinstance(result, SavingsRateData)
 
 
@@ -190,9 +188,9 @@ async def test_analytics_engine_savings_rate_custom_definition():
 async def test_analytics_engine_spending_insights():
     """Test AnalyticsEngine.spending_insights() method."""
     analytics = easy_analytics()
-    
+
     result = await analytics.spending_insights("user123")
-    
+
     assert isinstance(result, SpendingInsight)
 
 
@@ -200,9 +198,9 @@ async def test_analytics_engine_spending_insights():
 async def test_analytics_engine_spending_advice():
     """Test AnalyticsEngine.spending_advice() method."""
     analytics = easy_analytics()
-    
+
     result = await analytics.spending_advice("user123")
-    
+
     assert isinstance(result, PersonalizedSpendingAdvice)
 
 
@@ -210,9 +208,9 @@ async def test_analytics_engine_spending_advice():
 async def test_analytics_engine_portfolio_metrics():
     """Test AnalyticsEngine.portfolio_metrics() method."""
     analytics = easy_analytics()
-    
+
     result = await analytics.portfolio_metrics("user123")
-    
+
     assert isinstance(result, PortfolioMetrics)
     assert result.total_value >= 0
 
@@ -221,9 +219,9 @@ async def test_analytics_engine_portfolio_metrics():
 async def test_analytics_engine_benchmark_comparison():
     """Test AnalyticsEngine.benchmark_comparison() method."""
     analytics = easy_analytics()
-    
+
     result = await analytics.benchmark_comparison("user123")
-    
+
     assert isinstance(result, BenchmarkComparison)
     assert result.benchmark_symbol == "SPY"  # Default
 
@@ -232,9 +230,9 @@ async def test_analytics_engine_benchmark_comparison():
 async def test_analytics_engine_benchmark_comparison_custom():
     """Test benchmark_comparison with custom benchmark."""
     analytics = easy_analytics(default_benchmark="QQQ")
-    
+
     result = await analytics.benchmark_comparison("user123")
-    
+
     assert result.benchmark_symbol == "QQQ"
 
 
@@ -242,9 +240,9 @@ async def test_analytics_engine_benchmark_comparison_custom():
 async def test_analytics_engine_net_worth_projection():
     """Test AnalyticsEngine.net_worth_projection() method."""
     analytics = easy_analytics()
-    
+
     result = await analytics.net_worth_projection("user123")
-    
+
     assert isinstance(result, GrowthProjection)
     assert result.years == 30  # Default
     assert len(result.scenarios) == 3
@@ -254,18 +252,18 @@ async def test_analytics_engine_net_worth_projection():
 async def test_analytics_engine_net_worth_projection_custom_years():
     """Test net_worth_projection with custom years."""
     analytics = easy_analytics()
-    
+
     result = await analytics.net_worth_projection("user123", years=40)
-    
+
     assert result.years == 40
 
 
 def test_analytics_engine_compound_interest():
     """Test AnalyticsEngine.compound_interest() static method."""
     analytics = easy_analytics()
-    
+
     result = analytics.compound_interest(10000, 0.08, 10)
-    
+
     # Should be around $21,589
     assert 21000 < result < 22000
 
@@ -279,22 +277,20 @@ def test_analytics_engine_compound_interest():
 async def test_default_period_days_applied():
     """Test default period_days is applied to cash_flow."""
     analytics = easy_analytics(default_period_days=45)
-    
+
     # Should use 45-day default
     result = await analytics.cash_flow("user123")
-    
+
     assert isinstance(result, CashFlowAnalysis)
 
 
 @pytest.mark.asyncio
 async def test_default_savings_definition_applied():
     """Test default savings definition is applied."""
-    analytics = easy_analytics(
-        default_savings_definition=SavingsDefinition.DISCRETIONARY
-    )
-    
+    analytics = easy_analytics(default_savings_definition=SavingsDefinition.DISCRETIONARY)
+
     result = await analytics.savings_rate("user123")
-    
+
     assert isinstance(result, SavingsRateData)
 
 
@@ -302,9 +298,9 @@ async def test_default_savings_definition_applied():
 async def test_default_benchmark_applied():
     """Test default benchmark is applied."""
     analytics = easy_analytics(default_benchmark="VTI")
-    
+
     result = await analytics.benchmark_comparison("user123", period="1y")
-    
+
     assert result.benchmark_symbol == "VTI"
 
 
@@ -317,12 +313,12 @@ async def test_default_benchmark_applied():
 async def test_providers_passed_to_functions():
     """Test providers are passed through to underlying functions."""
     mock_banking = object()
-    
+
     analytics = easy_analytics(banking_provider=mock_banking)
-    
+
     # Should pass banking_provider to cash_flow
     result = await analytics.cash_flow("user123")
-    
+
     assert isinstance(result, CashFlowAnalysis)
     # Provider was passed through (verified by no errors)
 
@@ -336,13 +332,13 @@ async def test_providers_passed_to_functions():
 async def test_multiple_operations():
     """Test multiple analytics operations with same engine."""
     analytics = easy_analytics()
-    
+
     # Run multiple operations
     cash_flow = await analytics.cash_flow("user123")
     savings = await analytics.savings_rate("user123")
     portfolio = await analytics.portfolio_metrics("user123")
     projection = await analytics.net_worth_projection("user123", years=20)
-    
+
     # All should succeed
     assert isinstance(cash_flow, CashFlowAnalysis)
     assert isinstance(savings, SavingsRateData)
@@ -354,9 +350,9 @@ async def test_multiple_operations():
 async def test_different_users():
     """Test analytics for different users with same engine."""
     analytics = easy_analytics()
-    
+
     user1_cash_flow = await analytics.cash_flow("user_a")
     user2_cash_flow = await analytics.cash_flow("user_b")
-    
+
     assert isinstance(user1_cash_flow, CashFlowAnalysis)
     assert isinstance(user2_cash_flow, CashFlowAnalysis)

@@ -26,11 +26,11 @@ async def log_pii_access(
     ip_address: Optional[str] = None,
     user_agent: Optional[str] = None,
     success: bool = True,
-    error_message: Optional[str] = None
+    error_message: Optional[str] = None,
 ) -> PIIAccessLog:
     """
     Log PII access for audit trail.
-    
+
     Args:
         user_id: User who accessed PII
         pii_type: Type of PII (ssn, account, card, routing, etc.)
@@ -40,10 +40,10 @@ async def log_pii_access(
         user_agent: User agent string
         success: Whether access was successful
         error_message: Error message if failed
-        
+
     Returns:
         Audit log entry
-        
+
     Example:
         >>> await log_pii_access(
         ...     user_id="user123",
@@ -62,12 +62,12 @@ async def log_pii_access(
         user_agent=user_agent,
         success=success,
         error_message=error_message,
-        timestamp=datetime.utcnow()
+        timestamp=datetime.utcnow(),
     )
-    
+
     # Store in memory (production should use database)
     _audit_log.append(log_entry)
-    
+
     # Log to standard logger
     logger.info(
         f"PII access: user={user_id} type={pii_type} action={action} "
@@ -78,10 +78,10 @@ async def log_pii_access(
             "action": action,
             "resource": resource,
             "ip_address": ip_address,
-            "success": success
-        }
+            "success": success,
+        },
     )
-    
+
     return log_entry
 
 
@@ -89,37 +89,37 @@ def get_audit_logs(
     user_id: Optional[str] = None,
     pii_type: Optional[str] = None,
     action: Optional[str] = None,
-    limit: int = 100
+    limit: int = 100,
 ) -> list[PIIAccessLog]:
     """
     Retrieve audit logs with optional filters.
-    
+
     Args:
         user_id: Filter by user ID
         pii_type: Filter by PII type
         action: Filter by action
         limit: Maximum number of logs to return
-        
+
     Returns:
         List of audit log entries
-        
+
     Example:
         >>> logs = get_audit_logs(user_id="user123", pii_type="ssn")
     """
     filtered_logs = _audit_log
-    
+
     if user_id:
         filtered_logs = [log for log in filtered_logs if log.user_id == user_id]
-    
+
     if pii_type:
         filtered_logs = [log for log in filtered_logs if log.pii_type == pii_type]
-    
+
     if action:
         filtered_logs = [log for log in filtered_logs if log.action == action]
-    
+
     # Sort by timestamp descending
     filtered_logs = sorted(filtered_logs, key=lambda log: log.timestamp, reverse=True)
-    
+
     return filtered_logs[:limit]
 
 
