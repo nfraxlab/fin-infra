@@ -30,6 +30,43 @@ def app():
     db_url = "sqlite+aiosqlite:///:memory:"
     tracker = easy_budgets(db_url=db_url)
     add_budgets(app, tracker=tracker)
+    
+    # Override svc-infra dependencies for testing (same pattern as unit tests)
+    from svc_infra.api.fastapi.db.sql.session import get_session
+    from svc_infra.api.fastapi.auth.security import _current_principal, Principal
+    
+    class MockUser:
+        """Mock authenticated user for acceptance tests."""
+        id: str = "user_acceptance_123"
+        email: str = "acceptance@example.com"
+    
+    class _DummySession:
+        async def execute(self, *_, **__):
+            class _Res:
+                def scalars(self):
+                    return self
+                def all(self):
+                    return []
+                def scalar_one_or_none(self):
+                    return None
+            return _Res()
+        async def flush(self):
+            return None
+        async def commit(self):
+            return None
+        async def rollback(self):
+            return None
+        async def get(self, model, pk):
+            return MockUser()
+    
+    async def _mock_session():
+        return _DummySession()
+    
+    async def mock_principal(request=None, session=None, jwt_or_cookie=None, ak=None):
+        return Principal(user=MockUser(), scopes=["read", "write"], via="test")
+    
+    app.dependency_overrides[get_session] = _mock_session
+    app.dependency_overrides[_current_principal] = mock_principal
 
     return app
 
