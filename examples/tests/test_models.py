@@ -114,14 +114,14 @@ class TestUserModel:
         user = User(
             email="provider@example.com",
             full_name="Provider Test",
-            plaid_connected=True,
+            plaid_linked=True,
             alpaca_connected=True,
             experian_connected=False,
         )
         session.add(user)
         session.commit()
 
-        assert user.plaid_connected is True
+        assert user.plaid_linked is True
         assert user.alpaca_connected is True
         assert user.experian_connected is False
 
@@ -135,7 +135,7 @@ class TestAccountModel:
         account = Account(
             user_id=test_user.id,
             account_type="checking",
-            institution_name="Test Bank",
+            institution="Test Bank",
             account_name="My Checking",
             current_balance=Decimal("1000.50"),
             currency="USD",
@@ -156,7 +156,7 @@ class TestAccountModel:
             account = Account(
                 user_id=test_user.id,
                 account_type=acc_type,
-                institution_name="Test Bank",
+                institution="Test Bank",
                 account_name=f"My {acc_type}",
                 current_balance=Decimal("100.00"),
                 currency="USD",
@@ -174,7 +174,7 @@ class TestAccountModel:
         account = Account(
             user_id=test_user.id,
             account_type="checking",
-            institution_name="Test Bank",
+            institution="Test Bank",
             account_name="Balance Test",
             current_balance=Decimal("999999.99"),
             currency="USD",
@@ -190,7 +190,7 @@ class TestAccountModel:
         account = Account(
             user_id=test_user.id,
             account_type="savings",
-            institution_name="Test Bank",
+            institution="Test Bank",
             account_name="Savings",
             current_balance=Decimal("5000.00"),
             currency="USD",
@@ -213,7 +213,7 @@ class TestTransactionModel:
         account = Account(
             user_id=test_user.id,
             account_type="checking",
-            institution_name="Test Bank",
+            institution="Test Bank",
             account_name="Checking",
             current_balance=Decimal("1000.00"),
             currency="USD",
@@ -242,7 +242,7 @@ class TestTransactionModel:
         account = Account(
             user_id=test_user.id,
             account_type="checking",
-            institution_name="Test Bank",
+            institution="Test Bank",
             account_name="Checking",
             current_balance=Decimal("1000.00"),
             currency="USD",
@@ -279,7 +279,7 @@ class TestTransactionModel:
         account = Account(
             user_id=test_user.id,
             account_type="checking",
-            institution_name="Test Bank",
+            institution="Test Bank",
             account_name="Checking",
             current_balance=Decimal("1000.00"),
             currency="USD",
@@ -322,7 +322,7 @@ class TestPositionModel:
         account = Account(
             user_id=test_user.id,
             account_type="investment",
-            institution_name="Test Brokerage",
+            institution="Test Brokerage",
             account_name="Investment",
             current_balance=Decimal("10000.00"),
             currency="USD",
@@ -351,7 +351,7 @@ class TestPositionModel:
         account = Account(
             user_id=test_user.id,
             account_type="investment",
-            institution_name="Test Brokerage",
+            institution="Test Brokerage",
             account_name="Investment",
             current_balance=Decimal("10000.00"),
             currency="USD",
