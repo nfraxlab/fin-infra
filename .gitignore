@@ -79,3 +79,7 @@ credentials/
 /budgets/
 /goals/
 /net_worth/
+
+# Documentation
+.github/AGENTS.md
+.github/PLAN.md
