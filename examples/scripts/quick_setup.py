@@ -4,9 +4,7 @@ Quick setup for fin-infra template project.
 
 One-command setup that:
 1. Validates models exist (via scaffold_models.py)
-2. Initializes Alembic (if not already done)
-3. Creates migration revision (if models changed)
-4. Applies migrations (upgrade to head)
+2. Runs database migrations (via alembic)
 
 Target: Complete in < 30 seconds
 
@@ -19,6 +17,10 @@ Usage:
 Environment:
     SQL_URL: Database connection string (required)
              Example: postgresql+asyncpg://user:pass@localhost/dbname
+
+Note:
+    Currently uses alembic directly via poetry run. Will migrate to svc-infra's
+    CLI command (python -m svc_infra.db setup-and-migrate) once it's implemented.
 """
 
 import argparse
@@ -27,6 +29,26 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+
+# Load .env file if it exists
+try:
+    from dotenv import load_dotenv
+    env_file = Path(__file__).parent.parent / ".env"
+    if env_file.exists():
+        load_dotenv(env_file)
+except ImportError:
+    # python-dotenv not installed, try manual loading
+    env_file = Path(__file__).parent.parent / ".env"
+    if env_file.exists():
+        with open(env_file) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    key, value = line.split("=", 1)
+                    # Strip inline comments (anything after #)
+                    if "#" in value:
+                        value = value.split("#")[0]
+                    os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
 
 
 def run_command(cmd: list[str], cwd: Path = None, check: bool = True) -> tuple[int, str, str]:
@@ -92,61 +114,41 @@ def check_alembic_initialized(project_root: Path) -> bool:
     return False
 
 
-def initialize_alembic(project_root: Path) -> bool:
-    """Initialize Alembic if not already done."""
-    print("🔧 Initializing Alembic...")
-
-    if check_alembic_initialized(project_root):
-        print("✅ Alembic already initialized")
-        return True
-
-    # Note: This template has Alembic pre-configured
-    # In a real scenario, you'd run: alembic init migrations
-    print("⚠️  Alembic initialization not automated yet")
-    print("   This template has Alembic pre-configured")
-    return True
-
-
-def create_migration_revision(project_root: Path) -> bool:
-    """Create a new migration revision if needed."""
-    print("📝 Creating migration revision...")
-
-    # Check if migrations already exist
-    versions_dir = project_root / "migrations" / "versions"
-    if versions_dir.exists():
-        existing_migrations = list(versions_dir.glob("*.py"))
-        # Exclude __init__.py and __pycache__
-        existing_migrations = [
-            m for m in existing_migrations if m.name != "__init__.py" and "__pycache__" not in str(m)
-        ]
-
-        if existing_migrations:
-            print(f"✅ Found {len(existing_migrations)} existing migration(s)")
-            print("   Skipping revision creation (already exists)")
-            return True
-
-    print("⚠️  No migrations found")
-    print("   Run manually: alembic revision --autogenerate -m 'initial models'")
-    return True
-
-
-def apply_migrations(project_root: Path) -> bool:
-    """Apply migrations (alembic upgrade head)."""
-    print("⬆️  Applying migrations...")
-
+def setup_and_migrate(project_root: Path) -> bool:
+    """
+    Run database setup and migrations.
+    
+    This automatically:
+    - Initializes Alembic (if needed)
+    - Creates migration revision (if needed)
+    - Applies migrations (upgrade to head)
+    
+    Note: Uses alembic directly for now. Will migrate to svc-infra CLI
+    once python -m svc_infra.db is fully implemented.
+    """
+    print("🔧 Running database setup and migrations...")
+    
+    # Check if alembic is initialized
+    if not check_alembic_initialized(project_root):
+        print("❌ Alembic not initialized. Run 'alembic init migrations' first.")
+        return False
+    
+    # Run alembic upgrade via poetry to ensure correct environment
     returncode, stdout, stderr = run_command(
-        ["alembic", "upgrade", "head"],
+        ["poetry", "run", "alembic", "upgrade", "head"],
         cwd=project_root,
         check=False,
     )
-
+    
     if returncode == 0:
-        print("✅ Migrations applied successfully")
+        print("✅ Database migrations complete")
         return True
     else:
-        print("❌ Migration failed")
-        print(stdout)
-        print(stderr)
+        print("❌ Migrations failed")
+        if stdout:
+            print("STDOUT:", stdout)
+        if stderr:
+            print("STDERR:", stderr)
         return False
 
 
@@ -247,19 +249,14 @@ def main():
     if not check_models(project_root):
         print("⚠️  Models check failed, but continuing...")
 
-    # Step 3: Initialize Alembic
-    if not initialize_alembic(project_root):
-        print("❌ Alembic initialization failed")
-        return 1
-
-    # Step 4: Create migration revision
-    if not create_migration_revision(project_root):
-        print("⚠️  Migration revision creation issue, but continuing...")
-
-    # Step 5: Apply migrations (unless skipped)
+    # Step 3: Setup and migrate (unless skipped)
+    # This uses svc-infra's setup-and-migrate which does:
+    # - Initialize Alembic (if needed)
+    # - Create migration revision (if needed)
+    # - Apply migrations (upgrade to head)
     if not args.skip_migrate:
-        if not apply_migrations(project_root):
-            print("❌ Migration application failed")
+        if not setup_and_migrate(project_root):
+            print("❌ Database setup and migrations failed")
             return 1
     else:
         print("⏭️  Skipping migrations (--skip-migrate)")
