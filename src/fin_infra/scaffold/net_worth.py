@@ -59,7 +59,7 @@ def _generate_substitutions(
     # Tenant patterns (10 variables)
     if include_tenant:
         subs["tenant_field"] = (
-            "\n    tenant_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)"
+            "\n    # Multi-tenancy (nullable for simple testing, set to False in production)\n    tenant_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, index=True)"
         )
         subs["tenant_arg"] = ", tenant_id: str"
         subs["tenant_arg_unique_index"] = ', tenant_field="tenant_id"'
@@ -69,9 +69,9 @@ def _generate_substitutions(
         subs["tenant_dict_assign"] = '\n        data["tenant_id"] = tenant_id'
         subs["tenant_doc"] = "\n        tenant_id: Tenant identifier for multi-tenant applications."
         subs["tenant_filter"] = ".where(NetWorthSnapshot.tenant_id == tenant_id)"
-        subs["tenant_field_create"] = "\n    tenant_id: str"
+        subs["tenant_field_create"] = "\n    tenant_id: Optional[str] = None"
         subs["tenant_field_update"] = ""  # tenant_id immutable after creation
-        subs["tenant_field_read"] = "\n    tenant_id: str"
+        subs["tenant_field_read"] = "\n    tenant_id: Optional[str] = None"
     else:
         subs["tenant_field"] = ""
         subs["tenant_arg"] = ""

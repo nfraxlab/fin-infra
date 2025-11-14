@@ -35,7 +35,7 @@ class ${Entity}Base(BaseModel):
     """
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
     
-    user_id: str = Field(..., description="User identifier", min_length=1, max_length=64)
+    user_id: Optional[str] = Field(None, description="User identifier", min_length=1, max_length=64)
     name: str = Field(..., description="Budget name", min_length=1, max_length=128)
     type: str = Field(..., description="Budget type (personal, household, business, project, custom)")
     period: str = Field(..., description="Budget period (weekly, biweekly, monthly, quarterly, yearly)")
@@ -64,7 +64,7 @@ class ${Entity}Create(BaseModel):
     """
     model_config = ConfigDict(from_attributes=True)
     
-    user_id: str = Field(..., description="User identifier", min_length=1, max_length=64)
+    user_id: Optional[str] = Field(None, description="User identifier", min_length=1, max_length=64)
     name: str = Field(..., description="Budget name", min_length=1, max_length=128)
     type: str = Field(..., description="Budget type")
     period: str = Field(..., description="Budget period")

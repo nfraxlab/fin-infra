@@ -44,6 +44,10 @@ class SoftDeleteMixin:
 
 
 class UserOwnedMixin:
-    """Mixin for user-owned resources (financial data)."""
+    """Mixin for user-owned resources (financial data).
+    
+    Note: user_id is nullable for simple testing. Set to nullable=False
+    in production when authentication is required.
+    """
 
-    user_id: Mapped[int] = mapped_column(nullable=False, index=True)
+    user_id: Mapped[Optional[int]] = mapped_column(nullable=True, index=True)

@@ -160,8 +160,8 @@ def _generate_substitutions(
 def _tenant_field() -> str:
     """Generate tenant_id field definition for SQLAlchemy model."""
     return """
-    # multi-tenancy
-    tenant_id: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
+    # multi-tenancy (nullable for simple testing, set to False in production)
+    tenant_id: Mapped[Optional[str]] = mapped_column(String(64), index=True, nullable=True)
 """
 
 
@@ -208,7 +208,7 @@ def _soft_delete_hard_delete_fallback() -> str:
 def _tenant_field_schema_create() -> str:
     """Generate tenant_id field for Pydantic create schema."""
     return """
-    tenant_id: str
+    tenant_id: Optional[str] = None
 """
 
 

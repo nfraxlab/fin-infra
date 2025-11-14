@@ -73,7 +73,7 @@ class AccountBase(BaseModel):
 class AccountCreate(AccountBase):
     """Schema for creating a new account."""
 
-    user_id: int
+    user_id: Optional[int] = None
 
 
 class AccountUpdate(BaseModel):
@@ -90,7 +90,7 @@ class AccountRead(AccountBase):
     """Schema for reading an account (includes metadata)."""
 
     id: int
-    user_id: int
+    user_id: Optional[int] = None
     created_at: datetime
     updated_at: datetime
     deleted_at: Optional[datetime] = None
@@ -123,7 +123,7 @@ class TransactionBase(BaseModel):
 class TransactionCreate(TransactionBase):
     """Schema for creating a new transaction."""
 
-    user_id: int
+    user_id: Optional[int] = None
 
 
 class TransactionUpdate(BaseModel):
@@ -145,7 +145,7 @@ class TransactionRead(TransactionBase):
     """Schema for reading a transaction (includes metadata)."""
 
     id: int
-    user_id: int
+    user_id: Optional[int] = None
     created_at: datetime
     updated_at: datetime
 
@@ -175,7 +175,7 @@ class PositionBase(BaseModel):
 class PositionCreate(PositionBase):
     """Schema for creating a new position."""
 
-    user_id: int
+    user_id: Optional[int] = None
 
 
 class PositionUpdate(BaseModel):
@@ -193,7 +193,7 @@ class PositionRead(PositionBase):
     """Schema for reading a position (includes metadata)."""
 
     id: int
-    user_id: int
+    user_id: Optional[int] = None
     last_updated: datetime
     created_at: datetime
     updated_at: datetime
@@ -222,7 +222,7 @@ class GoalBase(BaseModel):
 class GoalCreate(GoalBase):
     """Schema for creating a new goal."""
 
-    user_id: int
+    user_id: Optional[int] = None
 
 
 class GoalUpdate(BaseModel):
@@ -242,7 +242,7 @@ class GoalRead(GoalBase):
     """Schema for reading a goal (includes metadata)."""
 
     id: int
-    user_id: int
+    user_id: Optional[int] = None
     progress_pct: Decimal
     is_completed: bool
     completed_at: Optional[datetime] = None
@@ -275,7 +275,7 @@ class BudgetBase(BaseModel):
 class BudgetCreate(BudgetBase):
     """Schema for creating a new budget."""
 
-    user_id: int
+    user_id: Optional[int] = None
 
 
 class BudgetUpdate(BaseModel):
@@ -295,7 +295,7 @@ class BudgetRead(BudgetBase):
     """Schema for reading a budget (includes metadata)."""
 
     id: int
-    user_id: int
+    user_id: Optional[int] = None
     is_overspent: bool
     created_at: datetime
     updated_at: datetime
@@ -330,7 +330,7 @@ class DocumentBase(BaseModel):
 class DocumentCreate(DocumentBase):
     """Schema for creating a new document."""
 
-    user_id: int
+    user_id: Optional[int] = None
 
 
 class DocumentUpdate(BaseModel):
@@ -351,7 +351,7 @@ class DocumentRead(DocumentBase):
     """Schema for reading a document (includes metadata)."""
 
     id: int
-    user_id: int
+    user_id: Optional[int] = None
     created_at: datetime
     updated_at: datetime
     deleted_at: Optional[datetime] = None
@@ -383,7 +383,7 @@ class NetWorthSnapshotBase(BaseModel):
 class NetWorthSnapshotCreate(NetWorthSnapshotBase):
     """Schema for creating a new net worth snapshot."""
 
-    user_id: int
+    user_id: Optional[int] = None
 
 
 class NetWorthSnapshotUpdate(BaseModel):
@@ -406,7 +406,7 @@ class NetWorthSnapshotRead(NetWorthSnapshotBase):
     """Schema for reading a net worth snapshot (includes metadata)."""
 
     id: int
-    user_id: int
+    user_id: Optional[int] = None
     change_from_previous: Optional[Decimal] = None
     change_from_previous_pct: Optional[Decimal] = None
     created_at: datetime

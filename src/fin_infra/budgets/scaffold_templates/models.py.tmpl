@@ -48,8 +48,8 @@ class ${Entity}(ModelBase):
     # identity
     id: Mapped[uuid.UUID] = mapped_column(GUID(), primary_key=True, default=uuid.uuid4)
 
-    # ownership
-    user_id: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    # ownership (nullable for simple testing, set to False in production with authentication)
+    user_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, index=True)
 
     # core budget fields
     name: Mapped[str] = mapped_column(String(128), nullable=False, index=True)

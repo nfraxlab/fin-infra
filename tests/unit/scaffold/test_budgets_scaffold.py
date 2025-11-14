@@ -80,7 +80,7 @@ class TestHelperFunctions:
         """Test _tenant_field() returns valid SQLAlchemy field definition."""
         field_def = _tenant_field()
         assert "tenant_id" in field_def
-        assert "Mapped[str]" in field_def
+        assert "Mapped[Optional[str]]" in field_def
         assert "String(64)" in field_def
         assert "index=True" in field_def
 
@@ -116,7 +116,7 @@ class TestHelperFunctions:
     def test_tenant_field_schema_create(self):
         """Test _tenant_field_schema_create() returns Pydantic field."""
         field = _tenant_field_schema_create()
-        assert "tenant_id: str" in field
+        assert "tenant_id: Optional[str] = None" in field
 
     def test_tenant_field_schema_update(self):
         """Test _tenant_field_schema_update() returns optional Pydantic field."""

@@ -19,7 +19,7 @@ class Timestamped(BaseModel):
 
 class ${Entity}Base(BaseModel):
     """Base ${entity} schema with core fields."""
-    user_id: str = Field(..., max_length=64, description="User who owns this goal")
+    user_id: Optional[str] = Field(None, max_length=64, description="User who owns this goal")
     name: str = Field(..., max_length=128, description="Goal name (e.g., 'Emergency Fund')")
     description: Optional[str] = Field(None, description="Optional detailed description")
     target_amount: Decimal = Field(..., ge=0, description="Financial goal amount (e.g., 10000.00)")

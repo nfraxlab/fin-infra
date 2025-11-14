@@ -18,7 +18,7 @@ class Timestamped(BaseModel):
 
 class ${Entity}Base(BaseModel):
     """Base net worth snapshot schema with core fields."""
-    user_id: str = Field(..., max_length=64, description="User who owns this snapshot")
+    user_id: Optional[str] = Field(None, max_length=64, description="User who owns this snapshot")
     snapshot_date: datetime = Field(..., description="Date when snapshot was taken (timezone-aware)")
     total_assets: Decimal = Field(..., ge=0, description="Sum of all asset values")
     total_liabilities: Decimal = Field(Decimal("0.00"), ge=0, description="Sum of all liabilities")

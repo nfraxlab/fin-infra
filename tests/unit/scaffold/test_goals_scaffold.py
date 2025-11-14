@@ -47,9 +47,9 @@ class TestGenerateSubstitutions:
         assert ".where(Goal.tenant_id == tenant_id)" in subs["tenant_filter"]
 
         # Schema fields
-        assert "tenant_id: str" in subs["tenant_field_create"]
+        assert "tenant_id: Optional[str] = None" in subs["tenant_field_create"]
         assert subs["tenant_field_update"] == ""  # Immutable
-        assert "tenant_id: str" in subs["tenant_field_read"]
+        assert "tenant_id: Optional[str] = None" in subs["tenant_field_read"]
 
     def test_soft_delete_substitutions(self):
         """Soft delete flag generates deleted_at patterns."""
@@ -110,12 +110,12 @@ class TestScaffoldGoalsCore:
 
         # Check models contains tenant_id
         models_content = (dest / "goal.py").read_text()
-        assert "tenant_id: Mapped[str]" in models_content
+        assert "tenant_id: Mapped[Optional[str]]" in models_content
         assert 'tenant_field="tenant_id"' in models_content  # For unique indexes
 
         # Check schemas contains tenant_id
         schemas_content = (dest / "goal_schemas.py").read_text()
-        assert "tenant_id: str" in schemas_content
+        assert "tenant_id: Optional[str] = None" in schemas_content
 
     def test_with_soft_delete(self, tmp_path):
         """Scaffold with deleted_at field."""
@@ -246,7 +246,7 @@ class TestScaffoldGoalsCore:
 
         # Check models contains both fields
         models_content = (dest / "goal.py").read_text()
-        assert "tenant_id: Mapped[str]" in models_content
+        assert "tenant_id: Mapped[Optional[str]]" in models_content
         assert "deleted_at: Mapped[datetime | None]" in models_content
 
         # Check repository uses both filters
@@ -269,8 +269,8 @@ class TestScaffoldGoalsCore:
         models_content = (dest / "goal.py").read_text()
         schemas_content = (dest / "goal_schemas.py").read_text()
 
-        assert "tenant_id: Mapped[str]" in models_content
-        assert "tenant_id: str" in schemas_content
+        assert "tenant_id: Mapped[Optional[str]]" in models_content
+        assert "tenant_id: Optional[str] = None" in schemas_content
 
         # Repository should not exist
         assert not (dest / "goal_repository.py").exists()
@@ -309,7 +309,7 @@ class TestScaffoldGoalsCore:
         assert "from sqlalchemy.orm import Mapped, mapped_column" in models_content
         assert "class Goal(ModelBase):" in models_content
         assert '__tablename__ = "goals"' in models_content
-        assert "user_id: Mapped[str]" in models_content
+        assert "user_id: Mapped[Optional[str]]" in models_content
         assert "target_amount: Mapped[Decimal]" in models_content
         assert "current_amount: Mapped[Decimal]" in models_content
         assert "status: Mapped[str]" in models_content

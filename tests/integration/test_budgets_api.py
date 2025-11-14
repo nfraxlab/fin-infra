@@ -26,8 +26,36 @@ def app():
     tracker = easy_budgets(db_url=db_url)
 
     # Mount endpoints
-
     add_budgets(app, tracker=tracker)
+    
+    # Override svc-infra dependencies for testing
+    from svc_infra.api.fastapi.db.sql.session import get_session
+    from svc_infra.api.fastapi.auth.security import _current_principal, Principal
+    
+    class MockUser:
+        id: str = "test_user"
+        email: str = "test@example.com"
+    
+    class _DummySession:
+        async def execute(self, *_, **__):
+            class _Res:
+                def scalars(self): return self
+                def all(self): return []
+                def scalar_one_or_none(self): return None
+            return _Res()
+        async def flush(self): pass
+        async def commit(self): pass
+        async def rollback(self): pass
+        async def get(self, model, pk): return MockUser()
+    
+    async def _mock_session():
+        return _DummySession()
+    
+    async def mock_principal(request=None, session=None, jwt_or_cookie=None, ak=None):
+        return Principal(user=MockUser(), scopes=["read", "write"], via="test")
+    
+    app.dependency_overrides[get_session] = _mock_session
+    app.dependency_overrides[_current_principal] = mock_principal
 
     yield app
 
