@@ -1,11 +1,24 @@
 from __future__ import annotations
 
-# Plaid SDK surface changes across versions; this class intentionally wraps
-# creation and calls in a minimal way so internal changes don't leak out.
+from datetime import date, datetime, timedelta
+
+# Plaid SDK v25+ uses new API structure
 try:
-    from plaid import Client as PlaidClientSDK  # legacy surface
+    import plaid
+    from plaid.api import plaid_api
+    from plaid.model.country_code import CountryCode
+    from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
+    from plaid.model.link_token_create_request import LinkTokenCreateRequest
+    from plaid.model.link_token_create_request_user import LinkTokenCreateRequestUser
+    from plaid.model.products import Products
+    from plaid.model.transactions_get_request import TransactionsGetRequest
+    from plaid.model.accounts_get_request import AccountsGetRequest
+    from plaid.model.accounts_balance_get_request import AccountsBalanceGetRequest
+    from plaid.model.identity_get_request import IdentityGetRequest
+
+    PLAID_AVAILABLE = True
 except Exception:  # pragma: no cover - dynamic import guard
-    PlaidClientSDK = None  # type: ignore
+    PLAID_AVAILABLE = False
 
 from ...settings import Settings
 from ..base import BankingProvider
@@ -27,9 +40,9 @@ class PlaidClient(BankingProvider):
             secret: Plaid secret (preferred - from env or passed directly)
             environment: Plaid environment - sandbox, development, or production
         """
-        if PlaidClientSDK is None:
+        if not PLAID_AVAILABLE:
             raise RuntimeError(
-                "plaid-python client not available or import failed; check installed version"
+                "plaid-python SDK not available or import failed; check installed version (requires v25+)"
             )
         
         # Support both patterns: Settings object or individual params
@@ -39,47 +52,73 @@ class PlaidClient(BankingProvider):
             secret = secret or settings.plaid_secret
             environment = environment or settings.plaid_env
         
-        # Individual params take precedence
-        self.client = PlaidClientSDK(
-            client_id=client_id,
-            secret=secret,
-            environment=environment,
-        )
-
-    def create_link_token(self, user_id: str) -> str:
-        resp = self.client.LinkToken.create(  # type: ignore[attr-defined]
-            {
-                "user": {"client_user_id": user_id},
-                "client_name": "fin-infra",
-                "products": ["auth", "transactions"],
-                "country_codes": ["US"],
-                "language": "en",
+        # Map environment string to Plaid Environment enum
+        env_map = {
+            "sandbox": plaid.Environment.Sandbox,
+            "development": plaid.Environment.Development,
+            "production": plaid.Environment.Production,
+        }
+        host = env_map.get(environment or "sandbox", plaid.Environment.Sandbox)
+        
+        # Configure Plaid client (v8.0.0+ API)
+        configuration = plaid.Configuration(
+            host=host,
+            api_key={
+                "clientId": client_id,
+                "secret": secret,
             }
         )
-        return resp["link_token"]
+        api_client = plaid.ApiClient(configuration)
+        self.client = plaid_api.PlaidApi(api_client)
+
+    def create_link_token(self, user_id: str) -> str:
+        request = LinkTokenCreateRequest(
+            user=LinkTokenCreateRequestUser(client_user_id=user_id),
+            client_name="fin-infra",
+            products=[Products("auth"), Products("transactions")],
+            country_codes=[CountryCode("US")],
+            language="en",
+        )
+        response = self.client.link_token_create(request)
+        return response["link_token"]
 
     def exchange_public_token(self, public_token: str) -> dict:
-        return self.client.Item.public_token.exchange(public_token)  # type: ignore[attr-defined]
+        request = ItemPublicTokenExchangeRequest(public_token=public_token)
+        response = self.client.item_public_token_exchange(request)
+        return {
+            "access_token": response["access_token"],
+            "item_id": response["item_id"],
+        }
 
     def accounts(self, access_token: str) -> list[dict]:
-        return self.client.Accounts.get(access_token)["accounts"]  # type: ignore[attr-defined]
+        request = AccountsGetRequest(access_token=access_token)
+        response = self.client.accounts_get(request)
+        return [acc.to_dict() for acc in response["accounts"]]
 
     def transactions(
         self, access_token: str, *, start_date: str | None = None, end_date: str | None = None
     ) -> list[dict]:
         """Fetch transactions for an access token within optional date range."""
-        options = {}
-        if start_date:
-            options["start_date"] = start_date
-        if end_date:
-            options["end_date"] = end_date
-        resp = self.client.Transactions.get(access_token, **options)  # type: ignore[attr-defined]
-        return resp.get("transactions", [])
+        # Default to last 30 days if not specified
+        if not start_date or not end_date:
+            end = datetime.now().date()
+            start = end - timedelta(days=30)
+            start_date = start_date or start.isoformat()
+            end_date = end_date or end.isoformat()
+        
+        request = TransactionsGetRequest(
+            access_token=access_token,
+            start_date=date.fromisoformat(start_date),
+            end_date=date.fromisoformat(end_date),
+        )
+        response = self.client.transactions_get(request)
+        return [txn.to_dict() for txn in response["transactions"]]
 
     def balances(self, access_token: str, account_id: str | None = None) -> dict:
         """Fetch current balances for all accounts or specific account."""
-        resp = self.client.Accounts.balance.get(access_token)  # type: ignore[attr-defined]
-        accounts = resp.get("accounts", [])
+        request = AccountsBalanceGetRequest(access_token=access_token)
+        response = self.client.accounts_balance_get(request)
+        accounts = [acc.to_dict() for acc in response["accounts"]]
         
         if account_id:
             # Filter to specific account
@@ -93,4 +132,6 @@ class PlaidClient(BankingProvider):
 
     def identity(self, access_token: str) -> dict:
         """Fetch identity/account holder information."""
-        return self.client.Identity.get(access_token)  # type: ignore[attr-defined]
+        request = IdentityGetRequest(access_token=access_token)
+        response = self.client.identity_get(request)
+        return response.to_dict()
