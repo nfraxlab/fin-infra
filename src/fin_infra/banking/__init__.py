@@ -56,7 +56,24 @@ if TYPE_CHECKING:
     from fastapi import FastAPI
 
 
-__all__ = ["easy_banking", "add_banking"]
+__all__ = [
+    "easy_banking",
+    "add_banking",
+    # Utilities for apps to manage banking connections
+    "validate_plaid_token",
+    "validate_teller_token",
+    "validate_mx_token",
+    "validate_provider_token",
+    "parse_banking_providers",
+    "sanitize_connection_status",
+    "mark_connection_unhealthy",
+    "mark_connection_healthy",
+    "get_primary_access_token",
+    "test_connection_health",
+    "should_refresh_token",
+    "BankingConnectionInfo",
+    "BankingConnectionStatus",
+]
 
 
 # Pydantic models defined at module level to avoid forward reference issues
@@ -569,3 +586,21 @@ def add_banking(
         app.state.banking_provider = banking
 
     return banking
+
+
+# Import utilities at end to avoid circular imports
+from .utils import (
+    validate_plaid_token,
+    validate_teller_token,
+    validate_mx_token,
+    validate_provider_token,
+    parse_banking_providers,
+    sanitize_connection_status,
+    mark_connection_unhealthy,
+    mark_connection_healthy,
+    get_primary_access_token,
+    test_connection_health,
+    should_refresh_token,
+    BankingConnectionInfo,
+    BankingConnectionStatus,
+)
