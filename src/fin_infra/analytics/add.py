@@ -278,11 +278,8 @@ def add_analytics(
     # 6. Mount router
     app.include_router(router, include_in_schema=include_in_schema)
 
-    # 7. Call add_prefixed_docs for landing page card (CRITICAL)
-    try:
-    except ImportError:
-        # svc-infra not available, skip scoped docs
-        pass
+    # 7. Scoped docs removed (per architectural decision)
+    # All analytics endpoints appear in main /docs
 
     # 8. Return analytics instance for programmatic access
     return provider

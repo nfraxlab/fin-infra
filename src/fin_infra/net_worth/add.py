@@ -679,10 +679,7 @@ def add_net_worth_tracking(
     # Mount router
     app.include_router(router, include_in_schema=include_in_schema)
 
-    # Register scoped docs (when svc-infra available)
-    try:
-    except ImportError:
-        # svc-infra not available, skip scoped docs
-        pass
+    # Scoped docs removed (per architectural decision)
+    # All net worth endpoints appear in main /docs
 
     return tracker
