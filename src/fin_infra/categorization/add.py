@@ -180,9 +180,7 @@ def add_categorization(
     # Mount router
     app.include_router(router, include_in_schema=include_in_schema)
 
-    # Register scoped docs (svc-infra pattern)
-    try:
-    except ImportError:
-        pass  # svc-infra not available
+    # Scoped docs removed (per architectural decision)
+    # All categorization endpoints appear in main /docs
 
     return engine
