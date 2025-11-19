@@ -28,13 +28,15 @@ Financial document management system with OCR extraction and AI-powered analysis
 
 ## Overview
 
+> **Architecture**: fin-infra documents is built as **Layer 2** on top of svc-infra's generic document storage (**Layer 1**). This provides a clean separation: svc-infra handles base CRUD operations, while fin-infra adds financial-specific features like OCR for tax forms and AI-powered analysis. See [Architecture](#architecture) section for details.
+
 The documents module provides a complete solution for managing financial documents in fintech applications. It handles:
 
-- **Document Upload**: Store tax forms, bank statements, receipts, invoices, contracts, insurance docs
-- **OCR Extraction**: Extract text from images/PDFs with Tesseract or AWS Textract
-- **AI Analysis**: Generate insights, recommendations, and summaries
-- **Secure Storage**: In-memory for testing, S3 + SQL for production
-- **FastAPI Integration**: One-liner to mount full REST API
+- **Document Upload**: Store tax forms, bank statements, receipts, invoices, contracts, insurance docs (Layer 1: svc-infra)
+- **OCR Extraction**: Extract text from images/PDFs with Tesseract or AWS Textract (Layer 2: fin-infra)
+- **AI Analysis**: Generate insights, recommendations, and summaries (Layer 2: fin-infra)
+- **Secure Storage**: In-memory for testing, S3 + SQL for production (Layer 1: svc-infra)
+- **FastAPI Integration**: One-liner to mount full REST API (6 endpoints total)
 
 ### Key Features
 
@@ -104,7 +106,7 @@ from fin_infra.documents import add_documents
 
 app = FastAPI()
 
-# One-liner: mount all document endpoints
+# One-liner: mount all document endpoints (Layer 1 + Layer 2)
 manager = add_documents(
     app,
     storage_path="/data/documents",
@@ -113,12 +115,15 @@ manager = add_documents(
 )
 
 # Endpoints now available:
-# POST /documents/upload
-# GET /documents/list?user_id=...&type=...&year=...
-# GET /documents/{document_id}
-# DELETE /documents/{document_id}
-# POST /documents/{document_id}/ocr
-# POST /documents/{document_id}/analyze
+# Layer 1 (svc-infra base - generic CRUD):
+#   POST /documents/upload           - Upload document
+#   GET /documents/list              - List documents with filters
+#   GET /documents/{document_id}     - Get document details
+#   DELETE /documents/{document_id}  - Delete document
+#
+# Layer 2 (fin-infra extensions - financial features):
+#   POST /documents/{document_id}/ocr     - Extract text via OCR
+#   POST /documents/{document_id}/analyze - AI-powered analysis
 ```
 
 ---

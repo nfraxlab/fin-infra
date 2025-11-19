@@ -16,6 +16,8 @@ fin-infra is the **financial data layer** for fintech apps. While `svc-infra` ha
 - View real-time market data (stocks, crypto, forex)
 - Perform financial calculations (NPV, IRR, loan amortization)
 
+**Architecture**: fin-infra builds on top of svc-infra's generic modules to provide financial-specific features. For example, document management uses svc-infra's base CRUD operations (upload, list, get, delete) and adds OCR extraction for tax forms and AI-powered financial analysis. This layered approach eliminates duplication while maintaining clear domain separation.
+
 ## Status
 
 Alpha. Core functionality is stable, but the surface is intentionally small while we stabilize models and provider contracts.

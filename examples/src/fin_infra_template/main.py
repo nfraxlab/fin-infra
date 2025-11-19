@@ -346,18 +346,9 @@ if settings.database_configured:
                 create_schema=BudgetCreate,
                 update_schema=BudgetUpdate,
             ),
-            SqlResource(
-                model=Document,
-                prefix="/documents",
-                tags=["Documents"],
-                soft_delete=True,
-                search_fields=["filename", "document_type", "tags"],
-                ordering_default="-created_at",
-                allowed_order_fields=["id", "filename", "document_type", "document_date", "created_at"],
-                read_schema=DocumentRead,
-                create_schema=DocumentCreate,
-                update_schema=DocumentUpdate,
-            ),
+            # NOTE: Document model uses add_documents() instead of SqlResource
+            # This provides proper file storage + OCR + AI analysis capabilities
+            # See line ~729 where add_documents() is called
             SqlResource(
                 model=NetWorthSnapshot,
                 prefix="/net-worth-snapshots",
