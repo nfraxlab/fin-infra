@@ -38,7 +38,19 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-from svc_infra.documents import DocumentManager as BaseDocumentManager
+try:
+    from svc_infra.documents import DocumentManager as BaseDocumentManager
+except ImportError:
+    # Fallback for older svc-infra versions without documents module
+    # This provides backward compatibility until svc-infra 0.1.668+ is published
+    import warnings
+    warnings.warn(
+        "svc_infra.documents not found. Using legacy implementation. "
+        "Please upgrade svc-infra to >=0.1.668 for layered architecture support.",
+        DeprecationWarning,
+        stacklevel=2
+    )
+    BaseDocumentManager = object  # type: ignore
 
 if TYPE_CHECKING:
     from svc_infra.storage.base import StorageBackend

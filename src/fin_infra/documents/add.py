@@ -90,15 +90,31 @@ def add_documents(
 
     from svc_infra.api.fastapi.dual.protected import user_router
 
-    # Import svc-infra base function to mount base endpoints
-    from svc_infra.documents import add_documents as add_base_documents
+    # Import svc-infra base function to mount base endpoints (with fallback)
+    try:
+        from svc_infra.documents import add_documents as add_base_documents
+        HAS_SVC_INFRA_DOCUMENTS = True
+    except ImportError:
+        # Fallback for older svc-infra versions - skip base endpoints
+        HAS_SVC_INFRA_DOCUMENTS = False
+        add_base_documents = None  # type: ignore
 
     from .ease import easy_documents
     from .models import OCRResult
 
     # Step 1: Mount base endpoints (upload, list, get, delete) via svc-infra
     # This returns the base DocumentManager, but we'll create our own FinancialDocumentManager
-    add_base_documents(app, storage_backend=storage, prefix=prefix, tags=tags)
+    if HAS_SVC_INFRA_DOCUMENTS and add_base_documents:
+        add_base_documents(app, storage_backend=storage, prefix=prefix, tags=tags)
+    else:
+        # Legacy mode: mount basic endpoints inline (for svc-infra < 0.1.668)
+        import warnings
+        warnings.warn(
+            "svc_infra.documents not found. Using legacy document endpoints. "
+            "Please upgrade svc-infra to >=0.1.668 for full functionality.",
+            DeprecationWarning,
+            stacklevel=2
+        )
 
     # Step 2: Create financial document manager with OCR/AI capabilities
     manager = easy_documents(storage=storage, default_ocr_provider=default_ocr_provider)

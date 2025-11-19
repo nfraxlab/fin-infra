@@ -48,8 +48,8 @@ cashews = { version = "^7.4.1", extras = ["redis"] }
 loguru = "^0.7.2"
 numpy = "^2.1.3"
 numpy-financial = "^1.0.0"
-svc-infra = { path = "../svc-infra", develop = true }  # Local dev - using local version with documents module
-# svc-infra = "^0.1.665"  # Uncomment for published version
+# svc-infra = { path = "../svc-infra", develop = true }  # Local dev only - uncomment for local development
+svc-infra = "^0.1.665"  # Published version for CI/production
 
 # Provider dependencies (installed by default for easy_* functions)
 yahooquery = "^2.3.7"

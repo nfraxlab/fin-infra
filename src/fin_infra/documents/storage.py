@@ -38,13 +38,23 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, Optional
 
-from svc_infra.documents import (
-    delete_document as base_delete_document,
-    download_document as base_download_document,
-    get_document as base_get_document,
-    list_documents as base_list_documents,
-    upload_document as base_upload_document,
-)
+try:
+    from svc_infra.documents import (
+        delete_document as base_delete_document,
+        download_document as base_download_document,
+        get_document as base_get_document,
+        list_documents as base_list_documents,
+        upload_document as base_upload_document,
+    )
+    HAS_SVC_INFRA_DOCUMENTS = True
+except ImportError:
+    # Fallback for older svc-infra versions - use legacy implementation
+    HAS_SVC_INFRA_DOCUMENTS = False
+    base_delete_document = None  # type: ignore
+    base_download_document = None  # type: ignore
+    base_get_document = None  # type: ignore
+    base_list_documents = None  # type: ignore
+    base_upload_document = None  # type: ignore
 
 if TYPE_CHECKING:
     from svc_infra.storage.base import StorageBackend

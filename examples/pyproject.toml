@@ -16,8 +16,8 @@ python = ">=3.11,<4.0"
 
 # 2. When used inside fin-infra repo (at examples/ level):
 fin-infra = { path = "../", develop = true }
-svc-infra = { path = "../../svc-infra", develop = true }  # Local dev - using local version with documents module
-# svc-infra = "^0.1.0"  # Uncomment for published version
+# svc-infra = { path = "../../svc-infra", develop = true }  # Local dev only - uncomment for local development
+svc-infra = "^0.1.0"  # Published version for CI/production
 
 # SQLite driver (included for easy local development)
 aiosqlite = "^0.20.0"
