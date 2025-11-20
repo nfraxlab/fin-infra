@@ -109,3 +109,12 @@ class TaxProvider(ABC):
     def calculate_crypto_gains(self, transactions: list[dict], **kwargs) -> dict:
         """Calculate capital gains from crypto transactions."""
         pass
+
+
+class InvestmentProvider(ABC):
+    """Provider for investment holdings and portfolio data (Plaid, SnapTrade).
+    
+    Full implementation in fin_infra.investments.providers.base.
+    This is a placeholder for consistency with other provider types.
+    """
+    pass
