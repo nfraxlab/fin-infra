@@ -76,7 +76,14 @@ class PlaidClient(BankingProvider):
         request = LinkTokenCreateRequest(
             user=LinkTokenCreateRequestUser(client_user_id=user_id),
             client_name="fin-infra",
-            products=[Products("auth"), Products("transactions")],
+            products=[
+                Products("auth"),           # Account/routing numbers for ACH
+                Products("transactions"),   # Transaction history
+                Products("liabilities"),    # Credit cards, loans, student loans
+                Products("investments"),    # Brokerage, retirement accounts
+                Products("assets"),         # Asset reports for lending/verification
+                Products("identity"),       # Account holder info (name, email, phone)
+            ],
             country_codes=[CountryCode("US")],
             language="en",
         )
