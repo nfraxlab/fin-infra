@@ -72,7 +72,7 @@ class InvestmentProvider(ABC):
             >>> end = date.today()
             >>> start = end - timedelta(days=30)
             >>> transactions = await provider.get_transactions(access_token, start, end)
-            >>> buys = [tx for tx in transactions if tx.type == "buy"]
+            >>> buys = [tx for tx in transactions if tx.transaction_type == "buy"]
         """
         pass
 
@@ -139,7 +139,7 @@ class InvestmentProvider(ABC):
 
         # Calculate total portfolio value
         total_value = sum(
-            holding.institution_value for holding in holdings if holding.institution_value
+            float(holding.institution_value) for holding in holdings if holding.institution_value
         )
 
         if total_value == 0:
@@ -156,7 +156,7 @@ class InvestmentProvider(ABC):
 
         for holding in holdings:
             sec_type = holding.security.type
-            value = holding.institution_value or 0.0
+            value = float(holding.institution_value or 0.0)
 
             if sec_type == SecurityType.cash:
                 cash_value += value
@@ -210,10 +210,10 @@ class InvestmentProvider(ABC):
             >>> print(f"Return: {metrics['total_unrealized_gain_loss_percent']:.2f}%")
         """
         total_value = sum(
-            holding.institution_value for holding in holdings if holding.institution_value
+            float(holding.institution_value) for holding in holdings if holding.institution_value
         )
         total_cost_basis = sum(
-            holding.cost_basis for holding in holdings if holding.cost_basis
+            float(holding.cost_basis) for holding in holdings if holding.cost_basis
         )
 
         total_gain_loss = total_value - total_cost_basis
@@ -262,6 +262,7 @@ class InvestmentProvider(ABC):
             "derivative": SecurityType.derivative,
             # SnapTrade types (common abbreviations)
             "cs": SecurityType.equity,  # common stock
+            "stock": SecurityType.equity,  # common stock (full word)
             "mf": SecurityType.mutual_fund,  # mutual fund
             "o": SecurityType.derivative,  # option
             # Fallback

@@ -10,13 +10,17 @@ from __future__ import annotations
 import re
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, Optional, Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+from pydantic.json_schema import JsonSchemaValue
+from pydantic_core import core_schema
 
 from ..providers.base import BankingProvider
 
 
 class BankingConnectionInfo(BaseModel):
     """Information about a banking provider connection."""
+    
+    model_config = ConfigDict()
     
     provider: Literal["plaid", "teller", "mx"]
     connected: bool
@@ -27,11 +31,6 @@ class BankingConnectionInfo(BaseModel):
     last_synced_at: Optional[datetime] = None
     is_healthy: bool = True
     error_message: Optional[str] = None
-    
-    class Config:
-        json_encoders = {
-            datetime: lambda v: v.isoformat() if v else None
-        }
 
 
 class BankingConnectionStatus(BaseModel):

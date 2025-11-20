@@ -65,12 +65,7 @@ class BalanceSnapshot(BaseModel):
         created_at: Timestamp when snapshot was recorded
     """
 
-    model_config = ConfigDict(
-        json_encoders={
-            date: lambda v: v.isoformat(),
-            datetime: lambda v: v.isoformat(),
-        }
-    )
+    model_config = ConfigDict()
 
     account_id: str = Field(..., description="Account identifier")
     balance: float = Field(..., description="Account balance at snapshot time")
