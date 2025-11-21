@@ -174,8 +174,11 @@ def add_investments(
 
     # 2. Store on app state
     app.state.investment_provider = provider
+    
+    # 3. Capture provider in local variable for closure
+    investment_provider = provider
 
-    # 3. Import user_router from svc-infra (requires authentication)
+    # 4. Import user_router from svc-infra (requires authentication)
     from svc_infra.api.fastapi.dual.protected import user_router
 
     router = user_router(prefix=prefix, tags=tags or ["Investments"])
@@ -217,7 +220,7 @@ def add_investments(
                 )
         
         # Call provider with resolved token
-        holdings = await provider.get_holdings(
+        holdings = await investment_provider.get_holdings(
             access_token=access_token,
             account_ids=request.account_ids,
         )
@@ -263,7 +266,7 @@ def add_investments(
                     detail="No access token found. Please reconnect your accounts."
                 )
 
-        transactions = await provider.get_transactions(
+        transactions = await investment_provider.get_transactions(
             access_token=access_token,
             start_date=request.start_date,
             end_date=request.end_date,
@@ -303,7 +306,7 @@ def add_investments(
                     detail="No access token found. Please reconnect your accounts."
                 )
 
-        accounts = await provider.get_investment_accounts(
+        accounts = await investment_provider.get_investment_accounts(
             access_token=access_token,
         )
         return accounts
@@ -341,13 +344,13 @@ def add_investments(
                 )
         
         # Fetch holdings
-        holdings = await provider.get_holdings(
+        holdings = await investment_provider.get_holdings(
             access_token=access_token,
             account_ids=request.account_ids,
         )
         
         # Calculate allocation using base provider helper
-        allocation = provider.calculate_allocation(holdings)
+        allocation = investment_provider.calculate_allocation(holdings)
         return allocation
 
     @router.post(
@@ -382,7 +385,7 @@ def add_investments(
                     detail="No access token found. Please reconnect your accounts."
                 )
 
-        securities = await provider.get_securities(
+        securities = await investment_provider.get_securities(
             access_token=access_token,
             security_ids=request.security_ids,
         )
