@@ -24,8 +24,8 @@ import typer
 def cmd_scaffold(
     domain: str = typer.Argument(
         ...,
-        help="Domain to scaffold (budgets, goals, net_worth, holdings)",
-        click_type=click.Choice(["budgets", "goals", "net_worth", "holdings"], case_sensitive=False),
+        help="Domain to scaffold (budgets, goals)",
+        click_type=click.Choice(["budgets", "goals"], case_sensitive=False),
     ),
     dest_dir: Path = typer.Option(
         ...,
@@ -79,11 +79,11 @@ def cmd_scaffold(
         # Basic scaffold (models + schemas + repository)
         fin-infra scaffold budgets --dest-dir app/models/
         
-        # Investment holdings snapshots for historical tracking
-        fin-infra scaffold holdings --dest-dir app/models/holdings/
+        # Financial goals tracking
+        fin-infra scaffold goals --dest-dir app/models/goals/
         
         # With multi-tenancy and soft deletes
-        fin-infra scaffold budgets --dest-dir app/models/ \\
+        fin-infra scaffold budgets --dest-dir app/models/ \
             --include-tenant --include-soft-delete
         
         # Without repository (use svc-infra SqlRepository directly)
@@ -136,35 +136,9 @@ def cmd_scaffold(
             schemas_filename=schemas_filename or "goal_schemas.py",
             repository_filename=repository_filename or "goal_repository.py",
         )
-    elif domain == "net_worth":
-        from fin_infra.scaffold.net_worth import scaffold_net_worth_core
-
-        result = scaffold_net_worth_core(
-            dest_dir=dest_dir,
-            include_tenant=include_tenant,
-            include_soft_delete=include_soft_delete,
-            with_repository=with_repository,
-            overwrite=overwrite,
-            models_filename=models_filename or "net_worth_snapshot.py",
-            schemas_filename=schemas_filename or "net_worth_snapshot_schemas.py",
-            repository_filename=repository_filename or "net_worth_snapshot_repository.py",
-        )
-    elif domain == "holdings":
-        from fin_infra.scaffold.holdings import scaffold_holdings_core
-
-        result = scaffold_holdings_core(
-            dest_dir=dest_dir,
-            include_tenant=include_tenant,
-            include_soft_delete=include_soft_delete,
-            with_repository=with_repository,
-            overwrite=overwrite,
-            models_filename=models_filename or "holding_snapshot.py",
-            schemas_filename=schemas_filename or "holding_snapshot_schemas.py",
-            repository_filename=repository_filename or "holding_snapshot_repository.py",
-        )
     else:
         typer.secho(
-            f"❌ Unknown domain: {domain}. Must be one of: budgets, goals, net_worth, holdings",
+            f"❌ Unknown domain: {domain}. Must be one of: budgets, goals",
             fg=typer.colors.RED,
             err=True,
         )
@@ -204,8 +178,6 @@ def cmd_scaffold(
         entity_map = {
             "budgets": "Budget",
             "goals": "Goal",
-            "net_worth": "NetWorthSnapshot",
-            "holdings": "HoldingSnapshot",
         }
         entity_name = entity_map.get(domain, domain.capitalize())
 
@@ -213,8 +185,6 @@ def cmd_scaffold(
         prefix_map = {
             "budgets": "/budgets",
             "goals": "/goals",
-            "net_worth": "/net-worth",
-            "holdings": "/holding-snapshots",
         }
         route_prefix = prefix_map.get(domain, f"/{domain}")
 

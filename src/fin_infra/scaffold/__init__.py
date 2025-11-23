@@ -5,7 +5,7 @@ and repository implementations from templates for different financial domains.
 
 Typical usage:
     from fin_infra.scaffold.budgets import scaffold_budgets_core
-    from fin_infra.scaffold.holdings import scaffold_holdings_core
+    from fin_infra.scaffold.goals import scaffold_goals_core
 
     result = scaffold_budgets_core(
         dest_dir=Path("app/models"),
@@ -13,17 +13,17 @@ Typical usage:
         include_soft_delete=True,
     )
     
-    result = scaffold_holdings_core(
-        dest_dir=Path("app/models/holdings"),
+    result = scaffold_goals_core(
+        dest_dir=Path("app/models/goals"),
         include_tenant=False,
         include_soft_delete=False,
     )
 """
 
 from .budgets import scaffold_budgets_core
-from .holdings import scaffold_holdings_core
+from .goals import scaffold_goals_core
 
 __all__ = [
     "scaffold_budgets_core",
-    "scaffold_holdings_core",
+    "scaffold_goals_core",
 ]
