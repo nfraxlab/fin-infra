@@ -822,5 +822,4 @@ fin-infra scaffold budgets --dest-dir app/models/budgets
 
 **Next Steps**:
 - See [Persistence Guide](./persistence.md) for scaffold workflow
-- See [Persistence Strategy ADR](./presistence-strategy.md) for architecture decisions
 - See domain-specific docs for core functions: [Budgets](./budgets.md), [Goals](./goals.md), [Net Worth](./net-worth.md)

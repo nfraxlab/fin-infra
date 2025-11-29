@@ -1265,5 +1265,4 @@ add_sql_resources(app, [SqlResource(model=Budget, prefix="/budgets")])
 
 For more details, see:
 - [svc-infra SQL README](https://github.com/your-org/svc-infra/blob/main/src/svc_infra/api/fastapi/db/sql/README.md)
-- [Persistence Strategy (ADR)](./presistence-strategy.md)
 - [Core vs Scaffold](./core-vs-scaffold.md)

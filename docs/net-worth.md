@@ -1698,10 +1698,7 @@ GOOGLE_API_KEY=your_key poetry run python examples/scripts/measure_llm_costs.py 
 
 **Cause**: Insufficient context in LLM prompts.
 
-**Solution**: See quality review guide for improvement strategies.
-
-- [docs/testing/llm-quality-review.md](./testing/llm-quality-review.md)
-- Target: 4.0+ average rating from 20 test users
+**Solution**: Improve prompts with more user context and financial history.
 
 ---
 

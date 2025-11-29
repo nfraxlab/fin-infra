@@ -355,4 +355,3 @@ market = easy_market(provider="alphavantage")
 - **Banking**: [banking.md](banking.md) for account aggregation
 - **Market Data**: [market-data.md](market-data.md) for stock quotes
 - **Credit**: [credit.md](credit.md) for credit scores
-- **Easy Builders**: [getting-started.md](getting-started.md) for one-call setup

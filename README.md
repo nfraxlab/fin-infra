@@ -235,7 +235,7 @@ fin-infra/
 ```
 
 **Architecture Documentation:**
-- [Persistence Strategy ADR](docs/presistence-strategy.md) - Why fin-infra is stateless
+- [Core vs Scaffold](docs/core-vs-scaffold.md) - What fin-infra provides vs what apps own
 - [Persistence Guide](docs/persistence.md) - Complete scaffold workflow
 
 ## Configuration
@@ -303,7 +303,6 @@ If the secret isn't configured, acceptance tests will still run and CoinGecko te
 
 - Keep APIs small and typed. Prefer Pydantic models for IO boundaries.
 - Add or update tests for any behavior changes. Keep `pytest` passing and `mypy` clean.
-- See [Contributing Guide](docs/contributing.md) for detailed development workflow.
 
 ## License
 
