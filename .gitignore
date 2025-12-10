@@ -1,3 +1,17 @@
+# OS artifacts
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# Editor backup files
+*~
+*.swp
+*.swo
+*.bak
+*.backup
+\#*\#
+.#*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
