@@ -29,7 +29,7 @@ add_goals(app)
 
 import logging
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, List, Optional, cast
 
 from fastapi import FastAPI, HTTPException, status, Query, Body
 from pydantic import BaseModel, Field
@@ -469,7 +469,7 @@ def add_goals(
             # Get all milestones from the goal (check_milestones only returns newly reached ones)
             goal = get_goal(goal_id)
             milestones = goal.get("milestones", [])
-            return milestones
+            return cast(list[dict[Any, Any]], milestones)
         except KeyError:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail=f"Goal {goal_id} not found"

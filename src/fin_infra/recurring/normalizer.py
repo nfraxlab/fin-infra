@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import re
 from functools import lru_cache
+from typing import cast
 
 try:
     from rapidfuzz import fuzz, process
@@ -165,7 +166,7 @@ class FuzzyMatcher:
         norm2 = normalize_merchant(name2)
 
         similarity = fuzz.token_sort_ratio(norm1, norm2)
-        return similarity >= self.similarity_threshold
+        return cast(bool, similarity >= self.similarity_threshold)
 
     def group_merchants(self, merchants: list[str]) -> dict[str, list[str]]:
         """

@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-from typing import Any, Callable, TYPE_CHECKING
+from typing import Any, Callable, TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
     from fastapi import FastAPI, Request, Response
@@ -118,7 +118,8 @@ def add_compliance_tracking(
 
         # Track only GET requests (data access)
         if method != "GET":
-            return await call_next(request)
+            from starlette.responses import Response as StarletteResponse
+            return cast("Response", await call_next(request))
 
         # Determine if path is a compliance-tracked endpoint
         event = None
@@ -148,7 +149,7 @@ def add_compliance_tracking(
             if on_event:
                 on_event(event, context)
 
-        return response
+        return cast("Response", response)
 
     logger.info(
         "Compliance tracking enabled",

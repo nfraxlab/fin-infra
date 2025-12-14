@@ -14,7 +14,7 @@ Example:
     >>> data = await client.get_credit_score("user123")
 """
 
-from typing import Any
+from typing import Any, cast
 
 import httpx
 from tenacity import (
@@ -155,7 +155,7 @@ class ExperianClient:
                 **kwargs,
             )
             response.raise_for_status()
-            return response.json()
+            return cast(dict[str, Any], response.json())
 
         except httpx.HTTPStatusError as e:
             # Parse error response

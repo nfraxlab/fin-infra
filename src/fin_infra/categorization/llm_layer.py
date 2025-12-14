@@ -15,7 +15,7 @@ Expected performance:
 
 import hashlib
 import logging
-from typing import Optional, List, Tuple
+from typing import Optional, List, Tuple, cast
 from pydantic import BaseModel, Field
 
 # ai-infra imports
@@ -245,7 +245,7 @@ class LLMCategorizer:
                 f"Must be one of {len(valid_categories)} valid categories."
             )
 
-        return response
+        return cast(CategoryPrediction, response)
 
     def _build_system_prompt(self) -> str:
         """Build system prompt with few-shot examples (reused across all requests)."""

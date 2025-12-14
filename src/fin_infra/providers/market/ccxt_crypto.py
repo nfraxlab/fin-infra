@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any, cast
+
 import ccxt
 
 from ..base import CryptoDataProvider
@@ -15,14 +17,14 @@ class CCXTCryptoData(CryptoDataProvider):
         # Defer load_markets to first call to avoid network on construction
         self._markets_loaded = False
 
-    def ticker(self, symbol_pair: str) -> dict:
+    def ticker(self, symbol_pair: str) -> dict[Any, Any]:
         if not self._markets_loaded:
             self.exchange.load_markets()
             self._markets_loaded = True
-        return self.exchange.fetch_ticker(symbol_pair)
+        return cast(dict[Any, Any], self.exchange.fetch_ticker(symbol_pair))
 
     def ohlcv(self, symbol_pair: str, timeframe: str = "1d", limit: int = 100) -> list[list[float]]:
         if not self._markets_loaded:
             self.exchange.load_markets()
             self._markets_loaded = True
-        return self.exchange.fetch_ohlcv(symbol_pair, timeframe=timeframe, limit=limit)
+        return cast(list[list[float]], self.exchange.fetch_ohlcv(symbol_pair, timeframe=timeframe, limit=limit))

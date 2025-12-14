@@ -23,6 +23,7 @@ Example:
 """
 
 import logging
+from typing import cast
 
 from fastapi import FastAPI, Depends, HTTPException, status
 
@@ -175,7 +176,7 @@ def add_credit(
                 # Don't fail request if webhook publishing fails
                 logger.warning(f"Failed to publish credit.score_changed webhook: {e}")
 
-        return score
+        return cast(CreditScore, score)
 
     @router.post("/report", response_model=CreditReport)
     @credit_resource.cache_read(ttl=cache_ttl, suffix="report")
@@ -219,7 +220,7 @@ def add_credit(
                 detail="Credit bureau service unavailable",
             )
 
-        return report
+        return cast(CreditReport, report)
 
     # Mount router with dual routes (with/without trailing slash)
     app.include_router(router, include_in_schema=True)

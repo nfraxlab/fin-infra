@@ -26,7 +26,7 @@ Example:
 """
 
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 from fin_infra.goals.management import get_goal, update_goal
 from fin_infra.goals.models import Milestone
@@ -229,7 +229,7 @@ def get_next_milestone(goal_id: str) -> dict[str, Any] | None:
     # Find first unreached milestone (sorted by amount)
     for milestone in milestones:
         if not milestone.get("reached", False):
-            return milestone
+            return cast(dict[str, Any], milestone)
 
     return None
 

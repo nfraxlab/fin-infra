@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from datetime import date
 from decimal import Decimal
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 import httpx
 
@@ -393,7 +393,7 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
             url = f"{self.base_url}/connections"
             response = await self.client.get(url, headers=auth_headers)
             response.raise_for_status()
-            return await response.json()
+            return cast(list[dict[str, Any]], await response.json())
 
         except httpx.HTTPStatusError as e:
             raise self._transform_error(e)

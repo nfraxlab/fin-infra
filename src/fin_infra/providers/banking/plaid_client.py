@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta
+from typing import Any, cast
 
 # Plaid SDK v25+ uses new API structure
 try:
@@ -96,7 +97,7 @@ class PlaidClient(BankingProvider):
             language="en",
         )
         response = self.client.link_token_create(request)
-        return response["link_token"]
+        return cast(str, response["link_token"])
 
     def exchange_public_token(self, public_token: str) -> dict:
         request = ItemPublicTokenExchangeRequest(public_token=public_token)
@@ -146,8 +147,8 @@ class PlaidClient(BankingProvider):
         # Return all balances
         return {"balances": [acc.get("balances", {}) for acc in accounts]}
 
-    def identity(self, access_token: str) -> dict:
+    def identity(self, access_token: str) -> dict[Any, Any]:
         """Fetch identity/account holder information."""
         request = IdentityGetRequest(access_token=access_token)
         response = self.client.identity_get(request)
-        return response.to_dict()
+        return cast(dict[Any, Any], response.to_dict())

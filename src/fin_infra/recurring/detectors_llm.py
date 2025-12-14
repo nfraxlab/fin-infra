@@ -14,7 +14,7 @@ Only called for ambiguous patterns (20-40% variance, ~10% of patterns).
 from __future__ import annotations
 
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, cast
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -292,7 +292,7 @@ class VariableDetectorLLM:
 
         # Extract structured output
         if hasattr(response, "structured") and response.structured:
-            return response.structured
+            return cast(VariableRecurringPattern, response.structured)
         else:
             raise ValueError(f"LLM returned no structured output for '{merchant_name}'")
 

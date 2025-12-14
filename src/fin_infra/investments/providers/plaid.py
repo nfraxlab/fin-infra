@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from datetime import date
 from decimal import Decimal
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from plaid.api import plaid_api
 from plaid.model.investments_holdings_get_request import InvestmentsHoldingsGetRequest
@@ -103,7 +103,7 @@ class PlaidInvestmentProvider(InvestmentProvider):
             "development": plaid.Environment.Sandbox,  # Map development to sandbox
             "production": plaid.Environment.Production,
         }
-        return hosts.get(environment.lower(), plaid.Environment.Sandbox)
+        return cast(str, hosts.get(environment.lower(), plaid.Environment.Sandbox))
 
     async def get_holdings(
         self, access_token: str, account_ids: Optional[List[str]] = None

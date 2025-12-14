@@ -7,7 +7,7 @@ mode for development and testing. Live trading requires explicit opt-in.
 from __future__ import annotations
 
 import os
-from typing import Literal
+from typing import Any, Literal, cast
 
 try:
     from alpaca_trade_api import REST
@@ -308,14 +308,14 @@ class AlpacaBrokerage(BrokerageProvider):
         return self._extract_raw(watchlist)
 
     @staticmethod
-    def _extract_raw(obj) -> dict:
+    def _extract_raw(obj: Any) -> dict[Any, Any]:
         """Extract raw dict from Alpaca entity object.
 
         Alpaca entities have a _raw attribute with the API response data.
         """
         if hasattr(obj, "_raw"):
-            return obj._raw
+            return cast(dict[Any, Any], obj._raw)
         elif hasattr(obj, "__dict__"):
-            return obj.__dict__
+            return cast(dict[Any, Any], obj.__dict__)
         else:
-            return obj
+            return cast(dict[Any, Any], obj)

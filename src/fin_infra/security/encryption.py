@@ -7,7 +7,7 @@ Encrypt/decrypt financial provider API tokens at rest.
 import base64
 import json
 import os
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, cast
 
 from cryptography.fernet import Fernet, InvalidToken
 
@@ -144,7 +144,7 @@ class ProviderTokenEncryption:
                         "Token may have been tampered with or used for wrong user/provider."
                     )
 
-            return data["token"]
+            return cast(str, data["token"])
 
         except InvalidToken as e:
             raise ValueError(

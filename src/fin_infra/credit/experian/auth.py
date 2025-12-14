@@ -24,6 +24,7 @@ Example:
 """
 
 import base64
+from typing import cast
 
 import httpx
 from svc_infra.cache import cache_read
@@ -85,7 +86,7 @@ class ExperianAuthManager:
             >>> headers = {"Authorization": f"Bearer {token}"}
         """
         # Call the cached implementation with client_id for cache key
-        return await self._get_token_cached(client_id=self.client_id)
+        return cast(str, await self._get_token_cached(client_id=self.client_id))
 
     @cache_read(
         key="oauth_token:experian:{client_id}",  # Use client_id for uniqueness
@@ -140,7 +141,7 @@ class ExperianAuthManager:
 
         # Parse and return token
         data = response.json()
-        return data["access_token"]
+        return cast(str, data["access_token"])
 
     async def invalidate(self) -> None:
         """Invalidate cached token for THIS client (force refresh on next get_token call).

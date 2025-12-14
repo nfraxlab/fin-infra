@@ -2,7 +2,7 @@
 
 import os
 from datetime import date as DateType
-from typing import Optional
+from typing import Optional, cast
 
 import httpx
 
@@ -66,10 +66,10 @@ class ExchangeRateClient:
                         raise ExchangeRateAPIError(
                             f"API returned error: {data.get('error-type', 'unknown')}"
                         )
-                    return data["conversion_rates"]
+                    return cast(dict[str, float], data["conversion_rates"])
                 else:
                     # Free tier response format
-                    return data["rates"]
+                    return cast(dict[str, float], data["rates"])
 
         except httpx.HTTPError as e:
             raise ExchangeRateAPIError(f"HTTP error fetching rates: {e}")

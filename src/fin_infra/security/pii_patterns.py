@@ -67,7 +67,7 @@ def luhn_checksum(card_number: str) -> bool:
         True if valid, False otherwise
     """
 
-    def digits_of(n):
+    def digits_of(n: int | str) -> list[int]:
         return [int(d) for d in str(n)]
 
     digits = digits_of(card_number)

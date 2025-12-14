@@ -45,7 +45,7 @@ from __future__ import annotations
 
 import os
 from datetime import date
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, cast
 
 from pydantic import BaseModel, Field
 
@@ -199,7 +199,7 @@ def easy_banking(provider: str = "teller", **config) -> BankingProvider:
             }
 
     # Use provider registry to dynamically load and configure provider
-    return resolve("banking", provider, **config)
+    return cast(BankingProvider, resolve("banking", provider, **config))
 
 
 def add_banking(

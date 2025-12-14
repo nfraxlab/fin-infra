@@ -31,7 +31,7 @@ Example:
 
 import logging
 from datetime import datetime, timezone
-from typing import Literal
+from typing import Literal, cast
 
 from fin_infra.credit.experian.auth import ExperianAuthManager
 from fin_infra.credit.experian.client import ExperianClient
@@ -360,4 +360,4 @@ class ExperianProvider(CreditProvider):
             signature_key=signature_key,
         )
 
-        return data.get("subscriptionId", "unknown")
+        return cast(str, data.get("subscriptionId", "unknown"))

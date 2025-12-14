@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, cast
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -383,7 +383,7 @@ class SubscriptionInsightsGenerator:
 
         # Extract structured output
         if hasattr(response, "structured") and response.structured:
-            return response.structured
+            return cast(SubscriptionInsights, response.structured)
         else:
             raise ValueError("LLM returned no structured output for insights")
 

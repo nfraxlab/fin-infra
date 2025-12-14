@@ -41,7 +41,7 @@ Example:
 """
 
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 from pydantic import BaseModel, Field
 
@@ -839,7 +839,7 @@ def get_goal(goal_id: str) -> dict[str, Any]:
     if goal_id not in _GOALS_STORE:
         raise KeyError(f"Goal not found: {goal_id}")
 
-    return _GOALS_STORE[goal_id]
+    return cast(dict[str, Any], _GOALS_STORE[goal_id])
 
 
 def update_goal(
@@ -885,7 +885,7 @@ def update_goal(
 
     Goal(**goal)  # Will raise ValidationError if invalid
 
-    return goal
+    return cast(dict[str, Any], goal)
 
 
 def delete_goal(goal_id: str) -> None:
