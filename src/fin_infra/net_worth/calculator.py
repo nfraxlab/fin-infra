@@ -100,18 +100,27 @@ def calculate_net_worth(
 
     Returns:
         Net worth in base currency
+        
+    Raises:
+        ValueError: If assets or liabilities contain non-base currencies and no
+            exchange rate conversion is available. This prevents silent data loss.
     """
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    # Collect any non-base currency items for error reporting
+    non_base_assets: list[tuple[str, str, float]] = []
+    non_base_liabilities: list[tuple[str, str, float]] = []
+    
     # Sum all assets (use market_value if available, otherwise balance)
     total_assets = 0.0
     for asset in assets:
         # Use market value for investments/crypto (includes unrealized gains)
         amount = asset.market_value if asset.market_value is not None else asset.balance
 
-        # Normalize to base currency (future: implement currency conversion)
-        # For now, assume all are in USD
+        # Check for non-base currency
         if asset.currency != base_currency:
-            # TODO: Implement currency conversion with exchange rate API
-            # For V1, we'll require all accounts in USD or skip non-USD
+            non_base_assets.append((asset.name or asset.account_id, asset.currency, amount))
             continue
 
         total_assets += amount
@@ -119,12 +128,29 @@ def calculate_net_worth(
     # Sum all liabilities
     total_liabilities = 0.0
     for liability in liabilities:
-        # Normalize to base currency
+        # Check for non-base currency
         if liability.currency != base_currency:
-            # TODO: Implement currency conversion
+            non_base_liabilities.append((liability.name or liability.account_id, liability.currency, liability.balance))
             continue
 
         total_liabilities += liability.balance
+
+    # If any non-base currency items were found, log warning and raise error
+    # This prevents silent data loss where user's net worth is wrong
+    if non_base_assets or non_base_liabilities:
+        items_msg = []
+        if non_base_assets:
+            items_msg.append(f"Assets: {non_base_assets}")
+        if non_base_liabilities:
+            items_msg.append(f"Liabilities: {non_base_liabilities}")
+        
+        error_msg = (
+            f"Cannot calculate net worth: found accounts in non-{base_currency} currencies. "
+            f"Currency conversion not yet implemented. {'; '.join(items_msg)}. "
+            f"Either convert all accounts to {base_currency} or wait for currency conversion feature."
+        )
+        logger.warning(error_msg)
+        raise ValueError(error_msg)
 
     return total_assets - total_liabilities
 

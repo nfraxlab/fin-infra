@@ -178,22 +178,22 @@ class TestExperianAuthManager:
         assert decoded == "my_client:my_secret"
 
     @pytest.mark.asyncio
-    async def test_invalidate_calls_tag_invalidation(self):
-        """Test invalidate() calls svc-infra tag invalidation."""
+    async def test_invalidate_calls_invalidate_tags_for_client(self):
+        """Test invalidate() calls svc-infra invalidate_tags for specific client."""
         auth = ExperianAuthManager(
             client_id=self.client_id,
             client_secret=self.client_secret,
             base_url=self.base_url,
         )
 
-        # Mock the invalidate_tags function
+        # Mock the invalidate_tags function at the source module
         with patch(
-            "fin_infra.credit.experian.auth.invalidate_tags", new=AsyncMock()
+            "svc_infra.cache.tags.invalidate_tags", new=AsyncMock()
         ) as mock_invalidate:
             await auth.invalidate()
 
-        # Verify invalidate_tags was called with correct tag
-        mock_invalidate.assert_called_once_with("oauth:experian")
+        # Verify invalidate_tags was called with client-specific tag
+        mock_invalidate.assert_called_once_with(f"oauth:experian:{self.client_id}")
 
     @pytest.mark.asyncio
     async def test_get_token_returns_string(self):

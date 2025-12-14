@@ -3,7 +3,7 @@
 These tests make real API calls to Plaid's sandbox environment and require:
 - PLAID_CLIENT_ID: Your Plaid client ID
 - PLAID_SECRET: Your Plaid sandbox secret
-- PLAID_ENV: Set to "sandbox" (default)
+- PLAID_ENVIRONMENT: Set to "sandbox" (default)
 
 To run these tests:
 1. Sign up for Plaid sandbox: https://dashboard.plaid.com/signup
@@ -11,7 +11,7 @@ To run these tests:
 3. Export environment variables:
    export PLAID_CLIENT_ID=your_client_id
    export PLAID_SECRET=your_sandbox_secret
-   export PLAID_ENV=sandbox
+   export PLAID_ENVIRONMENT=sandbox
 4. Run: poetry run pytest tests/acceptance/test_investments_plaid_acceptance.py -v
 
 Plaid Sandbox Test Credentials:
@@ -51,7 +51,7 @@ pytestmark = [pytest.mark.acceptance]
 # Skip all tests if Plaid credentials not configured
 PLAID_CLIENT_ID = os.getenv("PLAID_CLIENT_ID")
 PLAID_SECRET = os.getenv("PLAID_SECRET")
-PLAID_ENV = os.getenv("PLAID_ENV", "sandbox")
+PLAID_ENVIRONMENT = os.getenv("PLAID_ENVIRONMENT", "sandbox")
 
 skip_if_no_plaid = pytest.mark.skipif(
     not (PLAID_CLIENT_ID and PLAID_SECRET),
@@ -378,12 +378,12 @@ class TestPlaidSandboxSetup:
         """Verify Plaid environment variables are set correctly."""
         assert PLAID_CLIENT_ID, "PLAID_CLIENT_ID not set"
         assert PLAID_SECRET, "PLAID_SECRET not set"
-        assert PLAID_ENV == "sandbox", f"PLAID_ENV should be 'sandbox', got '{PLAID_ENV}'"
+        assert PLAID_ENVIRONMENT == "sandbox", f"PLAID_ENVIRONMENT should be 'sandbox', got '{PLAID_ENVIRONMENT}'"
         
         print("✓ Plaid environment variables configured:")
         print(f"  PLAID_CLIENT_ID: {PLAID_CLIENT_ID[:8]}...")
         print(f"  PLAID_SECRET: {PLAID_SECRET[:8]}...")
-        print(f"  PLAID_ENV: {PLAID_ENV}")
+        print(f"  PLAID_ENVIRONMENT: {PLAID_ENVIRONMENT}")
 
     def test_sandbox_documentation(self):
         """Document how to set up Plaid sandbox for testing.

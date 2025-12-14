@@ -158,13 +158,13 @@ def test_plaid_custom_environment():
 
 
 def test_plaid_environment_from_env_var():
-    """Test Plaid environment from PLAID_ENV variable."""
+    """Test Plaid environment from PLAID_ENVIRONMENT variable."""
     with patch.dict(
         os.environ,
         {
             "PLAID_CLIENT_ID": "test_id",
             "PLAID_SECRET": "test_secret",
-            "PLAID_ENV": "production",
+            "PLAID_ENVIRONMENT": "production",
         },
         clear=True,
     ):
@@ -253,7 +253,7 @@ def test_config_overrides_env_plaid():
         {
             "PLAID_CLIENT_ID": "env_id",
             "PLAID_SECRET": "env_secret",
-            "PLAID_ENV": "sandbox",
+            "PLAID_ENVIRONMENT": "sandbox",
         },
         clear=True,
     ):

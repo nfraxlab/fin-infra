@@ -46,7 +46,7 @@ def easy_investments(
         Plaid:
             - PLAID_CLIENT_ID: Plaid client ID
             - PLAID_SECRET: Plaid secret key
-            - PLAID_ENV: Environment (sandbox/development/production), default: sandbox
+            - PLAID_ENVIRONMENT: Environment (sandbox/development/production), default: sandbox
 
         SnapTrade:
             - SNAPTRADE_CLIENT_ID: SnapTrade client ID
@@ -177,7 +177,7 @@ def _create_plaid_provider(**config: Any) -> InvestmentProvider:
     # Get credentials from config or environment
     client_id = config.get("client_id") or os.getenv("PLAID_CLIENT_ID")
     secret = config.get("secret") or os.getenv("PLAID_SECRET")
-    environment = config.get("environment") or os.getenv("PLAID_ENV", "sandbox")
+    environment = config.get("environment") or os.getenv("PLAID_ENVIRONMENT", "sandbox")
 
     # Validate required credentials
     if not client_id or not secret:

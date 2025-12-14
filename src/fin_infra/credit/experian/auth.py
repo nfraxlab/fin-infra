@@ -27,7 +27,6 @@ import base64
 
 import httpx
 from svc_infra.cache import cache_read
-from svc_infra.cache.tags import invalidate_tags
 
 # Cache key for OAuth tokens: "oauth_token:experian:{base_url_hash}"
 # TTL: 3600 seconds (1 hour) - matches typical OAuth token expiry
@@ -91,7 +90,7 @@ class ExperianAuthManager:
     @cache_read(
         key="oauth_token:experian:{client_id}",  # Use client_id for uniqueness
         ttl=3600,  # 1 hour - matches OAuth token expiry
-        tags=lambda **kw: ["oauth:experian"],
+        tags=lambda **kw: [f"oauth:experian:{kw['client_id']}"],  # Client-specific tag
     )
     async def _get_token_cached(self, *, client_id: str) -> str:
         """Cached token getter (internal method).
@@ -144,10 +143,10 @@ class ExperianAuthManager:
         return data["access_token"]
 
     async def invalidate(self) -> None:
-        """Invalidate cached token (force refresh on next get_token call).
+        """Invalidate cached token for THIS client (force refresh on next get_token call).
 
-        Uses svc-infra cache tag invalidation to clear all tokens with tag
-        "oauth:experian". Useful when token is rejected by API.
+        Invalidates only the token for this specific client_id, not all Experian tokens.
+        Useful when token is rejected by API.
 
         Example:
             >>> try:
@@ -157,4 +156,8 @@ class ExperianAuthManager:
             ...         await auth.invalidate()
             ...         # Next get_token() will fetch new token
         """
-        await invalidate_tags("oauth:experian")
+        # Import here to avoid circular import
+        from svc_infra.cache.tags import invalidate_tags
+
+        # Invalidate using client-specific tag, not all Experian tokens
+        await invalidate_tags(f"oauth:experian:{self.client_id}")

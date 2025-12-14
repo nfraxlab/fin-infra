@@ -107,7 +107,7 @@ async def test_banking(verbose: bool = False) -> bool:
     print_header("Testing Banking Provider (Plaid)")
 
     # Check environment variables
-    required_vars = ["PLAID_CLIENT_ID", "PLAID_SECRET", "PLAID_ENV"]
+    required_vars = ["PLAID_CLIENT_ID", "PLAID_SECRET", "PLAID_ENVIRONMENT"]
     configured, missing = check_env_vars(required_vars)
 
     if not configured:
@@ -118,7 +118,7 @@ async def test_banking(verbose: bool = False) -> bool:
         print("   3. Add to .env:")
         print("      PLAID_CLIENT_ID=your_client_id")
         print("      PLAID_SECRET=your_sandbox_secret")
-        print("      PLAID_ENV=sandbox")
+        print("      PLAID_ENVIRONMENT=sandbox")
         return False
 
     try:

@@ -217,8 +217,9 @@ class InvestmentProvider(ABC):
         )
 
         total_gain_loss = total_value - total_cost_basis
+        # Use != 0 to handle short sales (negative cost basis)
         total_gain_loss_percent = (
-            (total_gain_loss / total_cost_basis * 100) if total_cost_basis > 0 else 0.0
+            (total_gain_loss / total_cost_basis * 100) if total_cost_basis != 0 else 0.0
         )
 
         return {

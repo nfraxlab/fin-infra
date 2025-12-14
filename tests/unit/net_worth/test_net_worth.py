@@ -166,13 +166,11 @@ def test_calculate_net_worth_empty():
     assert net_worth == 0.0
 
 
-def test_calculate_net_worth_skips_non_usd(sample_assets_multiple_currencies):
-    """Test that non-USD currencies are skipped (for V1)."""
-    # Only USD account should be counted
-    net_worth = calculate_net_worth(sample_assets_multiple_currencies, [])
-
-    # Should only count USD ($10k), skip EUR
-    assert net_worth == 10000.0
+def test_calculate_net_worth_raises_on_non_usd(sample_assets_multiple_currencies):
+    """Test that non-USD currencies raise ValueError (prevents silent data loss)."""
+    # Non-USD accounts should raise ValueError, not be silently skipped
+    with pytest.raises(ValueError, match="Cannot calculate net worth.*non-USD currencies"):
+        calculate_net_worth(sample_assets_multiple_currencies, [])
 
 
 # ============================================================================

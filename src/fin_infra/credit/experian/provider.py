@@ -7,6 +7,7 @@ Features:
 - HTTP client with retry logic
 - Response parsing to Pydantic models
 - FCRA compliance headers
+- FCRA audit logging (required for regulatory compliance)
 - Error handling
 
 Example:
@@ -28,6 +29,8 @@ Example:
     >>> print(len(report.accounts))  # Real credit accounts
 """
 
+import logging
+from datetime import datetime, timezone
 from typing import Literal
 
 from fin_infra.credit.experian.auth import ExperianAuthManager
@@ -36,6 +39,10 @@ from fin_infra.credit.experian.parser import parse_credit_report, parse_credit_s
 from fin_infra.models.credit import CreditReport, CreditScore
 from fin_infra.providers.base import CreditProvider
 from fin_infra.settings import Settings
+
+# FCRA audit logger - use dedicated logger for compliance auditing
+# This should be configured to write to a tamper-evident, append-only log
+fcra_audit_logger = logging.getLogger("fin_infra.fcra_audit")
 
 
 class ExperianProvider(CreditProvider):
@@ -143,11 +150,14 @@ class ExperianProvider(CreditProvider):
         """Retrieve current credit score for a user from Experian API.
 
         Makes real API call to Experian. Uses FCRA-compliant permissible purpose.
+        All credit pulls are logged for FCRA compliance (15 USC § 1681b).
 
         Args:
             user_id: User identifier (SSN hash or internal ID)
             **kwargs: Additional parameters
                 - permissible_purpose: FCRA purpose (default: "account_review")
+                - requester_ip: IP address of requester (for audit log)
+                - requester_user_id: ID of user/service making the request
 
         Returns:
             CreditScore with real FICO score from Experian
@@ -162,25 +172,79 @@ class ExperianProvider(CreditProvider):
             >>> print(score.score)  # Real FICO score (300-850)
         """
         permissible_purpose = kwargs.get("permissible_purpose", "account_review")
-
-        # Fetch from Experian API
-        data = await self._client.get_credit_score(
-            user_id,
-            permissible_purpose=permissible_purpose,
+        requester_ip = kwargs.get("requester_ip", "unknown")
+        requester_user_id = kwargs.get("requester_user_id", "unknown")
+        
+        # FCRA Audit Log - REQUIRED for regulatory compliance (15 USC § 1681b)
+        # This log must be retained for at least 2 years per FCRA requirements
+        timestamp = datetime.now(timezone.utc).isoformat()
+        fcra_audit_logger.info(
+            "FCRA_CREDIT_PULL",
+            extra={
+                "action": "credit_score_pull",
+                "subject_user_id": user_id,
+                "requester_user_id": requester_user_id,
+                "requester_ip": requester_ip,
+                "permissible_purpose": permissible_purpose,
+                "provider": "experian",
+                "environment": self.environment,
+                "timestamp": timestamp,
+                "result": "pending",
+            }
         )
 
-        # Parse response to CreditScore model
-        return parse_credit_score(data, user_id=user_id)
+        try:
+            # Fetch from Experian API
+            data = await self._client.get_credit_score(
+                user_id,
+                permissible_purpose=permissible_purpose,
+            )
+
+            # Parse response to CreditScore model
+            result = parse_credit_score(data, user_id=user_id)
+            
+            # Log successful pull
+            fcra_audit_logger.info(
+                "FCRA_CREDIT_PULL_SUCCESS",
+                extra={
+                    "action": "credit_score_pull",
+                    "subject_user_id": user_id,
+                    "requester_user_id": requester_user_id,
+                    "timestamp": timestamp,
+                    "result": "success",
+                    "score_returned": result.score is not None,
+                }
+            )
+            
+            return result
+            
+        except Exception as e:
+            # Log failed pull - still required for FCRA audit trail
+            fcra_audit_logger.warning(
+                "FCRA_CREDIT_PULL_FAILED",
+                extra={
+                    "action": "credit_score_pull",
+                    "subject_user_id": user_id,
+                    "requester_user_id": requester_user_id,
+                    "timestamp": timestamp,
+                    "result": "error",
+                    "error_type": type(e).__name__,
+                }
+            )
+            raise
 
     async def get_credit_report(self, user_id: str, **kwargs) -> CreditReport:
         """Retrieve full credit report for a user from Experian API.
 
         Makes real API call to Experian. Includes FCRA-required permissible purpose header.
+        All credit pulls are logged for FCRA compliance (15 USC § 1681b).
 
         Args:
             user_id: User identifier (SSN hash or internal ID)
             **kwargs: Additional parameters
                 - permissible_purpose: FCRA purpose (default: "account_review")
+                - requester_ip: IP address of requester (for audit log)
+                - requester_user_id: ID of user/service making the request
 
         Returns:
             CreditReport with real credit data from Experian
@@ -196,15 +260,69 @@ class ExperianProvider(CreditProvider):
             >>> print(report.score.score)  # Real FICO score
         """
         permissible_purpose = kwargs.get("permissible_purpose", "account_review")
-
-        # Fetch from Experian API
-        data = await self._client.get_credit_report(
-            user_id,
-            permissible_purpose=permissible_purpose,
+        requester_ip = kwargs.get("requester_ip", "unknown")
+        requester_user_id = kwargs.get("requester_user_id", "unknown")
+        
+        # FCRA Audit Log - REQUIRED for regulatory compliance (15 USC § 1681b)
+        # Full credit report pulls have stricter requirements than score-only pulls
+        # This log must be retained for at least 2 years per FCRA requirements
+        timestamp = datetime.now(timezone.utc).isoformat()
+        fcra_audit_logger.info(
+            "FCRA_CREDIT_PULL",
+            extra={
+                "action": "credit_report_pull",
+                "subject_user_id": user_id,
+                "requester_user_id": requester_user_id,
+                "requester_ip": requester_ip,
+                "permissible_purpose": permissible_purpose,
+                "provider": "experian",
+                "environment": self.environment,
+                "timestamp": timestamp,
+                "result": "pending",
+                "report_type": "full",
+            }
         )
 
-        # Parse response to CreditReport model
-        return parse_credit_report(data, user_id=user_id)
+        try:
+            # Fetch from Experian API
+            data = await self._client.get_credit_report(
+                user_id,
+                permissible_purpose=permissible_purpose,
+            )
+
+            # Parse response to CreditReport model
+            result = parse_credit_report(data, user_id=user_id)
+            
+            # Log successful pull
+            fcra_audit_logger.info(
+                "FCRA_CREDIT_PULL_SUCCESS",
+                extra={
+                    "action": "credit_report_pull",
+                    "subject_user_id": user_id,
+                    "requester_user_id": requester_user_id,
+                    "timestamp": timestamp,
+                    "result": "success",
+                    "accounts_returned": len(result.accounts) if result.accounts else 0,
+                    "inquiries_returned": len(result.inquiries) if result.inquiries else 0,
+                }
+            )
+            
+            return result
+            
+        except Exception as e:
+            # Log failed pull - still required for FCRA audit trail
+            fcra_audit_logger.warning(
+                "FCRA_CREDIT_PULL_FAILED",
+                extra={
+                    "action": "credit_report_pull",
+                    "subject_user_id": user_id,
+                    "requester_user_id": requester_user_id,
+                    "timestamp": timestamp,
+                    "result": "error",
+                    "error_type": type(e).__name__,
+                }
+            )
+            raise
 
     async def subscribe_to_changes(self, user_id: str, webhook_url: str, **kwargs) -> str:
         """Subscribe to credit score change notifications from Experian.

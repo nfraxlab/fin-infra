@@ -114,7 +114,27 @@ class TaxProvider(ABC):
 class InvestmentProvider(ABC):
     """Provider for investment holdings and portfolio data (Plaid, SnapTrade).
     
-    Full implementation in fin_infra.investments.providers.base.
-    This is a placeholder for consistency with other provider types.
+    This is a minimal ABC for type checking. The full implementation with
+    all abstract methods is in fin_infra.investments.providers.base.InvestmentProvider.
+    
+    Abstract Methods (defined in full implementation):
+        - get_holdings(access_token, account_ids) -> List[Holding]
+        - get_transactions(access_token, start_date, end_date, account_ids) -> List[InvestmentTransaction]
+        - get_securities(access_token, security_ids) -> List[Security]
+        - get_investment_accounts(access_token) -> List[InvestmentAccount]
+    
+    Example:
+        >>> from fin_infra.investments import easy_investments
+        >>> provider = easy_investments(provider="plaid")
+        >>> holdings = await provider.get_holdings(access_token)
     """
-    pass
+    
+    @abstractmethod
+    async def get_holdings(self, access_token: str, account_ids: list[str] | None = None) -> list:
+        """Fetch holdings for investment accounts."""
+        pass
+    
+    @abstractmethod
+    async def get_investment_accounts(self, access_token: str) -> list:
+        """Fetch investment accounts with aggregated holdings."""
+        pass

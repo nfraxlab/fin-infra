@@ -54,12 +54,20 @@ class PlaidClient(BankingProvider):
         
         # Map environment string to Plaid Environment enum
         # Note: Plaid only has Sandbox and Production (no Development in SDK)
+        env_str = environment or "sandbox"
         env_map = {
             "sandbox": plaid.Environment.Sandbox,
-            "development": plaid.Environment.Sandbox,  # Map development to sandbox
+            "development": plaid.Environment.Sandbox,  # Map development to sandbox (Plaid SDK limitation)
             "production": plaid.Environment.Production,
         }
-        host = env_map.get(environment or "sandbox", plaid.Environment.Sandbox)
+        
+        if env_str not in env_map:
+            raise ValueError(
+                f"Invalid Plaid environment: '{env_str}'. "
+                f"Must be one of: sandbox, development, production"
+            )
+        
+        host = env_map[env_str]
         
         # Configure Plaid client (v8.0.0+ API)
         configuration = plaid.Configuration(
