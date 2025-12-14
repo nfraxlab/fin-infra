@@ -3,6 +3,7 @@
 import logging
 from typing import Optional
 
+from fin_infra.exceptions import SymbolNotFoundError
 from fin_infra.normalization.models import SymbolMetadata
 from fin_infra.normalization.providers import (
     CUSIP_TO_TICKER,
@@ -13,13 +14,13 @@ from fin_infra.normalization.providers import (
     TICKER_TO_ISIN,
 )
 
+# Re-export for backward compatibility
+__all__ = [
+    "SymbolNotFoundError",
+    "SymbolResolver",
+]
+
 logger = logging.getLogger(__name__)
-
-
-class SymbolNotFoundError(Exception):
-    """Symbol could not be resolved."""
-
-    pass
 
 
 class SymbolResolver:

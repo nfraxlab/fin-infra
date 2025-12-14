@@ -44,6 +44,7 @@ Examples:
 
 from collections import defaultdict
 from datetime import timedelta
+from decimal import Decimal
 from typing import Optional
 
 from fin_infra.analytics.models import (
@@ -132,7 +133,7 @@ async def analyze_spending(
         ]
 
     # Calculate top merchants
-    merchant_totals: dict[str, float] = defaultdict(float)
+    merchant_totals: dict[str, Decimal] = defaultdict(Decimal)
     for t in expense_transactions:
         merchant = _extract_merchant_name(t.description or "Unknown")
         merchant_totals[merchant] += abs(t.amount)
@@ -142,7 +143,7 @@ async def analyze_spending(
     ]  # Top 10 merchants
 
     # Calculate category breakdown
-    category_totals: dict[str, float] = defaultdict(float)
+    category_totals: dict[str, Decimal] = defaultdict(Decimal)
     for t in expense_transactions:
         category = _get_transaction_category(t)
         category_totals[category] += abs(t.amount)
@@ -261,7 +262,7 @@ def _get_transaction_category(transaction: Transaction) -> str:
 
 async def _calculate_spending_trends(
     user_id: str,
-    current_category_totals: dict[str, float],
+    current_category_totals: dict[str, Decimal],
     current_period_days: int,
     banking_provider=None,
     categorization_provider=None,
@@ -288,7 +289,7 @@ async def _calculate_spending_trends(
     for category, current_amount in current_category_totals.items():
         # Mock: assume previous period was 10% lower on average
         # In reality, would fetch historical data
-        previous_amount = current_amount * 0.9
+        previous_amount = current_amount * Decimal("0.9")
 
         change_percent = (
             ((current_amount - previous_amount) / previous_amount) * 100
@@ -311,7 +312,7 @@ async def _calculate_spending_trends(
 
 async def _detect_spending_anomalies(
     user_id: str,
-    current_category_totals: dict[str, float],
+    current_category_totals: dict[str, Decimal],
     current_period_days: int,
     banking_provider=None,
     categorization_provider=None,
@@ -339,7 +340,7 @@ async def _detect_spending_anomalies(
     for category, current_amount in current_category_totals.items():
         # Mock: assume historical average is current amount * 0.8
         # In reality, would calculate from historical data
-        average_amount = current_amount * 0.8
+        average_amount = current_amount * Decimal("0.8")
 
         deviation_percent = (
             ((current_amount - average_amount) / average_amount) * 100 if average_amount > 0 else 0
@@ -409,7 +410,7 @@ def _generate_mock_transactions(days: int) -> list[Transaction]:
                 Transaction(
                     id=f"mock_{i}",
                     account_id="mock_account",
-                    amount=float(amount),
+                    amount=Decimal(str(amount)),
                     date=base_date - timedelta(days=days_ago),
                     description=description,
                 )

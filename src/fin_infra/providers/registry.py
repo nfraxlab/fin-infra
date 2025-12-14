@@ -13,6 +13,8 @@ from __future__ import annotations
 import importlib
 from typing import Any, TypeVar
 
+from fin_infra.exceptions import ProviderNotFoundError
+
 from .base import (
     BankingProvider,
     BrokerageProvider,
@@ -22,6 +24,15 @@ from .base import (
     MarketDataProvider,
     TaxProvider,
 )
+
+# Re-export for backward compatibility
+__all__ = [
+    "ProviderNotFoundError",
+    "ProviderRegistry",
+    "PROVIDER_TYPES",
+    "PROVIDER_MODULES",
+    "DEFAULT_PROVIDERS",
+]
 
 T = TypeVar("T")
 
@@ -75,12 +86,6 @@ DEFAULT_PROVIDERS = {
     "identity": "stripe",
     "tax": "taxbit",
 }
-
-
-class ProviderNotFoundError(Exception):
-    """Raised when a provider cannot be found or loaded."""
-
-    pass
 
 
 class ProviderRegistry:

@@ -36,7 +36,6 @@ class TestScaffoldCLIHelp:
         assert result.returncode == 0
         assert "budgets" in result.stdout.lower()
         assert "goals" in result.stdout.lower()
-        assert "net_worth" in result.stdout.lower()
 
 
 class TestScaffoldCLIInvalidDomain:
@@ -62,7 +61,7 @@ class TestScaffoldCLIInvalidDomain:
 class TestScaffoldCLIValidDomains:
     """Test CLI with all valid domains."""
 
-    @pytest.mark.parametrize("domain", ["budgets", "goals", "net_worth"])
+    @pytest.mark.parametrize("domain", ["budgets", "goals"])
     def test_valid_domain_creates_files(self, domain):
         """Test that valid domains create expected files."""
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -89,7 +88,7 @@ class TestScaffoldCLIValidDomains:
             # Check for __init__.py
             assert (dest_dir / "__init__.py").exists(), f"__init__.py not created for {domain}"
 
-    @pytest.mark.parametrize("domain", ["budgets", "goals", "net_worth"])
+    @pytest.mark.parametrize("domain", ["budgets", "goals"])
     def test_valid_domain_with_flags(self, domain):
         """Test that valid domains work with all flags."""
         with tempfile.TemporaryDirectory() as tmpdir:

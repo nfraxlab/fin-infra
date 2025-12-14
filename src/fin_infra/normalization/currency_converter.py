@@ -4,19 +4,17 @@ import logging
 from datetime import date as DateType
 from typing import Optional
 
+from fin_infra.exceptions import CurrencyNotSupportedError, ExchangeRateAPIError
 from fin_infra.normalization.models import CurrencyConversionResult
-from fin_infra.normalization.providers.exchangerate import (
-    ExchangeRateAPIError,
-    ExchangeRateClient,
-)
+from fin_infra.normalization.providers.exchangerate import ExchangeRateClient
+
+# Re-export for backward compatibility
+__all__ = [
+    "CurrencyNotSupportedError",
+    "CurrencyConverter",
+]
 
 logger = logging.getLogger(__name__)
-
-
-class CurrencyNotSupportedError(Exception):
-    """Currency code not supported."""
-
-    pass
 
 
 class CurrencyConverter:

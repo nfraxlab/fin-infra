@@ -287,7 +287,7 @@ class TestDetectSpendingAnomalies:
         """Test detecting severe spending anomaly (50%+ deviation)."""
         # Mock implementation: average = current * 0.8, so current = 500 gives 25% deviation
         # This is a "minor" anomaly (15-30%)
-        category_totals = {"Groceries": 500.0}
+        category_totals = {"Groceries": Decimal("500.0")}
 
         anomalies = await _detect_spending_anomalies("user123", category_totals, 30)
 
@@ -299,7 +299,7 @@ class TestDetectSpendingAnomalies:
     @pytest.mark.asyncio
     async def test_detect_moderate_anomaly(self):
         """Test detecting moderate spending anomaly (30-50% deviation)."""
-        category_totals = {"Restaurants": 400.0}  # Mock: average would be ~320
+        category_totals = {"Restaurants": Decimal("400.0")}  # Mock: average would be ~320
 
         anomalies = await _detect_spending_anomalies("user123", category_totals, 30)
 
@@ -310,9 +310,9 @@ class TestDetectSpendingAnomalies:
     async def test_anomalies_sorted_by_severity(self):
         """Test that anomalies are sorted by severity."""
         category_totals = {
-            "Groceries": 600.0,  # Severe
-            "Restaurants": 400.0,  # Moderate
-            "Shopping": 350.0,  # Minor or none
+            "Groceries": Decimal("600.0"),  # Severe
+            "Restaurants": Decimal("400.0"),  # Moderate
+            "Shopping": Decimal("350.0"),  # Minor or none
         }
 
         anomalies = await _detect_spending_anomalies("user123", category_totals, 30)

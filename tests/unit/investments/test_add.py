@@ -125,21 +125,35 @@ def mock_provider(
 
 
 @pytest.fixture
-def app_with_investments(mock_provider: InvestmentProvider) -> FastAPI:
+def mock_principal():
+    """Create a mock Principal for testing (replaces Identity dependency)."""
+    from svc_infra.api.fastapi.auth.security import Principal
+    
+    mock_user = Mock()
+    mock_user.banking_providers = {}  # No stored tokens - tests provide explicit ones
+    return Principal(user=mock_user, scopes=[], via="test")
+
+
+@pytest.fixture
+def app_with_investments(mock_provider: InvestmentProvider, mock_principal) -> FastAPI:
     """Create FastAPI app with investments endpoints mounted.
     
     Note: Patches user_router with public_router to bypass authentication in tests.
     Production code uses user_router (requires authentication).
     """
+    from svc_infra.api.fastapi.dual.public import public_router
+    from svc_infra.api.fastapi.auth.security import _current_principal
+    
     app = FastAPI()
-
-    # Patch the import to use public_router instead of user_router
-    with patch("svc_infra.api.fastapi.dual.protected.user_router") as mock_user_router:
-        from svc_infra.api.fastapi.dual.public import public_router
-        mock_user_router.side_effect = public_router
-        
+    
+    # Patch user_router with public_router to avoid authentication dependencies
+    with patch("svc_infra.api.fastapi.dual.protected.user_router", public_router):
         # Mount investments with mocked provider
         add_investments(app, provider=mock_provider)
+    
+    # Override the _current_principal dependency to return our mock
+    # This bypasses database access in Identity resolution
+    app.dependency_overrides[_current_principal] = lambda: mock_principal
 
     return app
 
@@ -263,7 +277,7 @@ def test_get_holdings_missing_credentials(client: TestClient):
     )
 
     assert response.status_code == 400
-    assert "Must provide either access_token" in response.json()["detail"]
+    assert "No Plaid connection found" in response.json()["detail"]
 
 
 def test_get_holdings_invalid_token(client: TestClient, mock_provider: InvestmentProvider):
@@ -535,7 +549,7 @@ def test_allocation_generic_error(client: TestClient, mock_provider: InvestmentP
     )
 
     assert response.status_code == 500
-    assert "Failed to calculate allocation" in response.json()["detail"]
+    assert "Failed to fetch allocation" in response.json()["detail"]
 
 
 def test_securities_generic_error(client: TestClient, mock_provider: InvestmentProvider):

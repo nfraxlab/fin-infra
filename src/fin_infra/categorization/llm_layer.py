@@ -20,7 +20,7 @@ from pydantic import BaseModel, Field
 
 # ai-infra imports
 try:
-    from ai_infra.llm import LLM
+    from ai_infra.llm import CoreLLM as LLM
     from ai_infra.llm.providers import Providers
 except ImportError:
     raise ImportError("ai-infra not installed. Install with: pip install ai-infra")

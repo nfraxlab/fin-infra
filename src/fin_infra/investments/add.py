@@ -220,10 +220,15 @@ def add_investments(
                 )
         
         # Call provider with resolved token
-        holdings = await investment_provider.get_holdings(
-            access_token=access_token,
-            account_ids=request.account_ids,
-        )
+        try:
+            holdings = await investment_provider.get_holdings(
+                access_token=access_token,
+                account_ids=request.account_ids,
+            )
+        except ValueError as e:
+            raise HTTPException(status_code=401, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to fetch holdings: {e}")
         return holdings
 
     @router.post(
@@ -266,12 +271,17 @@ def add_investments(
                     detail="No access token found. Please reconnect your accounts."
                 )
 
-        transactions = await investment_provider.get_transactions(
-            access_token=access_token,
-            start_date=request.start_date,
-            end_date=request.end_date,
-            account_ids=request.account_ids,
-        )
+        try:
+            transactions = await investment_provider.get_transactions(
+                access_token=access_token,
+                start_date=request.start_date,
+                end_date=request.end_date,
+                account_ids=request.account_ids,
+            )
+        except ValueError as e:
+            raise HTTPException(status_code=401, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to fetch transactions: {e}")
         return transactions
 
     @router.post(
@@ -306,9 +316,14 @@ def add_investments(
                     detail="No access token found. Please reconnect your accounts."
                 )
 
-        accounts = await investment_provider.get_investment_accounts(
-            access_token=access_token,
-        )
+        try:
+            accounts = await investment_provider.get_investment_accounts(
+                access_token=access_token,
+            )
+        except ValueError as e:
+            raise HTTPException(status_code=401, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to fetch accounts: {e}")
         return accounts
 
     @router.post(
@@ -344,10 +359,15 @@ def add_investments(
                 )
         
         # Fetch holdings
-        holdings = await investment_provider.get_holdings(
-            access_token=access_token,
-            account_ids=request.account_ids,
-        )
+        try:
+            holdings = await investment_provider.get_holdings(
+                access_token=access_token,
+                account_ids=request.account_ids,
+            )
+        except ValueError as e:
+            raise HTTPException(status_code=401, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to fetch allocation: {e}")
         
         # Calculate allocation using base provider helper
         allocation = investment_provider.calculate_allocation(holdings)
@@ -385,10 +405,15 @@ def add_investments(
                     detail="No access token found. Please reconnect your accounts."
                 )
 
-        securities = await investment_provider.get_securities(
-            access_token=access_token,
-            security_ids=request.security_ids,
-        )
+        try:
+            securities = await investment_provider.get_securities(
+                access_token=access_token,
+                security_ids=request.security_ids,
+            )
+        except ValueError as e:
+            raise HTTPException(status_code=401, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to fetch securities: {e}")
         return securities
 
     # 5. Mount router

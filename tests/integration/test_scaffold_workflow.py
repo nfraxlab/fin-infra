@@ -12,7 +12,6 @@ from pathlib import Path
 
 from fin_infra.scaffold.budgets import scaffold_budgets_core
 from fin_infra.scaffold.goals import scaffold_goals_core
-from fin_infra.scaffold.net_worth import scaffold_net_worth_core
 
 
 class TestScaffoldCompileWorkflow:
@@ -23,7 +22,6 @@ class TestScaffoldCompileWorkflow:
         [
             (scaffold_budgets_core, "budgets", "Budget"),
             (scaffold_goals_core, "goals", "Goal"),
-            (scaffold_net_worth_core, "net_worth", "NetWorthSnapshot"),
         ],
     )
     def test_scaffold_then_compile(self, scaffold_func, domain, entity):
@@ -48,7 +46,6 @@ class TestScaffoldCompileWorkflow:
         [
             (scaffold_budgets_core, "budgets"),
             (scaffold_goals_core, "goals"),
-            (scaffold_net_worth_core, "net_worth"),
         ],
     )
     def test_all_flag_combinations_compile(self, scaffold_func, domain):
@@ -110,7 +107,6 @@ class TestScaffoldImportWorkflow:
         [
             (scaffold_budgets_core, "budgets", "Budget"),
             (scaffold_goals_core, "goals", "Goal"),
-            (scaffold_net_worth_core, "net_worth", "NetWorthSnapshot"),
         ],
     )
     def test_scaffold_then_import_model(self, scaffold_func, domain, entity):
@@ -125,7 +121,6 @@ class TestScaffoldImportWorkflow:
         [
             (scaffold_budgets_core, "budgets"),
             (scaffold_goals_core, "goals"),
-            (scaffold_net_worth_core, "net_worth"),
         ],
     )
     def test_scaffold_then_import_schemas(self, scaffold_func, domain):
@@ -140,7 +135,6 @@ class TestScaffoldImportWorkflow:
         [
             (scaffold_budgets_core, "budgets"),
             (scaffold_goals_core, "goals"),
-            (scaffold_net_worth_core, "net_worth"),
         ],
     )
     def test_scaffold_with_repository_imports(self, scaffold_func, domain):
@@ -163,7 +157,6 @@ class TestScaffoldInstantiateWorkflow:
         [
             (scaffold_budgets_core, "budgets", "Budget"),
             (scaffold_goals_core, "goals", "Goal"),
-            (scaffold_net_worth_core, "net_worth", "NetWorthSnapshot"),
         ],
     )
     def test_scaffold_then_instantiate_schemas(self, scaffold_func, domain, entity):
@@ -229,36 +222,6 @@ class TestAllFlagCombinations:
                 assert (dest_dir / "goal_repository.py").exists()
             else:
                 assert not (dest_dir / "goal_repository.py").exists()
-
-            # Compile all files
-            for py_file in dest_dir.glob("*.py"):
-                compile(py_file.read_text(), str(py_file), "exec")
-
-    @pytest.mark.parametrize("include_tenant", [False, True])
-    @pytest.mark.parametrize("include_soft_delete", [False, True])
-    @pytest.mark.parametrize("with_repository", [False, True])
-    def test_net_worth_all_combinations(self, include_tenant, include_soft_delete, with_repository):
-        """Test all flag combinations for net worth."""
-        with tempfile.TemporaryDirectory() as tmpdir:
-            dest_dir = Path(tmpdir) / "net_worth"
-
-            # Scaffold with flags
-            scaffold_net_worth_core(
-                dest_dir=str(dest_dir),
-                include_tenant=include_tenant,
-                include_soft_delete=include_soft_delete,
-                with_repository=with_repository,
-            )
-
-            # Verify files created
-            assert (dest_dir / "net_worth_snapshot.py").exists()
-            assert (dest_dir / "net_worth_snapshot_schemas.py").exists()
-            assert (dest_dir / "__init__.py").exists()
-
-            if with_repository:
-                assert (dest_dir / "net_worth_snapshot_repository.py").exists()
-            else:
-                assert not (dest_dir / "net_worth_snapshot_repository.py").exists()
 
             # Compile all files
             for py_file in dest_dir.glob("*.py"):

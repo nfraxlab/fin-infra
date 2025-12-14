@@ -37,8 +37,8 @@ def mock_llm_response():
 
 @pytest.fixture
 def mock_core_llm():
-    """Mock ai-infra CoreLLM."""
-    with patch("fin_infra.categorization.llm_layer.CoreLLM") as mock:
+    """Mock ai-infra LLM (imported as LLM alias from CoreLLM)."""
+    with patch("fin_infra.categorization.llm_layer.LLM") as mock:
         yield mock
 
 
@@ -239,7 +239,7 @@ class TestHybridWithLLM:
     async def test_hybrid_exact_match_skip_llm(self):
         """Test that exact match skips LLM."""
         # Create engine with LLM (but exact match should win)
-        with patch("fin_infra.categorization.llm_layer.CoreLLM") as mock_llm:
+        with patch("fin_infra.categorization.llm_layer.LLM") as mock_llm:
             mock_instance = AsyncMock()
             mock_llm.return_value = mock_instance
 
@@ -264,7 +264,7 @@ class TestHybridWithLLM:
     @pytest.mark.asyncio
     async def test_hybrid_regex_match_skip_llm(self):
         """Test that regex match skips LLM."""
-        with patch("fin_infra.categorization.llm_layer.CoreLLM") as mock_llm:
+        with patch("fin_infra.categorization.llm_layer.LLM") as mock_llm:
             mock_instance = AsyncMock()
             mock_llm.return_value = mock_instance
 
@@ -289,7 +289,7 @@ class TestHybridWithLLM:
     async def test_llm_fallback_when_sklearn_low_confidence(self, mock_llm_response):
         """Test that LLM is called when sklearn confidence < threshold."""
         # Mock sklearn prediction with low confidence
-        with patch("fin_infra.categorization.llm_layer.CoreLLM") as mock_llm:
+        with patch("fin_infra.categorization.llm_layer.LLM") as mock_llm:
             mock_instance = AsyncMock()
             mock_instance.achat.return_value = mock_llm_response
             mock_llm.return_value = mock_instance
@@ -328,7 +328,7 @@ class TestHybridWithLLM:
     @pytest.mark.asyncio
     async def test_llm_fallback_to_sklearn_on_exception(self):
         """Test that sklearn prediction is used when LLM fails."""
-        with patch("fin_infra.categorization.llm_layer.CoreLLM") as mock_llm:
+        with patch("fin_infra.categorization.llm_layer.LLM") as mock_llm:
             # LLM always fails
             mock_instance = AsyncMock()
             mock_instance.achat.side_effect = Exception("LLM API error")
@@ -369,7 +369,7 @@ class TestHybridWithLLM:
     @pytest.mark.asyncio
     async def test_hybrid_stats_tracking(self, mock_llm_response):
         """Test that stats track LLM predictions."""
-        with patch("fin_infra.categorization.llm_layer.CoreLLM") as mock_llm:
+        with patch("fin_infra.categorization.llm_layer.LLM") as mock_llm:
             mock_instance = AsyncMock()
             mock_instance.achat.return_value = mock_llm_response
             mock_llm.return_value = mock_instance

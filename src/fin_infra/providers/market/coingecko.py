@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import httpx
 from decimal import Decimal
 from datetime import datetime, timezone
@@ -7,6 +8,7 @@ from datetime import datetime, timezone
 from ..base import CryptoDataProvider
 from ...models import Quote, Candle
 
+logger = logging.getLogger(__name__)
 
 _BASE = "https://api.coingecko.com/api/v3"
 
@@ -25,7 +27,8 @@ class CoinGeckoCryptoData(CryptoDataProvider):
             r.raise_for_status()
             data = r.json()
             price = data.get(_to_cg_id(base), {}).get(quote.lower(), 0)
-        except Exception:
+        except Exception as e:
+            logger.warning("CoinGecko ticker fetch failed for %s: %s", symbol_pair, e)
             price = 0
         return Quote(
             symbol=f"{base}/{quote}", price=Decimal(str(price)), as_of=datetime.now(timezone.utc)
@@ -42,7 +45,8 @@ class CoinGeckoCryptoData(CryptoDataProvider):
             )
             r.raise_for_status()
             prices = r.json().get("prices", [])
-        except Exception:
+        except Exception as e:
+            logger.warning("CoinGecko OHLCV fetch failed for %s: %s", symbol_pair, e)
             prices = []
         out: list[Candle] = []
         for p in prices[:limit]:

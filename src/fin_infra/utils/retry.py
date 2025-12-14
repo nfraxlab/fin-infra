@@ -4,11 +4,12 @@ import asyncio
 import random
 from typing import Awaitable, Callable, Iterable, TypeVar
 
+from fin_infra.exceptions import RetryError
+
+# Re-export for backward compatibility
+__all__ = ["RetryError", "retry_async"]
+
 T = TypeVar("T")
-
-
-class RetryError(Exception):
-    pass
 
 
 async def retry_async(

@@ -25,33 +25,21 @@ from tenacity import (
 )
 
 from fin_infra.credit.experian.auth import ExperianAuthManager
+from fin_infra.exceptions import (
+    ExperianAPIError,
+    ExperianAuthError,
+    ExperianNotFoundError,
+    ExperianRateLimitError,
+)
 
-
-class ExperianAPIError(Exception):
-    """Base exception for Experian API errors."""
-
-    def __init__(self, message: str, status_code: int | None = None, response: dict | None = None):
-        super().__init__(message)
-        self.status_code = status_code
-        self.response = response
-
-
-class ExperianRateLimitError(ExperianAPIError):
-    """Raised when rate limit is exceeded (429)."""
-
-    pass
-
-
-class ExperianAuthError(ExperianAPIError):
-    """Raised when authentication fails (401)."""
-
-    pass
-
-
-class ExperianNotFoundError(ExperianAPIError):
-    """Raised when user not found in bureau (404)."""
-
-    pass
+# Re-export for backward compatibility
+__all__ = [
+    "ExperianAPIError",
+    "ExperianAuthError",
+    "ExperianNotFoundError",
+    "ExperianRateLimitError",
+    "ExperianClient",
+]
 
 
 class ExperianClient:

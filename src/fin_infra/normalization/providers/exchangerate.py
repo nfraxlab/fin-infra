@@ -6,13 +6,14 @@ from typing import Optional
 
 import httpx
 
+from fin_infra.exceptions import ExchangeRateAPIError
 from fin_infra.normalization.models import ExchangeRate
 
-
-class ExchangeRateAPIError(Exception):
-    """Exchange rate API error."""
-
-    pass
+# Re-export for backward compatibility
+__all__ = [
+    "ExchangeRateAPIError",
+    "ExchangeRateClient",
+]
 
 
 class ExchangeRateClient:

@@ -87,10 +87,12 @@ target-version = "py311"
 [tool.mypy]
 python_version = "3.13"
 ignore_missing_imports = true
-no_implicit_optional = false
+no_implicit_optional = true
 install_types = true
 non_interactive = true
-check_untyped_defs = false
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
 files = "src"
 exclude = '^(\.venv|venv|build|dist|node_modules|tests)/'
 plugins = ["pydantic.mypy"]
