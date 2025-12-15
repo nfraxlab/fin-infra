@@ -403,7 +403,16 @@ def add_recurring_detection(
 
             # Generate insights with LLM
             # TODO: Pass user_id for better caching (currently uses subscriptions hash)
-            insights = await detector.insights_generator.generate(subscriptions)
+            insights_generator = detector.insights_generator
+            if insights_generator is None:
+                from fastapi import HTTPException
+
+                raise HTTPException(
+                    status_code=500,
+                    detail="Subscription insights generator not configured (enable_llm=True required).",
+                )
+
+            insights = await insights_generator.generate(subscriptions)
 
             return insights
     else:

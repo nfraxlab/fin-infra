@@ -121,6 +121,15 @@ class NetWorthTracker:
         self.goal_tracker = goal_tracker
         self.conversation = conversation
 
+        # Configuration set by easy_net_worth(); declared here for type checkers.
+        self.snapshot_schedule: str = "daily"
+        self.change_threshold_percent: float = 5.0
+        self.change_threshold_amount: float = 10000.0
+        self.enable_llm: bool = False
+        self.llm_provider: str | None = None
+        self.llm_model: str | None = None
+        self.config: dict[str, Any] = {}
+
     async def calculate_net_worth(
         self,
         user_id: str,
@@ -368,11 +377,19 @@ def easy_net_worth(
 
     if enable_llm:
         try:
-            from ai_infra.llm import LLM
+            from ai_infra.llm.llm import LLM  # type: ignore[attr-defined]
         except ImportError:
             raise ImportError(
                 "LLM features require ai-infra package. " "Install with: pip install ai-infra"
             )
+
+        cache = None
+        try:
+            from svc_infra.cache import get_cache
+
+            cache = get_cache()
+        except Exception:
+            cache = None
 
         # Determine default model
         default_models = {
@@ -416,18 +433,22 @@ def easy_net_worth(
             # goals.management not yet implemented, skip
             pass
 
-        try:
-            from fin_infra.conversation import FinancialPlanningConversation
+        if cache is not None:
+            try:
+                from fin_infra.conversation import FinancialPlanningConversation
 
-            conversation = FinancialPlanningConversation(
-                llm=llm,
-                cache=cache,  # Required for context storage
-                provider=llm_provider,
-                model_name=model_name,
-            )
-        except ImportError:
-            # conversation module not yet implemented, skip
-            pass
+                conversation = FinancialPlanningConversation(
+                    llm=llm,
+                    cache=cache,  # Required for context storage
+                    provider=llm_provider,
+                    model_name=model_name,
+                )
+            except ImportError:
+                # conversation module not yet implemented, skip
+                pass
+            except Exception:
+                # Cache not configured or other runtime issue; skip optional conversation wiring.
+                pass
 
     # Create tracker
     tracker = NetWorthTracker(

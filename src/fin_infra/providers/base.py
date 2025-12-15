@@ -67,12 +67,85 @@ class BankingProvider(ABC):
 class BrokerageProvider(ABC):
     @abstractmethod
     def submit_order(
-        self, symbol: str, qty: float, side: str, type_: str, time_in_force: str
+        self,
+        symbol: str,
+        qty: float,
+        side: str,
+        type_: str,
+        time_in_force: str,
+        limit_price: float | None = None,
+        stop_price: float | None = None,
+        client_order_id: str | None = None,
     ) -> dict:
         pass
 
     @abstractmethod
     def positions(self) -> Iterable[dict]:
+        pass
+
+    @abstractmethod
+    def get_account(self) -> dict:
+        """Get trading account information."""
+        pass
+
+    @abstractmethod
+    def get_position(self, symbol: str) -> dict:
+        """Get position for a specific symbol."""
+        pass
+
+    @abstractmethod
+    def close_position(self, symbol: str) -> dict:
+        """Close a position (market sell/cover)."""
+        pass
+
+    @abstractmethod
+    def list_orders(self, status: str = "open", limit: int = 50) -> list[dict]:
+        """List orders."""
+        pass
+
+    @abstractmethod
+    def get_order(self, order_id: str) -> dict:
+        """Get order by ID."""
+        pass
+
+    @abstractmethod
+    def cancel_order(self, order_id: str) -> None:
+        """Cancel an order."""
+        pass
+
+    @abstractmethod
+    def get_portfolio_history(self, period: str = "1M", timeframe: str = "1D") -> dict:
+        """Get portfolio value history."""
+        pass
+
+    @abstractmethod
+    def create_watchlist(self, name: str, symbols: list[str] | None = None) -> dict:
+        """Create a new watchlist."""
+        pass
+
+    @abstractmethod
+    def list_watchlists(self) -> list[dict]:
+        """List all watchlists."""
+        pass
+
+    @abstractmethod
+    def get_watchlist(self, watchlist_id: str) -> dict:
+        """Get a watchlist by ID."""
+        pass
+
+    @abstractmethod
+    def delete_watchlist(self, watchlist_id: str) -> None:
+        """Delete a watchlist."""
+        pass
+
+    @abstractmethod
+    def add_to_watchlist(self, watchlist_id: str, symbol: str) -> dict:
+        """Add a symbol to a watchlist."""
+        pass
+
+    @abstractmethod
+    def remove_from_watchlist(self, watchlist_id: str, symbol: str) -> dict:
+        """Remove a symbol from a watchlist."""
         pass
 
 
@@ -91,6 +164,11 @@ class CreditProvider(ABC):
     def get_credit_score(self, user_id: str, **kwargs) -> dict | None:
         pass
 
+    @abstractmethod
+    def get_credit_report(self, user_id: str, **kwargs) -> dict | None:
+        """Retrieve full credit report for a user."""
+        pass
+
 
 class TaxProvider(ABC):
     """Provider for tax data and document retrieval."""
@@ -101,6 +179,11 @@ class TaxProvider(ABC):
         pass
 
     @abstractmethod
+    def get_tax_documents(self, user_id: str, tax_year: int, **kwargs) -> list[dict]:
+        """Retrieve tax documents for a user and tax year."""
+        pass
+
+    @abstractmethod
     def get_tax_document(self, document_id: str, **kwargs) -> dict:
         """Retrieve a specific tax document by ID."""
         pass
@@ -108,6 +191,20 @@ class TaxProvider(ABC):
     @abstractmethod
     def calculate_crypto_gains(self, transactions: list[dict], **kwargs) -> dict:
         """Calculate capital gains from crypto transactions."""
+        pass
+
+    @abstractmethod
+    def calculate_tax_liability(
+        self,
+        user_id: str,
+        income: float,
+        deductions: float,
+        filing_status: str,
+        tax_year: int,
+        state: str | None = None,
+        **kwargs,
+    ) -> dict:
+        """Calculate estimated tax liability."""
         pass
 
 

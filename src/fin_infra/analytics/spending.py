@@ -470,7 +470,7 @@ async def generate_spending_insights(
 
     # Try to import ai-infra LLM (optional dependency)
     try:
-        from ai_infra.llm import LLM
+        from ai_infra.llm import LLM  # type: ignore[attr-defined]
     except ImportError:
         # Graceful degradation: return rule-based insights
         return _generate_rule_based_insights(spending_insight, user_context)

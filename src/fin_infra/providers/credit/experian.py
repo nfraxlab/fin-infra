@@ -11,3 +11,8 @@ class ExperianCredit(CreditProvider):
         self, user_id: str, **kwargs
     ) -> dict | None:  # pragma: no cover - placeholder
         return None
+
+    def get_credit_report(
+        self, user_id: str, **kwargs
+    ) -> dict | None:  # pragma: no cover - placeholder
+        return None

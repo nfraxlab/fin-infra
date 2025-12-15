@@ -20,8 +20,8 @@ from pydantic import BaseModel, Field
 
 # ai-infra imports
 try:
-    from ai_infra.llm import LLM
-    from ai_infra.llm.providers import Providers
+    from ai_infra.llm import LLM  # type: ignore[attr-defined]
+    from ai_infra.llm.providers import Providers  # type: ignore[attr-defined]
 except ImportError:
     raise ImportError("ai-infra not installed. Install with: pip install ai-infra")
 

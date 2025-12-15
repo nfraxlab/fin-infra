@@ -21,7 +21,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 # Lazy import for optional dependency (ai-infra)
 try:
-    from ai_infra.llm import LLM
+    from ai_infra.llm import LLM  # type: ignore[attr-defined]
 except ImportError:
     LLM = None
 

@@ -338,7 +338,64 @@ class FinancialPlanningConversation:
         # Save updated context (24h TTL)
         await self._save_context(context)
 
+        # Track latest session id for convenience endpoints (history/clear).
+        # Best-effort: failures here must not break the chat response.
+        try:
+            await self.cache.set(
+                self._latest_session_key(user_id),
+                context.session_id,
+                ttl=86400,
+            )
+        except Exception:
+            pass
+
         return response
+
+    # ---------------------------------------------------------------------
+    # Backward-compatible context helpers
+    # ---------------------------------------------------------------------
+
+    def _latest_session_key(self, user_id: str) -> str:
+        return f"fin_infra:conversation_latest_session:{user_id}"
+
+    async def _get_latest_session_id(self, user_id: str) -> str | None:
+        try:
+            value = await self.cache.get(self._latest_session_key(user_id))
+        except Exception:
+            return None
+
+        if value is None:
+            return None
+        if isinstance(value, bytes):
+            try:
+                return value.decode("utf-8")
+            except Exception:
+                return None
+        if isinstance(value, str):
+            return value
+        return str(value)
+
+    async def _get_context(
+        self, user_id: str, session_id: str | None = None
+    ) -> ConversationContext | None:
+        if session_id is None:
+            session_id = await self._get_latest_session_id(user_id)
+        if session_id is None:
+            return None
+
+        return await self._load_context(user_id=user_id, session_id=session_id)
+
+    async def _clear_context(self, user_id: str, session_id: str | None = None) -> None:
+        if session_id is None:
+            session_id = await self._get_latest_session_id(user_id)
+
+        if session_id is not None:
+            await self.clear_session(user_id=user_id, session_id=session_id)
+
+        try:
+            await self.cache.delete(self._latest_session_key(user_id))
+        except Exception:
+            pass
 
     async def _load_context(
         self,

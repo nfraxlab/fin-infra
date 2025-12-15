@@ -150,14 +150,14 @@ def add_normalization(
     ):
         """Convert amount between currencies."""
         try:
-            result = await converter.convert(amount, from_currency, to_currency)
+            result = await converter.convert_with_details(amount, from_currency, to_currency)
             return {
-                "amount": amount,
-                "from_currency": from_currency,
-                "to_currency": to_currency,
-                "result": result.amount,
+                "amount": result.amount,
+                "from_currency": result.from_currency,
+                "to_currency": result.to_currency,
+                "result": result.converted,
                 "rate": result.rate,
-                "timestamp": result.timestamp.isoformat(),
+                "timestamp": result.date.isoformat() if result.date else None,
             }
         except CurrencyNotSupportedError as e:
             raise HTTPException(status_code=400, detail=str(e))

@@ -136,21 +136,19 @@ def add_categorization(
             categories = get_all_categories()
 
         # Return category metadata
-        return [
-            {
-                "name": cat.value,
-                "group": get_category_metadata(cat).group.value
-                if get_category_metadata(cat)
-                else None,
-                "display_name": get_category_metadata(cat).display_name
-                if get_category_metadata(cat)
-                else cat.value,
-                "description": get_category_metadata(cat).description
-                if get_category_metadata(cat)
-                else None,
-            }
-            for cat in categories
-        ]
+        result = []
+        for cat in categories:
+            meta = get_category_metadata(cat)
+            result.append(
+                {
+                    "name": cat.value,
+                    "group": meta.group.value if meta else None,
+                    "display_name": meta.display_name if meta else cat.value,
+                    "description": meta.description if meta else None,
+                }
+            )
+
+        return result
 
     @router.get("/stats", response_model=CategoryStats)
     async def get_stats():

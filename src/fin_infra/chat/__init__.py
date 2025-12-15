@@ -149,15 +149,6 @@ def add_financial_conversation(
         # TODO: Get user_id from svc-infra auth context
         user_id = "demo_user"  # Placeholder
 
-        # Check for sensitive content
-        if is_sensitive_question(request.question):
-            return ConversationResponse(
-                answer="I cannot process requests containing sensitive information like SSNs, passwords, or account numbers. Please rephrase your question without this information.",
-                follow_up_questions=[],
-                conversation_id=f"{user_id}_denied",
-                disclaimer="This is an automated safety response.",
-            )
-
         # Ask conversation
         response = await conversation.ask(
             user_id=user_id,
@@ -173,7 +164,7 @@ def add_financial_conversation(
         # TODO: Get user_id from svc-infra auth context
         user_id = "demo_user"
         context = await conversation._get_context(user_id)
-        return context.exchanges if context else []
+        return context.previous_exchanges if context else []
 
     @router.delete("/history")
     async def clear_history():
