@@ -13,7 +13,7 @@ from .engine import CategorizationEngine
 try:
     from .llm_layer import LLMCategorizer
 except ImportError:
-    LLMCategorizer = None
+    LLMCategorizer = None  # type: ignore[assignment,misc]
 
 
 def easy_categorization(

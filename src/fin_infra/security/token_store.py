@@ -162,7 +162,9 @@ async def get_provider_token(
 
     # Decrypt token
     context = {"user_id": user_id, "provider": provider}
-    token = encryption.decrypt(token_obj.encrypted_token, context=context)
+    # Cast to str since SQLAlchemy Column[str] needs explicit conversion for type checker
+    encrypted_token_str: str = str(token_obj.encrypted_token)
+    token = encryption.decrypt(encrypted_token_str, context=context)
 
     # Update last_used_at
     update_stmt = (

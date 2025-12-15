@@ -51,7 +51,8 @@ from typing import TYPE_CHECKING, Literal
 if TYPE_CHECKING:
     from fastapi import FastAPI
 
-from ..providers.base import InvestmentProvider
+# Use the local InvestmentProvider base class (same as providers use)
+from .providers.base import InvestmentProvider
 
 # Lazy imports to avoid loading provider SDKs unless needed
 _provider_cache: dict[str, InvestmentProvider] = {}
@@ -114,6 +115,7 @@ def easy_investments(
         return _provider_cache[cache_key]
 
     # Lazy import and initialize provider
+    instance: InvestmentProvider
     if provider == "plaid":
         from .providers.plaid import PlaidInvestmentProvider
 
@@ -172,14 +174,19 @@ def add_investments(
         >>> # GET /investments/transactions
         >>> # etc.
     """
-    from .add import add_investments_impl
+    from .add import add_investments as add_investments_impl
+    from .providers.base import InvestmentProvider as InvestmentProviderBase
+
+    # Resolve provider from string Literal to actual InvestmentProvider instance
+    resolved_provider: InvestmentProviderBase | None = None
+    if provider is not None:
+        resolved_provider = easy_investments(provider=provider, **provider_config)  # type: ignore[assignment]
 
     return add_investments_impl(
         app,
-        provider=provider,
+        provider=resolved_provider,
         prefix=prefix,
         tags=tags or ["Investments"],
-        **provider_config,
     )
 
 

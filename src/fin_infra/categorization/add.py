@@ -96,7 +96,8 @@ def add_categorization(
         start_time = time.perf_counter()
 
         try:
-            prediction = engine.categorize(
+            # Await the async categorize method
+            prediction = await engine.categorize(
                 merchant_name=request.merchant_name,
                 user_id=request.user_id,
                 include_alternatives=request.include_alternatives,

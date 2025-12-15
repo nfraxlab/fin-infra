@@ -397,10 +397,13 @@ def add_banking(
             }
         """
         # Get all transactions from provider
+        # Convert date to ISO string format as expected by BankingProvider.transactions()
+        start_date_str: str | None = start_date.isoformat() if start_date else None
+        end_date_str: str | None = end_date.isoformat() if end_date else None
         transactions = banking.transactions(
             access_token=access_token,
-            start_date=start_date,
-            end_date=end_date,
+            start_date=start_date_str,
+            end_date=end_date_str,
         )
 
         # Apply filters

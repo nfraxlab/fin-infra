@@ -193,7 +193,11 @@ def add_market_data(
     if isinstance(provider, MarketDataProvider):
         market = provider
     else:
-        market = easy_market(provider=provider, **config)
+        # Cast provider to Literal type for type checker
+        provider_literal: Literal["alphavantage", "yahoo"] | None = (
+            provider if provider in ("alphavantage", "yahoo", None) else None  # type: ignore[assignment]
+        )
+        market = easy_market(provider=provider_literal, **config)
 
     # Create router (public - no auth required)
     router = public_router(prefix=prefix, tags=["Market Data"])
@@ -223,14 +227,15 @@ def add_market_data(
         try:
             candles = market.history(symbol, period=period, interval=interval)
             # Convert to dicts if they're Pydantic models
-            candles_list = []
+            candles_list: list[dict] = []
             for candle in candles:
                 if hasattr(candle, "model_dump"):
                     candles_list.append(candle.model_dump())
                 elif hasattr(candle, "dict"):
                     candles_list.append(candle.dict())
                 else:
-                    candles_list.append(candle)
+                    # Cast to dict for type compatibility
+                    candles_list.append(dict(candle) if hasattr(candle, "__iter__") else {"data": candle})
             return {"candles": candles_list}
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))

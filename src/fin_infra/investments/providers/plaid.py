@@ -370,7 +370,7 @@ class PlaidInvestmentProvider(InvestmentProvider):
             isin=plaid_security.get("isin"),
             sedol=plaid_security.get("sedol"),
             ticker_symbol=plaid_security.get("ticker_symbol"),
-            name=plaid_security.get("name"),
+            name=plaid_security.get("name") or "Unknown Security",
             type=self._normalize_security_type(plaid_security.get("type", "other")),
             sector=plaid_security.get("sector"),
             close_price=close_price,

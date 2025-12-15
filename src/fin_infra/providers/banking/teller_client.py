@@ -93,7 +93,13 @@ class TellerClient(BankingProvider):
             ssl_context.load_cert_chain(certfile=cert_path, keyfile=key_path)
             client_kwargs["verify"] = ssl_context
 
-        self.client = httpx.Client(**client_kwargs)
+        # Create client with explicit parameters to satisfy type checker
+        self.client = httpx.Client(
+            base_url=str(client_kwargs["base_url"]),
+            timeout=float(client_kwargs["timeout"]),  # type: ignore[arg-type]
+            headers=client_kwargs["headers"],  # type: ignore[arg-type]
+            verify=client_kwargs.get("verify", True),  # type: ignore[arg-type]
+        )
 
     def _request(self, method: str, path: str, **kwargs: Any) -> Any:
         """Make HTTP request to Teller API with error handling.

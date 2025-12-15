@@ -44,7 +44,7 @@ from .taxonomy import Category, CategoryGroup, get_all_categories, get_category_
 try:
     from .llm_layer import LLMCategorizer
 except ImportError:
-    LLMCategorizer = None
+    LLMCategorizer = None  # type: ignore[assignment,misc]
 
 __all__ = [
     # Easy setup

@@ -212,7 +212,9 @@ def add_brokerage(
 
     # Initialize provider if string or None
     if isinstance(provider, str):
-        brokerage_provider = easy_brokerage(provider=provider, mode=mode, **config)
+        # Cast provider string to Literal type for type checker
+        provider_literal: Literal["alpaca"] | None = provider if provider == "alpaca" else None  # type: ignore[assignment]
+        brokerage_provider = easy_brokerage(provider=provider_literal, mode=mode, **config)
     elif provider is None:
         brokerage_provider = easy_brokerage(mode=mode, **config)
     else:
@@ -241,7 +243,7 @@ def add_brokerage(
         Returns list of positions with symbol, quantity, P/L, etc.
         """
         try:
-            positions = brokerage_provider.positions()
+            positions = list(brokerage_provider.positions())  # Convert Iterable to list for len()
             return {"positions": positions, "count": len(positions)}
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error fetching positions: {str(e)}")

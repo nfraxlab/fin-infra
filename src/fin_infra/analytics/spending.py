@@ -162,12 +162,13 @@ async def analyze_spending(
     )
 
     return SpendingInsight(
-        top_merchants=top_merchants,
-        category_breakdown=dict(category_totals),
+        # Convert Decimal to float for model compatibility (intentional for Pydantic field types)
+        top_merchants=[(m, float(v)) for m, v in top_merchants],
+        category_breakdown={k: float(v) for k, v in category_totals.items()},
         spending_trends=spending_trends,
         anomalies=anomalies,
         period_days=days,
-        total_spending=total_spending,
+        total_spending=float(total_spending) if total_spending else 0.0,
     )
 
 
@@ -359,9 +360,10 @@ async def _detect_spending_anomalies(
         anomalies.append(
             SpendingAnomaly(
                 category=category,
-                current_amount=current_amount,
-                average_amount=average_amount,
-                deviation_percent=deviation_percent,
+                # Convert Decimal to float for model compatibility (intentional for Pydantic field types)
+                current_amount=float(current_amount),
+                average_amount=float(average_amount),
+                deviation_percent=float(deviation_percent),
                 severity=severity,
             )
         )

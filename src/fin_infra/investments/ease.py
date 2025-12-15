@@ -112,19 +112,20 @@ def easy_investments(
         - Most other SnapTrade brokerages support trading operations
     """
     # Auto-detect provider from environment if not specified
-    if provider is None:
-        provider = _detect_provider()
+    detected_provider: str | None = provider
+    if detected_provider is None:
+        detected_provider = _detect_provider()
 
     # Validate provider
-    if provider not in ("plaid", "snaptrade"):
+    if detected_provider not in ("plaid", "snaptrade"):
         raise ValueError(
-            f"Invalid provider: {provider}. Must be 'plaid' or 'snaptrade'."
+            f"Invalid provider: {detected_provider}. Must be 'plaid' or 'snaptrade'."
         )
 
     # Instantiate provider
-    if provider == "plaid":
+    if detected_provider == "plaid":
         return _create_plaid_provider(**config)
-    elif provider == "snaptrade":
+    elif detected_provider == "snaptrade":
         return _create_snaptrade_provider(**config)
 
     # Should never reach here
@@ -233,10 +234,13 @@ def _create_snaptrade_provider(**config: Any) -> InvestmentProvider:
             "Example: easy_investments(provider='snaptrade', client_id='...', consumer_key='...')"
         )
 
+    # Ensure base_url is a string (default is set in SnapTradeInvestmentProvider)
+    resolved_base_url: str = base_url if isinstance(base_url, str) else "https://api.snaptrade.com/api/v1"
+
     return SnapTradeInvestmentProvider(
         client_id=client_id,
         consumer_key=consumer_key,
-        base_url=base_url,
+        base_url=resolved_base_url,
     )
 
 

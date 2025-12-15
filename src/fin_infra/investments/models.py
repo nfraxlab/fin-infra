@@ -71,7 +71,7 @@ class TransactionType(str, Enum):
     fee = "fee"
     tax = "tax"
     transfer = "transfer"
-    split = "split"
+    split = "split"  # type: ignore[assignment]  # str.split() name conflict
     merger = "merger"
     cancel = "cancel"
     other = "other"

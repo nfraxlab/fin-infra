@@ -313,9 +313,9 @@ class MockTaxProvider(TaxProvider):
         return CryptoTaxReport(
             user_id=user_id,
             tax_year=tax_year,
-            total_gain_loss=short_term + long_term,
-            short_term_gain_loss=short_term,
-            long_term_gain_loss=long_term,
+            total_gain_loss=Decimal(short_term + long_term),
+            short_term_gain_loss=Decimal(short_term),
+            long_term_gain_loss=Decimal(long_term),
             transaction_count=len(crypto_transactions),
             cost_basis_method=cost_basis_method,
             transactions=crypto_transactions,
