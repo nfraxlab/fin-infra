@@ -13,7 +13,6 @@ from fin_infra.investments.models import (
     InvestmentTransaction,
     Security,
     SecurityType,
-    TransactionType,
 )
 from fin_infra.investments.providers.base import InvestmentProvider
 
@@ -38,15 +37,11 @@ class MockInvestmentProvider(InvestmentProvider):
         """Mock implementation."""
         return []
 
-    async def get_securities(
-        self, access_token: str, security_ids: List[str]
-    ) -> List[Security]:
+    async def get_securities(self, access_token: str, security_ids: List[str]) -> List[Security]:
         """Mock implementation."""
         return []
 
-    async def get_investment_accounts(
-        self, access_token: str
-    ) -> List[InvestmentAccount]:
+    async def get_investment_accounts(self, access_token: str) -> List[InvestmentAccount]:
         """Mock implementation."""
         return []
 
@@ -170,9 +165,7 @@ class TestCalculateAllocation:
         assert "Diversified" in allocation.by_sector
         assert allocation.by_sector["Diversified"] == 35.0  # VOO only
 
-    def test_calculate_allocation_empty_holdings(
-        self, provider: MockInvestmentProvider
-    ):
+    def test_calculate_allocation_empty_holdings(self, provider: MockInvestmentProvider):
         """Test allocation calculation with empty holdings list."""
         allocation = provider.calculate_allocation([])
 
@@ -272,7 +265,9 @@ class TestCalculatePortfolioMetrics:
         assert metrics["total_value"] == 6000.0  # 1755 + 2100 + 1500 + 645
         assert metrics["total_cost_basis"] == 5695.0  # 1500 + 2000 + 1550 + 645
         assert metrics["total_unrealized_gain_loss"] == 305.0  # 6000 - 5695
-        assert metrics["total_unrealized_gain_loss_percent"] == pytest.approx(5.35, rel=0.01)  # 305 / 5695 * 100
+        assert metrics["total_unrealized_gain_loss_percent"] == pytest.approx(
+            5.35, rel=0.01
+        )  # 305 / 5695 * 100
 
     def test_calculate_portfolio_metrics_loss(
         self, provider: MockInvestmentProvider, sample_securities: List[Security]
@@ -297,9 +292,7 @@ class TestCalculatePortfolioMetrics:
         assert metrics["total_unrealized_gain_loss"] == -500.0
         assert metrics["total_unrealized_gain_loss_percent"] == pytest.approx(-33.33, rel=0.01)
 
-    def test_calculate_portfolio_metrics_empty_holdings(
-        self, provider: MockInvestmentProvider
-    ):
+    def test_calculate_portfolio_metrics_empty_holdings(self, provider: MockInvestmentProvider):
         """Test portfolio metrics with empty holdings list."""
         metrics = provider.calculate_portfolio_metrics([])
 
@@ -428,9 +421,7 @@ class TestIntegration:
         metrics = provider.calculate_portfolio_metrics(sample_holdings)
 
         # Verify allocation percentages add up correctly
-        total_allocation = (
-            sum(allocation.by_security_type.values()) + allocation.cash_percent
-        )
+        total_allocation = sum(allocation.by_security_type.values()) + allocation.cash_percent
         assert abs(total_allocation - 100.0) < 0.01  # Allow for rounding
 
         # Verify metrics are consistent with allocation

@@ -565,7 +565,6 @@ def portfolio_metrics_with_holdings(holdings: list) -> PortfolioMetrics:
         >>> metrics = portfolio_metrics_with_holdings(holdings)
     """
     # Import here to avoid circular dependency
-    from decimal import Decimal
 
     # Calculate total portfolio value and cost basis
     total_value = float(sum(
@@ -739,7 +738,7 @@ def _calculate_allocation_from_holdings(
     }
 
     # Sum values by asset class
-    allocation_values = defaultdict(float)
+    allocation_values: dict[str, float] = defaultdict(float)
     for holding in holdings:
         security_type = holding.security.type.value if hasattr(holding.security.type, 'value') else holding.security.type
         asset_class = type_to_class.get(security_type, "Other")

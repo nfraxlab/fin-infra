@@ -250,7 +250,7 @@ class TestScaffoldBudgetsCore:
         mock_write.return_value = {"path": "/tmp/file.py", "action": "wrote"}
         mock_init.return_value = {"path": "/tmp/__init__.py", "action": "wrote"}
 
-        result = scaffold_budgets_core(
+        scaffold_budgets_core(
             dest_dir=Path("/tmp/models"),
             models_filename="custom_model.py",
             schemas_filename="custom_schemas.py",
@@ -272,7 +272,7 @@ class TestScaffoldBudgetsCore:
         mock_write.return_value = {"path": "/tmp/file.py", "action": "wrote"}
         mock_init.return_value = {"path": "/tmp/__init__.py", "action": "wrote"}
 
-        result = scaffold_budgets_core(
+        scaffold_budgets_core(
             dest_dir=Path("/tmp/models"),
             include_tenant=True,
         )
@@ -293,7 +293,7 @@ class TestScaffoldBudgetsCore:
         mock_write.return_value = {"path": "/tmp/file.py", "action": "wrote"}
         mock_init.return_value = {"path": "/tmp/__init__.py", "action": "wrote"}
 
-        result = scaffold_budgets_core(
+        scaffold_budgets_core(
             dest_dir=Path("/tmp/models"),
             include_soft_delete=True,
         )
@@ -314,7 +314,7 @@ class TestScaffoldBudgetsCore:
         mock_write.return_value = {"path": "/tmp/file.py", "action": "wrote"}
         mock_init.return_value = {"path": "/tmp/__init__.py", "action": "wrote"}
 
-        result = scaffold_budgets_core(
+        scaffold_budgets_core(
             dest_dir=Path("/tmp/models"),
             include_tenant=True,
             include_soft_delete=True,
@@ -344,11 +344,11 @@ class TestScaffoldBudgetsCore:
 
         # Verify write was called with overwrite=True
         for call in mock_write.call_args_list:
-            assert call[0][2] == True  # Third positional arg is overwrite
+            assert call[0][2]  # Third positional arg is overwrite
 
         # Verify ensure_init_py was called with overwrite=True
         init_call_kwargs = mock_init.call_args[1]
-        assert init_call_kwargs["overwrite"] == True
+        assert init_call_kwargs["overwrite"]
 
     @patch("fin_infra.scaffold.budgets.render_template")
     @patch("fin_infra.scaffold.budgets.write")

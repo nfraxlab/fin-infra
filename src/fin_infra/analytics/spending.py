@@ -292,10 +292,10 @@ async def _calculate_spending_trends(
         # In reality, would fetch historical data
         previous_amount = current_amount * Decimal("0.9")
 
-        change_percent = (
-            ((current_amount - previous_amount) / previous_amount) * 100
+        change_percent: float = (
+            float((current_amount - previous_amount) / previous_amount) * 100
             if previous_amount > 0
-            else 0
+            else 0.0
         )
 
         # Threshold for "stable" is within 5%
@@ -343,8 +343,8 @@ async def _detect_spending_anomalies(
         # In reality, would calculate from historical data
         average_amount = current_amount * Decimal("0.8")
 
-        deviation_percent = (
-            ((current_amount - average_amount) / average_amount) * 100 if average_amount > 0 else 0
+        deviation_percent: float = (
+            float((current_amount - average_amount) / average_amount) * 100 if average_amount > 0 else 0.0
         )
 
         # Detect anomalies based on deviation
@@ -470,7 +470,7 @@ async def generate_spending_insights(
 
     # Try to import ai-infra LLM (optional dependency)
     try:
-        from ai_infra.llm import LLM  # type: ignore[attr-defined]
+        from ai_infra.llm import LLM
     except ImportError:
         # Graceful degradation: return rule-based insights
         return _generate_rule_based_insights(spending_insight, user_context)

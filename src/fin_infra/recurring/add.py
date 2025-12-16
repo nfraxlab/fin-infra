@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import time
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from .ease import easy_recurring_detection
 from .models import (
@@ -93,7 +93,7 @@ def add_recurring_detection(
         llm_model=llm_model,
     )
 
-        # Store on app.state
+    # Store on app.state
     app.state.recurring_detector = detector
 
     # Use svc-infra user_router for authentication (recurring detection is user-specific)
@@ -133,7 +133,7 @@ def add_recurring_detection(
         # For now, return empty result with structure.
         # In production: transactions = get_user_transactions(user.id, days=request.days)
 
-        transactions = []  # Placeholder
+        transactions: list[dict[str, Any]] = []  # Placeholder
 
         # Detect patterns
         patterns = detector.detect_patterns(transactions)
@@ -180,7 +180,7 @@ def add_recurring_detection(
         #     return cached
 
         # Detect patterns (same as /detect endpoint)
-        transactions = []  # Placeholder
+        transactions: list[dict[str, Any]] = []  # Placeholder
         patterns = detector.detect_patterns(transactions)
         patterns = [p for p in patterns if p.confidence >= min_confidence]
 
@@ -208,7 +208,7 @@ def add_recurring_detection(
         List of predicted charges with expected dates and amounts
         """
         # Get detected patterns
-        transactions = []  # Placeholder
+        transactions: list[dict[str, Any]] = []  # Placeholder
         patterns = detector.detect_patterns(transactions)
         patterns = [p for p in patterns if p.confidence >= min_confidence]
 
@@ -230,7 +230,7 @@ def add_recurring_detection(
         - Top merchants by amount
         """
         # Get all detected patterns
-        transactions = []  # Placeholder
+        transactions: list[dict[str, Any]] = []  # Placeholder
         patterns = detector.detect_patterns(transactions)
 
         # Calculate stats
@@ -321,7 +321,7 @@ def add_recurring_detection(
         from .summary import get_recurring_summary
 
         # Get detected patterns for user
-        transactions = []  # Placeholder - in production: get_user_transactions(user_id)
+        transactions: list[dict[str, Any]] = []  # Placeholder - in production: get_user_transactions(user_id)
         patterns = detector.detect_patterns(transactions)
 
         # Generate summary
@@ -375,7 +375,7 @@ def add_recurring_detection(
             **Cost:** ~$0.0002/generation with Google Gemini, <$0.00004 effective with caching
             """
             # Get detected patterns
-            transactions = []  # Placeholder
+            transactions: list[dict[str, Any]] = []  # Placeholder
             patterns = detector.detect_patterns(transactions)
 
             # Convert patterns to subscription dicts for LLM

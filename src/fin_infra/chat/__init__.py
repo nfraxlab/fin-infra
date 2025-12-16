@@ -28,6 +28,11 @@ Example:
     )
 """
 
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from fastapi import FastAPI
+
 from fin_infra.chat.planning import (
     FinancialPlanningConversation,
     ConversationResponse,
@@ -51,7 +56,7 @@ __all__ = [
 
 
 def add_financial_conversation(
-    app: "FastAPI",  # type: ignore
+    app: "FastAPI",
     *,
     prefix: str = "/chat",
     conversation: FinancialPlanningConversation | None = None,
@@ -110,11 +115,6 @@ def add_financial_conversation(
         - Includes financial advice disclaimer in all responses
         - Logs all LLM calls for compliance (via svc-infra logging)
     """
-    from typing import TYPE_CHECKING, Any
-
-    if TYPE_CHECKING:
-        from fastapi import FastAPI
-
     from pydantic import BaseModel, Field
 
     # Import svc-infra user router (requires auth)

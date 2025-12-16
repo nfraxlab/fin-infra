@@ -36,13 +36,16 @@ tracker = add_net_worth_tracking(app)
 """
 
 from datetime import datetime, timedelta
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query
 
 from fin_infra.net_worth.ease import NetWorthTracker, easy_net_worth
 from fin_infra.net_worth.models import (
+    AssetDetail,
     ConversationResponse,
     GoalProgressResponse,
+    LiabilityDetail,
     NetWorthResponse,
     SnapshotHistoryResponse,
 )
@@ -188,8 +191,8 @@ def add_net_worth_tracking(
             # Persistence: Asset/liability details stored in snapshot JSON fields or separate tables.
             # Generate with: fin-infra scaffold net_worth --dest-dir app/models/
             # For now, create empty lists for testing/examples.
-            asset_details = []
-            liability_details = []
+            asset_details: list[AssetDetail] = []
+            liability_details: list[LiabilityDetail] = []
 
             # Calculate breakdowns
             asset_allocation = calculate_asset_allocation(asset_details)
@@ -508,7 +511,7 @@ def add_net_worth_tracking(
             snapshot = await tracker.calculate_net_worth(user_id=user_id, access_token=access_token)
 
             # Get goals for context (if goal_tracker available)
-            goals = []
+            goals: list[Any] = []
             if tracker.goal_tracker:
                 # TODO: Implement get_goals() method
                 pass
@@ -657,10 +660,10 @@ def add_net_worth_tracking(
 
         try:
             # Get current snapshot
-            snapshot = await tracker.calculate_net_worth(user_id=user_id, access_token=access_token)
+            await tracker.calculate_net_worth(user_id=user_id, access_token=access_token)
 
             # Get historical snapshots for progress tracking
-            snapshots = await tracker.get_snapshots(user_id=user_id, days=90)
+            await tracker.get_snapshots(user_id=user_id, days=90)
 
             # Persistence: Goal retrieval via scaffolded goals repository.
             # Generate with: fin-infra scaffold goals --dest-dir app/models/

@@ -1,6 +1,5 @@
 """Unit tests for savings rate analysis."""
 
-
 import pytest
 
 from fin_infra.analytics.models import Period, SavingsDefinition, TrendDirection

@@ -15,7 +15,7 @@ class TestEasyBrokerage:
         """Should default to Alpaca provider in paper mode."""
         from fin_infra.brokerage import easy_brokerage
 
-        broker = easy_brokerage()
+        easy_brokerage()
 
         mock_alpaca.assert_called_once()
         call_kwargs = mock_alpaca.call_args[1]
@@ -27,7 +27,7 @@ class TestEasyBrokerage:
         """Should create broker in paper mode when explicitly specified."""
         from fin_infra.brokerage import easy_brokerage
 
-        broker = easy_brokerage(mode="paper")
+        easy_brokerage(mode="paper")
 
         call_kwargs = mock_alpaca.call_args[1]
         assert call_kwargs["mode"] == "paper"
@@ -38,7 +38,7 @@ class TestEasyBrokerage:
         """Should create broker in live mode when explicitly specified."""
         from fin_infra.brokerage import easy_brokerage
 
-        broker = easy_brokerage(mode="live")
+        easy_brokerage(mode="live")
 
         call_kwargs = mock_alpaca.call_args[1]
         assert call_kwargs["mode"] == "live"
@@ -56,7 +56,7 @@ class TestEasyBrokerage:
         """Should accept explicit credentials."""
         from fin_infra.brokerage import easy_brokerage
 
-        broker = easy_brokerage(api_key="explicit_key", api_secret="explicit_secret", mode="paper")
+        easy_brokerage(api_key="explicit_key", api_secret="explicit_secret", mode="paper")
 
         call_kwargs = mock_alpaca.call_args[1]
         assert call_kwargs["api_key"] == "explicit_key"
@@ -84,7 +84,7 @@ class TestAddBrokerage:
         mock_easy_brokerage.return_value = mock_provider
 
         app = FastAPI()
-        broker = add_brokerage(app, prefix="/brokerage")
+        add_brokerage(app, prefix="/brokerage")
 
         # Check provider stored on app state
         assert hasattr(app.state, "brokerage_provider")

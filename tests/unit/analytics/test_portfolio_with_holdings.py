@@ -3,7 +3,6 @@
 Tests portfolio_metrics_with_holdings() and calculate_day_change_with_snapshot().
 """
 
-from datetime import datetime, timezone
 from decimal import Decimal
 
 import pytest
@@ -139,7 +138,7 @@ class TestPortfolioMetricsWithHoldings:
         # Stocks (AAPL + GOOGL): 2200 / 3800 ≈ 57.89%
         # Bonds (BND): 1600 / 3800 ≈ 42.11%
         allocation = {a.asset_class: a.percentage for a in metrics.allocation_by_asset_class}
-        
+
         assert "Stocks" in allocation
         assert "Bonds" in allocation
 

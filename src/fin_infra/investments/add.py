@@ -7,14 +7,13 @@ transactions, accounts, allocation, and securities data.
 from __future__ import annotations
 
 from datetime import date
-from typing import TYPE_CHECKING, Optional, Literal, Annotated
+from typing import TYPE_CHECKING, Optional
 
-from fastapi import HTTPException, Query, Depends
+from fastapi import HTTPException
 from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
     from fastapi import FastAPI
-    from svc_infra.api.fastapi.auth.security import Principal
 
 # Import Identity for dependency injection
 try:

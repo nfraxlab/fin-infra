@@ -69,7 +69,7 @@ def easy_financial_conversation(
     # Auto-create LLM if not provided
     if llm is None:
         try:
-            from ai_infra.llm import LLM  # type: ignore[attr-defined]
+            from ai_infra.llm import LLM
 
             llm = LLM()
         except ImportError:

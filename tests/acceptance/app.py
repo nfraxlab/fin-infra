@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from io import BytesIO
 
-from fastapi import Body, FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 
 from fin_infra.documents import DocumentType, easy_documents
@@ -31,7 +30,7 @@ def make_app() -> FastAPI:
     ):
         """Upload financial document for acceptance testing."""
         content = await file.read()
-        
+
         # Convert to DocumentType enum
         try:
             doc_type = DocumentType(document_type)

@@ -4,9 +4,8 @@ Tests all investment API endpoints with mocked InvestmentProvider.
 """
 
 import pytest
-from datetime import date, datetime
+from datetime import date
 from decimal import Decimal
-from typing import Optional
 from unittest.mock import AsyncMock, Mock, patch
 
 from fastapi import FastAPI
@@ -128,7 +127,7 @@ def mock_provider(
 def mock_principal():
     """Create a mock Principal for testing (replaces Identity dependency)."""
     from svc_infra.api.fastapi.auth.security import Principal
-    
+
     mock_user = Mock()
     mock_user.banking_providers = {}  # No stored tokens - tests provide explicit ones
     return Principal(user=mock_user, scopes=[], via="test")
@@ -137,20 +136,20 @@ def mock_principal():
 @pytest.fixture
 def app_with_investments(mock_provider: InvestmentProvider, mock_principal) -> FastAPI:
     """Create FastAPI app with investments endpoints mounted.
-    
+
     Note: Patches user_router with public_router to bypass authentication in tests.
     Production code uses user_router (requires authentication).
     """
     from svc_infra.api.fastapi.dual.public import public_router
     from svc_infra.api.fastapi.auth.security import _current_principal
-    
+
     app = FastAPI()
-    
+
     # Patch user_router with public_router to avoid authentication dependencies
     with patch("svc_infra.api.fastapi.dual.protected.user_router", public_router):
         # Mount investments with mocked provider
         add_investments(app, provider=mock_provider)
-    
+
     # Override the _current_principal dependency to return our mock
     # This bypasses database access in Identity resolution
     app.dependency_overrides[_current_principal] = lambda: mock_principal
@@ -169,9 +168,11 @@ def test_add_investments_creates_provider_if_none(mock_provider: InvestmentProvi
     """Test add_investments() creates provider if none provided."""
     app = FastAPI()
 
-    with patch("fin_infra.investments.add.easy_investments", return_value=mock_provider), \
-         patch("svc_infra.api.fastapi.dual.protected.user_router") as mock_user_router:
+    with patch("fin_infra.investments.add.easy_investments", return_value=mock_provider), patch(
+        "svc_infra.api.fastapi.dual.protected.user_router"
+    ) as mock_user_router:
         from svc_infra.api.fastapi.dual.public import public_router
+
         mock_user_router.side_effect = public_router
         provider = add_investments(app)
 
@@ -185,6 +186,7 @@ def test_add_investments_uses_provided_provider(mock_provider: InvestmentProvide
 
     with patch("svc_infra.api.fastapi.dual.protected.user_router") as mock_user_router:
         from svc_infra.api.fastapi.dual.public import public_router
+
         mock_user_router.side_effect = public_router
         provider = add_investments(app, provider=mock_provider)
 
@@ -198,6 +200,7 @@ def test_add_investments_stores_on_app_state(mock_provider: InvestmentProvider):
 
     with patch("svc_infra.api.fastapi.dual.protected.user_router") as mock_user_router:
         from svc_infra.api.fastapi.dual.public import public_router
+
         mock_user_router.side_effect = public_router
         add_investments(app, provider=mock_provider)
 
@@ -208,9 +211,10 @@ def test_add_investments_stores_on_app_state(mock_provider: InvestmentProvider):
 def test_add_investments_mounts_router(mock_provider: InvestmentProvider):
     """Test add_investments() mounts router with correct prefix."""
     app = FastAPI()
-    
+
     with patch("svc_infra.api.fastapi.dual.protected.user_router") as mock_user_router:
         from svc_infra.api.fastapi.dual.public import public_router
+
         mock_user_router.side_effect = public_router
         add_investments(app, provider=mock_provider, prefix="/investments")
 

@@ -108,18 +108,15 @@ class TestMerchantNormalizer:
         normalizer.llm.achat.assert_called_once()
         call_args = normalizer.llm.achat.call_args
         assert call_args.kwargs["provider"] == "google"
-        assert call_args.kwargs["model"] == "gemini-2.0-flash-exp"
+        assert call_args.kwargs["model_name"] == "gemini-2.0-flash-exp"
         assert call_args.kwargs["output_schema"] == MerchantNormalized
         assert call_args.kwargs["output_method"] == "prompt"
         assert call_args.kwargs["temperature"] == 0.0
 
         # Verify prompt contains system and user messages
-        messages = call_args.kwargs["messages"]
-        assert len(messages) == 2
-        assert messages[0]["role"] == "system"
-        assert messages[0]["content"] == MERCHANT_NORMALIZATION_SYSTEM_PROMPT
-        assert messages[1]["role"] == "user"
-        assert "NFLX*SUB #12345" in messages[1]["content"]
+        assert call_args.kwargs["system"] == MERCHANT_NORMALIZATION_SYSTEM_PROMPT
+        user_msg = call_args.kwargs["user_msg"]
+        assert "NFLX*SUB #12345" in user_msg
 
     @pytest.mark.asyncio
     async def test_normalize_payment_processor_prefix(self, normalizer, mock_llm):
@@ -458,6 +455,6 @@ class TestMerchantNormalizer:
 
         # Verify LLM received stripped name
         call_args = normalizer.llm.achat.call_args
-        user_message = call_args.kwargs["messages"][1]["content"]
+        user_message = call_args.kwargs["user_msg"]
         assert "NFLX*SUB" in user_message
         assert "  NFLX*SUB  " not in user_message

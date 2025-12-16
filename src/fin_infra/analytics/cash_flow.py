@@ -6,6 +6,7 @@ Provides income vs expense analysis, breakdowns by source/category, and forecast
 from __future__ import annotations
 
 from datetime import datetime, timedelta
+from decimal import Decimal
 from typing import Any, Optional
 
 from ..models import Transaction
@@ -219,7 +220,7 @@ async def forecast_cash_flow(
 def _categorize_transactions(
     transactions: list[Transaction],
     categorization_provider=None,
-) -> tuple[dict[str, float], dict[str, float]]:
+) -> tuple[dict[str, Decimal], dict[str, Decimal]]:
     """Helper to categorize transactions into income sources and expense categories.
 
     Args:
@@ -229,19 +230,19 @@ def _categorize_transactions(
     Returns:
         Tuple of (income_by_source, expenses_by_category) dicts
     """
-    income_by_source: dict[str, float] = {}
-    expenses_by_category: dict[str, float] = {}
+    income_by_source: dict[str, Decimal] = {}
+    expenses_by_category: dict[str, Decimal] = {}
 
     for txn in transactions:
         if txn.amount > 0:
             # Income transaction
             source = _determine_income_source(txn)
-            income_by_source[source] = income_by_source.get(source, 0) + txn.amount
+            income_by_source[source] = income_by_source.get(source, Decimal(0)) + txn.amount
         else:
             # Expense transaction
             category = _get_expense_category(txn, categorization_provider)
             amount = abs(txn.amount)
-            expenses_by_category[category] = expenses_by_category.get(category, 0) + amount
+            expenses_by_category[category] = expenses_by_category.get(category, Decimal(0)) + amount
 
     return income_by_source, expenses_by_category
 

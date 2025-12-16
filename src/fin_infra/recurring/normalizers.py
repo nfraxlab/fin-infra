@@ -22,9 +22,12 @@ from pydantic import BaseModel, ConfigDict, Field
 
 # Lazy import for optional dependency (ai-infra)
 try:
-    from ai_infra.llm import LLM  # type: ignore[attr-defined]
+    from ai_infra.llm import LLM
+
+    LLM_AVAILABLE = True
 except ImportError:
-    LLM = None
+    LLM = None  # type: ignore[misc,assignment]
+    LLM_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -340,12 +343,10 @@ class MerchantNormalizer:
         user_prompt = MERCHANT_NORMALIZATION_USER_PROMPT.format(merchant_name=merchant_name)
 
         response = await self.llm.achat(
+            user_msg=user_prompt,
             provider=self.provider,
-            model=self.model_name,
-            messages=[
-                {"role": "system", "content": MERCHANT_NORMALIZATION_SYSTEM_PROMPT},
-                {"role": "user", "content": user_prompt},
-            ],
+            model_name=self.model_name,
+            system=MERCHANT_NORMALIZATION_SYSTEM_PROMPT,
             output_schema=MerchantNormalized,
             output_method="prompt",  # Cross-provider compatibility
             temperature=0.0,  # Deterministic

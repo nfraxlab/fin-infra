@@ -112,9 +112,9 @@ def financial_route_classifier(route_path: str, method: str) -> str:
 
 
 def compose_classifiers(
-    *classifiers: Callable[[str], str],
+    *classifiers: Callable[[str, str], str],
     default: str = "public",
-) -> Callable[[str], str]:
+) -> Callable[[str, str], str]:
     """
     Compose multiple route classifiers with fallback logic.
 

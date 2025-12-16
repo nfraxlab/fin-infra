@@ -21,9 +21,12 @@ from pydantic import BaseModel, ConfigDict, Field
 
 # Lazy import for optional dependency (ai-infra)
 try:
-    from ai_infra.llm import LLM  # type: ignore[attr-defined]
+    from ai_infra.llm import LLM
+
+    LLM_AVAILABLE = True
 except ImportError:
-    LLM = None
+    LLM = None  # type: ignore[misc,assignment]
+    LLM_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -369,12 +372,10 @@ class SubscriptionInsightsGenerator:
         user_prompt = INSIGHTS_GENERATION_USER_PROMPT.format(subscriptions_json=subscriptions_json)
 
         response = await self.llm.achat(
+            user_msg=user_prompt,
             provider=self.provider,
-            model=self.model_name,
-            messages=[
-                {"role": "system", "content": INSIGHTS_GENERATION_SYSTEM_PROMPT},
-                {"role": "user", "content": user_prompt},
-            ],
+            model_name=self.model_name,
+            system=INSIGHTS_GENERATION_SYSTEM_PROMPT,
             output_schema=SubscriptionInsights,
             output_method="prompt",  # Cross-provider compatibility
             temperature=0.3,  # Slight creativity for recommendations

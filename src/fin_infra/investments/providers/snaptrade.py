@@ -354,8 +354,8 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
                     type=account.get("type", "investment"),
                     subtype=account.get("account_type"),
                     balances={
-                        "current": float(balances.get("total", {}).get("amount", 0)),
-                        "available": float(balances.get("cash", {}).get("amount", 0)),
+                        "current": Decimal(str(balances.get("total", {}).get("amount", 0))),
+                        "available": Decimal(str(balances.get("cash", {}).get("amount", 0))),
                     },
                     holdings=holdings,
                 )

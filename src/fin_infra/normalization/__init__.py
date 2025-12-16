@@ -1,5 +1,10 @@
 """Data normalization module for financial symbols and currencies."""
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from fastapi import FastAPI
+
 from fin_infra.normalization.currency_converter import (
     CurrencyConverter,
     CurrencyNotSupportedError,
@@ -64,7 +69,7 @@ def easy_normalization(
 
 
 def add_normalization(
-    app: "FastAPI",  # type: ignore
+    app: "FastAPI",
     *,
     prefix: str = "/normalize",
     api_key: str | None = None,
@@ -110,11 +115,6 @@ def add_normalization(
         - Integrated with svc-infra observability (request metrics)
         - Scoped docs at {prefix}/docs for standalone documentation
     """
-    from typing import TYPE_CHECKING
-
-    if TYPE_CHECKING:
-        from fastapi import FastAPI
-
     # Import FastAPI dependencies
     from fastapi import Query, HTTPException
 

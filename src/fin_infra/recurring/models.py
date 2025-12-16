@@ -228,9 +228,9 @@ class SubscriptionStats(BaseModel):
                 "by_pattern_type": {"fixed": 12, "variable": 2, "irregular": 1},
                 "by_cadence": {"monthly": 13, "quarterly": 1, "annual": 1},
                 "top_merchants": [
-                    ("Netflix", 15.99),
-                    ("Spotify", 9.99),
-                    ("Amazon Prime", 14.99),
+                    ["Netflix", 15.99],
+                    ["Spotify", 9.99],
+                    ["Amazon Prime", 14.99],
                 ],
                 "confidence_distribution": {
                     "high (0.85-1.0)": 12,

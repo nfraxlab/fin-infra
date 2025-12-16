@@ -95,7 +95,7 @@ class CategorizationEngine:
         Returns:
             CategoryPrediction with category, confidence, and method
         """
-        start_time = time.perf_counter()
+        time.perf_counter()
 
         # Normalize merchant name
         normalized = self._normalize(merchant_name)
@@ -333,7 +333,7 @@ def get_engine() -> CategorizationEngine:
     return _default_engine
 
 
-def categorize(
+async def categorize(
     merchant_name: str,
     user_id: Optional[str] = None,
     include_alternatives: bool = False,
@@ -350,4 +350,4 @@ def categorize(
         CategoryPrediction with category, confidence, and method
     """
     engine = get_engine()
-    return engine.categorize(merchant_name, user_id, include_alternatives)
+    return await engine.categorize(merchant_name, user_id, include_alternatives)

@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 RMI ?= all
 
-.PHONY: help accept compose_up wait seed down pytest_accept unit unitv clean clean-pycache test lint type format setup-template run-template
+.PHONY: help accept compose_up wait seed down pytest_accept unit unitv integration integrationv clean clean-pycache test lint type typecheck format format-check check ci setup-template run-template
 
 DC_FILE := docker-compose.test.yml
 COMPOSE := docker compose -f $(DC_FILE)
@@ -23,8 +23,12 @@ help: ## Show available commands
 	@echo ""
 	@echo "Code Quality:"
 	@echo "  format            Format code with black and isort"
+	@echo "  format-check      Check formatting (black/isort)"
 	@echo "  lint              Lint code with flake8 and ruff"
 	@echo "  type              Type check with mypy"
+	@echo "  typecheck         Alias for 'type'"
+	@echo "  check             Run lint + type checks"
+	@echo "  ci                Run checks + unit + integration"
 	@echo ""
 	@echo "Docker Compose:"
 	@echo "  compose_up        Start test services (if COMPOSE_PROFILES set)"
@@ -141,15 +145,25 @@ format:
 	poetry run black . --line-length 100; \
 	poetry run isort . --profile black --line-length 100
 
+format-check:
+	@echo "[format] Checking formatting (black/isort)"
+	@if ! command -v poetry >/dev/null 2>&1; then \
+		echo "[format] Poetry is not installed. Please install Poetry (https://python-poetry.org/docs/#installation)"; \
+		exit 2; \
+	fi; \
+	poetry install --no-interaction --only dev >/dev/null 2>&1 || true; \
+	poetry run black . --check --line-length 100; \
+	poetry run isort . --check-only --profile black --line-length 100
+
 lint:
-	@echo "[lint] Running flake8 and ruff"
+	@echo "[lint] Running flake8 and ruff on src/tests"
 	@if ! command -v poetry >/dev/null 2>&1; then \
 		echo "[lint] Poetry is not installed. Please install Poetry (https://python-poetry.org/docs/#installation)"; \
 		exit 2; \
 	fi; \
 	poetry install --no-interaction --only dev >/dev/null 2>&1 || true; \
-	poetry run flake8 --select=E,F; \
-	poetry run ruff check .
+	poetry run flake8 --select=E,F src tests; \
+	poetry run ruff check src tests
 
 type:
 	@echo "[type] Running mypy"
@@ -159,6 +173,15 @@ type:
 	fi; \
 	poetry install --no-interaction --only dev >/dev/null 2>&1 || true; \
 	poetry run mypy src
+
+typecheck: type
+
+check: lint type
+	@echo "[check] All checks passed"
+
+# CI-friendly: avoids dockerized acceptance by default
+ci: check unit integration
+	@echo "[ci] Checks + unit + integration passed"
 
 # --- Cleanup helpers ---
 clean:

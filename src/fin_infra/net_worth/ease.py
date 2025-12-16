@@ -377,7 +377,7 @@ def easy_net_worth(
 
     if enable_llm:
         try:
-            from ai_infra.llm.llm import LLM  # type: ignore[attr-defined]
+            from ai_infra.llm.llm import LLM
         except ImportError:
             raise ImportError(
                 "LLM features require ai-infra package. " "Install with: pip install ai-infra"

@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
-    from ai_infra.llm import LLM  # type: ignore[attr-defined]
+    from ai_infra.llm import LLM
 
 
 class CryptoInsight(BaseModel):
@@ -258,10 +258,8 @@ Provide your insight:"""
 
     try:
         # Use natural language conversation (no output_schema)
-        # Note: In tests, achat is mocked with messages= parameter
-        # In production, this should use user_msg, provider, model_name parameters
         response = await llm.achat(
-            messages=[{"role": "user", "content": prompt}],
+            user_msg=prompt,
         )
 
         # Parse response text

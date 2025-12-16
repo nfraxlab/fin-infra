@@ -22,9 +22,12 @@ Example usage:
     rate = irr(cashflows)
 """
 
-from typing import Iterable
+from typing import TYPE_CHECKING
 
 import numpy_financial as npf
+
+if TYPE_CHECKING:
+    from fastapi import FastAPI
 
 from .core import npv, irr
 
@@ -110,7 +113,7 @@ def pv(rate: float, nper: int, pmt: float, fv: float = 0, when: str = "end") -> 
 
 
 def add_cashflows(
-    app: "FastAPI",  # type: ignore
+    app: "FastAPI",
     *,
     prefix: str = "/cashflows",
 ) -> None:
@@ -169,11 +172,6 @@ def add_cashflows(
         - Integrated with svc-infra observability
         - Scoped docs at {prefix}/docs
     """
-    from typing import TYPE_CHECKING
-
-    if TYPE_CHECKING:
-        from fastapi import FastAPI
-
     from pydantic import BaseModel, Field
 
     # Import svc-infra public router (no auth - utility calculations)
@@ -254,4 +252,4 @@ def add_cashflows(
     # Mount router
     app.include_router(router, include_in_schema=True)
 
-    print(f"✅ Cashflow calculations enabled (NPV, IRR, PMT, FV, PV)")
+    print("✅ Cashflow calculations enabled (NPV, IRR, PMT, FV, PV)")

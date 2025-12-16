@@ -429,7 +429,7 @@ class TestTaxEfficiencySorting:
 
         # Should prioritize selling from IRA (no tax impact)
         ira_trades = [t for t in plan.trades if t.account_id == "ira_acc"]
-        taxable_trades = [t for t in plan.trades if t.account_id == "taxable_acc"]
+        [t for t in plan.trades if t.account_id == "taxable_acc"]
 
         # IRA trades should have no tax impact
         if ira_trades:

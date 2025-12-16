@@ -592,7 +592,7 @@ def add_banking(
 
 
 # Import utilities at end to avoid circular imports
-from .utils import (
+from .utils import (  # noqa: E402
     validate_plaid_token,
     validate_teller_token,
     validate_mx_token,

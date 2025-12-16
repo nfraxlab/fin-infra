@@ -19,6 +19,7 @@ Pydantic V2 models for net worth tracking.
 
 from datetime import datetime
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field
 
@@ -207,54 +208,100 @@ class AssetAllocation(BaseModel):
     vehicles: float = Field(0.0, ge=0, description="Vehicle value")
     other_assets: float = Field(0.0, ge=0, description="Other asset value")
 
-    @computed_field
-    @property
-    def total_assets(self) -> float:
-        """Sum of all asset categories."""
-        return (
-            self.cash
-            + self.investments
-            + self.crypto
-            + self.real_estate
-            + self.vehicles
-            + self.other_assets
-        )
+    if TYPE_CHECKING:
 
-    @computed_field
-    @property
-    def cash_percentage(self) -> float:
-        """Cash as percentage of total assets."""
-        return (self.cash / self.total_assets * 100) if self.total_assets > 0 else 0.0
+        @property
+        def total_assets(self) -> float:
+            """Sum of all asset categories."""
+            return (
+                self.cash
+                + self.investments
+                + self.crypto
+                + self.real_estate
+                + self.vehicles
+                + self.other_assets
+            )
 
-    @computed_field
-    @property
-    def investments_percentage(self) -> float:
-        """Investments as percentage of total assets."""
-        return (self.investments / self.total_assets * 100) if self.total_assets > 0 else 0.0
+        @property
+        def cash_percentage(self) -> float:
+            """Cash as percentage of total assets."""
+            return (self.cash / self.total_assets * 100) if self.total_assets > 0 else 0.0
 
-    @computed_field
-    @property
-    def crypto_percentage(self) -> float:
-        """Crypto as percentage of total assets."""
-        return (self.crypto / self.total_assets * 100) if self.total_assets > 0 else 0.0
+        @property
+        def investments_percentage(self) -> float:
+            """Investments as percentage of total assets."""
+            return (self.investments / self.total_assets * 100) if self.total_assets > 0 else 0.0
 
-    @computed_field
-    @property
-    def real_estate_percentage(self) -> float:
-        """Real estate as percentage of total assets."""
-        return (self.real_estate / self.total_assets * 100) if self.total_assets > 0 else 0.0
+        @property
+        def crypto_percentage(self) -> float:
+            """Crypto as percentage of total assets."""
+            return (self.crypto / self.total_assets * 100) if self.total_assets > 0 else 0.0
 
-    @computed_field
-    @property
-    def vehicles_percentage(self) -> float:
-        """Vehicles as percentage of total assets."""
-        return (self.vehicles / self.total_assets * 100) if self.total_assets > 0 else 0.0
+        @property
+        def real_estate_percentage(self) -> float:
+            """Real estate as percentage of total assets."""
+            return (self.real_estate / self.total_assets * 100) if self.total_assets > 0 else 0.0
 
-    @computed_field
-    @property
-    def other_percentage(self) -> float:
-        """Other assets as percentage of total assets."""
-        return (self.other_assets / self.total_assets * 100) if self.total_assets > 0 else 0.0
+        @property
+        def vehicles_percentage(self) -> float:
+            """Vehicles as percentage of total assets."""
+            return (self.vehicles / self.total_assets * 100) if self.total_assets > 0 else 0.0
+
+        @property
+        def other_percentage(self) -> float:
+            """Other assets as percentage of total assets."""
+            return (self.other_assets / self.total_assets * 100) if self.total_assets > 0 else 0.0
+
+    else:
+
+        @computed_field
+        @property
+        def total_assets(self) -> float:
+            """Sum of all asset categories."""
+            return (
+                self.cash
+                + self.investments
+                + self.crypto
+                + self.real_estate
+                + self.vehicles
+                + self.other_assets
+            )
+
+        @computed_field
+        @property
+        def cash_percentage(self) -> float:
+            """Cash as percentage of total assets."""
+            return (self.cash / self.total_assets * 100) if self.total_assets > 0 else 0.0
+
+        @computed_field
+        @property
+        def investments_percentage(self) -> float:
+            """Investments as percentage of total assets."""
+            return (self.investments / self.total_assets * 100) if self.total_assets > 0 else 0.0
+
+        @computed_field
+        @property
+        def crypto_percentage(self) -> float:
+            """Crypto as percentage of total assets."""
+            return (self.crypto / self.total_assets * 100) if self.total_assets > 0 else 0.0
+
+        @computed_field
+        @property
+        def real_estate_percentage(self) -> float:
+            """Real estate as percentage of total assets."""
+            return (self.real_estate / self.total_assets * 100) if self.total_assets > 0 else 0.0
+
+        @computed_field
+        @property
+        def vehicles_percentage(self) -> float:
+            """Vehicles as percentage of total assets."""
+            return (self.vehicles / self.total_assets * 100) if self.total_assets > 0 else 0.0
+
+        @computed_field
+        @property
+        def other_percentage(self) -> float:
+            """Other assets as percentage of total assets."""
+            return (self.other_assets / self.total_assets * 100) if self.total_assets > 0 else 0.0
 
 
 class LiabilityBreakdown(BaseModel):
@@ -288,74 +335,148 @@ class LiabilityBreakdown(BaseModel):
     personal_loans: float = Field(0.0, ge=0, description="Personal loan balance")
     lines_of_credit: float = Field(0.0, ge=0, description="Line of credit balance")
 
-    @computed_field
-    @property
-    def total_liabilities(self) -> float:
-        """Sum of all liability categories."""
-        return (
-            self.credit_cards
-            + self.mortgages
-            + self.auto_loans
-            + self.student_loans
-            + self.personal_loans
-            + self.lines_of_credit
-        )
+    if TYPE_CHECKING:
 
-    @computed_field
-    @property
-    def credit_cards_percentage(self) -> float:
-        """Credit cards as percentage of total liabilities."""
-        return (
-            (self.credit_cards / self.total_liabilities * 100)
-            if self.total_liabilities > 0
-            else 0.0
-        )
+        @property
+        def total_liabilities(self) -> float:
+            """Sum of all liability categories."""
+            return (
+                self.credit_cards
+                + self.mortgages
+                + self.auto_loans
+                + self.student_loans
+                + self.personal_loans
+                + self.lines_of_credit
+            )
 
-    @computed_field
-    @property
-    def mortgages_percentage(self) -> float:
-        """Mortgages as percentage of total liabilities."""
-        return (
-            (self.mortgages / self.total_liabilities * 100) if self.total_liabilities > 0 else 0.0
-        )
+        @property
+        def credit_cards_percentage(self) -> float:
+            """Credit cards as percentage of total liabilities."""
+            return (
+                (self.credit_cards / self.total_liabilities * 100)
+                if self.total_liabilities > 0
+                else 0.0
+            )
 
-    @computed_field
-    @property
-    def auto_loans_percentage(self) -> float:
-        """Auto loans as percentage of total liabilities."""
-        return (
-            (self.auto_loans / self.total_liabilities * 100) if self.total_liabilities > 0 else 0.0
-        )
+        @property
+        def mortgages_percentage(self) -> float:
+            """Mortgages as percentage of total liabilities."""
+            return (
+                (self.mortgages / self.total_liabilities * 100)
+                if self.total_liabilities > 0
+                else 0.0
+            )
 
-    @computed_field
-    @property
-    def student_loans_percentage(self) -> float:
-        """Student loans as percentage of total liabilities."""
-        return (
-            (self.student_loans / self.total_liabilities * 100)
-            if self.total_liabilities > 0
-            else 0.0
-        )
+        @property
+        def auto_loans_percentage(self) -> float:
+            """Auto loans as percentage of total liabilities."""
+            return (
+                (self.auto_loans / self.total_liabilities * 100)
+                if self.total_liabilities > 0
+                else 0.0
+            )
 
-    @computed_field
-    @property
-    def personal_loans_percentage(self) -> float:
-        """Personal loans as percentage of total liabilities."""
-        return (
-            (self.personal_loans / self.total_liabilities * 100)
-            if self.total_liabilities > 0
-            else 0.0
-        )
+        @property
+        def student_loans_percentage(self) -> float:
+            """Student loans as percentage of total liabilities."""
+            return (
+                (self.student_loans / self.total_liabilities * 100)
+                if self.total_liabilities > 0
+                else 0.0
+            )
 
-    @computed_field
-    @property
-    def lines_of_credit_percentage(self) -> float:
-        """Lines of credit as percentage of total liabilities."""
-        return (
-            (self.lines_of_credit / self.total_liabilities * 100)
-            if self.total_liabilities > 0
-            else 0.0
-        )
+        @property
+        def personal_loans_percentage(self) -> float:
+            """Personal loans as percentage of total liabilities."""
+            return (
+                (self.personal_loans / self.total_liabilities * 100)
+                if self.total_liabilities > 0
+                else 0.0
+            )
+
+        @property
+        def lines_of_credit_percentage(self) -> float:
+            """Lines of credit as percentage of total liabilities."""
+            return (
+                (self.lines_of_credit / self.total_liabilities * 100)
+                if self.total_liabilities > 0
+                else 0.0
+            )
+
+    else:
+
+        @computed_field
+        @property
+        def total_liabilities(self) -> float:
+            """Sum of all liability categories."""
+            return (
+                self.credit_cards
+                + self.mortgages
+                + self.auto_loans
+                + self.student_loans
+                + self.personal_loans
+                + self.lines_of_credit
+            )
+
+        @computed_field
+        @property
+        def credit_cards_percentage(self) -> float:
+            """Credit cards as percentage of total liabilities."""
+            return (
+                (self.credit_cards / self.total_liabilities * 100)
+                if self.total_liabilities > 0
+                else 0.0
+            )
+
+        @computed_field
+        @property
+        def mortgages_percentage(self) -> float:
+            """Mortgages as percentage of total liabilities."""
+            return (
+                (self.mortgages / self.total_liabilities * 100)
+                if self.total_liabilities > 0
+                else 0.0
+            )
+
+        @computed_field
+        @property
+        def auto_loans_percentage(self) -> float:
+            """Auto loans as percentage of total liabilities."""
+            return (
+                (self.auto_loans / self.total_liabilities * 100)
+                if self.total_liabilities > 0
+                else 0.0
+            )
+
+        @computed_field
+        @property
+        def student_loans_percentage(self) -> float:
+            """Student loans as percentage of total liabilities."""
+            return (
+                (self.student_loans / self.total_liabilities * 100)
+                if self.total_liabilities > 0
+                else 0.0
+            )
+
+        @computed_field
+        @property
+        def personal_loans_percentage(self) -> float:
+            """Personal loans as percentage of total liabilities."""
+            return (
+                (self.personal_loans / self.total_liabilities * 100)
+                if self.total_liabilities > 0
+                else 0.0
+            )
+
+        @computed_field
+        @property
+        def lines_of_credit_percentage(self) -> float:
+            """Lines of credit as percentage of total liabilities."""
+            return (
+                (self.lines_of_credit / self.total_liabilities * 100)
+                if self.total_liabilities > 0
+                else 0.0
+            )
 
 
 class AssetDetail(BaseModel):

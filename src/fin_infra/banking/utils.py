@@ -8,11 +8,9 @@ Apps still manage user-to-token mappings, but these utilities simplify common op
 from __future__ import annotations
 
 import re
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional, Literal
 from pydantic import BaseModel, ConfigDict, Field
-from pydantic.json_schema import JsonSchemaValue
-from pydantic_core import core_schema
 
 from ..providers.base import BankingProvider
 
@@ -270,7 +268,7 @@ def sanitize_connection_status(status: BankingConnectionStatus) -> Dict[str, Any
         >>> safe_data = sanitize_connection_status(status)
         >>> return {"connections": safe_data}  # Safe to return to client
     """
-    result = {
+    result: dict[str, Any] = {
         "has_any_connection": status.has_any_connection,
         "connected_providers": status.connected_providers,
         "primary_provider": status.primary_provider,
@@ -280,7 +278,8 @@ def sanitize_connection_status(status: BankingConnectionStatus) -> Dict[str, Any
     for provider_name in ["plaid", "teller", "mx"]:
         info = getattr(status, provider_name)
         if info:
-            result["providers"][provider_name] = {
+            providers_dict: dict[str, Any] = result["providers"]
+            providers_dict[provider_name] = {
                 "connected": info.connected,
                 "item_id": info.item_id,
                 "enrollment_id": info.enrollment_id,
@@ -415,7 +414,7 @@ async def test_connection_health(
     """
     try:
         # Try to fetch accounts (lightweight call)
-        accounts = provider.accounts(access_token)
+        provider.accounts(access_token)
         
         # If we got here, connection is healthy
         return True, None

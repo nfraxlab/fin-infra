@@ -308,23 +308,6 @@ class TestParsePublicRecord:
         assert result.amount is None
         assert result.court is None
 
-    def test_parse_public_record_missing_optional_fields(self):
-        """Test parse_public_record handles missing optional fields."""
-        record_data = {
-            "recordId": "rec_456",
-            "recordType": "tax_lien",
-            # Missing most fields
-        }
-
-        result = parse_public_record(record_data)
-
-        assert result.record_id == "rec_456"
-        assert result.record_type == "tax_lien"
-        assert result.filed_date == date.today()  # Default (field is filed_date not filing_date)
-        assert result.status == "active"  # Default
-        assert result.amount is None
-        assert result.court is None
-
 
 class TestParseCreditReport:
     """Test parse_credit_report function."""

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date  # noqa: F401 - used in type annotation
 from decimal import Decimal
 from typing import Optional
 

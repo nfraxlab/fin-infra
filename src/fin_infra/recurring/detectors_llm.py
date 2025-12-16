@@ -20,9 +20,12 @@ from pydantic import BaseModel, ConfigDict, Field
 
 # Lazy import for optional dependency (ai-infra)
 try:
-    from ai_infra.llm import LLM  # type: ignore[attr-defined]
+    from ai_infra.llm import LLM
+
+    LLM_AVAILABLE = True
 except ImportError:
-    LLM = None
+    LLM = None  # type: ignore[misc,assignment]
+    LLM_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +76,7 @@ class VariableRecurringPattern(BaseModel):
             "example": {
                 "is_recurring": True,
                 "cadence": "monthly",
-                "expected_range": (45.0, 60.0),
+                "expected_range": [45.0, 60.0],
                 "reasoning": "Seasonal winter heating causes variance",
                 "confidence": 0.85,
             }
@@ -278,12 +281,10 @@ class VariableDetectorLLM:
         )
 
         response = await self.llm.achat(
+            user_msg=user_prompt,
             provider=self.provider,
-            model=self.model_name,
-            messages=[
-                {"role": "system", "content": VARIABLE_DETECTION_SYSTEM_PROMPT},
-                {"role": "user", "content": user_prompt},
-            ],
+            model_name=self.model_name,
+            system=VARIABLE_DETECTION_SYSTEM_PROMPT,
             output_schema=VariableRecurringPattern,
             output_method="prompt",  # Cross-provider compatibility
             temperature=0.0,  # Deterministic

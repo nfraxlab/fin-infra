@@ -187,9 +187,7 @@ class TestExperianAuthManager:
         )
 
         # Mock the invalidate_tags function at the source module
-        with patch(
-            "svc_infra.cache.tags.invalidate_tags", new=AsyncMock()
-        ) as mock_invalidate:
+        with patch("svc_infra.cache.tags.invalidate_tags", new=AsyncMock()) as mock_invalidate:
             await auth.invalidate()
 
         # Verify invalidate_tags was called with client-specific tag

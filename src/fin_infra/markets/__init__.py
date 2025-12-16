@@ -181,13 +181,9 @@ def add_market_data(
         - docs/adr/0004-market-data-integration.md: Architecture decisions
     """
     from fastapi import HTTPException, Query
-    from typing import TYPE_CHECKING, Optional
 
     # Import svc-infra public router (no auth required for market data)
     from svc_infra.api.fastapi.dual.public import public_router
-
-    if TYPE_CHECKING:
-        from fastapi import FastAPI
 
     # Create market provider instance (or use the provided one)
     if isinstance(provider, MarketDataProvider):

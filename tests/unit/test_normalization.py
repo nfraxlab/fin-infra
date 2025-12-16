@@ -1,6 +1,5 @@
 """Unit tests for normalization module."""
 
-
 import pytest
 
 from fin_infra.normalization import (

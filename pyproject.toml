@@ -49,7 +49,6 @@ loguru = ">=0.7.0"
 numpy = ">=1.24.0"
 numpy-financial = ">=1.0.0"
 # svc-infra = { path = "../svc-infra", develop = true }  # Local dev only - uncomment for local development
-svc-infra = ">=0.1.0"  # Published version for CI/production
 
 # Provider dependencies (installed by default for easy_* functions)
 yahooquery = ">=2.3.0"

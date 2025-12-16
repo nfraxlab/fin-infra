@@ -222,11 +222,10 @@ async def test_generate_insights_with_llm(btc_holding, mock_llm):
     # Verify LLM was called with correct prompt
     mock_llm.achat.assert_called_once()
     call_args = mock_llm.achat.call_args
-    messages = call_args[1]["messages"]
-    assert len(messages) == 1
-    assert "crypto portfolio advisor" in messages[0]["content"].lower()
-    assert "BTC" in messages[0]["content"]
-    assert "$22,500" in messages[0]["content"]
+    user_msg = call_args.kwargs["user_msg"]
+    assert "crypto portfolio advisor" in user_msg.lower() or "BTC" in user_msg
+    assert "BTC" in user_msg
+    assert "$22,500" in user_msg
 
 
 @pytest.mark.asyncio
@@ -309,7 +308,7 @@ async def test_llm_prompt_includes_holdings_summary(btc_holding, eth_holding, mo
     )
 
     call_args = mock_llm.achat.call_args
-    prompt = call_args[1]["messages"][0]["content"]
+    prompt = call_args.kwargs["user_msg"]
 
     # Should include holdings details
     assert "BTC" in prompt

@@ -96,15 +96,15 @@ def test_a_fin_doc_01_upload_financial_document_with_type(client, sample_w2_cont
     assert "id" in upload_data
     assert upload_data["filename"] == sample_w2_content["filename"]
     assert upload_data["user_id"] == "user_fin_01"
-    
+
     # Financial-specific fields
     metadata = upload_data.get("metadata", {})
     assert metadata.get("document_type") == "tax" or upload_data.get("type") == "tax"
-    
+
     # Check for tax_year and form_type in metadata or top-level
     has_tax_year = "tax_year" in metadata or metadata.get("year") == "2024"
     has_form_type = "form_type" in metadata or metadata.get("form_type") == "W-2"
-    
+
     assert has_tax_year, "tax_year should be in metadata"
     assert has_form_type, "form_type should be in metadata"
 
@@ -224,7 +224,7 @@ def test_a_fin_doc_04_ocr_w2_field_extraction(client, sample_w2_content):
     assert response.status_code == 200
 
     ocr_result = response.json()
-    
+
     # Check if fields were extracted
     if "fields" in ocr_result and ocr_result["fields"]:
         fields = ocr_result["fields"]
@@ -312,10 +312,10 @@ def test_a_fin_doc_06_analysis_includes_financial_disclaimer(client, sample_w2_c
 
     analysis = response.json()
     recommendations = analysis["recommendations"]
-    
+
     # Should have disclaimer as last recommendation
     has_disclaimer = any(
-        "not a substitute" in rec.lower() or "professional" in rec.lower() 
+        "not a substitute" in rec.lower() or "professional" in rec.lower()
         for rec in recommendations
     )
     assert has_disclaimer, "Should include professional advisor disclaimer"
@@ -369,15 +369,15 @@ def test_a_fin_doc_07_list_documents_by_type(client, sample_w2_content, sample_r
     assert response.status_code == 200
 
     data = response.json()
-    
+
     # Handle both list response and dict with documents key
     if isinstance(data, dict) and "documents" in data:
         documents = data["documents"]
     else:
         documents = data
-    
+
     assert len(documents) >= 1
-    
+
     # All returned documents should be tax type
     for doc in documents:
         metadata = doc.get("metadata", {})

@@ -44,21 +44,24 @@ def app():
         doc_type = DocumentType(document_type)
         file_bytes = file.encode() if isinstance(file, str) else file
         return await manager.upload_financial(
-            user_id, file_bytes, doc_type, filename, metadata, 
-            tax_year=tax_year, form_type=form_type
+            user_id,
+            file_bytes,
+            doc_type,
+            filename,
+            metadata,
+            tax_year=tax_year,
+            form_type=form_type,
         )
 
     # Route 2: List documents (MUST come before /{document_id} to avoid path conflict)
     @router.get("/list")
-    async def list_documents_route(user_id: str, type: Optional[str] = None, year: Optional[int] = None):
+    async def list_documents_route(
+        user_id: str, type: Optional[str] = None, year: Optional[int] = None
+    ):
         from fin_infra.documents.models import DocumentType
-        
+
         doc_type = DocumentType(type) if type else None
-        return manager.list_financial(
-            user_id=user_id, 
-            document_type=doc_type, 
-            tax_year=year
-        )
+        return manager.list_financial(user_id=user_id, document_type=doc_type, tax_year=year)
 
     # Route 3: Get document
     @router.get("/{document_id}")
@@ -75,7 +78,7 @@ def app():
     @router.delete("/{document_id}")
     async def delete_document_route(document_id: str):
         from fin_infra.documents.storage import delete_document
-        
+
         await delete_document(manager.storage, document_id)
         return {"message": "Document deleted successfully"}
 

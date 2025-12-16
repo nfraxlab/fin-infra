@@ -180,7 +180,7 @@ def add_investments(
     # Resolve provider from string Literal to actual InvestmentProvider instance
     resolved_provider: InvestmentProviderBase | None = None
     if provider is not None:
-        resolved_provider = easy_investments(provider=provider, **provider_config)  # type: ignore[assignment]
+        resolved_provider = easy_investments(provider=provider, **provider_config)
 
     return add_investments_impl(
         app,

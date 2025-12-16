@@ -342,8 +342,8 @@ class TestFastAPIIntegration:
         from fin_infra.banking import add_banking
         from fin_infra.markets import add_market_data
 
-        banking = add_banking(app, provider="teller")
-        market = add_market_data(app, provider="yahoo")
+        add_banking(app, provider="teller")
+        add_market_data(app, provider="yahoo")
 
         # Verify both providers are stored
         assert app.state.banking_provider == mock_banking_provider

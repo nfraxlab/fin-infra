@@ -15,13 +15,12 @@ Expected performance:
 
 import hashlib
 import logging
-from typing import Optional, List, Tuple, cast
+from typing import Any, List, Optional, Tuple, cast
 from pydantic import BaseModel, Field
 
 # ai-infra imports
 try:
-    from ai_infra.llm import LLM  # type: ignore[attr-defined]
-    from ai_infra.llm.providers import Providers  # type: ignore[attr-defined]
+    from ai_infra.llm import LLM
 except ImportError:
     raise ImportError("ai-infra not installed. Install with: pip install ai-infra")
 
@@ -217,7 +216,7 @@ class LLMCategorizer:
         user_message = self._build_user_message(merchant_name, user_id)
 
         # Call LLM with retry logic
-        extra = {
+        extra: dict[str, Any] = {
             "retry": {
                 "max_tries": 3,
                 "base": 0.5,

@@ -44,7 +44,7 @@ class CategoryPrediction(BaseModel):
                 "category": "Coffee Shops",
                 "confidence": 0.98,
                 "method": "exact",
-                "alternatives": [("Restaurants", 0.15), ("Fast Food", 0.10)],
+                "alternatives": [["Restaurants", 0.15], ["Fast Food", 0.10]],
             }
         }
     )

@@ -145,7 +145,7 @@ class TestScaffoldCLIFlagBehavior:
             assert result.returncode == 0
 
             # Check that repository file was NOT created
-            repo_file = dest_dir / "budget_repository.py"
+            dest_dir / "budget_repository.py"
             # Note: Current implementation creates it by default, so this test documents behavior
             # If behavior changes to not create by default, this assertion should flip
             # For now, we just verify the command succeeds

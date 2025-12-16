@@ -24,6 +24,7 @@ from fin_infra.budgets.tracker import BudgetTracker
 # Mock user for authentication bypass in tests
 class MockUser:
     """Mock authenticated user."""
+
     id: str = "user_123"
     email: str = "test@example.com"
 
@@ -130,52 +131,50 @@ def app_with_budgets(mock_tracker):
     """Create FastAPI app with budget endpoints."""
     app = FastAPI()
     add_budgets(app, tracker=mock_tracker)
-    
+
     # Override svc-infra session dependency to avoid database initialization
     from svc_infra.api.fastapi.db.sql.session import get_session
-    
+
     class _DummySession:
         async def execute(self, *_, **__):
             class _Res:
                 def scalars(self):
                     return self
+
                 def all(self):
                     return []
+
                 def scalar_one_or_none(self):
                     return None
+
             return _Res()
+
         async def flush(self):
             return None
+
         async def commit(self):
             return None
+
         async def rollback(self):
             return None
+
         async def get(self, model, pk):
             return MockUser()
-    
+
     async def _mock_session():
         return _DummySession()
-    
+
     app.dependency_overrides[get_session] = _mock_session
-    
+
     # Override authentication to provide mock user
     from svc_infra.api.fastapi.auth.security import _current_principal, Principal
-    
-    async def mock_principal(
-        request=None,
-        session=None,
-        jwt_or_cookie=None,
-        ak=None
-    ):
+
+    async def mock_principal(request=None, session=None, jwt_or_cookie=None, ak=None):
         """Mock principal for testing."""
-        return Principal(
-            user=MockUser(),
-            scopes=["read", "write"],
-            via="test"
-        )
-    
+        return Principal(user=MockUser(), scopes=["read", "write"], via="test")
+
     app.dependency_overrides[_current_principal] = mock_principal
-    
+
     return app
 
 
@@ -501,39 +500,46 @@ class TestIntegration:
         # Setup app
         app = FastAPI()
         add_budgets(app, db_url="sqlite+aiosqlite:///test.db")
-        
+
         # Override svc-infra dependencies for testing
         from svc_infra.api.fastapi.db.sql.session import get_session
         from svc_infra.api.fastapi.auth.security import _current_principal, Principal
-        
+
         class _DummySession:
             async def execute(self, *_, **__):
                 class _Res:
                     def scalars(self):
                         return self
+
                     def all(self):
                         return []
+
                     def scalar_one_or_none(self):
                         return None
+
                 return _Res()
+
             async def flush(self):
                 return None
+
             async def commit(self):
                 return None
+
             async def rollback(self):
                 return None
+
             async def get(self, model, pk):
                 return MockUser()
-        
+
         async def _mock_session():
             return _DummySession()
-        
+
         async def mock_principal(request=None, session=None, jwt_or_cookie=None, ak=None):
             return Principal(user=MockUser(), scopes=["read", "write"], via="test")
-        
+
         app.dependency_overrides[get_session] = _mock_session
         app.dependency_overrides[_current_principal] = mock_principal
-        
+
         client = TestClient(app)
 
         # Step 1: List templates

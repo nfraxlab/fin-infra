@@ -457,7 +457,7 @@ class TestDetectorStats:
         ]
 
         detector = PatternDetector()
-        patterns = detector.detect(transactions)
+        detector.detect(transactions)
         stats = detector.get_stats()
 
         assert stats["total_detected"] == 2

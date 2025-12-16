@@ -200,7 +200,7 @@ def easy_recurring_detection(
         )
 
     # Validate config keys (reserved for future use)
-    valid_config_keys = set()  # Will expand in future versions
+    valid_config_keys: set[str] = set()  # Will expand in future versions
     invalid_keys = set(config.keys()) - valid_config_keys
     if invalid_keys:
         raise ValueError(

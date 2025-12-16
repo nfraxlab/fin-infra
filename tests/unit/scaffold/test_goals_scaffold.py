@@ -100,7 +100,7 @@ class TestScaffoldGoalsCore:
     def test_with_tenant(self, tmp_path):
         """Scaffold with tenant_id field."""
         dest = tmp_path / "goals"
-        result = scaffold_goals_core(
+        scaffold_goals_core(
             dest_dir=dest,
             include_tenant=True,
             include_soft_delete=False,
@@ -120,7 +120,7 @@ class TestScaffoldGoalsCore:
     def test_with_soft_delete(self, tmp_path):
         """Scaffold with deleted_at field."""
         dest = tmp_path / "goals"
-        result = scaffold_goals_core(
+        scaffold_goals_core(
             dest_dir=dest,
             include_tenant=False,
             include_soft_delete=True,
@@ -163,7 +163,7 @@ class TestScaffoldGoalsCore:
     def test_custom_filenames(self, tmp_path):
         """Scaffold with custom filenames."""
         dest = tmp_path / "goals"
-        result = scaffold_goals_core(
+        scaffold_goals_core(
             dest_dir=dest,
             include_tenant=False,
             include_soft_delete=False,
@@ -236,7 +236,7 @@ class TestScaffoldGoalsCore:
     def test_combined_tenant_and_soft_delete(self, tmp_path):
         """Scaffold with both tenant_id and deleted_at."""
         dest = tmp_path / "goals"
-        result = scaffold_goals_core(
+        scaffold_goals_core(
             dest_dir=dest,
             include_tenant=True,
             include_soft_delete=True,
@@ -257,7 +257,7 @@ class TestScaffoldGoalsCore:
     def test_tenant_without_repository(self, tmp_path):
         """Scaffold with tenant but no repository."""
         dest = tmp_path / "goals"
-        result = scaffold_goals_core(
+        scaffold_goals_core(
             dest_dir=dest,
             include_tenant=True,
             include_soft_delete=False,
@@ -280,7 +280,7 @@ class TestScaffoldGoalsCore:
         dest = tmp_path / "nonexistent" / "goals"
         assert not dest.exists()
 
-        result = scaffold_goals_core(
+        scaffold_goals_core(
             dest_dir=dest,
             include_tenant=False,
             include_soft_delete=False,

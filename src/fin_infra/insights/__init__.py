@@ -10,6 +10,11 @@ Aggregates insights from multiple sources:
 - Cash flow projections
 """
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from fastapi import FastAPI
+
 from .models import Insight, InsightFeed, InsightPriority, InsightCategory
 from .aggregator import aggregate_insights, get_user_insights
 
@@ -25,7 +30,7 @@ __all__ = [
 
 
 def add_insights(
-    app: "FastAPI",  # type: ignore
+    app: "FastAPI",
     *,
     prefix: str = "/insights",
 ) -> None:
@@ -71,11 +76,6 @@ def add_insights(
         - Real-time aggregation from net worth, budgets, goals, etc.
         - Notification system for critical insights
     """
-    from typing import TYPE_CHECKING
-
-    if TYPE_CHECKING:
-        from fastapi import FastAPI
-
     from fastapi import Query
 
     # Import svc-infra user router (requires auth)
@@ -125,5 +125,5 @@ def add_insights(
     # Mount router
     app.include_router(router, include_in_schema=True)
 
-    print(f"✅ Insights feed enabled (unified financial insights)")
+    print("✅ Insights feed enabled (unified financial insights)")
 

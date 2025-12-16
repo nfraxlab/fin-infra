@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Iterable, Sequence
+from typing import Any, Iterable, Sequence
 
 from ..models import Quote, Candle
 
@@ -20,11 +20,11 @@ class MarketDataProvider(ABC):
 
 class CryptoDataProvider(ABC):
     @abstractmethod
-    def ticker(self, symbol_pair: str) -> Quote:
+    def ticker(self, symbol_pair: str) -> Any:
         pass
 
     @abstractmethod
-    def ohlcv(self, symbol_pair: str, timeframe: str = "1d", limit: int = 100) -> Sequence[Candle]:
+    def ohlcv(self, symbol_pair: str, timeframe: str = "1d", limit: int = 100) -> Any:
         pass
 
 
@@ -161,11 +161,11 @@ class IdentityProvider(ABC):
 
 class CreditProvider(ABC):
     @abstractmethod
-    def get_credit_score(self, user_id: str, **kwargs) -> dict | None:
+    def get_credit_score(self, user_id: str, **kwargs: Any) -> Any:
         pass
 
     @abstractmethod
-    def get_credit_report(self, user_id: str, **kwargs) -> dict | None:
+    def get_credit_report(self, user_id: str, **kwargs: Any) -> Any:
         """Retrieve full credit report for a user."""
         pass
 
@@ -174,36 +174,31 @@ class TaxProvider(ABC):
     """Provider for tax data and document retrieval."""
 
     @abstractmethod
-    def get_tax_forms(self, user_id: str, tax_year: int, **kwargs) -> list[dict]:
+    def get_tax_forms(self, user_id: str, tax_year: int, **kwargs: Any) -> Any:
         """Retrieve tax forms for a user and tax year."""
         pass
 
     @abstractmethod
-    def get_tax_documents(self, user_id: str, tax_year: int, **kwargs) -> list[dict]:
+    def get_tax_documents(self, user_id: str, tax_year: int, **kwargs: Any) -> Any:
         """Retrieve tax documents for a user and tax year."""
         pass
 
     @abstractmethod
-    def get_tax_document(self, document_id: str, **kwargs) -> dict:
+    def get_tax_document(self, document_id: str, **kwargs: Any) -> Any:
         """Retrieve a specific tax document by ID."""
         pass
 
     @abstractmethod
-    def calculate_crypto_gains(self, transactions: list[dict], **kwargs) -> dict:
+    def calculate_crypto_gains(self, *args: Any, **kwargs: Any) -> Any:
         """Calculate capital gains from crypto transactions."""
         pass
 
     @abstractmethod
     def calculate_tax_liability(
         self,
-        user_id: str,
-        income: float,
-        deductions: float,
-        filing_status: str,
-        tax_year: int,
-        state: str | None = None,
-        **kwargs,
-    ) -> dict:
+        *args: Any,
+        **kwargs: Any,
+    ) -> Any:
         """Calculate estimated tax liability."""
         pass
 

@@ -296,7 +296,7 @@ class TestAddBanking:
         mock_provider = Mock()
 
         with patch("fin_infra.banking.easy_banking", return_value=mock_provider):
-            banking = add_banking(app, provider="teller", prefix="/banking")
+            add_banking(app, provider="teller", prefix="/banking")
 
         client = TestClient(app)
         return client, mock_provider

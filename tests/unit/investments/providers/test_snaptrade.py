@@ -1,8 +1,8 @@
 """Unit tests for SnapTrade Investment provider."""
 
-from datetime import date, timedelta
+from datetime import date
 from decimal import Decimal
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from unittest.mock import AsyncMock, Mock
 
 import httpx
 import pytest
@@ -126,9 +126,7 @@ def test_init_missing_consumer_key():
 
 
 @pytest.mark.asyncio
-async def test_get_holdings_success(
-    provider, mock_snaptrade_account, mock_snaptrade_position
-):
+async def test_get_holdings_success(provider, mock_snaptrade_account, mock_snaptrade_position):
     """Test successful holdings retrieval."""
     # Mock httpx client responses
     mock_accounts_response = AsyncMock()
@@ -206,7 +204,6 @@ async def test_get_holdings_invalid_access_token(provider):
     with pytest.raises(ValueError, match="Invalid access_token format"):
         await provider.get_holdings("invalid_token_format")
 
-
     @pytest.mark.asyncio
     async def test_get_holdings_api_error(provider):
         """Test holdings retrieval handles API errors."""
@@ -222,6 +219,8 @@ async def test_get_holdings_invalid_access_token(provider):
 
         with pytest.raises(ValueError, match="Invalid SnapTrade credentials"):
             await provider.get_holdings("user_123:secret_abc")
+
+
 # Test get_transactions
 
 
@@ -250,9 +249,7 @@ async def test_get_transactions_success(
     # Test get_transactions
     start_date = date(2024, 1, 1)
     end_date = date(2024, 1, 31)
-    transactions = await provider.get_transactions(
-        "user_123:secret_abc", start_date, end_date
-    )
+    transactions = await provider.get_transactions("user_123:secret_abc", start_date, end_date)
 
     # Assertions
     assert len(transactions) == 1
@@ -319,9 +316,7 @@ async def test_get_transactions_filtered_accounts(
 
 
 @pytest.mark.asyncio
-async def test_get_securities_success(
-    provider, mock_snaptrade_account, mock_snaptrade_position
-):
+async def test_get_securities_success(provider, mock_snaptrade_account, mock_snaptrade_position):
     """Test successful securities retrieval."""
     mock_accounts_response = AsyncMock()
     mock_accounts_response.json.return_value = [mock_snaptrade_account]
@@ -360,9 +355,7 @@ async def test_get_securities_success(
 
 
 @pytest.mark.asyncio
-async def test_get_securities_filtered(
-    provider, mock_snaptrade_account, mock_snaptrade_position
-):
+async def test_get_securities_filtered(provider, mock_snaptrade_account, mock_snaptrade_position):
     """Test securities retrieval with symbol filter."""
     mock_accounts_response = AsyncMock()
     mock_accounts_response.json.return_value = [mock_snaptrade_account]
@@ -446,6 +439,8 @@ async def test_get_investment_accounts_success(
     # total_value = holdings value (15050) + cash balance (50000)
     assert account.total_value == Decimal("65050.0")
     assert account.total_cost_basis == Decimal("14000.00")
+
+
 # Test list_connections
 
 
@@ -621,9 +616,7 @@ def test_transform_error_401(provider):
     mock_response.text = "Unauthorized"
     mock_response.json.return_value = {"message": "Invalid credentials"}
 
-    error = httpx.HTTPStatusError(
-        message="401", request=Mock(), response=mock_response
-    )
+    error = httpx.HTTPStatusError(message="401", request=Mock(), response=mock_response)
     transformed = provider._transform_error(error)
 
     assert isinstance(transformed, ValueError)
@@ -637,9 +630,7 @@ def test_transform_error_429(provider):
     mock_response.text = "Rate limit exceeded"
     mock_response.json.return_value = {"message": "Too many requests"}
 
-    error = httpx.HTTPStatusError(
-        message="429", request=Mock(), response=mock_response
-    )
+    error = httpx.HTTPStatusError(message="429", request=Mock(), response=mock_response)
     transformed = provider._transform_error(error)
 
     assert isinstance(transformed, ValueError)
@@ -653,9 +644,7 @@ def test_transform_error_404(provider):
     mock_response.text = "Not found"
     mock_response.json.side_effect = Exception("Not JSON")
 
-    error = httpx.HTTPStatusError(
-        message="404", request=Mock(), response=mock_response
-    )
+    error = httpx.HTTPStatusError(message="404", request=Mock(), response=mock_response)
     transformed = provider._transform_error(error)
 
     assert isinstance(transformed, ValueError)
@@ -669,9 +658,7 @@ def test_transform_error_500(provider):
     mock_response.text = "Internal server error"
     mock_response.json.return_value = {"message": "Server error"}
 
-    error = httpx.HTTPStatusError(
-        message="500", request=Mock(), response=mock_response
-    )
+    error = httpx.HTTPStatusError(message="500", request=Mock(), response=mock_response)
     transformed = provider._transform_error(error)
 
     assert isinstance(transformed, Exception)

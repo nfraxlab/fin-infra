@@ -15,7 +15,7 @@ from fin_infra.analytics.add import add_analytics
 def app():
     """Create FastAPI app with analytics endpoints."""
     app = FastAPI(title="Test Analytics API")
-    analytics_engine = add_analytics(app)
+    add_analytics(app)
     return app
 
 

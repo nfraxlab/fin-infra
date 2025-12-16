@@ -172,18 +172,15 @@ class TestSubscriptionInsightsGenerator:
         generator.llm.achat.assert_called_once()
         call_args = generator.llm.achat.call_args
         assert call_args.kwargs["provider"] == "google"
-        assert call_args.kwargs["model"] == "gemini-2.0-flash-exp"
+        assert call_args.kwargs["model_name"] == "gemini-2.0-flash-exp"
         assert call_args.kwargs["output_schema"] == SubscriptionInsights
         assert call_args.kwargs["temperature"] == 0.3  # Slight creativity
 
         # Verify prompt
-        messages = call_args.kwargs["messages"]
-        assert len(messages) == 2
-        assert messages[0]["role"] == "system"
-        assert messages[0]["content"] == INSIGHTS_GENERATION_SYSTEM_PROMPT
-        assert messages[1]["role"] == "user"
-        assert "Netflix" in messages[1]["content"]
-        assert "$15.99" in messages[1]["content"] or "15.99" in messages[1]["content"]
+        assert call_args.kwargs["system"] == INSIGHTS_GENERATION_SYSTEM_PROMPT
+        user_msg = call_args.kwargs["user_msg"]
+        assert "Netflix" in user_msg
+        assert "$15.99" in user_msg or "15.99" in user_msg
 
     @pytest.mark.asyncio
     async def test_generate_insights_for_duplicate_services(self, generator, mock_llm):
@@ -267,7 +264,7 @@ class TestSubscriptionInsightsGenerator:
 
         # Generate insights
         subscriptions = [{"merchant": "Netflix", "amount": 15.99, "cadence": "monthly"}]
-        result = await generator.generate(subscriptions, user_id="user123")
+        await generator.generate(subscriptions, user_id="user123")
 
         # Verify cache was checked
         mock_cache.get.assert_called_once()

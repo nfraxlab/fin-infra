@@ -123,19 +123,16 @@ class TestVariableDetectorLLM:
         detector.llm.achat.assert_called_once()
         call_args = detector.llm.achat.call_args
         assert call_args.kwargs["provider"] == "google"
-        assert call_args.kwargs["model"] == "gemini-2.0-flash-exp"
+        assert call_args.kwargs["model_name"] == "gemini-2.0-flash-exp"
         assert call_args.kwargs["output_schema"] == VariableRecurringPattern
         assert call_args.kwargs["temperature"] == 0.0
 
         # Verify prompt contains system and user messages
-        messages = call_args.kwargs["messages"]
-        assert len(messages) == 2
-        assert messages[0]["role"] == "system"
-        assert messages[0]["content"] == VARIABLE_DETECTION_SYSTEM_PROMPT
-        assert messages[1]["role"] == "user"
-        assert "City Electric" in messages[1]["content"]
+        assert call_args.kwargs["system"] == VARIABLE_DETECTION_SYSTEM_PROMPT
+        user_msg = call_args.kwargs["user_msg"]
+        assert "City Electric" in user_msg
         assert (
-            "45.5" in messages[1]["content"] or "52.3" in messages[1]["content"]
+            "45.5" in user_msg or "52.3" in user_msg
         )  # Float amounts, not dollar strings
 
     @pytest.mark.asyncio
@@ -421,7 +418,7 @@ class TestVariableDetectorLLM:
 
         # Verify user prompt
         call_args = detector.llm.achat.call_args
-        user_message = call_args.kwargs["messages"][1]["content"]
+        user_message = call_args.kwargs["user_msg"]
 
         # Should contain merchant name
         assert "Test Merchant" in user_message

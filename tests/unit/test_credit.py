@@ -281,7 +281,7 @@ class TestAddCredit:
     def test_add_credit_custom_prefix(self):
         """Test add_credit with custom prefix."""
         app = FastAPI()
-        credit = add_credit(app, prefix="/api/credit")
+        add_credit(app, prefix="/api/credit")
 
         routes = [route.path for route in app.routes]
         assert "/api/credit/score" in routes

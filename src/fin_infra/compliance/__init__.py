@@ -118,7 +118,6 @@ def add_compliance_tracking(
 
         # Track only GET requests (data access)
         if method != "GET":
-            from starlette.responses import Response as StarletteResponse
             return cast("Response", await call_next(request))
 
         # Determine if path is a compliance-tracked endpoint

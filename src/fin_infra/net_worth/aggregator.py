@@ -213,16 +213,17 @@ class NetWorthAggregator:
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         # Aggregate results (skip failed providers)
-        all_assets = []
-        all_liabilities = []
-        actual_providers = []
+        all_assets: list[AssetDetail] = []
+        all_liabilities: list[LiabilityDetail] = []
+        actual_providers: list[str] = []
 
         for i, result in enumerate(results):
-            if isinstance(result, Exception):
+            if isinstance(result, BaseException):
                 # Log error but continue (graceful degradation)
                 print(f"Provider {providers_used[i]} failed: {result}")
                 continue
 
+            # result is now tuple[list[AssetDetail], list[LiabilityDetail]]
             assets, liabilities = result
             all_assets.extend(assets)
             all_liabilities.extend(liabilities)

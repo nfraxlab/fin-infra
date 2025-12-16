@@ -2,7 +2,7 @@
 
 from datetime import date
 from decimal import Decimal
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -152,9 +152,7 @@ class TestGetHoldings:
     """Tests for get_holdings method."""
 
     @pytest.mark.asyncio
-    async def test_get_holdings_success(
-        self, provider, mock_plaid_security, mock_plaid_holding
-    ):
+    async def test_get_holdings_success(self, provider, mock_plaid_security, mock_plaid_holding):
         """Test successful holdings retrieval."""
         # Mock Plaid API response
         mock_response = Mock()
@@ -189,9 +187,7 @@ class TestGetHoldings:
         provider.client.investments_holdings_get = Mock(return_value=mock_response)
 
         # Call with account filter
-        holdings = await provider.get_holdings(
-            "access_token_123", account_ids=["acc_401k_123"]
-        )
+        await provider.get_holdings("access_token_123", account_ids=["acc_401k_123"])
 
         # Verify request was made with account filter
         call_args = provider.client.investments_holdings_get.call_args
@@ -245,9 +241,7 @@ class TestGetTransactions:
         # Call method
         start_date = date(2025, 11, 1)
         end_date = date(2025, 11, 20)
-        transactions = await provider.get_transactions(
-            "access_token_123", start_date, end_date
-        )
+        transactions = await provider.get_transactions("access_token_123", start_date, end_date)
 
         # Assertions
         assert len(transactions) == 1
@@ -300,9 +294,7 @@ class TestGetTransactions:
 
         start_date = date(2025, 11, 1)
         end_date = date(2025, 11, 20)
-        transactions = await provider.get_transactions(
-            "access_token_123", start_date, end_date
-        )
+        transactions = await provider.get_transactions("access_token_123", start_date, end_date)
 
         assert transactions == []
 
@@ -322,9 +314,7 @@ class TestGetSecurities:
         provider.client.investments_holdings_get = Mock(return_value=mock_response)
 
         # Call method
-        securities = await provider.get_securities(
-            "access_token_123", ["sec_aapl_123"]
-        )
+        securities = await provider.get_securities("access_token_123", ["sec_aapl_123"])
 
         # Assertions
         assert len(securities) == 1
@@ -369,9 +359,7 @@ class TestGetSecurities:
         provider.client.investments_holdings_get = Mock(return_value=mock_response)
 
         # Request only AAPL
-        securities = await provider.get_securities(
-            "access_token_123", ["sec_aapl_123"]
-        )
+        securities = await provider.get_securities("access_token_123", ["sec_aapl_123"])
 
         # Should only return AAPL
         assert len(securities) == 1
@@ -419,9 +407,7 @@ class TestGetInvestmentAccounts:
         assert account.total_cost_basis > 0
 
     @pytest.mark.asyncio
-    async def test_get_investment_accounts_multiple_holdings(
-        self, provider, mock_plaid_account
-    ):
+    async def test_get_investment_accounts_multiple_holdings(self, provider, mock_plaid_account):
         """Test account with multiple holdings."""
         # Create multiple securities and holdings
         sec1 = Mock()

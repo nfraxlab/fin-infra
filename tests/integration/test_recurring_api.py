@@ -3,10 +3,15 @@
 Tests add_recurring_detection() helper and all mounted endpoints with TestClient.
 """
 
+from typing import TYPE_CHECKING
+
 import pytest
 from datetime import datetime
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+
+if TYPE_CHECKING:
+    from fin_infra.recurring.models import RecurringPattern
 
 
 @pytest.fixture

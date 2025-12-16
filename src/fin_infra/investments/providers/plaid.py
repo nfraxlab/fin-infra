@@ -31,7 +31,6 @@ from ..models import (
     InvestmentAccount,
     InvestmentTransaction,
     Security,
-    SecurityType,
     TransactionType,
 )
 from .base import InvestmentProvider
@@ -344,8 +343,8 @@ class PlaidInvestmentProvider(InvestmentProvider):
                     type=account_dict.get("type", "investment"),
                     subtype=account_dict.get("subtype"),
                     balances={
-                        "current": float(account_dict.get("balances", {}).get("current", 0)),
-                        "available": float(account_dict.get("balances", {}).get("available")),
+                        "current": Decimal(str(account_dict.get("balances", {}).get("current", 0))),
+                        "available": Decimal(str(account_dict.get("balances", {}).get("available") or 0)),
                     },
                     holdings=holdings,
                 )

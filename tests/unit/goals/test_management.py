@@ -257,7 +257,7 @@ def test_list_goals_filters_by_multiple_criteria(sample_deadline):
     )
     update_goal(goal2["id"], updates={"status": "paused"})
 
-    goal3 = create_goal(
+    create_goal(
         user_id="user_123",
         name="Pay Off Loan",
         goal_type="debt",

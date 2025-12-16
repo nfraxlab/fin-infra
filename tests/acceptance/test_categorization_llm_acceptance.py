@@ -126,7 +126,7 @@ class TestGoogleGeminiLLM:
         assert categorizer.llm_categorizer.monthly_cost == 0
 
         # Categorize a merchant
-        result = await categorizer.categorize("Target")
+        await categorizer.categorize("Target")
 
         # Costs should be tracked
         assert categorizer.llm_categorizer.daily_cost > 0
@@ -203,7 +203,7 @@ class TestOpenAIGPT4oMini:
             llm_max_cost_per_day=1.00,
         )
 
-        result = await categorizer.categorize("Walmart")
+        await categorizer.categorize("Walmart")
 
         cost_per_txn = categorizer.llm_categorizer.daily_cost
         assert cost_per_txn > 0
@@ -276,7 +276,7 @@ class TestAnthropicClaude:
             llm_max_cost_per_day=1.00,
         )
 
-        result = await categorizer.categorize("Costco")
+        await categorizer.categorize("Costco")
 
         cost_per_txn = categorizer.llm_categorizer.daily_cost
         assert cost_per_txn > 0

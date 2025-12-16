@@ -125,9 +125,7 @@ class TestForecastCashFlow:
         forecasts = await forecast_cash_flow(
             user_id="user123",
             months=6,
-            assumptions={
-                "one_time_income": {3: bonus_amount}  # Bonus in month 3
-            },
+            assumptions={"one_time_income": {3: bonus_amount}},  # Bonus in month 3
         )
 
         # Month 3 (index 3) should have higher income than month 2
@@ -140,9 +138,7 @@ class TestForecastCashFlow:
         forecasts = await forecast_cash_flow(
             user_id="user123",
             months=6,
-            assumptions={
-                "one_time_expenses": {2: vacation_cost}  # Vacation in month 2
-            },
+            assumptions={"one_time_expenses": {2: vacation_cost}},  # Vacation in month 2
         )
 
         # Month 2 (index 2) should have higher expenses than month 1

@@ -104,7 +104,7 @@ def add_documents(
 
     # Step 1: Mount base endpoints (upload, list, get, delete) via svc-infra
     # This returns the base DocumentManager, but we'll create our own FinancialDocumentManager
-    if HAS_SVC_INFRA_DOCUMENTS and add_base_documents:
+    if HAS_SVC_INFRA_DOCUMENTS and add_base_documents is not None:
         add_base_documents(app, storage_backend=storage, prefix=prefix, tags=tags)
     else:
         # Legacy mode: mount basic endpoints inline (for svc-infra < 0.1.668)
