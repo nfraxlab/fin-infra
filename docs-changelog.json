@@ -1,0 +1,240 @@
+{
+  "files": {
+    "analytics.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-12-14",
+      "updateCount": 5,
+      "title": "Analytics Module"
+    },
+    "api.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-11-27",
+      "updateCount": 4,
+      "title": "Building Fintech APIs with fin-infra + svc-infra"
+    },
+    "banking/connection-utilities.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-11-27",
+      "updateCount": 2,
+      "title": "Banking Connection Utilities"
+    },
+    "banking/index.md": {
+      "created": "2025-11-29",
+      "lastUpdated": "2025-11-29",
+      "updateCount": 6,
+      "title": "Banking Integration Guide"
+    },
+    "brokerage.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-12-13",
+      "updateCount": 5,
+      "title": "Brokerage Integration"
+    },
+    "budgets.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-11-29",
+      "updateCount": 4,
+      "title": "Budget Management"
+    },
+    "caching-rate-limits-retries.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-11-27",
+      "updateCount": 2,
+      "title": "Caching, Rate Limiting & Retries"
+    },
+    "cashflows.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-11-27",
+      "updateCount": 2,
+      "title": "Cashflows & Financial Calculations"
+    },
+    "categorization.md": {
+      "created": "2025-11-06",
+      "lastUpdated": "2025-12-14",
+      "updateCount": 5,
+      "title": "Transaction Categorization"
+    },
+    "compliance.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-11-29",
+      "updateCount": 3,
+      "title": "Compliance & Data Governance"
+    },
+    "core-vs-scaffold.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-11-29",
+      "updateCount": 4,
+      "title": "Core Functions vs Scaffold: What fin-infra Provides vs What Apps Own"
+    },
+    "credit.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-11-29",
+      "updateCount": 6,
+      "title": "Credit Score Monitoring"
+    },
+    "crypto-data.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-11-27",
+      "updateCount": 2,
+      "title": "Cryptocurrency Market Data Integration"
+    },
+    "crypto.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-12-14",
+      "updateCount": 3,
+      "title": "Cryptocurrency Module"
+    },
+    "documents.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-12-14",
+      "updateCount": 7,
+      "title": "Document Management"
+    },
+    "goals.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-11-29",
+      "updateCount": 4,
+      "title": "Goal Management"
+    },
+    "insights.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-12-14",
+      "updateCount": 3,
+      "title": "Unified Insights Feed"
+    },
+    "investments.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-11-27",
+      "updateCount": 2,
+      "title": "Investments Module"
+    },
+    "market-data.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-11-27",
+      "updateCount": 3,
+      "title": "Market Data Integration"
+    },
+    "net-worth.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-12-14",
+      "updateCount": 7,
+      "title": "Net Worth Tracking"
+    },
+    "normalization.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-11-29",
+      "updateCount": 3,
+      "title": "Data Normalization & Symbol Resolution"
+    },
+    "observability.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-11-29",
+      "updateCount": 4,
+      "title": "Financial Observability Integration"
+    },
+    "persistence.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-12-14",
+      "updateCount": 4,
+      "title": "Persistence Guide"
+    },
+    "providers.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-11-29",
+      "updateCount": 3,
+      "title": "Provider System"
+    },
+    "recurring-detection.md": {
+      "created": "2025-11-06",
+      "lastUpdated": "2025-12-14",
+      "updateCount": 7,
+      "title": "Recurring Transaction Detection"
+    },
+    "security.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-12-13",
+      "updateCount": 4,
+      "title": "Financial Security Guide"
+    },
+    "tax-data.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-11-29",
+      "updateCount": 3,
+      "title": "Tax Data Integration"
+    },
+    "tax.md": {
+      "created": "2025-11-27",
+      "lastUpdated": "2025-12-14",
+      "updateCount": 4,
+      "title": "Tax Data Integration"
+    }
+  },
+  "history": [
+    {
+      "date": "2025-12-14",
+      "file": "tax.md",
+      "type": "updated",
+      "title": "Tax Data Integration"
+    },
+    {
+      "date": "2025-12-13",
+      "file": "security.md",
+      "type": "updated",
+      "title": "Financial Security Guide"
+    },
+    {
+      "date": "2025-12-14",
+      "file": "recurring-detection.md",
+      "type": "updated",
+      "title": "Recurring Transaction Detection"
+    },
+    {
+      "date": "2025-12-14",
+      "file": "persistence.md",
+      "type": "updated",
+      "title": "Persistence Guide"
+    },
+    {
+      "date": "2025-12-14",
+      "file": "net-worth.md",
+      "type": "updated",
+      "title": "Net Worth Tracking"
+    },
+    {
+      "date": "2025-12-14",
+      "file": "insights.md",
+      "type": "updated",
+      "title": "Unified Insights Feed"
+    },
+    {
+      "date": "2025-12-14",
+      "file": "documents.md",
+      "type": "updated",
+      "title": "Document Management"
+    },
+    {
+      "date": "2025-12-14",
+      "file": "crypto.md",
+      "type": "updated",
+      "title": "Cryptocurrency Module"
+    },
+    {
+      "date": "2025-12-14",
+      "file": "categorization.md",
+      "type": "updated",
+      "title": "Transaction Categorization"
+    },
+    {
+      "date": "2025-12-13",
+      "file": "brokerage.md",
+      "type": "updated",
+      "title": "Brokerage Integration"
+    },
+    {
+      "date": "2025-12-14",
+      "file": "analytics.md",
+      "type": "updated",
+      "title": "Analytics Module"
+    }
+  ]
+}

@@ -28,7 +28,7 @@ help: ## Show available commands
 	@echo "  type              Type check with mypy"
 	@echo "  typecheck         Alias for 'type'"
 	@echo "  check             Run lint + type checks"
-	@echo "  ci                Run checks + unit + integration"
+	@echo "  ci                Run checks + tests"
 	@echo ""
 	@echo "Docker Compose:"
 	@echo "  compose_up        Start test services (if COMPOSE_PROFILES set)"
@@ -179,9 +179,8 @@ typecheck: type
 check: lint type
 	@echo "[check] All checks passed"
 
-# CI-friendly: avoids dockerized acceptance by default
-ci: check unit integration
-	@echo "[ci] Checks + unit + integration passed"
+ci: check test
+	@echo "[ci] All checks + tests passed"
 
 # --- Cleanup helpers ---
 clean:
@@ -232,3 +231,9 @@ test:
 		echo "[test] Tests failed"; \
 	fi; \
 	exit $$status
+
+# --- Docs Changelog ---
+.PHONY: docs-changelog
+
+docs-changelog: ## Generate/update docs/CHANGELOG.json for What's New page
+	@./scripts/docs-changelog.sh
