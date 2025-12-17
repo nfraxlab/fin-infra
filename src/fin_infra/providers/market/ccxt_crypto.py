@@ -2,15 +2,31 @@ from __future__ import annotations
 
 from typing import Any, cast
 
-import ccxt
+try:
+    import ccxt
+
+    HAS_CCXT = True
+except ImportError:  # pragma: no cover
+    HAS_CCXT = False
+    ccxt = None
 
 from ..base import CryptoDataProvider
+
+
+def _require_ccxt() -> None:
+    """Raise ImportError if ccxt is not installed."""
+    if not HAS_CCXT:
+        raise ImportError(
+            "Crypto exchange support requires the 'ccxt' package. "
+            "Install with: pip install fin-infra[crypto] or pip install fin-infra[markets]"
+        )
 
 
 class CCXTCryptoData(CryptoDataProvider):
     """Exchange-agnostic crypto market data using CCXT."""
 
     def __init__(self, exchange: str = "binance") -> None:
+        _require_ccxt()
         if not hasattr(ccxt, exchange):
             raise ValueError(f"Unknown exchange '{exchange}' in ccxt")
         self.exchange = getattr(ccxt, exchange)()

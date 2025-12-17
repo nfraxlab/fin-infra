@@ -12,19 +12,33 @@ from datetime import date
 from decimal import Decimal
 from typing import Any, Dict, List, Optional, cast
 
-from plaid.api import plaid_api
-from plaid.model.investments_holdings_get_request import InvestmentsHoldingsGetRequest
-from plaid.model.investments_transactions_get_request import (
-    InvestmentsTransactionsGetRequest,
-)
-from plaid.model.investments_holdings_get_response import InvestmentsHoldingsGetResponse
-from plaid.model.investments_transactions_get_response import (
-    InvestmentsTransactionsGetResponse,
-)
-from plaid.exceptions import ApiException
-import plaid
-from plaid.api_client import ApiClient
-from plaid.configuration import Configuration
+try:
+    from plaid.api import plaid_api
+    from plaid.model.investments_holdings_get_request import InvestmentsHoldingsGetRequest
+    from plaid.model.investments_transactions_get_request import (
+        InvestmentsTransactionsGetRequest,
+    )
+    from plaid.model.investments_holdings_get_response import InvestmentsHoldingsGetResponse
+    from plaid.model.investments_transactions_get_response import (
+        InvestmentsTransactionsGetResponse,
+    )
+    from plaid.exceptions import ApiException
+    import plaid
+    from plaid.api_client import ApiClient
+    from plaid.configuration import Configuration
+
+    HAS_PLAID = True
+except ImportError:  # pragma: no cover
+    HAS_PLAID = False
+    plaid_api = None
+    plaid = None
+    ApiClient = None
+    Configuration = None
+    ApiException = Exception
+    InvestmentsHoldingsGetRequest = Any
+    InvestmentsTransactionsGetRequest = Any
+    InvestmentsHoldingsGetResponse = Any
+    InvestmentsTransactionsGetResponse = Any
 
 from ..models import (
     Holding,
@@ -34,6 +48,15 @@ from ..models import (
     TransactionType,
 )
 from .base import InvestmentProvider
+
+
+def _require_plaid() -> None:
+    """Raise ImportError if plaid-python is not installed."""
+    if not HAS_PLAID:
+        raise ImportError(
+            "Plaid support requires the 'plaid-python' package. "
+            "Install with: pip install fin-infra[plaid] or pip install fin-infra[banking]"
+        )
 
 
 class PlaidInvestmentProvider(InvestmentProvider):
@@ -76,7 +99,10 @@ class PlaidInvestmentProvider(InvestmentProvider):
 
         Raises:
             ValueError: If client_id or secret is missing
+            ImportError: If plaid-python is not installed
         """
+        _require_plaid()
+
         if not client_id or not secret:
             raise ValueError("client_id and secret are required for Plaid provider")
 

@@ -14,10 +14,25 @@ from typing import Sequence
 from decimal import Decimal
 from datetime import datetime, timezone
 
-from yahooquery import Ticker
+try:
+    from yahooquery import Ticker
+
+    HAS_YAHOOQUERY = True
+except ImportError:  # pragma: no cover
+    HAS_YAHOOQUERY = False
+    Ticker = None
 
 from .base import MarketDataProvider
 from ...models import Quote, Candle
+
+
+def _require_yahooquery() -> None:
+    """Raise ImportError if yahooquery is not installed."""
+    if not HAS_YAHOOQUERY:
+        raise ImportError(
+            "Yahoo Finance support requires the 'yahooquery' package. "
+            "Install with: pip install fin-infra[yahoo] or pip install fin-infra[markets]"
+        )
 
 
 class YahooFinanceMarketData(MarketDataProvider):
@@ -42,7 +57,7 @@ class YahooFinanceMarketData(MarketDataProvider):
 
     def __init__(self) -> None:
         """Initialize Yahoo Finance provider (no configuration needed)."""
-        pass
+        _require_yahooquery()
 
     def quote(self, symbol: str) -> Quote:
         """Get real-time quote for a symbol.
