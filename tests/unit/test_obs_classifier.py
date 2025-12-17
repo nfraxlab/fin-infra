@@ -214,9 +214,9 @@ class TestFinancialRoutePrefixes:
         ]
 
         for prefix in expected:
-            assert (
-                prefix in FINANCIAL_ROUTE_PREFIXES
-            ), f"Expected financial prefix {prefix} not found"
+            assert prefix in FINANCIAL_ROUTE_PREFIXES, (
+                f"Expected financial prefix {prefix} not found"
+            )
 
     def test_prefixes_are_lowercase(self):
         """All prefixes should be lowercase (FastAPI convention)."""

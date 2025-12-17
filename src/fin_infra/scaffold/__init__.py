@@ -12,7 +12,7 @@ Typical usage:
         include_tenant=True,
         include_soft_delete=True,
     )
-    
+
     result = scaffold_goals_core(
         dest_dir=Path("app/models/goals"),
         include_tenant=False,

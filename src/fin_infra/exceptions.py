@@ -6,7 +6,7 @@ This module provides a consistent exception hierarchy across all fin-infra compo
 - Validation errors (data validation, compliance)
 - Calculation errors (financial calculations)
 
-All exceptions inherit from FinInfraError, allowing users to catch all library 
+All exceptions inherit from FinInfraError, allowing users to catch all library
 errors with a single except clause.
 
 Example:

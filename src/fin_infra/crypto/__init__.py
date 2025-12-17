@@ -70,7 +70,7 @@ def easy_crypto(
         return CoinGeckoCryptoData()
 
     else:
-        raise ValueError(f"Unknown crypto data provider: {provider_name}. " f"Supported: coingecko")
+        raise ValueError(f"Unknown crypto data provider: {provider_name}. Supported: coingecko")
 
 
 def add_crypto_data(

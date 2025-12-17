@@ -168,9 +168,10 @@ def test_add_investments_creates_provider_if_none(mock_provider: InvestmentProvi
     """Test add_investments() creates provider if none provided."""
     app = FastAPI()
 
-    with patch("fin_infra.investments.add.easy_investments", return_value=mock_provider), patch(
-        "svc_infra.api.fastapi.dual.protected.user_router"
-    ) as mock_user_router:
+    with (
+        patch("fin_infra.investments.add.easy_investments", return_value=mock_provider),
+        patch("svc_infra.api.fastapi.dual.protected.user_router") as mock_user_router,
+    ):
         from svc_infra.api.fastapi.dual.public import public_router
 
         mock_user_router.side_effect = public_router

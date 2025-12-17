@@ -321,7 +321,9 @@ def add_recurring_detection(
         from .summary import get_recurring_summary
 
         # Get detected patterns for user
-        transactions: list[dict[str, Any]] = []  # Placeholder - in production: get_user_transactions(user_id)
+        transactions: list[
+            dict[str, Any]
+        ] = []  # Placeholder - in production: get_user_transactions(user_id)
         patterns = detector.detect_patterns(transactions)
 
         # Generate summary

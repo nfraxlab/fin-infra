@@ -567,22 +567,16 @@ def portfolio_metrics_with_holdings(holdings: list) -> PortfolioMetrics:
     # Import here to avoid circular dependency
 
     # Calculate total portfolio value and cost basis
-    total_value = float(sum(
-        holding.institution_value
-        for holding in holdings
-    ))
+    total_value = float(sum(holding.institution_value for holding in holdings))
 
-    total_cost_basis = float(sum(
-        holding.cost_basis if holding.cost_basis is not None else 0
-        for holding in holdings
-    ))
+    total_cost_basis = float(
+        sum(holding.cost_basis if holding.cost_basis is not None else 0 for holding in holdings)
+    )
 
     # Calculate total return (P/L)
     total_return_dollars = total_value - total_cost_basis
     total_return_percent = (
-        (total_return_dollars / total_cost_basis * 100.0)
-        if total_cost_basis > 0
-        else 0.0
+        (total_return_dollars / total_cost_basis * 100.0) if total_cost_basis > 0 else 0.0
     )
 
     # Calculate asset allocation from real security types
@@ -684,9 +678,7 @@ def calculate_day_change_with_snapshot(
     # Calculate day change
     day_change_dollars = current_total - previous_total
     day_change_percent = (
-        (day_change_dollars / previous_total * 100.0)
-        if previous_total > 0
-        else 0.0
+        (day_change_dollars / previous_total * 100.0) if previous_total > 0 else 0.0
     )
 
     return {
@@ -740,16 +732,18 @@ def _calculate_allocation_from_holdings(
     # Sum values by asset class
     allocation_values: dict[str, float] = defaultdict(float)
     for holding in holdings:
-        security_type = holding.security.type.value if hasattr(holding.security.type, 'value') else holding.security.type
+        security_type = (
+            holding.security.type.value
+            if hasattr(holding.security.type, "value")
+            else holding.security.type
+        )
         asset_class = type_to_class.get(security_type, "Other")
         allocation_values[asset_class] += float(holding.institution_value)
 
     # Convert to list of AssetAllocation objects
     allocation_list = [
         AssetAllocation(
-            asset_class=asset_class,
-            value=value,
-            percentage=round((value / total_value) * 100.0, 2)
+            asset_class=asset_class, value=value, percentage=round((value / total_value) * 100.0, 2)
         )
         for asset_class, value in allocation_values.items()
     ]

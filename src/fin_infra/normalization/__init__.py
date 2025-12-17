@@ -145,7 +145,9 @@ def add_normalization(
     @router.get("/convert")
     async def convert_currency(
         amount: float = Query(..., description="Amount to convert"),
-        from_currency: str = Query(..., alias="from", description="Source currency code (e.g., USD)"),
+        from_currency: str = Query(
+            ..., alias="from", description="Source currency code (e.g., USD)"
+        ),
         to_currency: str = Query(..., alias="to", description="Target currency code (e.g., EUR)"),
     ):
         """Convert amount between currencies."""

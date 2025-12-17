@@ -93,6 +93,7 @@ def add_documents(
     # Import svc-infra base function to mount base endpoints (with fallback)
     try:
         from svc_infra.documents import add_documents as add_base_documents
+
         HAS_SVC_INFRA_DOCUMENTS = True
     except ImportError:
         # Fallback for older svc-infra versions - skip base endpoints
@@ -109,11 +110,12 @@ def add_documents(
     else:
         # Legacy mode: mount basic endpoints inline (for svc-infra < 0.1.668)
         import warnings
+
         warnings.warn(
             "svc_infra.documents not found. Using legacy document endpoints. "
             "Please upgrade svc-infra to >=0.1.668 for full functionality.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
 
     # Step 2: Create financial document manager with OCR/AI capabilities
@@ -210,9 +212,7 @@ def add_documents(
             ```
         """
         try:
-            return await manager.analyze(
-                document_id=document_id, force_refresh=force_refresh
-            )
+            return await manager.analyze(document_id=document_id, force_refresh=force_refresh)
         except ValueError as e:
             raise HTTPException(status_code=404, detail=str(e))
 

@@ -144,7 +144,7 @@ def easy_tax(provider: str | TaxProvider = "mock", **config) -> TaxProvider:
 
     else:
         raise ValueError(
-            f"Unknown tax provider: {provider}. " f"Supported providers: 'mock', 'irs', 'taxbit'"
+            f"Unknown tax provider: {provider}. Supported providers: 'mock', 'irs', 'taxbit'"
         )
 
 

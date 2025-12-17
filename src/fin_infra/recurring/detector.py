@@ -450,7 +450,7 @@ class PatternDetector:
             min_amt, max_amt = pattern.amount_range or (0, 0)
             return (
                 f"Variable amount ${min_amt:.2f}-${max_amt:.2f} charged {pattern.cadence.value} "
-                f"({pattern.amount_variance_pct*100:.1f}% variance, "
+                f"({pattern.amount_variance_pct * 100:.1f}% variance, "
                 f"{pattern.occurrence_count} occurrences)"
             )
         else:  # IRREGULAR

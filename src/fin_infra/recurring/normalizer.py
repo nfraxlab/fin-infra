@@ -96,7 +96,7 @@ class FuzzyMatcher:
         """
         if not RAPIDFUZZ_AVAILABLE:
             raise ImportError(
-                "rapidfuzz is required for fuzzy matching. " "Install with: pip install rapidfuzz"
+                "rapidfuzz is required for fuzzy matching. Install with: pip install rapidfuzz"
             )
         self.similarity_threshold = similarity_threshold
 

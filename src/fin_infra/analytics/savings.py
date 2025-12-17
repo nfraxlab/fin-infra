@@ -77,7 +77,7 @@ async def calculate_savings_rate(
         period_enum = Period(period)
     except ValueError:
         raise ValueError(
-            f"Invalid period '{period}'. Must be one of: " f"{', '.join([p.value for p in Period])}"
+            f"Invalid period '{period}'. Must be one of: {', '.join([p.value for p in Period])}"
         )
 
     try:

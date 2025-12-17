@@ -34,7 +34,7 @@ class PlaidClient(BankingProvider):
         environment: str | None = None,
     ) -> None:
         """Initialize Plaid client with either Settings object or individual parameters.
-        
+
         Args:
             settings: Settings object (legacy pattern)
             client_id: Plaid client ID (preferred - from env or passed directly)
@@ -45,14 +45,14 @@ class PlaidClient(BankingProvider):
             raise RuntimeError(
                 "plaid-python SDK not available or import failed; check installed version (requires v25+)"
             )
-        
+
         # Support both patterns: Settings object or individual params
         if settings is not None:
             # Legacy pattern with Settings object
             client_id = client_id or settings.plaid_client_id
             secret = secret or settings.plaid_secret
             environment = environment or settings.plaid_env
-        
+
         # Map environment string to Plaid Environment enum
         # Note: Plaid only has Sandbox and Production (no Development in SDK)
         env_str = environment or "sandbox"
@@ -61,22 +61,22 @@ class PlaidClient(BankingProvider):
             "development": plaid.Environment.Sandbox,  # Map development to sandbox (Plaid SDK limitation)
             "production": plaid.Environment.Production,
         }
-        
+
         if env_str not in env_map:
             raise ValueError(
                 f"Invalid Plaid environment: '{env_str}'. "
                 f"Must be one of: sandbox, development, production"
             )
-        
+
         host = env_map[env_str]
-        
+
         # Configure Plaid client (v8.0.0+ API)
         configuration = plaid.Configuration(
             host=host,
             api_key={
                 "clientId": client_id,
                 "secret": secret,
-            }
+            },
         )
         api_client = plaid.ApiClient(configuration)
         self.client = plaid_api.PlaidApi(api_client)
@@ -86,12 +86,12 @@ class PlaidClient(BankingProvider):
             user=LinkTokenCreateRequestUser(client_user_id=user_id),
             client_name="fin-infra",
             products=[
-                Products("auth"),           # Account/routing numbers for ACH
-                Products("transactions"),   # Transaction history
-                Products("liabilities"),    # Credit cards, loans, student loans
-                Products("investments"),    # Brokerage, retirement accounts
-                Products("assets"),         # Asset reports for lending/verification
-                Products("identity"),       # Account holder info (name, email, phone)
+                Products("auth"),  # Account/routing numbers for ACH
+                Products("transactions"),  # Transaction history
+                Products("liabilities"),  # Credit cards, loans, student loans
+                Products("investments"),  # Brokerage, retirement accounts
+                Products("assets"),  # Asset reports for lending/verification
+                Products("identity"),  # Account holder info (name, email, phone)
             ],
             country_codes=[CountryCode("US")],
             language="en",
@@ -122,7 +122,7 @@ class PlaidClient(BankingProvider):
             start = end - timedelta(days=30)
             start_date = start_date or start.isoformat()
             end_date = end_date or end.isoformat()
-        
+
         request = TransactionsGetRequest(
             access_token=access_token,
             start_date=date.fromisoformat(start_date),
@@ -136,14 +136,14 @@ class PlaidClient(BankingProvider):
         request = AccountsBalanceGetRequest(access_token=access_token)
         response = self.client.accounts_balance_get(request)
         accounts = [acc.to_dict() for acc in response["accounts"]]
-        
+
         if account_id:
             # Filter to specific account
             for account in accounts:
                 if account.get("account_id") == account_id:
                     return {"balances": [account.get("balances", {})]}
             return {"balances": []}
-        
+
         # Return all balances
         return {"balances": [acc.get("balances", {}) for acc in accounts]}
 

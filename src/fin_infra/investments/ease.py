@@ -24,13 +24,13 @@ def easy_investments(
 
     Provider Selection Guide:
         **Most apps should use BOTH providers for complete coverage:**
-        
+
         - **Plaid**: Traditional investment accounts (401k, IRA, bank brokerage)
           - Coverage: 15,000+ institutions
           - Best for: Employer retirement accounts, bank-connected investments
           - Data freshness: Daily updates (usually overnight)
           - Authentication: access_token from Plaid Link
-          
+
         - **SnapTrade**: Retail brokerage accounts (E*TRADE, Wealthsimple, Robinhood)
           - Coverage: 125M+ accounts, 70+ brokerages
           - Best for: User's EXISTING retail brokerage accounts
@@ -118,9 +118,7 @@ def easy_investments(
 
     # Validate provider
     if detected_provider not in ("plaid", "snaptrade"):
-        raise ValueError(
-            f"Invalid provider: {detected_provider}. Must be 'plaid' or 'snaptrade'."
-        )
+        raise ValueError(f"Invalid provider: {detected_provider}. Must be 'plaid' or 'snaptrade'.")
 
     # Instantiate provider
     if detected_provider == "plaid":
@@ -193,8 +191,7 @@ def _create_plaid_provider(**config: Any) -> InvestmentProvider:
     valid_envs = ("sandbox", "development", "production")
     if environment not in valid_envs:
         raise ValueError(
-            f"Invalid Plaid environment: {environment}. "
-            f"Must be one of: {', '.join(valid_envs)}"
+            f"Invalid Plaid environment: {environment}. Must be one of: {', '.join(valid_envs)}"
         )
 
     return PlaidInvestmentProvider(
@@ -235,7 +232,9 @@ def _create_snaptrade_provider(**config: Any) -> InvestmentProvider:
         )
 
     # Ensure base_url is a string (default is set in SnapTradeInvestmentProvider)
-    resolved_base_url: str = base_url if isinstance(base_url, str) else "https://api.snaptrade.com/api/v1"
+    resolved_base_url: str = (
+        base_url if isinstance(base_url, str) else "https://api.snaptrade.com/api/v1"
+    )
 
     return SnapTradeInvestmentProvider(
         client_id=client_id,

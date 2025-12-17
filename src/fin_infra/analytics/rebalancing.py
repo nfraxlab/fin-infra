@@ -329,13 +329,11 @@ def _generate_trade_reasoning(
 
     if action == "buy":
         return (
-            f"Buy {symbol} to increase {asset_class} allocation "
-            f"by {diff_pct:.1f}% towards target"
+            f"Buy {symbol} to increase {asset_class} allocation by {diff_pct:.1f}% towards target"
         )
     else:
         return (
-            f"Sell {symbol} to decrease {asset_class} allocation "
-            f"by {diff_pct:.1f}% towards target"
+            f"Sell {symbol} to decrease {asset_class} allocation by {diff_pct:.1f}% towards target"
         )
 
 

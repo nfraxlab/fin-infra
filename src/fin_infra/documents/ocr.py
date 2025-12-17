@@ -46,7 +46,7 @@ async def extract_text(
     Extract text from a document using OCR (uses svc-infra storage).
 
     Args:
-        storage: Storage backend instance  
+        storage: Storage backend instance
         document_id: Document identifier
         provider: OCR provider ("tesseract" or "textract")
         force_refresh: Force re-extraction even if cached result exists

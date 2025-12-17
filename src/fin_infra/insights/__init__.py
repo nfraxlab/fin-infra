@@ -126,4 +126,3 @@ def add_insights(
     app.include_router(router, include_in_schema=True)
 
     print("✅ Insights feed enabled (unified financial insights)")
-

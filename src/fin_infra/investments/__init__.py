@@ -19,7 +19,7 @@ Example usage:
     # Explicit provider
     investments = easy_investments(provider="plaid")
     holdings = await investments.get_holdings(access_token)
-    
+
     # Calculate metrics
     allocation = investments.calculate_allocation(holdings)
     metrics = investments.calculate_portfolio_metrics(holdings)
@@ -125,9 +125,7 @@ def easy_investments(
 
         instance = SnapTradeInvestmentProvider(**config)
     else:
-        raise ValueError(
-            f"Unknown provider: {provider}. Supported: 'plaid', 'snaptrade'"
-        )
+        raise ValueError(f"Unknown provider: {provider}. Supported: 'plaid', 'snaptrade'")
 
     _provider_cache[cache_key] = instance
     return instance

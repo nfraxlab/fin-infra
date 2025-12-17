@@ -46,6 +46,7 @@ try:
         list_documents as base_list_documents,
         upload_document as base_upload_document,
     )
+
     HAS_SVC_INFRA_DOCUMENTS = True
 except ImportError:
     # Fallback for older svc-infra versions - use legacy implementation
@@ -153,7 +154,7 @@ def get_document(document_id: str) -> Optional["FinancialDocument"]:
         >>> doc = get_document("doc_abc123")
         >>> if doc:
         ...     print(doc.filename, doc.type, doc.tax_year)
-    
+
     Notes:
         - Delegates to svc-infra.documents.get_document
         - Converts base Document to FinancialDocument

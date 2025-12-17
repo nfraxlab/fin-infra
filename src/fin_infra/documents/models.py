@@ -52,17 +52,17 @@ class DocumentType(str, Enum):
 class FinancialDocument(BaseDocument):
     """
     Financial document extending base Document with financial-specific fields.
-    
+
     Inherits from svc-infra Document:
         - id, user_id, filename, file_size, upload_date
         - storage_path, content_type, checksum
         - metadata (Dict[str, Any])
-    
+
     Adds financial-specific fields:
         - type: DocumentType enum
         - tax_year: Optional year for tax documents
         - form_type: Optional form identifier (W-2, 1099, etc.)
-    
+
     Examples:
         >>> # Tax document with W-2 form
         >>> doc = FinancialDocument(

@@ -479,13 +479,13 @@ class NetWorthInsightsGenerator:
 
         user_prompt = f"""Analyze wealth trends:
 
-Current net worth: ${current['total_net_worth']:,.0f}
-Previous net worth: ${previous['total_net_worth']:,.0f}
+Current net worth: ${current["total_net_worth"]:,.0f}
+Previous net worth: ${previous["total_net_worth"]:,.0f}
 Period: {period}
 Change: ${change_amount:,.0f} ({change_percent:.1%})
 
-Assets: ${current['total_assets']:,.0f}
-Liabilities: ${current['total_liabilities']:,.0f}
+Assets: ${current["total_assets"]:,.0f}
+Liabilities: ${current["total_liabilities"]:,.0f}
 
 Identify drivers of change, risk factors, and recommendations."""
 

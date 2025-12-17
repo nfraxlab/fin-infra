@@ -339,9 +339,9 @@ class TestAccuracy:
     async def test_common_merchants(self, merchant, expected_category):
         """Test categorization of common merchants."""
         result = await categorize(merchant)
-        assert (
-            result.category == expected_category
-        ), f"Failed for {merchant}: expected {expected_category}, got {result.category}"
+        assert result.category == expected_category, (
+            f"Failed for {merchant}: expected {expected_category}, got {result.category}"
+        )
 
     @pytest.mark.asyncio
     async def test_accuracy_rate(self):

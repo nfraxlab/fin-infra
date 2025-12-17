@@ -18,10 +18,11 @@ class AccountType(str, Enum):
 
 class Account(BaseModel):
     """Financial account model.
-    
+
     Uses Decimal for balance fields to prevent floating-point precision errors
     in financial calculations (e.g., $0.01 + $0.02 != $0.03 with float).
     """
+
     id: str
     name: str
     type: AccountType

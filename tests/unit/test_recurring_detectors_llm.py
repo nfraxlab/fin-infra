@@ -131,9 +131,7 @@ class TestVariableDetectorLLM:
         assert call_args.kwargs["system"] == VARIABLE_DETECTION_SYSTEM_PROMPT
         user_msg = call_args.kwargs["user_msg"]
         assert "City Electric" in user_msg
-        assert (
-            "45.5" in user_msg or "52.3" in user_msg
-        )  # Float amounts, not dollar strings
+        assert "45.5" in user_msg or "52.3" in user_msg  # Float amounts, not dollar strings
 
     @pytest.mark.asyncio
     async def test_detect_phone_overage_spikes(self, detector, mock_llm):

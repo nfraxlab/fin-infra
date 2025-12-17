@@ -27,7 +27,7 @@ from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 class SecurityType(str, Enum):
     """Security type classification.
-    
+
     Categories:
     - equity: Common stock (AAPL, GOOGL, etc.)
     - etf: Exchange-traded fund (SPY, QQQ, etc.)
@@ -49,7 +49,7 @@ class SecurityType(str, Enum):
 
 class TransactionType(str, Enum):
     """Investment transaction type.
-    
+
     Categories:
     - buy: Purchase of security
     - sell: Sale of security
@@ -79,10 +79,10 @@ class TransactionType(str, Enum):
 
 class Security(BaseModel):
     """Security details (stock, bond, ETF, etc.).
-    
+
     Represents a tradable security with identifying information and current market data.
     Normalized across providers (Plaid, SnapTrade).
-    
+
     Example:
         >>> security = Security(
         ...     security_id="plaid_sec_123",
@@ -129,7 +129,9 @@ class Security(BaseModel):
     # Basic info
     name: str = Field(..., description="Security name")
     type: SecurityType = Field(..., description="Security type (equity, etf, bond, etc.)")
-    sector: Optional[str] = Field(None, description="Sector classification (Technology, Healthcare)")
+    sector: Optional[str] = Field(
+        None, description="Sector classification (Technology, Healthcare)"
+    )
 
     # Market data
     close_price: Optional[Decimal] = Field(None, ge=0, description="Latest closing price")
@@ -140,10 +142,10 @@ class Security(BaseModel):
 
 class Holding(BaseModel):
     """Investment holding with current value and cost basis.
-    
+
     Represents a position in a specific security within an investment account.
     Includes quantity, current value, cost basis, and calculated P&L.
-    
+
     Example:
         >>> holding = Holding(
         ...     account_id="acct_123",
@@ -193,8 +195,12 @@ class Holding(BaseModel):
     # Position data
     quantity: Decimal = Field(..., ge=0, description="Number of shares/units held")
     institution_price: Decimal = Field(..., ge=0, description="Current price per share")
-    institution_value: Decimal = Field(..., ge=0, description="Current market value (quantity × price)")
-    cost_basis: Optional[Decimal] = Field(None, ge=0, description="Total cost basis (original purchase price)")
+    institution_value: Decimal = Field(
+        ..., ge=0, description="Current market value (quantity × price)"
+    )
+    cost_basis: Optional[Decimal] = Field(
+        None, ge=0, description="Total cost basis (original purchase price)"
+    )
 
     # Additional data
     currency: str = Field("USD", description="Currency code")
@@ -240,10 +246,10 @@ class Holding(BaseModel):
 
 class InvestmentTransaction(BaseModel):
     """Investment transaction (buy, sell, dividend, etc.).
-    
+
     Represents a single transaction in an investment account.
     Used to calculate realized gains and track transaction history.
-    
+
     Example:
         >>> transaction = InvestmentTransaction(
         ...     transaction_id="tx_123",
@@ -295,7 +301,9 @@ class InvestmentTransaction(BaseModel):
     # Transaction details
     transaction_date: date = Field(..., alias="date", description="Transaction date")
     name: str = Field(..., description="Transaction description")
-    transaction_type: TransactionType = Field(..., alias="type", description="Transaction type (buy, sell, dividend)")
+    transaction_type: TransactionType = Field(
+        ..., alias="type", description="Transaction type (buy, sell, dividend)"
+    )
     subtype: Optional[str] = Field(None, description="Provider-specific subtype")
 
     # Amounts
@@ -311,10 +319,10 @@ class InvestmentTransaction(BaseModel):
 
 class InvestmentAccount(BaseModel):
     """Investment account with aggregated holdings and metrics.
-    
+
     Represents a complete investment account with all holdings, balances, and P&L.
     Includes calculated fields for total value, cost basis, and unrealized gains.
-    
+
     Example:
         >>> account = InvestmentAccount(
         ...     account_id="acct_123",
@@ -340,7 +348,11 @@ class InvestmentAccount(BaseModel):
                 "holdings": [
                     {
                         "account_id": "acct_abc123",
-                        "security": {"ticker_symbol": "AAPL", "name": "Apple Inc.", "type": "equity"},
+                        "security": {
+                            "ticker_symbol": "AAPL",
+                            "name": "Apple Inc.",
+                            "type": "equity",
+                        },
                         "quantity": 10.5,
                         "institution_price": 150.25,
                         "institution_value": 1577.63,
@@ -436,10 +448,10 @@ class InvestmentAccount(BaseModel):
 
 class AssetAllocation(BaseModel):
     """Asset allocation breakdown by security type and sector.
-    
+
     Provides percentage breakdown of portfolio by security type and sector.
     Used for diversification analysis and portfolio visualization.
-    
+
     Example:
         >>> allocation = AssetAllocation(
         ...     by_security_type={

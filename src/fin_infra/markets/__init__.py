@@ -93,7 +93,7 @@ def easy_market(
 
     else:
         raise ValueError(
-            f"Unknown market data provider: {provider_name}. " f"Supported: alphavantage, yahoo"
+            f"Unknown market data provider: {provider_name}. Supported: alphavantage, yahoo"
         )
 
 
@@ -231,7 +231,9 @@ def add_market_data(
                     candles_list.append(candle.dict())
                 else:
                     # Cast to dict for type compatibility
-                    candles_list.append(dict(candle) if hasattr(candle, "__iter__") else {"data": candle})
+                    candles_list.append(
+                        dict(candle) if hasattr(candle, "__iter__") else {"data": candle}
+                    )
             return {"candles": candles_list}
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))

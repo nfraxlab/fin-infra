@@ -284,8 +284,8 @@ class LLMCategorizer:
 Merchant: "{merchant_name}"
 
 User context:
-- Frequently shops at: {context['top_merchants']}
-- Top spending categories: {context['top_categories']}
+- Frequently shops at: {context["top_merchants"]}
+- Top spending categories: {context["top_categories"]}
 
 Return JSON with category, confidence, and reasoning."""
         else:

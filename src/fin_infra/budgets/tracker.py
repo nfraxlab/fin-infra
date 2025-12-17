@@ -155,7 +155,7 @@ class BudgetTracker:
             BudgetType(type)
         except ValueError:
             raise ValueError(
-                f"Invalid budget type: {type}. " f"Valid types: {[t.value for t in BudgetType]}"
+                f"Invalid budget type: {type}. Valid types: {[t.value for t in BudgetType]}"
             )
 
         # Validate budget period
@@ -163,8 +163,7 @@ class BudgetTracker:
             BudgetPeriod(period)
         except ValueError:
             raise ValueError(
-                f"Invalid budget period: {period}. "
-                f"Valid periods: {[p.value for p in BudgetPeriod]}"
+                f"Invalid budget period: {period}. Valid periods: {[p.value for p in BudgetPeriod]}"
             )
 
         # Validate categories

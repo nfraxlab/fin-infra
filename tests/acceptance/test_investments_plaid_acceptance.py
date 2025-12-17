@@ -239,9 +239,9 @@ class TestPlaidInvestmentsAcceptance:
 
         # Validate allocations sum to ~100%
         total_percent = sum(alloc.percentage for alloc in allocation.allocation_by_asset_class)
-        assert (
-            99.0 <= total_percent <= 101.0
-        ), f"Allocations should sum to 100%, got {total_percent}%"
+        assert 99.0 <= total_percent <= 101.0, (
+            f"Allocations should sum to 100%, got {total_percent}%"
+        )
 
         print("✓ Asset allocation calculated from Plaid sandbox holdings:")
         for alloc in allocation.allocation_by_asset_class:
@@ -384,9 +384,9 @@ class TestPlaidSandboxSetup:
         """Verify Plaid environment variables are set correctly."""
         assert PLAID_CLIENT_ID, "PLAID_CLIENT_ID not set"
         assert PLAID_SECRET, "PLAID_SECRET not set"
-        assert (
-            PLAID_ENVIRONMENT == "sandbox"
-        ), f"PLAID_ENVIRONMENT should be 'sandbox', got '{PLAID_ENVIRONMENT}'"
+        assert PLAID_ENVIRONMENT == "sandbox", (
+            f"PLAID_ENVIRONMENT should be 'sandbox', got '{PLAID_ENVIRONMENT}'"
+        )
 
         print("✓ Plaid environment variables configured:")
         print(f"  PLAID_CLIENT_ID: {PLAID_CLIENT_ID[:8]}...")

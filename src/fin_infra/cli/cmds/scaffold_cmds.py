@@ -108,7 +108,7 @@ def cmd_scaffold(
             err=True,
         )
         raise typer.Exit(1)
-    
+
     # Import scaffold function based on domain
     if domain == "budgets":
         from fin_infra.scaffold.budgets import scaffold_budgets_core

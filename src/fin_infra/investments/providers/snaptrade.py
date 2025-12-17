@@ -77,9 +77,7 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
             ValueError: If client_id or consumer_key is missing
         """
         if not client_id or not consumer_key:
-            raise ValueError(
-                "client_id and consumer_key are required for SnapTrade provider"
-            )
+            raise ValueError("client_id and consumer_key are required for SnapTrade provider")
 
         self.client_id = client_id
         self.consumer_key = consumer_key
@@ -97,15 +95,15 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
 
     def _auth_headers(self, user_id: str, user_secret: str) -> Dict[str, str]:
         """Build authentication headers for SnapTrade API requests.
-        
+
         SECURITY: User secrets are passed in headers, NOT URL params.
         URL params are logged in access logs, browser history, and proxy logs.
         Headers are not logged by default in most web servers.
-        
+
         Args:
             user_id: SnapTrade user ID
             user_secret: SnapTrade user secret (sensitive!)
-            
+
         Returns:
             Dict with authentication headers
         """
@@ -158,9 +156,7 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
             all_holdings = []
             for account in accounts:
                 account_id = account["id"]
-                positions_url = (
-                    f"{self.base_url}/accounts/{account_id}/positions"
-                )
+                positions_url = f"{self.base_url}/accounts/{account_id}/positions"
                 pos_response = await self.client.get(positions_url, headers=auth_headers)
                 pos_response.raise_for_status()
                 positions = await pos_response.json()
@@ -226,15 +222,15 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
             all_transactions = []
             for account in accounts:
                 account_id = account["id"]
-                transactions_url = (
-                    f"{self.base_url}/accounts/{account_id}/transactions"
-                )
+                transactions_url = f"{self.base_url}/accounts/{account_id}/transactions"
                 # Date params are non-sensitive, only auth goes in headers
                 tx_params = {
                     "startDate": start_date.isoformat(),
                     "endDate": end_date.isoformat(),
                 }
-                tx_response = await self.client.get(transactions_url, params=tx_params, headers=auth_headers)
+                tx_response = await self.client.get(
+                    transactions_url, params=tx_params, headers=auth_headers
+                )
                 tx_response.raise_for_status()
                 transactions = await tx_response.json()
 
@@ -250,9 +246,7 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
         except Exception as e:
             raise ValueError(f"SnapTrade API error: {str(e)}")
 
-    async def get_securities(
-        self, access_token: str, security_ids: List[str]
-    ) -> List[Security]:
+    async def get_securities(self, access_token: str, security_ids: List[str]) -> List[Security]:
         """Fetch security details from SnapTrade positions.
 
         Note: SnapTrade doesn't have a dedicated securities endpoint.
@@ -290,9 +284,7 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
         except Exception as e:
             raise ValueError(f"SnapTrade API error: {str(e)}")
 
-    async def get_investment_accounts(
-        self, access_token: str
-    ) -> List[InvestmentAccount]:
+    async def get_investment_accounts(self, access_token: str) -> List[InvestmentAccount]:
         """Fetch investment accounts with aggregated holdings.
 
         Returns accounts with total value, cost basis, and unrealized P&L.
@@ -328,9 +320,7 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
                 account_id = account["id"]
 
                 # Get positions for this account
-                positions_url = (
-                    f"{self.base_url}/accounts/{account_id}/positions"
-                )
+                positions_url = f"{self.base_url}/accounts/{account_id}/positions"
                 pos_response = await self.client.get(positions_url, headers=auth_headers)
                 pos_response.raise_for_status()
                 positions = await pos_response.json()
@@ -368,9 +358,7 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
         except Exception as e:
             raise ValueError(f"SnapTrade API error: {str(e)}")
 
-    async def list_connections(
-        self, access_token: str
-    ) -> List[Dict[str, Any]]:
+    async def list_connections(self, access_token: str) -> List[Dict[str, Any]]:
         """List brokerage connections for a user.
 
         Returns which brokerages the user has connected (E*TRADE, Robinhood, etc.).
@@ -490,16 +478,12 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
             user_id, user_secret = access_token.split(":", 1)
             return user_id, user_secret
         except ValueError:
-            raise ValueError(
-                "Invalid access_token format. Expected 'user_id:user_secret'"
-            )
+            raise ValueError("Invalid access_token format. Expected 'user_id:user_secret'")
 
-    def _transform_holding(
-        self, snaptrade_position: Dict[str, Any], account_id: str
-    ) -> Holding:
+    def _transform_holding(self, snaptrade_position: Dict[str, Any], account_id: str) -> Holding:
         """Transform SnapTrade position data to Holding model."""
         symbol_data = snaptrade_position.get("symbol", {})
-        
+
         # Create Security from symbol data
         security = Security(
             security_id=symbol_data.get("id", symbol_data.get("symbol", "")),
@@ -513,9 +497,7 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
         # SnapTrade uses "average_purchase_price" for cost basis
         avg_price = snaptrade_position.get("average_purchase_price")
         quantity = Decimal(str(snaptrade_position.get("units", 0)))
-        cost_basis = (
-            Decimal(str(avg_price)) * quantity if avg_price is not None else None
-        )
+        cost_basis = Decimal(str(avg_price)) * quantity if avg_price is not None else None
 
         return Holding(
             account_id=account_id,
@@ -532,7 +514,7 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
     ) -> InvestmentTransaction:
         """Transform SnapTrade transaction to InvestmentTransaction model."""
         symbol_data = snaptrade_tx.get("symbol", {})
-        
+
         # Create Security from symbol data
         security = Security(
             security_id=symbol_data.get("id", symbol_data.get("symbol", "")),

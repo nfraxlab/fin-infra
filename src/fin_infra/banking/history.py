@@ -68,10 +68,10 @@ def _check_in_memory_warning() -> None:
     global _production_warning_logged
     if _production_warning_logged:
         return
-    
+
     env = os.getenv("ENV", "development").lower()
     storage_backend = os.getenv("FIN_INFRA_STORAGE_BACKEND", "memory").lower()
-    
+
     if env in ("production", "staging") and storage_backend == "memory":
         _logger.warning(
             "⚠️ CRITICAL: Balance history using IN-MEMORY storage in %s environment! "
@@ -135,7 +135,7 @@ def record_balance_snapshot(
     """
     # Check if in-memory storage is being used in production
     _check_in_memory_warning()
-    
+
     snapshot = BalanceSnapshot(
         account_id=account_id,
         balance=balance,

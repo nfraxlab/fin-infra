@@ -135,9 +135,7 @@ class PlaidInvestmentProvider(InvestmentProvider):
             if account_ids:
                 request.options = {"account_ids": account_ids}
 
-            response: InvestmentsHoldingsGetResponse = (
-                self.client.investments_holdings_get(request)
-            )
+            response: InvestmentsHoldingsGetResponse = self.client.investments_holdings_get(request)
 
             # Build security lookup map
             securities_map = {
@@ -203,8 +201,8 @@ class PlaidInvestmentProvider(InvestmentProvider):
             if account_ids:
                 request.options = {"account_ids": account_ids}
 
-            response: InvestmentsTransactionsGetResponse = (
-                self.client.investments_transactions_get(request)
+            response: InvestmentsTransactionsGetResponse = self.client.investments_transactions_get(
+                request
             )
 
             # Build security lookup map
@@ -228,9 +226,7 @@ class PlaidInvestmentProvider(InvestmentProvider):
         except ApiException as e:
             raise self._transform_error(e)
 
-    async def get_securities(
-        self, access_token: str, security_ids: List[str]
-    ) -> List[Security]:
+    async def get_securities(self, access_token: str, security_ids: List[str]) -> List[Security]:
         """Fetch security details from Plaid holdings.
 
         Note: Plaid doesn't have a dedicated securities endpoint.
@@ -253,9 +249,7 @@ class PlaidInvestmentProvider(InvestmentProvider):
         """
         try:
             request = InvestmentsHoldingsGetRequest(access_token=access_token)
-            response: InvestmentsHoldingsGetResponse = (
-                self.client.investments_holdings_get(request)
-            )
+            response: InvestmentsHoldingsGetResponse = self.client.investments_holdings_get(request)
 
             # Filter securities by requested IDs
             securities = []
@@ -270,9 +264,7 @@ class PlaidInvestmentProvider(InvestmentProvider):
         except ApiException as e:
             raise self._transform_error(e)
 
-    async def get_investment_accounts(
-        self, access_token: str
-    ) -> List[InvestmentAccount]:
+    async def get_investment_accounts(self, access_token: str) -> List[InvestmentAccount]:
         """Fetch investment accounts with aggregated holdings.
 
         Returns accounts with total value, cost basis, and unrealized P&L.
@@ -294,9 +286,7 @@ class PlaidInvestmentProvider(InvestmentProvider):
         """
         try:
             request = InvestmentsHoldingsGetRequest(access_token=access_token)
-            response: InvestmentsHoldingsGetResponse = (
-                self.client.investments_holdings_get(request)
-            )
+            response: InvestmentsHoldingsGetResponse = self.client.investments_holdings_get(request)
 
             # Build security lookup map
             securities_map = {
@@ -317,11 +307,7 @@ class PlaidInvestmentProvider(InvestmentProvider):
                     if account_id not in accounts_map:
                         # Find account metadata
                         plaid_account = next(
-                            (
-                                acc
-                                for acc in response.accounts
-                                if acc.account_id == account_id
-                            ),
+                            (acc for acc in response.accounts if acc.account_id == account_id),
                             None,
                         )
                         accounts_map[account_id] = {
@@ -339,12 +325,16 @@ class PlaidInvestmentProvider(InvestmentProvider):
 
                 investment_account = InvestmentAccount(
                     account_id=account_id,
-                    name=account_dict.get("name", account_dict.get("official_name", "Unknown Account")),
+                    name=account_dict.get(
+                        "name", account_dict.get("official_name", "Unknown Account")
+                    ),
                     type=account_dict.get("type", "investment"),
                     subtype=account_dict.get("subtype"),
                     balances={
                         "current": Decimal(str(account_dict.get("balances", {}).get("current", 0))),
-                        "available": Decimal(str(account_dict.get("balances", {}).get("available") or 0)),
+                        "available": Decimal(
+                            str(account_dict.get("balances", {}).get("available") or 0)
+                        ),
                     },
                     holdings=holdings,
                 )
@@ -362,7 +352,7 @@ class PlaidInvestmentProvider(InvestmentProvider):
         # Handle close_price - Plaid may return None for securities without recent pricing
         close_price_raw = plaid_security.get("close_price")
         close_price = Decimal(str(close_price_raw)) if close_price_raw is not None else Decimal("0")
-        
+
         return Security(
             security_id=plaid_security["security_id"],
             cusip=plaid_security.get("cusip"),
@@ -378,9 +368,7 @@ class PlaidInvestmentProvider(InvestmentProvider):
             currency=plaid_security.get("iso_currency_code", "USD"),
         )
 
-    def _transform_holding(
-        self, plaid_holding: Dict[str, Any], security: Security
-    ) -> Holding:
+    def _transform_holding(self, plaid_holding: Dict[str, Any], security: Security) -> Holding:
         """Transform Plaid holding data to Holding model."""
         return Holding(
             account_id=plaid_holding["account_id"],
@@ -388,7 +376,9 @@ class PlaidInvestmentProvider(InvestmentProvider):
             quantity=Decimal(str(plaid_holding.get("quantity", 0))),
             institution_price=Decimal(str(plaid_holding.get("institution_price", 0))),
             institution_value=Decimal(str(plaid_holding.get("institution_value", 0))),
-            cost_basis=Decimal(str(plaid_holding.get("cost_basis"))) if plaid_holding.get("cost_basis") else None,
+            cost_basis=Decimal(str(plaid_holding.get("cost_basis")))
+            if plaid_holding.get("cost_basis")
+            else None,
             currency=plaid_holding.get("iso_currency_code", "USD"),
             unofficial_currency_code=plaid_holding.get("unofficial_currency_code"),
         )

@@ -44,11 +44,12 @@ except ImportError:
     # Fallback for older svc-infra versions without documents module
     # This provides backward compatibility until svc-infra 0.1.668+ is published
     import warnings
+
     warnings.warn(
         "svc_infra.documents not found. Using legacy implementation. "
         "Please upgrade svc-infra to >=0.1.668 for layered architecture support.",
         DeprecationWarning,
-        stacklevel=2
+        stacklevel=2,
     )
     BaseDocumentManager = object  # type: ignore
 
@@ -65,10 +66,10 @@ class FinancialDocumentManager(BaseDocumentManager):
     Inherits from svc-infra DocumentManager:
         - upload(), download(), delete(), get(), list() for base document CRUD
         - storage backend integration
-    
+
     Adds financial-specific methods:
         - upload_financial(): Upload with DocumentType, tax_year, form_type
-        - extract_text(): OCR for tax forms  
+        - extract_text(): OCR for tax forms
         - analyze(): AI-powered financial insights
 
     Attributes:

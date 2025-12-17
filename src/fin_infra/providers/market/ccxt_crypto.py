@@ -27,4 +27,7 @@ class CCXTCryptoData(CryptoDataProvider):
         if not self._markets_loaded:
             self.exchange.load_markets()
             self._markets_loaded = True
-        return cast(list[list[float]], self.exchange.fetch_ohlcv(symbol_pair, timeframe=timeframe, limit=limit))
+        return cast(
+            list[list[float]],
+            self.exchange.fetch_ohlcv(symbol_pair, timeframe=timeframe, limit=limit),
+        )

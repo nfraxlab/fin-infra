@@ -39,12 +39,8 @@ class HoldingsRequest(BaseModel):
 
     access_token: Optional[str] = Field(None, description="Plaid access token (Plaid only)")
     user_id: Optional[str] = Field(None, description="SnapTrade user ID (SnapTrade only)")
-    user_secret: Optional[str] = Field(
-        None, description="SnapTrade user secret (SnapTrade only)"
-    )
-    account_ids: Optional[list[str]] = Field(
-        None, description="Filter by specific account IDs"
-    )
+    user_secret: Optional[str] = Field(None, description="SnapTrade user secret (SnapTrade only)")
+    account_ids: Optional[list[str]] = Field(None, description="Filter by specific account IDs")
 
 
 class TransactionsRequest(BaseModel):
@@ -52,14 +48,10 @@ class TransactionsRequest(BaseModel):
 
     access_token: Optional[str] = Field(None, description="Plaid access token (Plaid only)")
     user_id: Optional[str] = Field(None, description="SnapTrade user ID (SnapTrade only)")
-    user_secret: Optional[str] = Field(
-        None, description="SnapTrade user secret (SnapTrade only)"
-    )
+    user_secret: Optional[str] = Field(None, description="SnapTrade user secret (SnapTrade only)")
     start_date: date = Field(..., description="Start date for transactions (YYYY-MM-DD)")
     end_date: date = Field(..., description="End date for transactions (YYYY-MM-DD)")
-    account_ids: Optional[list[str]] = Field(
-        None, description="Filter by specific account IDs"
-    )
+    account_ids: Optional[list[str]] = Field(None, description="Filter by specific account IDs")
 
 
 class AccountsRequest(BaseModel):
@@ -67,9 +59,7 @@ class AccountsRequest(BaseModel):
 
     access_token: Optional[str] = Field(None, description="Plaid access token (Plaid only)")
     user_id: Optional[str] = Field(None, description="SnapTrade user ID (SnapTrade only)")
-    user_secret: Optional[str] = Field(
-        None, description="SnapTrade user secret (SnapTrade only)"
-    )
+    user_secret: Optional[str] = Field(None, description="SnapTrade user secret (SnapTrade only)")
 
 
 class AllocationRequest(BaseModel):
@@ -77,12 +67,8 @@ class AllocationRequest(BaseModel):
 
     access_token: Optional[str] = Field(None, description="Plaid access token (Plaid only)")
     user_id: Optional[str] = Field(None, description="SnapTrade user ID (SnapTrade only)")
-    user_secret: Optional[str] = Field(
-        None, description="SnapTrade user secret (SnapTrade only)"
-    )
-    account_ids: Optional[list[str]] = Field(
-        None, description="Filter by specific account IDs"
-    )
+    user_secret: Optional[str] = Field(None, description="SnapTrade user secret (SnapTrade only)")
+    account_ids: Optional[list[str]] = Field(None, description="Filter by specific account IDs")
 
 
 class SecuritiesRequest(BaseModel):
@@ -90,9 +76,7 @@ class SecuritiesRequest(BaseModel):
 
     access_token: Optional[str] = Field(None, description="Plaid access token (Plaid only)")
     user_id: Optional[str] = Field(None, description="SnapTrade user ID (SnapTrade only)")
-    user_secret: Optional[str] = Field(
-        None, description="SnapTrade user secret (SnapTrade only)"
-    )
+    user_secret: Optional[str] = Field(None, description="SnapTrade user secret (SnapTrade only)")
     security_ids: list[str] = Field(..., description="List of security IDs to retrieve")
 
 
@@ -155,13 +139,13 @@ def add_investments(
            - Validates user's JWT/session cookie
            - Ensures user is logged into YOUR application
            - Provides identity.user with authenticated user
-        
+
         2. Provider Access (endpoint logic): Handled by these endpoints
            - Gets Plaid/SnapTrade access token for the provider
            - Auto-resolves from identity.user.banking_providers
            - Can be overridden with explicit token in request body
            - Used to call external provider APIs (Plaid, SnapTrade)
-        
+
         POST requests are used (not GET) because:
         1. Provider credentials should not be in URL query parameters
         2. Request bodies are more suitable for sensitive data
@@ -173,7 +157,7 @@ def add_investments(
 
     # 2. Store on app state
     app.state.investment_provider = provider
-    
+
     # 3. Capture provider in local variable for closure
     investment_provider = provider
 
@@ -204,20 +188,19 @@ def add_investments(
             access_token = f"{request.user_id}:{request.user_secret}"
         else:
             # Auto-resolve from authenticated user (user_router guarantees identity.user exists)
-            banking_providers = getattr(identity.user, 'banking_providers', {})
+            banking_providers = getattr(identity.user, "banking_providers", {})
             if not banking_providers or "plaid" not in banking_providers:
                 raise HTTPException(
                     status_code=400,
-                    detail="No Plaid connection found. Please connect your accounts first."
+                    detail="No Plaid connection found. Please connect your accounts first.",
                 )
-            
+
             access_token = banking_providers["plaid"].get("access_token")
             if not access_token:
                 raise HTTPException(
-                    status_code=400,
-                    detail="No access token found. Please reconnect your accounts."
+                    status_code=400, detail="No access token found. Please reconnect your accounts."
                 )
-        
+
         # Call provider with resolved token
         try:
             holdings = await investment_provider.get_holdings(
@@ -236,7 +219,9 @@ def add_investments(
         summary="List Transactions",
         description="Fetch investment transactions (buy, sell, dividend, etc.) within date range",
     )
-    async def get_transactions(request: TransactionsRequest, identity: Identity) -> list[InvestmentTransaction]:
+    async def get_transactions(
+        request: TransactionsRequest, identity: Identity
+    ) -> list[InvestmentTransaction]:
         """
         Retrieve investment transactions for authenticated user's accounts.
 
@@ -256,18 +241,17 @@ def add_investments(
         elif request.user_id and request.user_secret:
             access_token = f"{request.user_id}:{request.user_secret}"
         else:
-            banking_providers = getattr(identity.user, 'banking_providers', {})
+            banking_providers = getattr(identity.user, "banking_providers", {})
             if not banking_providers or "plaid" not in banking_providers:
                 raise HTTPException(
                     status_code=400,
-                    detail="No Plaid connection found. Please connect your accounts first."
+                    detail="No Plaid connection found. Please connect your accounts first.",
                 )
-            
+
             access_token = banking_providers["plaid"].get("access_token")
             if not access_token:
                 raise HTTPException(
-                    status_code=400,
-                    detail="No access token found. Please reconnect your accounts."
+                    status_code=400, detail="No access token found. Please reconnect your accounts."
                 )
 
         try:
@@ -301,18 +285,17 @@ def add_investments(
         elif request.user_id and request.user_secret:
             access_token = f"{request.user_id}:{request.user_secret}"
         else:
-            banking_providers = getattr(identity.user, 'banking_providers', {})
+            banking_providers = getattr(identity.user, "banking_providers", {})
             if not banking_providers or "plaid" not in banking_providers:
                 raise HTTPException(
                     status_code=400,
-                    detail="No Plaid connection found. Please connect your accounts first."
+                    detail="No Plaid connection found. Please connect your accounts first.",
                 )
-            
+
             access_token = banking_providers["plaid"].get("access_token")
             if not access_token:
                 raise HTTPException(
-                    status_code=400,
-                    detail="No access token found. Please reconnect your accounts."
+                    status_code=400, detail="No access token found. Please reconnect your accounts."
                 )
 
         try:
@@ -343,20 +326,19 @@ def add_investments(
         elif request.user_id and request.user_secret:
             access_token = f"{request.user_id}:{request.user_secret}"
         else:
-            banking_providers = getattr(identity.user, 'banking_providers', {})
+            banking_providers = getattr(identity.user, "banking_providers", {})
             if not banking_providers or "plaid" not in banking_providers:
                 raise HTTPException(
                     status_code=400,
-                    detail="No Plaid connection found. Please connect your accounts first."
+                    detail="No Plaid connection found. Please connect your accounts first.",
                 )
-            
+
             access_token = banking_providers["plaid"].get("access_token")
             if not access_token:
                 raise HTTPException(
-                    status_code=400,
-                    detail="No access token found. Please reconnect your accounts."
+                    status_code=400, detail="No access token found. Please reconnect your accounts."
                 )
-        
+
         # Fetch holdings
         try:
             holdings = await investment_provider.get_holdings(
@@ -367,7 +349,7 @@ def add_investments(
             raise HTTPException(status_code=401, detail=str(e))
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to fetch allocation: {e}")
-        
+
         # Calculate allocation using base provider helper
         allocation = investment_provider.calculate_allocation(holdings)
         return allocation
@@ -390,18 +372,17 @@ def add_investments(
         elif request.user_id and request.user_secret:
             access_token = f"{request.user_id}:{request.user_secret}"
         else:
-            banking_providers = getattr(identity.user, 'banking_providers', {})
+            banking_providers = getattr(identity.user, "banking_providers", {})
             if not banking_providers or "plaid" not in banking_providers:
                 raise HTTPException(
                     status_code=400,
-                    detail="No Plaid connection found. Please connect your accounts first."
+                    detail="No Plaid connection found. Please connect your accounts first.",
                 )
-            
+
             access_token = banking_providers["plaid"].get("access_token")
             if not access_token:
                 raise HTTPException(
-                    status_code=400,
-                    detail="No access token found. Please reconnect your accounts."
+                    status_code=400, detail="No access token found. Please reconnect your accounts."
                 )
 
         try:

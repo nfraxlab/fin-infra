@@ -113,7 +113,7 @@ def easy_categorization(
     if enable_llm:
         if LLMCategorizer is None:
             raise ImportError(
-                "LLM support requires ai-infra package. " "Install with: pip install ai-infra"
+                "LLM support requires ai-infra package. Install with: pip install ai-infra"
             )
 
         # Map provider names to ai-infra provider format
@@ -125,8 +125,7 @@ def easy_categorization(
         ai_infra_provider = provider_map.get(llm_provider)
         if not ai_infra_provider:
             raise ValueError(
-                f"Unsupported LLM provider: {llm_provider}. "
-                f"Use 'google', 'openai', or 'anthropic'."
+                f"Unsupported LLM provider: {llm_provider}. Use 'google', 'openai', or 'anthropic'."
             )
 
         # Default models per provider

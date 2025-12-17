@@ -597,10 +597,10 @@ Goal type: {goal_type}
 Goal data: {goal}
 
 CALCULATED VALUES (use these exactly, don't recalculate):
-- Feasibility: {calc['feasibility']}
-- Required monthly: ${calc['required_monthly']:,.0f}
+- Feasibility: {calc["feasibility"]}
+- Required monthly: ${calc["required_monthly"]:,.0f}
 - Projected completion: {projected_date}
-- Current progress: {calc['current_progress']:.1%}
+- Current progress: {calc["current_progress"]:.1%}
 
 Provide context and advice around these calculations. Suggest 2-3 alternative paths and 3-5 specific recommendations."""
 

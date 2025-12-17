@@ -77,9 +77,7 @@ class InvestmentProvider(ABC):
         pass
 
     @abstractmethod
-    async def get_securities(
-        self, access_token: str, security_ids: List[str]
-    ) -> List[Security]:
+    async def get_securities(self, access_token: str, security_ids: List[str]) -> List[Security]:
         """Fetch security details (ticker, name, type, current price).
 
         Args:
@@ -97,9 +95,7 @@ class InvestmentProvider(ABC):
         pass
 
     @abstractmethod
-    async def get_investment_accounts(
-        self, access_token: str
-    ) -> List[InvestmentAccount]:
+    async def get_investment_accounts(self, access_token: str) -> List[InvestmentAccount]:
         """Fetch investment accounts with aggregated holdings.
 
         Args:
@@ -176,8 +172,7 @@ class InvestmentProvider(ABC):
         }
 
         by_sector_percent = {
-            sector: round((value / total_value) * 100, 2)
-            for sector, value in sector_values.items()
+            sector: round((value / total_value) * 100, 2) for sector, value in sector_values.items()
         }
 
         cash_percent = round((cash_value / total_value) * 100, 2)

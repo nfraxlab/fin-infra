@@ -380,7 +380,7 @@ def easy_net_worth(
             from ai_infra.llm.llm import LLM
         except ImportError:
             raise ImportError(
-                "LLM features require ai-infra package. " "Install with: pip install ai-infra"
+                "LLM features require ai-infra package. Install with: pip install ai-infra"
             )
 
         cache = None
@@ -401,7 +401,7 @@ def easy_net_worth(
 
         if not model_name:
             raise ValueError(
-                f"Unknown llm_provider: {llm_provider}. " f"Use 'google', 'openai', or 'anthropic'"
+                f"Unknown llm_provider: {llm_provider}. Use 'google', 'openai', or 'anthropic'"
             )
 
         # Create shared LLM instance

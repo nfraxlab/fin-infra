@@ -30,7 +30,6 @@ print(f"Net Worth: ${net_worth:,.2f}")  # $55,000.00
 ```
 """
 
-
 from fin_infra.net_worth.models import (
     AssetAllocation,
     AssetCategory,
@@ -100,18 +99,19 @@ def calculate_net_worth(
 
     Returns:
         Net worth in base currency
-        
+
     Raises:
         ValueError: If assets or liabilities contain non-base currencies and no
             exchange rate conversion is available. This prevents silent data loss.
     """
     import logging
+
     logger = logging.getLogger(__name__)
-    
+
     # Collect any non-base currency items for error reporting
     non_base_assets: list[tuple[str, str, float]] = []
     non_base_liabilities: list[tuple[str, str, float]] = []
-    
+
     # Sum all assets (use market_value if available, otherwise balance)
     total_assets = 0.0
     for asset in assets:
@@ -130,7 +130,9 @@ def calculate_net_worth(
     for liability in liabilities:
         # Check for non-base currency
         if liability.currency != base_currency:
-            non_base_liabilities.append((liability.name or liability.account_id, liability.currency, liability.balance))
+            non_base_liabilities.append(
+                (liability.name or liability.account_id, liability.currency, liability.balance)
+            )
             continue
 
         total_liabilities += liability.balance
@@ -143,7 +145,7 @@ def calculate_net_worth(
             items_msg.append(f"Assets: {non_base_assets}")
         if non_base_liabilities:
             items_msg.append(f"Liabilities: {non_base_liabilities}")
-        
+
         error_msg = (
             f"Cannot calculate net worth: found accounts in non-{base_currency} currencies. "
             f"Currency conversion not yet implemented. {'; '.join(items_msg)}. "

@@ -174,7 +174,7 @@ class ExperianProvider(CreditProvider):
         permissible_purpose = kwargs.get("permissible_purpose", "account_review")
         requester_ip = kwargs.get("requester_ip", "unknown")
         requester_user_id = kwargs.get("requester_user_id", "unknown")
-        
+
         # FCRA Audit Log - REQUIRED for regulatory compliance (15 USC § 1681b)
         # This log must be retained for at least 2 years per FCRA requirements
         timestamp = datetime.now(timezone.utc).isoformat()
@@ -190,7 +190,7 @@ class ExperianProvider(CreditProvider):
                 "environment": self.environment,
                 "timestamp": timestamp,
                 "result": "pending",
-            }
+            },
         )
 
         try:
@@ -202,7 +202,7 @@ class ExperianProvider(CreditProvider):
 
             # Parse response to CreditScore model
             result = parse_credit_score(data, user_id=user_id)
-            
+
             # Log successful pull
             fcra_audit_logger.info(
                 "FCRA_CREDIT_PULL_SUCCESS",
@@ -213,11 +213,11 @@ class ExperianProvider(CreditProvider):
                     "timestamp": timestamp,
                     "result": "success",
                     "score_returned": result.score is not None,
-                }
+                },
             )
-            
+
             return result
-            
+
         except Exception as e:
             # Log failed pull - still required for FCRA audit trail
             fcra_audit_logger.warning(
@@ -229,7 +229,7 @@ class ExperianProvider(CreditProvider):
                     "timestamp": timestamp,
                     "result": "error",
                     "error_type": type(e).__name__,
-                }
+                },
             )
             raise
 
@@ -262,7 +262,7 @@ class ExperianProvider(CreditProvider):
         permissible_purpose = kwargs.get("permissible_purpose", "account_review")
         requester_ip = kwargs.get("requester_ip", "unknown")
         requester_user_id = kwargs.get("requester_user_id", "unknown")
-        
+
         # FCRA Audit Log - REQUIRED for regulatory compliance (15 USC § 1681b)
         # Full credit report pulls have stricter requirements than score-only pulls
         # This log must be retained for at least 2 years per FCRA requirements
@@ -280,7 +280,7 @@ class ExperianProvider(CreditProvider):
                 "timestamp": timestamp,
                 "result": "pending",
                 "report_type": "full",
-            }
+            },
         )
 
         try:
@@ -292,7 +292,7 @@ class ExperianProvider(CreditProvider):
 
             # Parse response to CreditReport model
             result = parse_credit_report(data, user_id=user_id)
-            
+
             # Log successful pull
             fcra_audit_logger.info(
                 "FCRA_CREDIT_PULL_SUCCESS",
@@ -304,11 +304,11 @@ class ExperianProvider(CreditProvider):
                     "result": "success",
                     "accounts_returned": len(result.accounts) if result.accounts else 0,
                     "inquiries_returned": len(result.inquiries) if result.inquiries else 0,
-                }
+                },
             )
-            
+
             return result
-            
+
         except Exception as e:
             # Log failed pull - still required for FCRA audit trail
             fcra_audit_logger.warning(
@@ -320,7 +320,7 @@ class ExperianProvider(CreditProvider):
                     "timestamp": timestamp,
                     "result": "error",
                     "error_type": type(e).__name__,
-                }
+                },
             )
             raise
 

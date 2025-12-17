@@ -123,7 +123,7 @@ def easy_brokerage(
         )
 
     else:
-        raise ValueError(f"Unknown brokerage provider: {provider_name}. " f"Supported: alpaca")
+        raise ValueError(f"Unknown brokerage provider: {provider_name}. Supported: alpaca")
 
 
 def add_brokerage(

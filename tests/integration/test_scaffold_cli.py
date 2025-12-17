@@ -81,9 +81,9 @@ class TestScaffoldCLIValidDomains:
 
             # Check that files were created
             py_files = list(dest_dir.glob("*.py"))
-            assert (
-                len(py_files) >= 3
-            ), f"Expected at least 3 Python files for {domain}, got {len(py_files)}"
+            assert len(py_files) >= 3, (
+                f"Expected at least 3 Python files for {domain}, got {len(py_files)}"
+            )
 
             # Check for __init__.py
             assert (dest_dir / "__init__.py").exists(), f"__init__.py not created for {domain}"
@@ -111,9 +111,9 @@ class TestScaffoldCLIValidDomains:
             )
 
             # Should succeed
-            assert (
-                result.returncode == 0
-            ), f"Failed for {domain} with flags: {result.stdout}\n{result.stderr}"
+            assert result.returncode == 0, (
+                f"Failed for {domain} with flags: {result.stdout}\n{result.stderr}"
+            )
 
             # Check files created
             py_files = list(dest_dir.glob("*.py"))

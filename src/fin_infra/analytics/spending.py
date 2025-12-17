@@ -344,7 +344,9 @@ async def _detect_spending_anomalies(
         average_amount = current_amount * Decimal("0.8")
 
         deviation_percent: float = (
-            float((current_amount - average_amount) / average_amount) * 100 if average_amount > 0 else 0.0
+            float((current_amount - average_amount) / average_amount) * 100
+            if average_amount > 0
+            else 0.0
         )
 
         # Detect anomalies based on deviation

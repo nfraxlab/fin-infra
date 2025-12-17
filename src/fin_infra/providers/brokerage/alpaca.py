@@ -55,8 +55,7 @@ class AlpacaBrokerage(BrokerageProvider):
     ) -> None:
         if not ALPACA_AVAILABLE:
             raise ImportError(
-                "alpaca-trade-api is not installed. "
-                "Install it with: pip install alpaca-trade-api"
+                "alpaca-trade-api is not installed. Install it with: pip install alpaca-trade-api"
             )
 
         # Get credentials from args or environment
@@ -128,6 +127,7 @@ class AlpacaBrokerage(BrokerageProvider):
         # Without this, network retries can cause duplicate order execution = MONEY LOSS.
         if client_order_id is None:
             import uuid
+
             client_order_id = str(uuid.uuid4())
 
         order = self.client.submit_order(
