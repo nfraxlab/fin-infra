@@ -3,7 +3,6 @@ minimum_pre_commit_version: "3.5.0"
 default_language_version:
   python: python3.13
 
-# Global file ignore patterns (adjust as needed)
 exclude: |
   (?x)(
     ^.venv/|
@@ -18,7 +17,6 @@ exclude: |
   )
 
 repos:
-  # --- Basic hygiene ---
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:
@@ -35,22 +33,13 @@ repos:
       - id: check-added-large-files
         args: ["--maxkb=500"]
 
-  # --- Ruff: Formatting + Linting (matches CI) ---
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.8.4
     hooks:
-      # Run the formatter (replaces black + isort)
       - id: ruff-format
-        args: ["--line-length", "100"]
-      # Run the linter (replaces flake8)
       - id: ruff
         args: ["--fix", "--exit-non-zero-on-fix"]
 
-  # NOTE: mypy removed from pre-commit - it needs full project dependencies
-  # which pre-commit's isolated environment can't provide. Type checking
-  # happens in CI via `poetry run mypy src` with full dependencies.
-
-  # --- Tests (opt-in/manual only) ---
   - repo: local
     hooks:
       - id: pytest
