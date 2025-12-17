@@ -29,10 +29,10 @@ classifiers = [
 ]
 
 [tool.poetry.urls]
-Homepage = "https://github.com/nfraxio/fin-infra"
-Repository = "https://github.com/nfraxio/fin-infra"
-Issues = "https://github.com/nfraxio/fin-infra/issues"
-Documentation = "https://nfrax.dev/fin-infra"
+Homepage = "https://github.com/nfraxlab/fin-infra"
+Repository = "https://github.com/nfraxlab/fin-infra"
+Issues = "https://github.com/nfraxlab/fin-infra/issues"
+Documentation = "https://nfrax.com/fin-infra"
 
 [tool.poetry.dependencies]
 python = ">=3.11,<4.0"
