@@ -158,6 +158,38 @@ fin-infra/
 └── examples/
 ```
 
+## Commit Messages
+
+Use [Conventional Commits](https://www.conventionalcommits.org/) format. This enables automated CHANGELOG generation.
+
+**Format:** `type(scope): description`
+
+**Types:**
+- `feat:` New feature
+- `fix:` Bug fix
+- `docs:` Documentation only
+- `refactor:` Code change that neither fixes a bug nor adds a feature
+- `perf:` Performance improvement
+- `test:` Adding or updating tests
+- `ci:` CI/CD changes
+- `chore:` Maintenance tasks
+
+**Examples:**
+```
+feat: add Plaid sandbox integration
+fix: handle decimal precision in NPV calculation
+docs: update brokerage API reference
+refactor: extract transaction categorization to shared module
+test: add unit tests for cashflow calculations
+```
+
+**Bad examples (will be grouped as "Other Changes"):**
+```
+Refactor code for improved readability  ← Missing type prefix!
+updating docs                           ← Missing type prefix!
+bug fix                                 ← Missing type prefix!
+```
+
 ## Required Checks Before PR
 
 - [ ] All money values use `Decimal`
