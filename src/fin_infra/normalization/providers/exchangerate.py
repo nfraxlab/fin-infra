@@ -2,7 +2,7 @@
 
 import os
 from datetime import date as DateType
-from typing import Optional, cast
+from typing import cast
 
 import httpx
 
@@ -19,7 +19,7 @@ __all__ = [
 class ExchangeRateClient:
     """Client for exchangerate-api.io API."""
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         """
         Initialize exchange rate client.
 
@@ -66,10 +66,10 @@ class ExchangeRateClient:
                         raise ExchangeRateAPIError(
                             f"API returned error: {data.get('error-type', 'unknown')}"
                         )
-                    return cast(dict[str, float], data["conversion_rates"])
+                    return cast("dict[str, float]", data["conversion_rates"])
                 else:
                     # Free tier response format
-                    return cast(dict[str, float], data["rates"])
+                    return cast("dict[str, float]", data["rates"])
 
         except httpx.HTTPError as e:
             raise ExchangeRateAPIError(f"HTTP error fetching rates: {e}")
@@ -77,7 +77,7 @@ class ExchangeRateClient:
             raise ExchangeRateAPIError(f"Invalid API response: {e}")
 
     async def get_rate(
-        self, from_currency: str, to_currency: str, date: Optional[DateType] = None
+        self, from_currency: str, to_currency: str, date: DateType | None = None
     ) -> ExchangeRate:
         """
         Get exchange rate between two currencies.

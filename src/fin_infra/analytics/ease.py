@@ -16,23 +16,22 @@ Typical usage:
     portfolio = await analytics.portfolio_metrics(user_id="user123")
 """
 
-from typing import Optional
 from datetime import datetime, timedelta
 
 from .cash_flow import calculate_cash_flow
-from .savings import calculate_savings_rate, SavingsDefinition
-from .spending import analyze_spending, generate_spending_insights
-from .portfolio import calculate_portfolio_metrics, compare_to_benchmark
-from .projections import project_net_worth, calculate_compound_interest
 from .models import (
+    BenchmarkComparison,
     CashFlowAnalysis,
-    SavingsRateData,
-    SpendingInsight,
+    GrowthProjection,
     PersonalizedSpendingAdvice,
     PortfolioMetrics,
-    BenchmarkComparison,
-    GrowthProjection,
+    SavingsRateData,
+    SpendingInsight,
 )
+from .portfolio import calculate_portfolio_metrics, compare_to_benchmark
+from .projections import calculate_compound_interest, project_net_worth
+from .savings import SavingsDefinition, calculate_savings_rate
+from .spending import analyze_spending, generate_spending_insights
 
 
 class AnalyticsEngine:
@@ -93,9 +92,9 @@ class AnalyticsEngine:
         self,
         user_id: str,
         *,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None,
-        period_days: Optional[int] = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
+        period_days: int | None = None,
     ) -> CashFlowAnalysis:
         """Analyze cash flow (income vs expenses).
 
@@ -129,7 +128,7 @@ class AnalyticsEngine:
         self,
         user_id: str,
         *,
-        definition: Optional[str | SavingsDefinition] = None,
+        definition: str | SavingsDefinition | None = None,
         period: str = "monthly",
     ) -> SavingsRateData:
         """Calculate savings rate.
@@ -163,7 +162,7 @@ class AnalyticsEngine:
         self,
         user_id: str,
         *,
-        period_days: Optional[int] = None,
+        period_days: int | None = None,
         include_trends: bool = True,
     ) -> SpendingInsight:
         """Analyze spending patterns and generate insights.
@@ -193,8 +192,8 @@ class AnalyticsEngine:
         self,
         user_id: str,
         *,
-        period_days: Optional[int] = None,
-        user_context: Optional[dict] = None,
+        period_days: int | None = None,
+        user_context: dict | None = None,
     ) -> PersonalizedSpendingAdvice:
         """Generate AI-powered personalized spending advice.
 
@@ -228,7 +227,7 @@ class AnalyticsEngine:
         self,
         user_id: str,
         *,
-        accounts: Optional[list[str]] = None,
+        accounts: list[str] | None = None,
     ) -> PortfolioMetrics:
         """Calculate portfolio performance metrics.
 
@@ -250,9 +249,9 @@ class AnalyticsEngine:
         self,
         user_id: str,
         *,
-        benchmark: Optional[str] = None,
+        benchmark: str | None = None,
         period: str = "1y",
-        accounts: Optional[list[str]] = None,
+        accounts: list[str] | None = None,
     ) -> BenchmarkComparison:
         """Compare portfolio to benchmark index.
 
@@ -282,7 +281,7 @@ class AnalyticsEngine:
         user_id: str,
         *,
         years: int = 30,
-        assumptions: Optional[dict] = None,
+        assumptions: dict | None = None,
     ) -> GrowthProjection:
         """Project net worth growth with scenarios.
 

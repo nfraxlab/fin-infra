@@ -8,8 +8,9 @@ Apps still manage user-to-token mappings, but these utilities simplify common op
 from __future__ import annotations
 
 import re
-from datetime import datetime, timezone
-from typing import Any, Optional, Literal
+from datetime import UTC, datetime
+from typing import Any, Literal
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from ..providers.base import BankingProvider
@@ -22,23 +23,23 @@ class BankingConnectionInfo(BaseModel):
 
     provider: Literal["plaid", "teller", "mx"]
     connected: bool
-    access_token: Optional[str] = Field(
+    access_token: str | None = Field(
         None, description="Token (only for internal use, never expose)"
     )
-    item_id: Optional[str] = None
-    enrollment_id: Optional[str] = None
-    connected_at: Optional[datetime] = None
-    last_synced_at: Optional[datetime] = None
+    item_id: str | None = None
+    enrollment_id: str | None = None
+    connected_at: datetime | None = None
+    last_synced_at: datetime | None = None
     is_healthy: bool = True
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 class BankingConnectionStatus(BaseModel):
     """Status of all banking connections for a user."""
 
-    plaid: Optional[BankingConnectionInfo] = None
-    teller: Optional[BankingConnectionInfo] = None
-    mx: Optional[BankingConnectionInfo] = None
+    plaid: BankingConnectionInfo | None = None
+    teller: BankingConnectionInfo | None = None
+    mx: BankingConnectionInfo | None = None
     has_any_connection: bool = False
 
     @property
@@ -54,7 +55,7 @@ class BankingConnectionStatus(BaseModel):
         return providers
 
     @property
-    def primary_provider(self) -> Optional[str]:
+    def primary_provider(self) -> str | None:
         """Primary provider (first connected, or most recently synced)."""
         if not self.has_any_connection:
             return None
@@ -329,7 +330,7 @@ def mark_connection_unhealthy(
 
     banking_providers[provider]["is_healthy"] = False
     banking_providers[provider]["error_message"] = error_message
-    banking_providers[provider]["error_at"] = datetime.now(timezone.utc).isoformat()
+    banking_providers[provider]["error_at"] = datetime.now(UTC).isoformat()
 
     return banking_providers
 
@@ -362,14 +363,14 @@ def mark_connection_healthy(
 
     banking_providers[provider]["is_healthy"] = True
     banking_providers[provider]["error_message"] = None
-    banking_providers[provider]["last_synced_at"] = datetime.now(timezone.utc).isoformat()
+    banking_providers[provider]["last_synced_at"] = datetime.now(UTC).isoformat()
 
     return banking_providers
 
 
 def get_primary_access_token(
     banking_providers: dict[str, Any],
-) -> tuple[Optional[str], Optional[str]]:
+) -> tuple[str | None, str | None]:
     """
     Get the primary access token and provider name.
 
@@ -401,7 +402,7 @@ def get_primary_access_token(
 async def test_connection_health(
     provider: BankingProvider,
     access_token: str,
-) -> tuple[bool, Optional[str]]:
+) -> tuple[bool, str | None]:
     """
     Test if a banking connection is healthy by making a lightweight API call.
 
@@ -468,14 +469,14 @@ def should_refresh_token(banking_providers: dict[str, Any], provider: str) -> bo
         last_synced = _parse_datetime(last_synced_str)
         if last_synced:
             # Refresh if not synced in 30 days
-            days_since_sync = (datetime.now(timezone.utc) - last_synced).days
+            days_since_sync = (datetime.now(UTC) - last_synced).days
             if days_since_sync > 30:
                 return True
 
     return False
 
 
-def _parse_datetime(value: Any) -> Optional[datetime]:
+def _parse_datetime(value: Any) -> datetime | None:
     """Parse datetime from various formats."""
     if not value:
         return None

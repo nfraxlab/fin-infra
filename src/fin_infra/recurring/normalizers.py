@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from typing import Any, Optional, cast
+from typing import Any, cast
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -145,7 +145,7 @@ class MerchantNormalizer:
     def __init__(
         self,
         provider: str = "google",
-        model_name: Optional[str] = None,
+        model_name: str | None = None,
         cache_ttl: int = 604800,  # 7 days
         enable_cache: bool = True,
         confidence_threshold: float = 0.8,
@@ -284,7 +284,7 @@ class MerchantNormalizer:
             logger.error(f"LLM normalization failed for '{merchant_name}': {e}")
             return self._fallback_normalize(merchant_name, fallback_confidence)
 
-    async def _get_cached(self, merchant_name: str) -> Optional[MerchantNormalized]:
+    async def _get_cached(self, merchant_name: str) -> MerchantNormalized | None:
         """
         Get cached normalization result.
 
@@ -355,7 +355,7 @@ class MerchantNormalizer:
 
         # Extract structured output
         if hasattr(response, "structured") and response.structured:
-            return cast(MerchantNormalized, response.structured)
+            return cast("MerchantNormalized", response.structured)
         else:
             raise ValueError(f"LLM returned no structured output for '{merchant_name}'")
 

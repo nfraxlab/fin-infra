@@ -116,11 +116,11 @@ def add_normalization(
         - Scoped docs at {prefix}/docs for standalone documentation
     """
     # Import FastAPI dependencies
-    from fastapi import Query, HTTPException
+    from fastapi import HTTPException, Query
+    from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
 
     # Import svc-infra public router (no auth - utility endpoints)
     from svc_infra.api.fastapi.dual.public import public_router
-    from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
 
     # Get normalization services
     resolver, converter = easy_normalization(api_key=api_key)

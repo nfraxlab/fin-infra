@@ -9,8 +9,6 @@ variable amount detection, and natural language insights.
 
 from __future__ import annotations
 
-from typing import Optional
-
 from .detector import RecurringDetector
 
 
@@ -20,7 +18,7 @@ def easy_recurring_detection(
     date_tolerance_days: int = 7,
     enable_llm: bool = False,
     llm_provider: str = "google",
-    llm_model: Optional[str] = None,
+    llm_model: str | None = None,
     llm_confidence_threshold: float = 0.8,
     llm_cache_merchant_ttl: int = 604800,  # 7 days
     llm_cache_insights_ttl: int = 86400,  # 24 hours
@@ -216,9 +214,9 @@ def easy_recurring_detection(
     if enable_llm:
         # Import V2 components only if needed (avoid circular imports)
         try:
-            from .normalizers import MerchantNormalizer
             from .detectors_llm import VariableDetectorLLM
             from .insights import SubscriptionInsightsGenerator
+            from .normalizers import MerchantNormalizer
         except ImportError as e:
             raise ImportError(
                 f"LLM components not available. Install ai-infra: pip install ai-infra. Error: {e}"

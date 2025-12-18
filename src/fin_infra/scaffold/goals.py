@@ -20,9 +20,9 @@ from pathlib import Path
 from typing import Any
 
 from svc_infra.utils import (
+    ensure_init_py,
     render_template,
     write,
-    ensure_init_py,
 )
 
 

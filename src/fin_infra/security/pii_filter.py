@@ -9,21 +9,21 @@ import re
 from typing import Any
 
 from .pii_patterns import (
-    ACCOUNT_PATTERN,
     ACCOUNT_CONTEXT,
+    ACCOUNT_PATTERN,
     CARD_PATTERN,
-    CVV_PATTERN,
     CVV_CONTEXT,
+    CVV_PATTERN,
     EIN_PATTERN,
     EMAIL_PATTERN,
     PHONE_PATTERN,
-    ROUTING_PATTERN,
     ROUTING_CONTEXT,
-    SSN_PATTERN,
-    SSN_NO_DASH,
+    ROUTING_PATTERN,
     SSN_CONTEXT,
-    luhn_checksum,
+    SSN_NO_DASH,
+    SSN_PATTERN,
     is_valid_routing_number,
+    luhn_checksum,
 )
 
 

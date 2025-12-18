@@ -29,7 +29,7 @@ import numpy_financial as npf
 if TYPE_CHECKING:
     from fastapi import FastAPI
 
-from .core import npv, irr
+from .core import irr, npv
 
 __all__ = ["npv", "irr", "pmt", "fv", "pv", "add_cashflows"]
 
@@ -173,10 +173,10 @@ def add_cashflows(
         - Scoped docs at {prefix}/docs
     """
     from pydantic import BaseModel, Field
+    from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
 
     # Import svc-infra public router (no auth - utility calculations)
     from svc_infra.api.fastapi.dual.public import public_router
-    from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
 
     # Request/Response models
     class NPVRequest(BaseModel):

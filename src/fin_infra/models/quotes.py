@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
+
 from pydantic import BaseModel, field_validator
 
 
@@ -16,5 +17,5 @@ class Quote(BaseModel):
     def _ensure_tzaware(cls, v: datetime) -> datetime:
         # Normalize to timezone-aware (UTC) for consistency
         if v.tzinfo is None:
-            return v.replace(tzinfo=timezone.utc)
-        return v.astimezone(timezone.utc)
+            return v.replace(tzinfo=UTC)
+        return v.astimezone(UTC)

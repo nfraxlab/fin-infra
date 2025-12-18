@@ -23,8 +23,9 @@ Example:
 from __future__ import annotations
 
 import ssl
-import httpx
 from typing import Any, cast
+
+import httpx
 
 from ..base import BankingProvider
 
@@ -145,7 +146,7 @@ class TellerClient(BankingProvider):
                 "products": ["accounts", "transactions", "balances", "identity"],
             },
         )
-        return cast(str, response.get("enrollment_id", ""))
+        return cast("str", response.get("enrollment_id", ""))
 
     def exchange_public_token(self, public_token: str) -> dict:
         """Exchange public token for access token.
@@ -192,7 +193,7 @@ class TellerClient(BankingProvider):
             auth=(access_token, ""),
         )
         response.raise_for_status()
-        return cast(list[dict[Any, Any]], response.json())
+        return cast("list[dict[Any, Any]]", response.json())
 
     def transactions(
         self,
@@ -235,7 +236,7 @@ class TellerClient(BankingProvider):
             params=params,
         )
         response.raise_for_status()
-        return cast(list[dict[Any, Any]], response.json())
+        return cast("list[dict[Any, Any]]", response.json())
 
     def balances(self, access_token: str, account_id: str | None = None) -> dict:
         """Fetch current balances.
@@ -267,7 +268,7 @@ class TellerClient(BankingProvider):
             )
 
         response.raise_for_status()
-        return cast(dict[Any, Any], response.json())
+        return cast("dict[Any, Any]", response.json())
 
     def identity(self, access_token: str) -> dict:
         """Fetch identity/account holder information.
@@ -291,7 +292,7 @@ class TellerClient(BankingProvider):
             auth=(access_token, ""),
         )
         response.raise_for_status()
-        return cast(dict[Any, Any], response.json())
+        return cast("dict[Any, Any]", response.json())
 
     def __del__(self) -> None:
         """Close HTTP client on cleanup."""

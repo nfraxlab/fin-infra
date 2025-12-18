@@ -55,7 +55,7 @@ Cost Considerations:
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
@@ -412,9 +412,9 @@ def _assess_wash_sale_risk(symbol: str, last_purchase_date: datetime | None) -> 
         return "none"
 
     # Calculate days since last purchase
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     if last_purchase_date.tzinfo is None:
-        last_purchase_date = last_purchase_date.replace(tzinfo=timezone.utc)
+        last_purchase_date = last_purchase_date.replace(tzinfo=UTC)
 
     days_since = (now - last_purchase_date).days
 
@@ -506,8 +506,8 @@ def _generate_tlh_recommendations(
     recommendations = []
 
     # Timing recommendations
-    now = datetime.now(timezone.utc)
-    days_until_year_end = (datetime(now.year, 12, 31, tzinfo=timezone.utc) - now).days
+    now = datetime.now(UTC)
+    days_until_year_end = (datetime(now.year, 12, 31, tzinfo=UTC) - now).days
 
     if days_until_year_end < 30:
         recommendations.append(

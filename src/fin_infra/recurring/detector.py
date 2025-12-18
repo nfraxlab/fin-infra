@@ -17,15 +17,15 @@ from __future__ import annotations
 import statistics
 from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import Any, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from .models import CadenceType, PatternType, RecurringPattern
 from .normalizer import get_canonical_merchant, is_generic_merchant
 
 if TYPE_CHECKING:
-    from .normalizers import MerchantNormalizer
     from .detectors_llm import VariableDetectorLLM
     from .insights import SubscriptionInsightsGenerator
+    from .normalizers import MerchantNormalizer
 
 
 class Transaction:
@@ -59,8 +59,8 @@ class PatternDetector:
         min_occurrences: int = 3,
         amount_tolerance: float = 0.02,
         date_tolerance_days: int = 7,
-        merchant_normalizer: Optional[MerchantNormalizer] = None,
-        variable_detector_llm: Optional[VariableDetectorLLM] = None,
+        merchant_normalizer: MerchantNormalizer | None = None,
+        variable_detector_llm: VariableDetectorLLM | None = None,
     ):
         """
         Initialize pattern detector.
@@ -512,9 +512,9 @@ class RecurringDetector:
         min_occurrences: int = 3,
         amount_tolerance: float = 0.02,
         date_tolerance_days: int = 7,
-        merchant_normalizer: Optional[MerchantNormalizer] = None,
-        variable_detector_llm: Optional[VariableDetectorLLM] = None,
-        insights_generator: Optional[SubscriptionInsightsGenerator] = None,
+        merchant_normalizer: MerchantNormalizer | None = None,
+        variable_detector_llm: VariableDetectorLLM | None = None,
+        insights_generator: SubscriptionInsightsGenerator | None = None,
     ):
         """
         Initialize recurring detector.

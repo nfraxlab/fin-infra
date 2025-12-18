@@ -19,10 +19,10 @@ Typical usage:
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 # Use svc-infra's scaffold utilities to avoid duplication
-from svc_infra.utils import render_template, write, ensure_init_py
+from svc_infra.utils import ensure_init_py, render_template, write
 
 
 def scaffold_budgets_core(
@@ -31,9 +31,9 @@ def scaffold_budgets_core(
     include_soft_delete: bool = False,
     with_repository: bool = True,
     overwrite: bool = False,
-    models_filename: Optional[str] = None,
-    schemas_filename: Optional[str] = None,
-    repository_filename: Optional[str] = None,
+    models_filename: str | None = None,
+    schemas_filename: str | None = None,
+    repository_filename: str | None = None,
 ) -> dict[str, Any]:
     """Generate budget persistence code from templates.
 
@@ -229,7 +229,7 @@ def _tenant_field_schema_read() -> str:
 def _generate_init_content(
     models_file: str,
     schemas_file: str,
-    repo_file: Optional[str],
+    repo_file: str | None,
 ) -> str:
     """Generate __init__.py content with re-exports.
 

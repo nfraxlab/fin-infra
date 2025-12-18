@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import re
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from svc_infra.storage.base import StorageBackend
@@ -33,15 +33,15 @@ if TYPE_CHECKING:
     from .models import OCRResult
 
 # In-memory OCR cache (production: use svc-infra cache)
-_ocr_cache: dict[str, "OCRResult"] = {}
+_ocr_cache: dict[str, OCRResult] = {}
 
 
 async def extract_text(
-    storage: "StorageBackend",
+    storage: StorageBackend,
     document_id: str,
     provider: str = "tesseract",
     force_refresh: bool = False,
-) -> "OCRResult":
+) -> OCRResult:
     """
     Extract text from a document using OCR (uses svc-infra storage).
 
@@ -106,7 +106,7 @@ async def extract_text(
 
 def _extract_with_tesseract(
     file_content: bytes, filename: str, metadata: dict, document_id: str
-) -> "OCRResult":
+) -> OCRResult:
     """
     Extract text using Tesseract OCR (simulated).
 
@@ -158,7 +158,7 @@ def _extract_with_tesseract(
 
 def _extract_with_textract(
     file_content: bytes, filename: str, metadata: dict, document_id: str
-) -> "OCRResult":
+) -> OCRResult:
     """
     Extract text using AWS Textract (simulated).
 
@@ -207,7 +207,7 @@ def _extract_with_textract(
     )
 
 
-def _parse_tax_form(text: str, form_type: Optional[str] = None) -> dict[str, str]:
+def _parse_tax_form(text: str, form_type: str | None = None) -> dict[str, str]:
     """
     Parse tax form text into structured fields.
 

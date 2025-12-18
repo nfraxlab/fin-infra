@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from datetime import date  # noqa: F401 - used in type annotation
+from datetime import date
 from decimal import Decimal
-from typing import Optional
 
 from pydantic import BaseModel, field_validator
 
@@ -19,8 +18,8 @@ class Transaction(BaseModel):
     date: date
     amount: Decimal
     currency: str = "USD"
-    description: Optional[str] = None
-    category: Optional[str] = None
+    description: str | None = None
+    category: str | None = None
 
     @field_validator("amount", mode="before")
     @classmethod

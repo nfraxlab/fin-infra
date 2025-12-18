@@ -32,14 +32,14 @@ if TYPE_CHECKING:
     from .models import DocumentAnalysis
 
 # In-memory analysis cache (production: use svc-infra cache)
-_analysis_cache: dict[str, "DocumentAnalysis"] = {}
+_analysis_cache: dict[str, DocumentAnalysis] = {}
 
 
 async def analyze_document(
-    storage: "StorageBackend",
+    storage: StorageBackend,
     document_id: str,
     force_refresh: bool = False,
-) -> "DocumentAnalysis":
+) -> DocumentAnalysis:
     """
     Analyze a document using AI to extract insights and recommendations.
 
@@ -165,7 +165,7 @@ Important: This analysis is not a substitute for professional financial advice.
     return prompt
 
 
-def _validate_analysis(analysis: "DocumentAnalysis") -> bool:
+def _validate_analysis(analysis: DocumentAnalysis) -> bool:
     """
     Validate LLM analysis output.
 
@@ -201,7 +201,7 @@ def _validate_analysis(analysis: "DocumentAnalysis") -> bool:
     return True
 
 
-def _analyze_tax_document(ocr_text: str, metadata: dict, document_id: str) -> "DocumentAnalysis":
+def _analyze_tax_document(ocr_text: str, metadata: dict, document_id: str) -> DocumentAnalysis:
     """
     Specialized analysis for tax documents.
 
@@ -301,7 +301,7 @@ def _analyze_tax_document(ocr_text: str, metadata: dict, document_id: str) -> "D
     )
 
 
-def _analyze_bank_statement(ocr_text: str, metadata: dict, document_id: str) -> "DocumentAnalysis":
+def _analyze_bank_statement(ocr_text: str, metadata: dict, document_id: str) -> DocumentAnalysis:
     """
     Specialized analysis for bank statements.
 
@@ -352,7 +352,7 @@ def _analyze_bank_statement(ocr_text: str, metadata: dict, document_id: str) -> 
     )
 
 
-def _analyze_receipt(ocr_text: str, metadata: dict, document_id: str) -> "DocumentAnalysis":
+def _analyze_receipt(ocr_text: str, metadata: dict, document_id: str) -> DocumentAnalysis:
     """
     Specialized analysis for receipts.
 
@@ -394,7 +394,7 @@ def _analyze_receipt(ocr_text: str, metadata: dict, document_id: str) -> "Docume
 
 def _analyze_generic_document(
     ocr_text: str, document_type: str, metadata: dict, document_id: str
-) -> "DocumentAnalysis":
+) -> DocumentAnalysis:
     """
     Generic analysis for other document types.
 

@@ -36,14 +36,22 @@ Quick Start:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 try:
     from svc_infra.documents import (
         delete_document as base_delete_document,
+    )
+    from svc_infra.documents import (
         download_document as base_download_document,
+    )
+    from svc_infra.documents import (
         get_document as base_get_document,
+    )
+    from svc_infra.documents import (
         list_documents as base_list_documents,
+    )
+    from svc_infra.documents import (
         upload_document as base_upload_document,
     )
 
@@ -64,15 +72,15 @@ if TYPE_CHECKING:
 
 
 async def upload_document(
-    storage: "StorageBackend",
+    storage: StorageBackend,
     user_id: str,
     file: bytes,
-    document_type: "DocumentType",
+    document_type: DocumentType,
     filename: str,
-    metadata: Optional[dict] = None,
-    tax_year: Optional[int] = None,
-    form_type: Optional[str] = None,
-) -> "FinancialDocument":
+    metadata: dict | None = None,
+    tax_year: int | None = None,
+    form_type: str | None = None,
+) -> FinancialDocument:
     """
     Upload a financial document (delegates to svc-infra, adds financial fields).
 
@@ -140,7 +148,7 @@ async def upload_document(
     return financial_doc
 
 
-def get_document(document_id: str) -> Optional["FinancialDocument"]:
+def get_document(document_id: str) -> FinancialDocument | None:
     """
     Get financial document metadata by ID (delegates to svc-infra).
 
@@ -187,7 +195,7 @@ def get_document(document_id: str) -> Optional["FinancialDocument"]:
     return financial_doc
 
 
-async def download_document(storage: "StorageBackend", document_id: str) -> bytes:
+async def download_document(storage: StorageBackend, document_id: str) -> bytes:
     """
     Download a financial document by ID (delegates to svc-infra).
 
@@ -213,7 +221,7 @@ async def download_document(storage: "StorageBackend", document_id: str) -> byte
     return await base_download_document(storage=storage, document_id=document_id)
 
 
-async def delete_document(storage: "StorageBackend", document_id: str) -> bool:
+async def delete_document(storage: StorageBackend, document_id: str) -> bool:
     """
     Delete a financial document and its metadata (delegates to svc-infra).
 
@@ -238,11 +246,11 @@ async def delete_document(storage: "StorageBackend", document_id: str) -> bool:
 
 def list_documents(
     user_id: str,
-    document_type: Optional["DocumentType"] = None,
-    tax_year: Optional[int] = None,
+    document_type: DocumentType | None = None,
+    tax_year: int | None = None,
     limit: int = 100,
     offset: int = 0,
-) -> list["FinancialDocument"]:
+) -> list[FinancialDocument]:
     """
     List user's financial documents with optional filters (delegates to svc-infra).
 

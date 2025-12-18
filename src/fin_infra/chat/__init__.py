@@ -33,15 +33,15 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from fastapi import FastAPI
 
-from fin_infra.chat.planning import (
-    FinancialPlanningConversation,
-    ConversationResponse,
-    ConversationContext,
-    Exchange,
-    is_sensitive_question,
-    SENSITIVE_PATTERNS,
-)
 from fin_infra.chat.ease import easy_financial_conversation
+from fin_infra.chat.planning import (
+    SENSITIVE_PATTERNS,
+    ConversationContext,
+    ConversationResponse,
+    Exchange,
+    FinancialPlanningConversation,
+    is_sensitive_question,
+)
 
 __all__ = [
     "FinancialPlanningConversation",
@@ -116,10 +116,10 @@ def add_financial_conversation(
         - Logs all LLM calls for compliance (via svc-infra logging)
     """
     from pydantic import BaseModel, Field
+    from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
 
     # Import svc-infra user router (requires auth)
     from svc_infra.api.fastapi.dual.protected import user_router
-    from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
 
     # Auto-create conversation if not provided
     if conversation is None:

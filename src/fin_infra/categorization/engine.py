@@ -10,8 +10,8 @@ Hybrid categorization engine (exact → regex → ML → LLM).
 Expected overall accuracy: 95-97% (V2 with LLM)
 """
 
-import time
 import logging
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -51,7 +51,7 @@ class CategorizationEngine:
         enable_ml: bool = False,
         enable_llm: bool = False,
         confidence_threshold: float = 0.6,
-        model_path: Optional[Path] = None,
+        model_path: Path | None = None,
         llm_categorizer: Optional["LLMCategorizer"] = None,
     ):
         self.enable_ml = enable_ml
@@ -81,7 +81,7 @@ class CategorizationEngine:
     async def categorize(
         self,
         merchant_name: str,
-        user_id: Optional[str] = None,
+        user_id: str | None = None,
         include_alternatives: bool = False,
     ) -> CategoryPrediction:
         """
@@ -195,7 +195,7 @@ class CategorizationEngine:
 
     def _predict_ml(
         self, merchant_name: str, include_alternatives: bool = False
-    ) -> Optional[CategoryPrediction]:
+    ) -> CategoryPrediction | None:
         """
         Predict category using ML model.
 
@@ -325,7 +325,7 @@ class CategorizationEngine:
 
 
 # Singleton instance (for easy access)
-_default_engine: Optional[CategorizationEngine] = None
+_default_engine: CategorizationEngine | None = None
 
 
 def get_engine() -> CategorizationEngine:
@@ -338,7 +338,7 @@ def get_engine() -> CategorizationEngine:
 
 async def categorize(
     merchant_name: str,
-    user_id: Optional[str] = None,
+    user_id: str | None = None,
     include_alternatives: bool = False,
 ) -> CategoryPrediction:
     """

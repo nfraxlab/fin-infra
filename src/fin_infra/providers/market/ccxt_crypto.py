@@ -37,13 +37,13 @@ class CCXTCryptoData(CryptoDataProvider):
         if not self._markets_loaded:
             self.exchange.load_markets()
             self._markets_loaded = True
-        return cast(dict[Any, Any], self.exchange.fetch_ticker(symbol_pair))
+        return cast("dict[Any, Any]", self.exchange.fetch_ticker(symbol_pair))
 
     def ohlcv(self, symbol_pair: str, timeframe: str = "1d", limit: int = 100) -> list[list[float]]:
         if not self._markets_loaded:
             self.exchange.load_markets()
             self._markets_loaded = True
         return cast(
-            list[list[float]],
+            "list[list[float]]",
             self.exchange.fetch_ohlcv(symbol_pair, timeframe=timeframe, limit=limit),
         )

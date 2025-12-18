@@ -33,7 +33,7 @@ Example:
 import os
 
 from fin_infra.providers.base import TaxProvider
-from fin_infra.providers.tax import MockTaxProvider, IRSProvider, TaxBitProvider
+from fin_infra.providers.tax import IRSProvider, MockTaxProvider, TaxBitProvider
 from fin_infra.tax.add import add_tax_data
 from fin_infra.tax.tlh import (
     TLHOpportunity,

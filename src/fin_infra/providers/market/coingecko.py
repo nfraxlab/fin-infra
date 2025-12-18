@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import logging
-import httpx
+from datetime import UTC, datetime
 from decimal import Decimal
-from datetime import datetime, timezone
 
+import httpx
+
+from ...models import Candle, Quote
 from ..base import CryptoDataProvider
-from ...models import Quote, Candle
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +31,7 @@ class CoinGeckoCryptoData(CryptoDataProvider):
         except Exception as e:
             logger.warning("CoinGecko ticker fetch failed for %s: %s", symbol_pair, e)
             price = 0
-        return Quote(
-            symbol=f"{base}/{quote}", price=Decimal(str(price)), as_of=datetime.now(timezone.utc)
-        )
+        return Quote(symbol=f"{base}/{quote}", price=Decimal(str(price)), as_of=datetime.now(UTC))
 
     def ohlcv(self, symbol_pair: str, timeframe: str = "1d", limit: int = 100) -> list[Candle]:
         # CoinGecko provides market_chart with daily data; map timeframe crudely

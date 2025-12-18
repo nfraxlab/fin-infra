@@ -11,8 +11,8 @@ For production, consider Alpha Vantage or other official providers.
 from __future__ import annotations
 
 from collections.abc import Sequence
+from datetime import UTC, datetime
 from decimal import Decimal
-from datetime import datetime, timezone
 
 try:
     from yahooquery import Ticker
@@ -22,8 +22,8 @@ except ImportError:  # pragma: no cover
     HAS_YAHOOQUERY = False
     Ticker = None
 
+from ...models import Candle, Quote
 from .base import MarketDataProvider
-from ...models import Quote, Candle
 
 
 def _require_yahooquery() -> None:
@@ -93,9 +93,9 @@ class YahooFinanceMarketData(MarketDataProvider):
         ts_raw = data.get("regularMarketTime")
         if ts_raw:
             # Convert Unix timestamp to datetime
-            as_of = datetime.fromtimestamp(ts_raw, tz=timezone.utc)
+            as_of = datetime.fromtimestamp(ts_raw, tz=UTC)
         else:
-            as_of = datetime.now(timezone.utc)
+            as_of = datetime.now(UTC)
 
         return Quote(
             symbol=symbol.upper(),
@@ -150,7 +150,7 @@ class YahooFinanceMarketData(MarketDataProvider):
 
                 # Ensure timezone aware
                 if dt.tzinfo is None:
-                    dt = dt.replace(tzinfo=timezone.utc)
+                    dt = dt.replace(tzinfo=UTC)
 
                 ts_ms = int(dt.timestamp() * 1000)
 

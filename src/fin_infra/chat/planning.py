@@ -54,7 +54,6 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-
 # ============================================================================
 # Pydantic Schemas (Structured Output)
 # ============================================================================

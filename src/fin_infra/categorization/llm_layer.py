@@ -15,7 +15,8 @@ Expected performance:
 
 import hashlib
 import logging
-from typing import Any, Optional, cast
+from typing import Any, cast
+
 from pydantic import BaseModel, Field
 
 # ai-infra imports
@@ -157,7 +158,7 @@ class LLMCategorizer:
     async def categorize(
         self,
         merchant_name: str,
-        user_id: Optional[str] = None,
+        user_id: str | None = None,
     ) -> CategoryPrediction:
         """
         Categorize merchant using LLM.
@@ -209,7 +210,7 @@ class LLMCategorizer:
     async def _call_llm(
         self,
         merchant_name: str,
-        user_id: Optional[str] = None,
+        user_id: str | None = None,
     ) -> CategoryPrediction:
         """Call LLM API with structured output."""
         # Build user message
@@ -244,7 +245,7 @@ class LLMCategorizer:
                 f"Must be one of {len(valid_categories)} valid categories."
             )
 
-        return cast(CategoryPrediction, response)
+        return cast("CategoryPrediction", response)
 
     def _build_system_prompt(self) -> str:
         """Build system prompt with few-shot examples (reused across all requests)."""
@@ -269,7 +270,7 @@ class LLMCategorizer:
     def _build_user_message(
         self,
         merchant_name: str,
-        user_id: Optional[str] = None,
+        user_id: str | None = None,
     ) -> str:
         """Build user message with optional personalization."""
         if self.enable_personalization and user_id:

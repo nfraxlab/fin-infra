@@ -17,7 +17,8 @@ Example:
 """
 
 from decimal import Decimal
-from fastapi import FastAPI, Query, Body
+
+from fastapi import Body, FastAPI, Query
 from pydantic import BaseModel
 
 from fin_infra.providers.base import TaxProvider
@@ -89,8 +90,8 @@ def add_tax_data(
         >>> # POST /tax/tax-liability
     """
     # Use svc-infra user_router for authentication (tax data is user-specific and sensitive)
-    from svc_infra.api.fastapi.dual.protected import user_router
     from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
+    from svc_infra.api.fastapi.dual.protected import user_router
 
     # Initialize provider
     if provider is None:

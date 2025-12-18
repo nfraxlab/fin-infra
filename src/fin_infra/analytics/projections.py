@@ -19,11 +19,9 @@ Typical usage:
     )
 """
 
-from typing import Optional
 import math
 
 from fin_infra.analytics.models import GrowthProjection, Scenario
-
 
 # ============================================================================
 # Public API
@@ -34,7 +32,7 @@ async def project_net_worth(
     user_id: str,
     *,
     years: int = 30,
-    assumptions: Optional[dict] = None,
+    assumptions: dict | None = None,
     net_worth_provider=None,
     cash_flow_provider=None,
 ) -> GrowthProjection:

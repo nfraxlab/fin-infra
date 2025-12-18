@@ -7,7 +7,7 @@ transactions, accounts, allocation, and securities data.
 from __future__ import annotations
 
 from datetime import date
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from fastapi import HTTPException
 from pydantic import BaseModel, Field
@@ -24,10 +24,10 @@ except ImportError:
 
 from .ease import easy_investments
 from .models import (
-    Holding,
-    InvestmentTransaction,
-    InvestmentAccount,
     AssetAllocation,
+    Holding,
+    InvestmentAccount,
+    InvestmentTransaction,
     Security,
 )
 from .providers.base import InvestmentProvider
@@ -37,55 +37,55 @@ from .providers.base import InvestmentProvider
 class HoldingsRequest(BaseModel):
     """Request model for holdings endpoint."""
 
-    access_token: Optional[str] = Field(None, description="Plaid access token (Plaid only)")
-    user_id: Optional[str] = Field(None, description="SnapTrade user ID (SnapTrade only)")
-    user_secret: Optional[str] = Field(None, description="SnapTrade user secret (SnapTrade only)")
-    account_ids: Optional[list[str]] = Field(None, description="Filter by specific account IDs")
+    access_token: str | None = Field(None, description="Plaid access token (Plaid only)")
+    user_id: str | None = Field(None, description="SnapTrade user ID (SnapTrade only)")
+    user_secret: str | None = Field(None, description="SnapTrade user secret (SnapTrade only)")
+    account_ids: list[str] | None = Field(None, description="Filter by specific account IDs")
 
 
 class TransactionsRequest(BaseModel):
     """Request model for transactions endpoint."""
 
-    access_token: Optional[str] = Field(None, description="Plaid access token (Plaid only)")
-    user_id: Optional[str] = Field(None, description="SnapTrade user ID (SnapTrade only)")
-    user_secret: Optional[str] = Field(None, description="SnapTrade user secret (SnapTrade only)")
+    access_token: str | None = Field(None, description="Plaid access token (Plaid only)")
+    user_id: str | None = Field(None, description="SnapTrade user ID (SnapTrade only)")
+    user_secret: str | None = Field(None, description="SnapTrade user secret (SnapTrade only)")
     start_date: date = Field(..., description="Start date for transactions (YYYY-MM-DD)")
     end_date: date = Field(..., description="End date for transactions (YYYY-MM-DD)")
-    account_ids: Optional[list[str]] = Field(None, description="Filter by specific account IDs")
+    account_ids: list[str] | None = Field(None, description="Filter by specific account IDs")
 
 
 class AccountsRequest(BaseModel):
     """Request model for investment accounts endpoint."""
 
-    access_token: Optional[str] = Field(None, description="Plaid access token (Plaid only)")
-    user_id: Optional[str] = Field(None, description="SnapTrade user ID (SnapTrade only)")
-    user_secret: Optional[str] = Field(None, description="SnapTrade user secret (SnapTrade only)")
+    access_token: str | None = Field(None, description="Plaid access token (Plaid only)")
+    user_id: str | None = Field(None, description="SnapTrade user ID (SnapTrade only)")
+    user_secret: str | None = Field(None, description="SnapTrade user secret (SnapTrade only)")
 
 
 class AllocationRequest(BaseModel):
     """Request model for asset allocation endpoint."""
 
-    access_token: Optional[str] = Field(None, description="Plaid access token (Plaid only)")
-    user_id: Optional[str] = Field(None, description="SnapTrade user ID (SnapTrade only)")
-    user_secret: Optional[str] = Field(None, description="SnapTrade user secret (SnapTrade only)")
-    account_ids: Optional[list[str]] = Field(None, description="Filter by specific account IDs")
+    access_token: str | None = Field(None, description="Plaid access token (Plaid only)")
+    user_id: str | None = Field(None, description="SnapTrade user ID (SnapTrade only)")
+    user_secret: str | None = Field(None, description="SnapTrade user secret (SnapTrade only)")
+    account_ids: list[str] | None = Field(None, description="Filter by specific account IDs")
 
 
 class SecuritiesRequest(BaseModel):
     """Request model for securities endpoint."""
 
-    access_token: Optional[str] = Field(None, description="Plaid access token (Plaid only)")
-    user_id: Optional[str] = Field(None, description="SnapTrade user ID (SnapTrade only)")
-    user_secret: Optional[str] = Field(None, description="SnapTrade user secret (SnapTrade only)")
+    access_token: str | None = Field(None, description="Plaid access token (Plaid only)")
+    user_id: str | None = Field(None, description="SnapTrade user ID (SnapTrade only)")
+    user_secret: str | None = Field(None, description="SnapTrade user secret (SnapTrade only)")
     security_ids: list[str] = Field(..., description="List of security IDs to retrieve")
 
 
 def add_investments(
     app: FastAPI,
     prefix: str = "/investments",
-    provider: Optional[InvestmentProvider] = None,
+    provider: InvestmentProvider | None = None,
     include_in_schema: bool = True,
-    tags: Optional[list[str]] = None,
+    tags: list[str] | None = None,
 ) -> InvestmentProvider:
     """Add investment endpoints to FastAPI application.
 

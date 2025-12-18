@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from .base import BankingClient
 from ..models import Account
+from .base import BankingClient
 
 
 class PlaidClient(BankingClient):

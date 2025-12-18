@@ -37,7 +37,8 @@ Example:
 
 from datetime import date, datetime
 from decimal import Decimal
-from pydantic import BaseModel, Field, ConfigDict
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class TaxDocument(BaseModel):

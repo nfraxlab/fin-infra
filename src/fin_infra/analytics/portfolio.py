@@ -35,7 +35,6 @@ Examples:
 """
 
 from datetime import datetime
-from typing import Optional
 
 from fin_infra.analytics.models import (
     AssetAllocation,
@@ -47,7 +46,7 @@ from fin_infra.analytics.models import (
 async def calculate_portfolio_metrics(
     user_id: str,
     *,
-    accounts: Optional[list[str]] = None,
+    accounts: list[str] | None = None,
     brokerage_provider=None,
     market_provider=None,
 ) -> PortfolioMetrics:
@@ -131,7 +130,7 @@ async def compare_to_benchmark(
     *,
     benchmark: str = "SPY",
     period: str = "1y",
-    accounts: Optional[list[str]] = None,
+    accounts: list[str] | None = None,
     brokerage_provider=None,
     market_provider=None,
 ) -> BenchmarkComparison:
@@ -221,7 +220,7 @@ async def compare_to_benchmark(
 
 def _generate_mock_holdings(
     user_id: str,
-    accounts: Optional[list[str]] = None,
+    accounts: list[str] | None = None,
 ) -> list[dict]:
     """Generate mock portfolio holdings for testing.
 
@@ -415,7 +414,7 @@ def _parse_benchmark_period(period: str) -> int:
 def _calculate_portfolio_return(
     user_id: str,
     period_days: int,
-    accounts: Optional[list[str]] = None,
+    accounts: list[str] | None = None,
 ) -> tuple[float, float]:
     """Calculate portfolio return for specified period.
 
@@ -483,7 +482,7 @@ def _calculate_beta(
     user_id: str,
     benchmark: str,
     period_days: int,
-) -> Optional[float]:
+) -> float | None:
     """Calculate portfolio beta (volatility relative to benchmark).
 
     Beta = Covariance(portfolio_returns, benchmark_returns) / Variance(benchmark_returns)
@@ -713,6 +712,7 @@ def _calculate_allocation_from_holdings(
         - other → Other
     """
     from collections import defaultdict
+
     from .models import AssetAllocation
 
     if total_value == 0:

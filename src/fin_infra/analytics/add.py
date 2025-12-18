@@ -7,7 +7,7 @@ MUST use svc-infra dual routers (user_router) - NEVER generic APIRouter.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from fastapi import HTTPException, Query
 from pydantic import BaseModel, Field
@@ -15,15 +15,15 @@ from pydantic import BaseModel, Field
 if TYPE_CHECKING:
     from fastapi import FastAPI
 
-from .ease import easy_analytics, AnalyticsEngine
+from .ease import AnalyticsEngine, easy_analytics
 from .models import (
+    BenchmarkComparison,
     CashFlowAnalysis,
-    SavingsRateData,
-    SpendingInsight,
+    GrowthProjection,
     PersonalizedSpendingAdvice,
     PortfolioMetrics,
-    BenchmarkComparison,
-    GrowthProjection,
+    SavingsRateData,
+    SpendingInsight,
 )
 
 
@@ -33,15 +33,15 @@ class NetWorthForecastRequest(BaseModel):
 
     user_id: str = Field(..., description="User identifier")
     years: int = Field(default=30, ge=1, le=50, description="Projection years (1-50)")
-    initial_net_worth: Optional[float] = Field(None, description="Override initial net worth")
-    annual_contribution: Optional[float] = Field(None, description="Annual savings contribution")
-    conservative_return: Optional[float] = Field(
+    initial_net_worth: float | None = Field(None, description="Override initial net worth")
+    annual_contribution: float | None = Field(None, description="Annual savings contribution")
+    conservative_return: float | None = Field(
         None, description="Conservative return rate (e.g., 0.05 = 5%)"
     )
-    moderate_return: Optional[float] = Field(
+    moderate_return: float | None = Field(
         None, description="Moderate return rate (e.g., 0.07 = 7%)"
     )
-    aggressive_return: Optional[float] = Field(
+    aggressive_return: float | None = Field(
         None, description="Aggressive return rate (e.g., 0.10 = 10%)"
     )
 
@@ -49,7 +49,7 @@ class NetWorthForecastRequest(BaseModel):
 def add_analytics(
     app: FastAPI,
     prefix: str = "/analytics",
-    provider: Optional[AnalyticsEngine] = None,
+    provider: AnalyticsEngine | None = None,
     include_in_schema: bool = True,
 ) -> AnalyticsEngine:
     """Add analytics endpoints to FastAPI application.
@@ -124,9 +124,9 @@ def add_analytics(
     )
     async def get_cash_flow(
         user_id: str,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None,
-        period_days: Optional[int] = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
+        period_days: int | None = None,
     ) -> CashFlowAnalysis:
         """
         Calculate cash flow analysis for a user.
@@ -164,7 +164,7 @@ def add_analytics(
     )
     async def get_spending_insights(
         user_id: str,
-        period_days: Optional[int] = None,
+        period_days: int | None = None,
         include_trends: bool = True,
     ) -> SpendingInsight:
         """
@@ -186,7 +186,7 @@ def add_analytics(
     )
     async def get_spending_advice(
         user_id: str,
-        period_days: Optional[int] = None,
+        period_days: int | None = None,
     ) -> PersonalizedSpendingAdvice:
         """
         Generate personalized spending advice using AI.
@@ -206,11 +206,11 @@ def add_analytics(
     )
     async def get_portfolio_metrics(
         user_id: str,
-        accounts: Optional[list[str]] = None,
+        accounts: list[str] | None = None,
         with_holdings: bool = Query(
             False, description="Use real holdings data from investment provider for accurate P/L"
         ),
-        access_token: Optional[str] = Query(
+        access_token: str | None = Query(
             None, description="Investment provider access token (required if with_holdings=true)"
         ),
     ) -> PortfolioMetrics:
@@ -286,9 +286,9 @@ def add_analytics(
     )
     async def get_benchmark_comparison(
         user_id: str,
-        benchmark: Optional[str] = None,
+        benchmark: str | None = None,
         period: str = "1y",
-        accounts: Optional[list[str]] = None,
+        accounts: list[str] | None = None,
     ) -> BenchmarkComparison:
         """
         Compare portfolio to benchmark (e.g., SPY, VTI).

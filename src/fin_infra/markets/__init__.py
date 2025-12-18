@@ -101,7 +101,7 @@ def easy_market(
 
 
 def add_market_data(
-    app: "FastAPI",
+    app: FastAPI,
     *,
     provider: str | MarketDataProvider | None = None,
     prefix: str = "/market",

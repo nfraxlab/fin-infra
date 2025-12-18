@@ -155,7 +155,7 @@ class ExperianClient:
                 **kwargs,
             )
             response.raise_for_status()
-            return cast(dict[str, Any], response.json())
+            return cast("dict[str, Any]", response.json())
 
         except httpx.HTTPStatusError as e:
             # Parse error response

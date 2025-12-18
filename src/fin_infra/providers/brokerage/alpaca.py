@@ -314,8 +314,8 @@ class AlpacaBrokerage(BrokerageProvider):
         Alpaca entities have a _raw attribute with the API response data.
         """
         if hasattr(obj, "_raw"):
-            return cast(dict[Any, Any], obj._raw)
+            return cast("dict[Any, Any]", obj._raw)
         elif hasattr(obj, "__dict__"):
-            return cast(dict[Any, Any], obj.__dict__)
+            return cast("dict[Any, Any]", obj.__dict__)
         else:
-            return cast(dict[Any, Any], obj)
+            return cast("dict[Any, Any]", obj)

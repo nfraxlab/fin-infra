@@ -10,22 +10,22 @@ from __future__ import annotations
 
 from datetime import date
 from decimal import Decimal
-from typing import Any, Optional, cast
+from typing import Any, cast
 
 try:
+    import plaid
     from plaid.api import plaid_api
+    from plaid.api_client import ApiClient
+    from plaid.configuration import Configuration
+    from plaid.exceptions import ApiException
     from plaid.model.investments_holdings_get_request import InvestmentsHoldingsGetRequest
+    from plaid.model.investments_holdings_get_response import InvestmentsHoldingsGetResponse
     from plaid.model.investments_transactions_get_request import (
         InvestmentsTransactionsGetRequest,
     )
-    from plaid.model.investments_holdings_get_response import InvestmentsHoldingsGetResponse
     from plaid.model.investments_transactions_get_response import (
         InvestmentsTransactionsGetResponse,
     )
-    from plaid.exceptions import ApiException
-    import plaid
-    from plaid.api_client import ApiClient
-    from plaid.configuration import Configuration
 
     HAS_PLAID = True
 except ImportError:  # pragma: no cover
@@ -128,10 +128,10 @@ class PlaidInvestmentProvider(InvestmentProvider):
             "development": plaid.Environment.Sandbox,  # Map development to sandbox
             "production": plaid.Environment.Production,
         }
-        return cast(str, hosts.get(environment.lower(), plaid.Environment.Sandbox))
+        return cast("str", hosts.get(environment.lower(), plaid.Environment.Sandbox))
 
     async def get_holdings(
-        self, access_token: str, account_ids: Optional[list[str]] = None
+        self, access_token: str, account_ids: list[str] | None = None
     ) -> list[Holding]:
         """Fetch investment holdings from Plaid.
 
@@ -189,7 +189,7 @@ class PlaidInvestmentProvider(InvestmentProvider):
         access_token: str,
         start_date: date,
         end_date: date,
-        account_ids: Optional[list[str]] = None,
+        account_ids: list[str] | None = None,
     ) -> list[InvestmentTransaction]:
         """Fetch investment transactions from Plaid.
 

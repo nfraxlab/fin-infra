@@ -13,7 +13,7 @@ Quick start:
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Literal
 
 if TYPE_CHECKING:
@@ -74,7 +74,7 @@ def easy_crypto(
 
 
 def add_crypto_data(
-    app: "FastAPI",
+    app: FastAPI,
     *,
     provider: str | CryptoDataProvider | None = None,
     prefix: str = "/crypto",
@@ -131,9 +131,9 @@ def add_crypto_data(
             >>> add_observability(app)
             >>> crypto = add_crypto_data(app)
     """
-    from svc_infra.api.fastapi.dual.public import public_router
-    from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
     from fastapi import HTTPException, Query
+    from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
+    from svc_infra.api.fastapi.dual.public import public_router
 
     # Initialize provider if string or None
     if isinstance(provider, str):
@@ -168,11 +168,11 @@ def add_crypto_data(
                 "price": float(ticker.price),
                 "as_of": ticker.as_of.isoformat()
                 if ticker.as_of
-                else datetime.now(timezone.utc).isoformat(),
+                else datetime.now(UTC).isoformat(),
             }
         except Exception as e:
             raise HTTPException(
-                status_code=400, detail=f"Error fetching ticker for {symbol}: {str(e)}"
+                status_code=400, detail=f"Error fetching ticker for {symbol}: {e!s}"
             )
 
     @router.get("/ohlcv/{symbol}")
@@ -216,9 +216,7 @@ def add_crypto_data(
                 ],
             }
         except Exception as e:
-            raise HTTPException(
-                status_code=400, detail=f"Error fetching OHLCV for {symbol}: {str(e)}"
-            )
+            raise HTTPException(status_code=400, detail=f"Error fetching OHLCV for {symbol}: {e!s}")
 
     # Mount router
     app.include_router(router, include_in_schema=True)

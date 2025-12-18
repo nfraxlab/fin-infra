@@ -30,7 +30,7 @@ Example:
 """
 
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Literal, cast
 
 from fin_infra.credit.experian.auth import ExperianAuthManager
@@ -177,7 +177,7 @@ class ExperianProvider(CreditProvider):
 
         # FCRA Audit Log - REQUIRED for regulatory compliance (15 USC § 1681b)
         # This log must be retained for at least 2 years per FCRA requirements
-        timestamp = datetime.now(timezone.utc).isoformat()
+        timestamp = datetime.now(UTC).isoformat()
         fcra_audit_logger.info(
             "FCRA_CREDIT_PULL",
             extra={
@@ -266,7 +266,7 @@ class ExperianProvider(CreditProvider):
         # FCRA Audit Log - REQUIRED for regulatory compliance (15 USC § 1681b)
         # Full credit report pulls have stricter requirements than score-only pulls
         # This log must be retained for at least 2 years per FCRA requirements
-        timestamp = datetime.now(timezone.utc).isoformat()
+        timestamp = datetime.now(UTC).isoformat()
         fcra_audit_logger.info(
             "FCRA_CREDIT_PULL",
             extra={
@@ -360,4 +360,4 @@ class ExperianProvider(CreditProvider):
             signature_key=signature_key,
         )
 
-        return cast(str, data.get("subscriptionId", "unknown"))
+        return cast("str", data.get("subscriptionId", "unknown"))

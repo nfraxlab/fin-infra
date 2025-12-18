@@ -21,8 +21,8 @@ Example:
 from decimal import Decimal
 
 from fin_infra.models.tax import (
-    TaxDocument,
     CryptoTaxReport,
+    TaxDocument,
     TaxLiability,
 )
 from fin_infra.providers.base import TaxProvider

@@ -46,17 +46,17 @@ from .models import (
     SubscriptionDetection,
     SubscriptionStats,
 )
-from .summary import (
-    CancellationOpportunity,
-    RecurringItem,
-    RecurringSummary,
-    get_recurring_summary,
-)
 from .normalizer import (
     FuzzyMatcher,
     get_canonical_merchant,
     is_generic_merchant,
     normalize_merchant,
+)
+from .summary import (
+    CancellationOpportunity,
+    RecurringItem,
+    RecurringSummary,
+    get_recurring_summary,
 )
 
 __all__ = [

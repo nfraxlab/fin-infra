@@ -5,6 +5,14 @@ Provides comprehensive goal management with milestone tracking,
 funding allocation, and progress monitoring.
 """
 
+from fin_infra.goals.add import add_goals
+from fin_infra.goals.funding import (
+    get_account_allocations,
+    get_goal_funding_sources,
+    link_account_to_goal,
+    remove_account_from_goal,
+    update_account_allocation,
+)
 from fin_infra.goals.management import (
     FinancialGoalTracker,
     GoalProgressReport,
@@ -28,14 +36,6 @@ from fin_infra.goals.milestones import (
     get_next_milestone,
     trigger_milestone_notification,
 )
-from fin_infra.goals.funding import (
-    link_account_to_goal,
-    get_goal_funding_sources,
-    get_account_allocations,
-    update_account_allocation,
-    remove_account_from_goal,
-)
-from fin_infra.goals.add import add_goals
 from fin_infra.goals.models import (
     FundingSource,
     Goal,

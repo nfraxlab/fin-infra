@@ -22,8 +22,8 @@ Example:
     >>> # Raises ValueError if total allocation > 100%
 """
 
-from fin_infra.goals.models import FundingSource
 from fin_infra.goals.management import get_goal
+from fin_infra.goals.models import FundingSource
 
 # In-memory storage for funding allocations
 # Structure: {account_id: {goal_id: allocation_percent}}

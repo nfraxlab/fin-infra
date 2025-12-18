@@ -29,29 +29,29 @@ add_goals(app)
 
 import logging
 from datetime import datetime
-from typing import Any, Optional, cast
+from typing import Any, cast
 
-from fastapi import FastAPI, HTTPException, status, Query, Body
+from fastapi import Body, FastAPI, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
+from fin_infra.goals.funding import (
+    get_goal_funding_sources,
+    link_account_to_goal,
+    remove_account_from_goal,
+    update_account_allocation,
+)
 from fin_infra.goals.management import (
     create_goal,
-    list_goals,
-    get_goal,
-    update_goal,
     delete_goal,
+    get_goal,
     get_goal_progress,
+    list_goals,
+    update_goal,
 )
 from fin_infra.goals.milestones import (
     add_milestone,
     check_milestones,
     get_milestone_progress,
-)
-from fin_infra.goals.funding import (
-    link_account_to_goal,
-    get_goal_funding_sources,
-    update_account_allocation,
-    remove_account_from_goal,
 )
 from fin_infra.goals.models import GoalStatus
 
@@ -63,7 +63,7 @@ logger = logging.getLogger(__name__)
 # ============================================================================
 
 
-def parse_iso_date(date_str: Optional[str]) -> Optional[datetime]:
+def parse_iso_date(date_str: str | None) -> datetime | None:
     """Parse ISO date string to datetime object."""
     if date_str is None:
         return None
@@ -85,24 +85,24 @@ class CreateGoalRequest(BaseModel):
     name: str = Field(..., min_length=1, max_length=200, description="Goal name")
     goal_type: str = Field(..., description="Goal type (savings, debt, investment, etc.)")
     target_amount: float = Field(..., gt=0, description="Target amount")
-    deadline: Optional[str] = Field(None, description="Deadline (ISO date)")
-    description: Optional[str] = Field(None, description="Goal description")
-    current_amount: Optional[float] = Field(0.0, ge=0, description="Current amount")
-    auto_contribute: Optional[bool] = Field(False, description="Auto-contribute enabled")
-    tags: Optional[list[str]] = Field(None, description="Goal tags")
+    deadline: str | None = Field(None, description="Deadline (ISO date)")
+    description: str | None = Field(None, description="Goal description")
+    current_amount: float | None = Field(0.0, ge=0, description="Current amount")
+    auto_contribute: bool | None = Field(False, description="Auto-contribute enabled")
+    tags: list[str] | None = Field(None, description="Goal tags")
 
 
 class UpdateGoalRequest(BaseModel):
     """Request body for updating a goal."""
 
-    name: Optional[str] = Field(None, min_length=1, max_length=200)
-    target_amount: Optional[float] = Field(None, gt=0)
-    deadline: Optional[str] = None
-    description: Optional[str] = None
-    current_amount: Optional[float] = Field(None, ge=0)
-    status: Optional[GoalStatus] = None
-    auto_contribute: Optional[bool] = None
-    tags: Optional[list[str]] = None
+    name: str | None = Field(None, min_length=1, max_length=200)
+    target_amount: float | None = Field(None, gt=0)
+    deadline: str | None = None
+    description: str | None = None
+    current_amount: float | None = Field(None, ge=0)
+    status: GoalStatus | None = None
+    auto_contribute: bool | None = None
+    tags: list[str] | None = None
 
 
 class AddMilestoneRequest(BaseModel):
@@ -110,7 +110,7 @@ class AddMilestoneRequest(BaseModel):
 
     amount: float = Field(..., gt=0, description="Milestone amount")
     description: str = Field(..., min_length=1, description="Milestone description")
-    target_date: Optional[str] = Field(None, description="Target date (ISO date)")
+    target_date: str | None = Field(None, description="Target date (ISO date)")
 
 
 class LinkAccountRequest(BaseModel):
@@ -240,11 +240,11 @@ def add_goals(
 
     @router.get("", response_model=list[dict])
     async def list_goals_endpoint(
-        user_id: Optional[str] = Query(
+        user_id: str | None = Query(
             None, description="User identifier (optional, returns all if not provided)"
         ),
-        goal_type: Optional[str] = Query(None, description="Filter by goal type"),
-        status_filter: Optional[str] = Query(None, alias="status", description="Filter by status"),
+        goal_type: str | None = Query(None, description="Filter by goal type"),
+        status_filter: str | None = Query(None, alias="status", description="Filter by status"),
     ) -> list[dict]:
         """
         List all goals for a user with optional filters.
@@ -469,7 +469,7 @@ def add_goals(
             # Get all milestones from the goal (check_milestones only returns newly reached ones)
             goal = get_goal(goal_id)
             milestones = goal.get("milestones", [])
-            return cast(list[dict[Any, Any]], milestones)
+            return cast("list[dict[Any, Any]]", milestones)
         except KeyError:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail=f"Goal {goal_id} not found"

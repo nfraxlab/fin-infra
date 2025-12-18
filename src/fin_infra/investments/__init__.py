@@ -110,7 +110,7 @@ def easy_investments(
             provider = "plaid"  # Default to Plaid
 
     # Check cache
-    cache_key = f"{provider}:{str(sorted(config.items()))}"
+    cache_key = f"{provider}:{sorted(config.items())!s}"
     if cache_key in _provider_cache:
         return _provider_cache[cache_key]
 

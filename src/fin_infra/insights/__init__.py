@@ -16,8 +16,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from fastapi import FastAPI
 
-from .models import Insight, InsightFeed, InsightPriority, InsightCategory
 from .aggregator import aggregate_insights, get_user_insights
+from .models import Insight, InsightCategory, InsightFeed, InsightPriority
 
 logger = logging.getLogger(__name__)
 
@@ -80,10 +80,10 @@ def add_insights(
         - Notification system for critical insights
     """
     from fastapi import Query
+    from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
 
     # Import svc-infra user router (requires auth)
     from svc_infra.api.fastapi.dual.protected import user_router
-    from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
 
     # Create router
     router = user_router(prefix=prefix, tags=["Insights"])

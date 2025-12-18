@@ -9,15 +9,14 @@ from __future__ import annotations
 import os
 import time
 from collections.abc import Sequence
+from datetime import UTC, datetime
 from decimal import Decimal
-from datetime import datetime, timezone
 
 import httpx
 
-from .base import MarketDataProvider
-from ...models import Quote, Candle
+from ...models import Candle, Quote
 from ...settings import Settings
-
+from .base import MarketDataProvider
 
 _BASE = "https://www.alphavantage.co/query"
 
@@ -128,11 +127,7 @@ class AlphaVantageMarketData(MarketDataProvider):
 
         price = Decimal(str(q.get("05. price", "0")))
         ts = q.get("07. latest trading day")
-        as_of = (
-            datetime.strptime(ts, "%Y-%m-%d").replace(tzinfo=timezone.utc)
-            if ts
-            else datetime.now(timezone.utc)
-        )
+        as_of = datetime.strptime(ts, "%Y-%m-%d").replace(tzinfo=UTC) if ts else datetime.now(UTC)
 
         return Quote(symbol=symbol.upper(), price=price, as_of=as_of)
 
@@ -202,7 +197,7 @@ class AlphaVantageMarketData(MarketDataProvider):
         out: list[Candle] = []
         for d, vals in list(time_series.items())[:limit]:
             try:
-                dt = datetime.strptime(d, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                dt = datetime.strptime(d, "%Y-%m-%d").replace(tzinfo=UTC)
                 ts_ms = int(dt.timestamp() * 1000)
                 out.append(
                     Candle(

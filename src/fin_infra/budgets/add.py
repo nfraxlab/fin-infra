@@ -22,7 +22,6 @@ Generic Design:
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -42,16 +41,16 @@ class CreateBudgetRequest(BaseModel):
     type: BudgetType = Field(..., description="Budget type")
     period: BudgetPeriod = Field(..., description="Budget period")
     categories: dict[str, float] = Field(..., description="Category allocations")
-    start_date: Optional[datetime] = Field(None, description="Start date (defaults to now)")
+    start_date: datetime | None = Field(None, description="Start date (defaults to now)")
     rollover_enabled: bool = Field(False, description="Enable rollover")
 
 
 class UpdateBudgetRequest(BaseModel):
     """Request model for updating a budget."""
 
-    name: Optional[str] = Field(None, description="Updated budget name")
-    categories: Optional[dict[str, float]] = Field(None, description="Updated categories")
-    rollover_enabled: Optional[bool] = Field(None, description="Updated rollover setting")
+    name: str | None = Field(None, description="Updated budget name")
+    categories: dict[str, float] | None = Field(None, description="Updated categories")
+    rollover_enabled: bool | None = Field(None, description="Updated rollover setting")
 
 
 class ApplyTemplateRequest(BaseModel):
@@ -60,14 +59,14 @@ class ApplyTemplateRequest(BaseModel):
     user_id: str = Field(..., description="User identifier")
     template_name: str = Field(..., description="Template name (e.g., '50_30_20')")
     total_income: float = Field(..., description="Total income/budget amount", gt=0)
-    budget_name: Optional[str] = Field(None, description="Optional budget name")
-    start_date: Optional[datetime] = Field(None, description="Optional start date")
+    budget_name: str | None = Field(None, description="Optional budget name")
+    start_date: datetime | None = Field(None, description="Optional start date")
 
 
 def add_budgets(
     app: FastAPI,
-    tracker: Optional[BudgetTracker] = None,
-    db_url: Optional[str] = None,
+    tracker: BudgetTracker | None = None,
+    db_url: str | None = None,
     prefix: str = "/budgets",
 ) -> BudgetTracker:
     """Add budget management endpoints to FastAPI app.
@@ -162,13 +161,13 @@ def add_budgets(
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to create budget: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Failed to create budget: {e!s}")
 
     # Endpoint 2: List budgets
     @router.get("", response_model=list[Budget], summary="List Budgets")
     async def list_budgets(
         user_id: str = Query(..., description="User identifier"),
-        type: Optional[BudgetType] = Query(None, description="Filter by budget type"),
+        type: BudgetType | None = Query(None, description="Filter by budget type"),
     ) -> list[Budget]:
         """
         List budgets for a user.
@@ -189,7 +188,7 @@ def add_budgets(
             budgets = await tracker.get_budgets(user_id=user_id, type=type)
             return budgets
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to list budgets: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Failed to list budgets: {e!s}")
 
     # Endpoint 3: Get single budget
     @router.get("/{budget_id}", response_model=Budget, summary="Get Budget")
@@ -217,7 +216,7 @@ def add_budgets(
         except ValueError as e:
             raise HTTPException(status_code=404, detail=str(e))
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to get budget: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Failed to get budget: {e!s}")
 
     # Endpoint 4: Update budget
     @router.patch("/{budget_id}", response_model=Budget, summary="Update Budget")
@@ -269,7 +268,7 @@ def add_budgets(
             else:
                 raise HTTPException(status_code=400, detail=error_msg)
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to update budget: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Failed to update budget: {e!s}")
 
     # Endpoint 5: Delete budget
     @router.delete("/{budget_id}", status_code=204, summary="Delete Budget", response_model=None)
@@ -296,7 +295,7 @@ def add_budgets(
         except ValueError as e:
             raise HTTPException(status_code=404, detail=str(e))
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to delete budget: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Failed to delete budget: {e!s}")
 
     # Endpoint 6: Get budget progress
     @router.get(
@@ -328,7 +327,7 @@ def add_budgets(
         except ValueError as e:
             raise HTTPException(status_code=404, detail=str(e))
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to get budget progress: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Failed to get budget progress: {e!s}")
 
     # Endpoint 7: List templates
     @router.get("/templates/list", response_model=dict, summary="List Budget Templates")
@@ -402,7 +401,7 @@ def add_budgets(
             raise HTTPException(status_code=400, detail=str(e))
         except Exception as e:
             raise HTTPException(
-                status_code=500, detail=f"Failed to create budget from template: {str(e)}"
+                status_code=500, detail=f"Failed to create budget from template: {e!s}"
             )
 
     # Mount router

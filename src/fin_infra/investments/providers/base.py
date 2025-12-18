@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from datetime import date
-from typing import Optional
 
 # Import will work once models.py is fully implemented in Task 3
 # For now, using TYPE_CHECKING to avoid circular imports
@@ -30,7 +29,7 @@ class InvestmentProvider(ABC):
 
     @abstractmethod
     async def get_holdings(
-        self, access_token: str, account_ids: Optional[list[str]] = None
+        self, access_token: str, account_ids: list[str] | None = None
     ) -> list[Holding]:
         """Fetch holdings for investment accounts.
 
@@ -54,7 +53,7 @@ class InvestmentProvider(ABC):
         access_token: str,
         start_date: date,
         end_date: date,
-        account_ids: Optional[list[str]] = None,
+        account_ids: list[str] | None = None,
     ) -> list[InvestmentTransaction]:
         """Fetch investment transactions within date range.
 

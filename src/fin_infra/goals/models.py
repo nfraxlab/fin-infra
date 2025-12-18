@@ -11,10 +11,8 @@ Provides comprehensive data models for:
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
-
 
 # ============================================================================
 # Enums
@@ -69,14 +67,14 @@ class Milestone(BaseModel):
     """
 
     amount: float = Field(..., description="Milestone target amount", gt=0)
-    target_date: Optional[datetime] = Field(
+    target_date: datetime | None = Field(
         None, description="Target date to reach milestone (optional)"
     )
     description: str = Field(
         ..., description="Milestone description (e.g., '25% to emergency fund')", max_length=200
     )
     reached: bool = Field(default=False, description="Whether milestone has been reached")
-    reached_date: Optional[datetime] = Field(
+    reached_date: datetime | None = Field(
         None, description="Date milestone was reached (if reached=True)"
     )
 
@@ -107,7 +105,7 @@ class FundingSource(BaseModel):
         ge=0.0,
         le=100.0,
     )
-    account_name: Optional[str] = Field(
+    account_name: str | None = Field(
         None, description="Human-readable account name (e.g., 'Chase Savings')"
     )
 
@@ -154,9 +152,7 @@ class Goal(BaseModel):
     id: str = Field(..., description="Unique goal identifier")
     user_id: str = Field(..., description="User who owns this goal")
     name: str = Field(..., description="Goal name", max_length=200)
-    description: Optional[str] = Field(
-        None, description="Detailed goal description", max_length=1000
-    )
+    description: str | None = Field(None, description="Detailed goal description", max_length=1000)
 
     # Goal type and status
     type: GoalType = Field(..., description="Goal type")
@@ -165,7 +161,7 @@ class Goal(BaseModel):
     # Financial targets
     target_amount: float = Field(..., description="Target amount to achieve", gt=0)
     current_amount: float = Field(default=0.0, description="Current progress toward target", ge=0.0)
-    deadline: Optional[datetime] = Field(None, description="Target completion date")
+    deadline: datetime | None = Field(None, description="Target completion date")
 
     # Milestone tracking
     milestones: list[Milestone] = Field(default_factory=list, description="Progress milestones")
@@ -190,7 +186,7 @@ class Goal(BaseModel):
     updated_at: datetime = Field(
         default_factory=datetime.utcnow, description="Last update timestamp"
     )
-    completed_at: Optional[datetime] = Field(
+    completed_at: datetime | None = Field(
         None, description="Completion timestamp (if status=COMPLETED)"
     )
 
@@ -264,7 +260,7 @@ class GoalProgress(BaseModel):
     )
 
     # Projections
-    projected_completion_date: Optional[datetime] = Field(
+    projected_completion_date: datetime | None = Field(
         None, description="Projected completion date at current pace"
     )
     on_track: bool = Field(..., description="Whether on track to meet deadline")

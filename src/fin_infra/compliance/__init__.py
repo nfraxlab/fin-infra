@@ -20,9 +20,9 @@ Example:
 from __future__ import annotations
 
 import logging
-from datetime import datetime
-from typing import Any, TYPE_CHECKING, cast
 from collections.abc import Callable
+from datetime import datetime
+from typing import TYPE_CHECKING, Any, cast
 
 if TYPE_CHECKING:
     from fastapi import FastAPI, Request, Response
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 
 def log_compliance_event(
-    app: "FastAPI",
+    app: FastAPI,
     event: str,
     context: dict[str, Any] | None = None,
 ) -> None:
@@ -63,7 +63,7 @@ def log_compliance_event(
 
 
 def add_compliance_tracking(
-    app: "FastAPI",
+    app: FastAPI,
     *,
     track_banking: bool = True,
     track_credit: bool = True,
@@ -112,7 +112,7 @@ def add_compliance_tracking(
     """
 
     @app.middleware("http")
-    async def compliance_tracking_middleware(request: "Request", call_next: Callable) -> "Response":
+    async def compliance_tracking_middleware(request: Request, call_next: Callable) -> Response:
         """Middleware to track compliance events for financial endpoints."""
         path = request.url.path
         method = request.method

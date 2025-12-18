@@ -23,23 +23,22 @@ Quick Start:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from fastapi import FastAPI
-
     from svc_infra.storage.base import StorageBackend
 
     from .ease import FinancialDocumentManager
 
 
 def add_documents(
-    app: "FastAPI",
-    storage: Optional["StorageBackend"] = None,
+    app: FastAPI,
+    storage: StorageBackend | None = None,
     default_ocr_provider: str = "tesseract",
     prefix: str = "/documents",
-    tags: Optional[list[str]] = None,
-) -> "FinancialDocumentManager":
+    tags: list[str] | None = None,
+) -> FinancialDocumentManager:
     """
     Add financial document management endpoints to FastAPI app.
 
@@ -87,7 +86,6 @@ def add_documents(
         - Stores manager on app.state.financial_documents
     """
     from fastapi import HTTPException
-
     from svc_infra.api.fastapi.dual.protected import user_router
 
     # Import svc-infra base function to mount base endpoints (with fallback)
@@ -128,7 +126,7 @@ def add_documents(
     @router.post("/{document_id}/ocr", response_model=OCRResult)
     async def extract_text_ocr(
         document_id: str,
-        provider: Optional[str] = None,
+        provider: str | None = None,
         force_refresh: bool = False,
     ) -> OCRResult:
         """

@@ -14,7 +14,7 @@ Only called for ambiguous patterns (20-40% variance, ~10% of patterns).
 from __future__ import annotations
 
 import logging
-from typing import Any, Optional, cast
+from typing import Any, cast
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -41,14 +41,14 @@ class VariableRecurringPattern(BaseModel):
         ...,
         description="True if pattern is recurring despite variance",
     )
-    cadence: Optional[str] = Field(
+    cadence: str | None = Field(
         None,
         description=(
             "Frequency if recurring: monthly, bi-weekly, quarterly, annual, etc. "
             "None if not recurring."
         ),
     )
-    expected_range: Optional[tuple[float, float]] = Field(
+    expected_range: tuple[float, float] | None = Field(
         None,
         description=(
             "Expected amount range (min, max) if recurring. "
@@ -100,7 +100,7 @@ Examples:
 1. Merchant: "City Electric"
    Amounts: [$45, $52, $48, $55, $50, $49]
    Dates: Monthly (15th ±7 days)
-   → is_recurring: true, cadence: "monthly", range: (40, 60), 
+   → is_recurring: true, cadence: "monthly", range: (40, 60),
      reasoning: "Seasonal winter heating variation", confidence: 0.85
 
 2. Merchant: "T-Mobile"
@@ -164,7 +164,7 @@ class VariableDetectorLLM:
     def __init__(
         self,
         provider: str = "google",
-        model_name: Optional[str] = None,
+        model_name: str | None = None,
         max_cost_per_day: float = 0.10,
         max_cost_per_month: float = 2.00,
     ):
@@ -293,7 +293,7 @@ class VariableDetectorLLM:
 
         # Extract structured output
         if hasattr(response, "structured") and response.structured:
-            return cast(VariableRecurringPattern, response.structured)
+            return cast("VariableRecurringPattern", response.structured)
         else:
             raise ValueError(f"LLM returned no structured output for '{merchant_name}'")
 

@@ -25,15 +25,14 @@ Example:
 import logging
 from typing import cast
 
-from fastapi import FastAPI, Depends, HTTPException, status
-
-from svc_infra.api.fastapi.dual.protected import user_router, RequireUser
+from fastapi import Depends, FastAPI, HTTPException, status
 from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
+from svc_infra.api.fastapi.dual.protected import RequireUser, user_router
 from svc_infra.cache import resource
 from svc_infra.webhooks import add_webhooks
 
+from fin_infra.models.credit import CreditReport, CreditScore
 from fin_infra.providers.base import CreditProvider
-from fin_infra.models.credit import CreditScore, CreditReport
 
 logger = logging.getLogger(__name__)
 
@@ -156,8 +155,8 @@ def add_credit(
         if enable_webhooks and hasattr(app.state, "webhooks_outbox"):
             try:
                 # Get webhook service from app state
-                from svc_infra.webhooks.service import WebhookService
                 from svc_infra.db.outbox import OutboxStore
+                from svc_infra.webhooks.service import WebhookService
 
                 outbox: OutboxStore = app.state.webhooks_outbox
                 subs = app.state.webhooks_subscriptions
@@ -176,7 +175,7 @@ def add_credit(
                 # Don't fail request if webhook publishing fails
                 logger.warning(f"Failed to publish credit.score_changed webhook: {e}")
 
-        return cast(CreditScore, score)
+        return cast("CreditScore", score)
 
     @router.post("/report", response_model=CreditReport)
     @credit_resource.cache_read(ttl=cache_ttl, suffix="report")
@@ -220,7 +219,7 @@ def add_credit(
                 detail="Credit bureau service unavailable",
             )
 
-        return cast(CreditReport, report)
+        return cast("CreditReport", report)
 
     # Mount router with dual routes (with/without trailing slash)
     app.include_router(router, include_in_schema=True)

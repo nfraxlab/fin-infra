@@ -12,7 +12,6 @@ Usage:
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import click
 import typer
@@ -54,47 +53,47 @@ def cmd_scaffold(
         "--overwrite/--no-overwrite",
         help="Overwrite existing files",
     ),
-    models_filename: Optional[str] = typer.Option(
+    models_filename: str | None = typer.Option(
         None,
         "--models-filename",
         help="Custom filename for models (default: {domain}.py)",
     ),
-    schemas_filename: Optional[str] = typer.Option(
+    schemas_filename: str | None = typer.Option(
         None,
         "--schemas-filename",
         help="Custom filename for schemas (default: {domain}_schemas.py)",
     ),
-    repository_filename: Optional[str] = typer.Option(
+    repository_filename: str | None = typer.Option(
         None,
         "--repository-filename",
         help="Custom filename for repository (default: {domain}_repository.py)",
     ),
 ) -> None:
     """Generate SQLAlchemy models, Pydantic schemas, and repository code from templates.
-    
+
     The scaffold command generates production-ready persistence layer code that works
     seamlessly with svc-infra's add_sql_resources() for automatic CRUD APIs.
-    
+
     Examples:
         # Basic scaffold (models + schemas + repository)
         fin-infra scaffold budgets --dest-dir app/models/
-        
+
         # Financial goals tracking
         fin-infra scaffold goals --dest-dir app/models/goals/
-        
+
         # With multi-tenancy and soft deletes
         fin-infra scaffold budgets --dest-dir app/models/ \
             --include-tenant --include-soft-delete
-        
+
         # Without repository (use svc-infra SqlRepository directly)
         fin-infra scaffold goals --dest-dir app/models/ \\
             --no-with-repository
-        
+
         # Custom filenames
         fin-infra scaffold budgets --dest-dir app/models/ \\
             --models-filename custom_budget.py \\
             --schemas-filename custom_schemas.py
-    
+
     After scaffolding, integrate with svc-infra:
         1. Run migrations: svc-infra revision -m "add budgets" --autogenerate
         2. Apply: svc-infra upgrade head

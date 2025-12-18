@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from datetime import date
 from decimal import Decimal
-from typing import Any, Optional, cast
+from typing import Any, cast
 
 import httpx
 
@@ -115,7 +115,7 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
     async def get_holdings(
         self,
         access_token: str,
-        account_ids: Optional[list[str]] = None,
+        account_ids: list[str] | None = None,
     ) -> list[Holding]:
         """Fetch investment holdings from SnapTrade.
 
@@ -171,14 +171,14 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
         except httpx.HTTPStatusError as e:
             raise self._transform_error(e)
         except Exception as e:
-            raise ValueError(f"SnapTrade API error: {str(e)}")
+            raise ValueError(f"SnapTrade API error: {e!s}")
 
     async def get_transactions(
         self,
         access_token: str,
         start_date: date,
         end_date: date,
-        account_ids: Optional[list[str]] = None,
+        account_ids: list[str] | None = None,
     ) -> list[InvestmentTransaction]:
         """Fetch investment transactions from SnapTrade.
 
@@ -244,7 +244,7 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
         except httpx.HTTPStatusError as e:
             raise self._transform_error(e)
         except Exception as e:
-            raise ValueError(f"SnapTrade API error: {str(e)}")
+            raise ValueError(f"SnapTrade API error: {e!s}")
 
     async def get_securities(self, access_token: str, security_ids: list[str]) -> list[Security]:
         """Fetch security details from SnapTrade positions.
@@ -267,7 +267,7 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
             >>> for security in securities:
             ...     print(f"{security.ticker_symbol}: ${security.close_price}")
         """
-        user_id, user_secret = self._parse_access_token(access_token)
+        _user_id, _user_secret = self._parse_access_token(access_token)
 
         try:
             # Get all holdings to extract securities
@@ -282,7 +282,7 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
             return list(securities_map.values())
 
         except Exception as e:
-            raise ValueError(f"SnapTrade API error: {str(e)}")
+            raise ValueError(f"SnapTrade API error: {e!s}")
 
     async def get_investment_accounts(self, access_token: str) -> list[InvestmentAccount]:
         """Fetch investment accounts with aggregated holdings.
@@ -356,7 +356,7 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
         except httpx.HTTPStatusError as e:
             raise self._transform_error(e)
         except Exception as e:
-            raise ValueError(f"SnapTrade API error: {str(e)}")
+            raise ValueError(f"SnapTrade API error: {e!s}")
 
     async def list_connections(self, access_token: str) -> list[dict[str, Any]]:
         """List brokerage connections for a user.
@@ -381,12 +381,12 @@ class SnapTradeInvestmentProvider(InvestmentProvider):
             url = f"{self.base_url}/connections"
             response = await self.client.get(url, headers=auth_headers)
             response.raise_for_status()
-            return cast(list[dict[str, Any]], await response.json())
+            return cast("list[dict[str, Any]]", await response.json())
 
         except httpx.HTTPStatusError as e:
             raise self._transform_error(e)
         except Exception as e:
-            raise ValueError(f"SnapTrade API error: {str(e)}")
+            raise ValueError(f"SnapTrade API error: {e!s}")
 
     def get_brokerage_capabilities(self, brokerage_name: str) -> dict[str, Any]:
         """Get capabilities for a specific brokerage.

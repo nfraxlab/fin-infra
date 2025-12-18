@@ -36,7 +36,7 @@ Quick Start:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 try:
     from svc_infra.documents import DocumentManager as BaseDocumentManager
@@ -94,7 +94,7 @@ class FinancialDocumentManager(BaseDocumentManager):
 
     def __init__(
         self,
-        storage: "StorageBackend",
+        storage: StorageBackend,
         default_ocr_provider: str = "tesseract",
     ):
         """
@@ -111,12 +111,12 @@ class FinancialDocumentManager(BaseDocumentManager):
         self,
         user_id: str,
         file: bytes,
-        document_type: "DocumentType",
+        document_type: DocumentType,
         filename: str,
-        metadata: Optional[dict] = None,
-        tax_year: Optional[int] = None,
-        form_type: Optional[str] = None,
-    ) -> "FinancialDocument":
+        metadata: dict | None = None,
+        tax_year: int | None = None,
+        form_type: str | None = None,
+    ) -> FinancialDocument:
         """
         Upload a financial document with financial-specific fields.
 
@@ -159,11 +159,11 @@ class FinancialDocumentManager(BaseDocumentManager):
     def list_financial(
         self,
         user_id: str,
-        document_type: Optional["DocumentType"] = None,
-        tax_year: Optional[int] = None,
+        document_type: DocumentType | None = None,
+        tax_year: int | None = None,
         limit: int = 100,
         offset: int = 0,
-    ) -> list["FinancialDocument"]:
+    ) -> list[FinancialDocument]:
         """
         List user's financial documents with filters.
 
@@ -207,9 +207,9 @@ class FinancialDocumentManager(BaseDocumentManager):
     async def extract_text(
         self,
         document_id: str,
-        provider: Optional[str] = None,
+        provider: str | None = None,
         force_refresh: bool = False,
-    ) -> "OCRResult":
+    ) -> OCRResult:
         """
         Extract text from document using OCR (financial extension).
 
@@ -239,7 +239,7 @@ class FinancialDocumentManager(BaseDocumentManager):
         self,
         document_id: str,
         force_refresh: bool = False,
-    ) -> "DocumentAnalysis":
+    ) -> DocumentAnalysis:
         """
         Analyze document using AI (financial extension).
 
@@ -268,7 +268,7 @@ DocumentManager = FinancialDocumentManager
 
 
 def easy_documents(
-    storage: Optional["StorageBackend"] = None,
+    storage: StorageBackend | None = None,
     default_ocr_provider: str = "tesseract",
 ) -> FinancialDocumentManager:
     """

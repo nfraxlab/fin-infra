@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from typing import Any, Optional, cast
+from typing import Any, cast
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -61,7 +61,7 @@ class SubscriptionInsights(BaseModel):
         ge=0.0,
         description="Total monthly subscription cost",
     )
-    potential_savings: Optional[float] = Field(
+    potential_savings: float | None = Field(
         None,
         ge=0.0,
         description="Potential monthly savings from recommendations (if applicable)",
@@ -105,20 +105,20 @@ Guidelines:
 
 Examples:
 1. Subscriptions: Netflix $15.99, Hulu $12.99, Disney+ $10.99, Spotify $9.99, Amazon Prime $14.99
-   → "You have 5 subscriptions totaling $64.95/month. Consider the Disney+ bundle 
-      (Disney+, Hulu, ESPN+ for $19.99) to save $29.98/month. Also, Amazon Prime 
+   → "You have 5 subscriptions totaling $64.95/month. Consider the Disney+ bundle
+      (Disney+, Hulu, ESPN+ for $19.99) to save $29.98/month. Also, Amazon Prime
       includes Prime Video - you may be able to cancel Netflix or Hulu."
    → total_monthly_cost: 64.95
    → potential_savings: 30.00
 
 2. Subscriptions: Spotify $9.99, Apple Music $10.99
-   → "You're paying for both Spotify and Apple Music ($20.98/month). Cancel one 
+   → "You're paying for both Spotify and Apple Music ($20.98/month). Cancel one
       to save $10.99/month."
    → total_monthly_cost: 20.98
    → potential_savings: 10.99
 
 3. Subscriptions: LA Fitness $40, Planet Fitness $10
-   → "You have 2 gym memberships totaling $50/month. Consider consolidating to 
+   → "You have 2 gym memberships totaling $50/month. Consider consolidating to
       just Planet Fitness to save $40/month."
    → total_monthly_cost: 50.00
    → potential_savings: 40.00
@@ -163,7 +163,7 @@ class SubscriptionInsightsGenerator:
     def __init__(
         self,
         provider: str = "google",
-        model_name: Optional[str] = None,
+        model_name: str | None = None,
         cache_ttl: int = 86400,  # 24 hours
         enable_cache: bool = True,
         max_cost_per_day: float = 0.10,
@@ -230,7 +230,7 @@ class SubscriptionInsightsGenerator:
     async def generate(
         self,
         subscriptions: list[dict[str, Any]],
-        user_id: Optional[str] = None,
+        user_id: str | None = None,
     ) -> SubscriptionInsights:
         """
         Generate subscription insights with natural language recommendations.
@@ -291,8 +291,8 @@ class SubscriptionInsightsGenerator:
     async def _get_cached(
         self,
         subscriptions: list[dict[str, Any]],
-        user_id: Optional[str] = None,
-    ) -> Optional[SubscriptionInsights]:
+        user_id: str | None = None,
+    ) -> SubscriptionInsights | None:
         """
         Get cached insights.
 
@@ -317,7 +317,7 @@ class SubscriptionInsightsGenerator:
         self,
         subscriptions: list[dict[str, Any]],
         result: SubscriptionInsights,
-        user_id: Optional[str] = None,
+        user_id: str | None = None,
     ) -> None:
         """
         Cache insights result.
@@ -338,7 +338,7 @@ class SubscriptionInsightsGenerator:
     def _make_cache_key(
         self,
         subscriptions: list[dict[str, Any]],
-        user_id: Optional[str] = None,
+        user_id: str | None = None,
     ) -> str:
         """
         Generate cache key for insights.
@@ -384,7 +384,7 @@ class SubscriptionInsightsGenerator:
 
         # Extract structured output
         if hasattr(response, "structured") and response.structured:
-            return cast(SubscriptionInsights, response.structured)
+            return cast("SubscriptionInsights", response.structured)
         else:
             raise ValueError("LLM returned no structured output for insights")
 

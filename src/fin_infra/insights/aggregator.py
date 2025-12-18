@@ -224,7 +224,7 @@ def _generate_recurring_insights(user_id: str, patterns: list[RecurringPattern])
     high_cost = [
         p
         for p in patterns
-        if p.amount is not None and p.amount > 50 or (p.amount_range and p.amount_range[1] > 50)
+        if (p.amount is not None and p.amount > 50) or (p.amount_range and p.amount_range[1] > 50)
     ]
     if high_cost:
         total = Decimal("0")

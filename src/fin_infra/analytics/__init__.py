@@ -55,9 +55,10 @@ Dependencies:
 
 from __future__ import annotations
 
-# Import actual implementations
-from .ease import easy_analytics, AnalyticsEngine
 from .add import add_analytics
+
+# Import actual implementations
+from .ease import AnalyticsEngine, easy_analytics
 
 __all__ = [
     "easy_analytics",

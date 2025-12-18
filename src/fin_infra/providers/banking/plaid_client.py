@@ -7,15 +7,15 @@ from typing import Any, cast
 try:
     import plaid
     from plaid.api import plaid_api
+    from plaid.model.accounts_balance_get_request import AccountsBalanceGetRequest
+    from plaid.model.accounts_get_request import AccountsGetRequest
     from plaid.model.country_code import CountryCode
+    from plaid.model.identity_get_request import IdentityGetRequest
     from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
     from plaid.model.link_token_create_request import LinkTokenCreateRequest
     from plaid.model.link_token_create_request_user import LinkTokenCreateRequestUser
     from plaid.model.products import Products
     from plaid.model.transactions_get_request import TransactionsGetRequest
-    from plaid.model.accounts_get_request import AccountsGetRequest
-    from plaid.model.accounts_balance_get_request import AccountsBalanceGetRequest
-    from plaid.model.identity_get_request import IdentityGetRequest
 
     PLAID_AVAILABLE = True
 except Exception:  # pragma: no cover - dynamic import guard
@@ -97,7 +97,7 @@ class PlaidClient(BankingProvider):
             language="en",
         )
         response = self.client.link_token_create(request)
-        return cast(str, response["link_token"])
+        return cast("str", response["link_token"])
 
     def exchange_public_token(self, public_token: str) -> dict:
         request = ItemPublicTokenExchangeRequest(public_token=public_token)
@@ -151,4 +151,4 @@ class PlaidClient(BankingProvider):
         """Fetch identity/account holder information."""
         request = IdentityGetRequest(access_token=access_token)
         response = self.client.identity_get(request)
-        return cast(dict[Any, Any], response.to_dict())
+        return cast("dict[Any, Any]", response.to_dict())

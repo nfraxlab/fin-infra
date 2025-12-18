@@ -6,10 +6,10 @@ Uses svc-infra dual routers for consistent behavior.
 """
 
 import time
-from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 
+from . import rules
 from .ease import easy_categorization
 from .engine import CategorizationEngine
 from .models import (
@@ -18,7 +18,6 @@ from .models import (
     CategoryStats,
 )
 from .taxonomy import CategoryGroup, count_categories, get_all_categories
-from . import rules
 
 
 def add_categorization(
@@ -122,7 +121,7 @@ def add_categorization(
             raise HTTPException(status_code=400, detail=str(e))
 
     @router.get("/categories")
-    async def list_categories(group: Optional[CategoryGroup] = None):
+    async def list_categories(group: CategoryGroup | None = None):
         """
         List all available categories.
 

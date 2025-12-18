@@ -12,7 +12,7 @@ Total: 56 leaf categories
 """
 
 from enum import Enum
-from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -315,7 +315,7 @@ def get_category_group(category: Category) -> CategoryGroup:
     return CATEGORY_GROUPS.get(category, CategoryGroup.UNCATEGORIZED)
 
 
-def get_category_metadata(category: Category) -> Optional[CategoryMetadata]:
+def get_category_metadata(category: Category) -> CategoryMetadata | None:
     """Get metadata for a category."""
     return CATEGORY_METADATA.get(category)
 

@@ -105,12 +105,12 @@ def __getattr__(name: str):
     ):
         from fin_infra.budgets.models import (  # noqa: F401
             Budget,
-            BudgetType,
-            BudgetPeriod,
-            BudgetCategory,
-            BudgetProgress,
             BudgetAlert,
+            BudgetCategory,
+            BudgetPeriod,
+            BudgetProgress,
             BudgetTemplate,
+            BudgetType,
         )
 
         return locals()[name]

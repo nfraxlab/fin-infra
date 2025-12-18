@@ -14,14 +14,14 @@ from datetime import date, datetime
 from decimal import Decimal
 
 from fin_infra.models.tax import (
-    TaxDocument,
-    TaxFormW2,
-    TaxForm1099INT,
-    TaxForm1099DIV,
-    TaxForm1099B,
-    TaxForm1099MISC,
-    CryptoTransaction,
     CryptoTaxReport,
+    CryptoTransaction,
+    TaxDocument,
+    TaxForm1099B,
+    TaxForm1099DIV,
+    TaxForm1099INT,
+    TaxForm1099MISC,
+    TaxFormW2,
     TaxLiability,
 )
 from fin_infra.providers.base import TaxProvider

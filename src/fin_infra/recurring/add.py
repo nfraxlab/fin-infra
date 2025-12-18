@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import time
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from .ease import easy_recurring_detection
 from .models import (
@@ -24,6 +24,7 @@ from .models import (
 
 if TYPE_CHECKING:
     from fastapi import FastAPI
+
     from .detector import RecurringDetector
 
 
@@ -35,9 +36,9 @@ def add_recurring_detection(
     date_tolerance_days: int = 7,
     enable_llm: bool = False,
     llm_provider: str = "google",
-    llm_model: Optional[str] = None,
+    llm_model: str | None = None,
     include_in_schema: bool = True,
-) -> "RecurringDetector":
+) -> RecurringDetector:
     """
     Add recurring transaction detection endpoints to FastAPI app.
 
@@ -242,7 +243,7 @@ def add_recurring_detection(
     @router.get("/summary")
     async def get_recurring_summary(
         user_id: str,
-        category_map: Optional[dict[str, str]] = None,
+        category_map: dict[str, str] | None = None,
     ):
         """
         Get comprehensive recurring transaction summary.

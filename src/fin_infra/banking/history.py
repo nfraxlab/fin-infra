@@ -42,9 +42,8 @@ from __future__ import annotations
 import logging
 import os
 from datetime import date, datetime, timedelta
-from typing import Optional
-from pydantic import BaseModel, Field, ConfigDict
 
+from pydantic import BaseModel, ConfigDict, Field
 
 __all__ = [
     "BalanceSnapshot",
@@ -155,8 +154,8 @@ def record_balance_snapshot(
 def get_balance_history(
     account_id: str,
     days: int = 90,
-    start_date: Optional[date] = None,
-    end_date: Optional[date] = None,
+    start_date: date | None = None,
+    end_date: date | None = None,
 ) -> list[BalanceSnapshot]:
     """Get balance history for an account.
 
@@ -248,7 +247,7 @@ def get_balance_snapshots(
 
 def delete_balance_history(
     account_id: str,
-    before_date: Optional[date] = None,
+    before_date: date | None = None,
 ) -> int:
     """Delete balance history for an account.
 

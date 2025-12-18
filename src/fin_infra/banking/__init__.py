@@ -45,12 +45,12 @@ from __future__ import annotations
 
 import os
 from datetime import date
-from typing import TYPE_CHECKING, Optional, cast
+from typing import TYPE_CHECKING, cast
 
 from pydantic import BaseModel, Field
 
-from ..providers.registry import resolve
 from ..providers.base import BankingProvider
+from ..providers.registry import resolve
 
 if TYPE_CHECKING:
     from fastapi import FastAPI
@@ -99,7 +99,7 @@ class ExchangeTokenResponse(BaseModel):
     """Response model for token exchange."""
 
     access_token: str
-    item_id: Optional[str] = None
+    item_id: str | None = None
 
 
 class BalanceHistoryStats(BaseModel):
@@ -198,11 +198,11 @@ def easy_banking(provider: str = "teller", **config) -> BankingProvider:
             }
 
     # Use provider registry to dynamically load and configure provider
-    return cast(BankingProvider, resolve("banking", provider, **config))
+    return cast("BankingProvider", resolve("banking", provider, **config))
 
 
 def add_banking(
-    app: "FastAPI",
+    app: FastAPI,
     *,
     provider: str | BankingProvider | None = None,
     prefix: str = "/banking",
@@ -349,25 +349,25 @@ def add_banking(
     @router.get("/transactions")
     async def get_transactions(
         access_token: str = Depends(get_access_token),
-        start_date: Optional[date] = Query(None, description="Filter by start date (ISO format)"),
-        end_date: Optional[date] = Query(None, description="Filter by end date (ISO format)"),
-        merchant: Optional[str] = Query(
+        start_date: date | None = Query(None, description="Filter by start date (ISO format)"),
+        end_date: date | None = Query(None, description="Filter by end date (ISO format)"),
+        merchant: str | None = Query(
             None, description="Filter by merchant name (partial match, case-insensitive)"
         ),
-        category: Optional[str] = Query(
+        category: str | None = Query(
             None, description="Filter by category (comma-separated list for multiple)"
         ),
-        min_amount: Optional[float] = Query(
+        min_amount: float | None = Query(
             None, description="Minimum transaction amount (inclusive)"
         ),
-        max_amount: Optional[float] = Query(
+        max_amount: float | None = Query(
             None, description="Maximum transaction amount (inclusive)"
         ),
-        tags: Optional[str] = Query(None, description="Filter by tags (comma-separated list)"),
-        account_id: Optional[str] = Query(None, description="Filter by specific account ID"),
-        is_recurring: Optional[bool] = Query(None, description="Filter by recurring status"),
-        sort_by: Optional[str] = Query("date", description="Sort field: date, amount, or merchant"),
-        order: Optional[str] = Query("desc", description="Sort order: asc or desc"),
+        tags: str | None = Query(None, description="Filter by tags (comma-separated list)"),
+        account_id: str | None = Query(None, description="Filter by specific account ID"),
+        is_recurring: bool | None = Query(None, description="Filter by recurring status"),
+        sort_by: str | None = Query("date", description="Sort field: date, amount, or merchant"),
+        order: str | None = Query("desc", description="Sort order: asc or desc"),
         page: int = Query(1, ge=1, description="Page number (starts at 1)"),
         per_page: int = Query(50, ge=1, le=200, description="Items per page (max 200)"),
     ):
@@ -475,7 +475,7 @@ def add_banking(
     @router.get("/balances")
     async def get_balances(
         access_token: str = Depends(get_access_token),
-        account_id: Optional[str] = Query(None),
+        account_id: str | None = Query(None),
     ):
         """Get current balances."""
         balances = banking.balances(
@@ -592,17 +592,17 @@ def add_banking(
 
 # Import utilities at end to avoid circular imports
 from .utils import (  # noqa: E402
-    validate_plaid_token,
-    validate_teller_token,
-    validate_mx_token,
-    validate_provider_token,
-    parse_banking_providers,
-    sanitize_connection_status,
-    mark_connection_unhealthy,
-    mark_connection_healthy,
-    get_primary_access_token,
-    test_connection_health,
-    should_refresh_token,
     BankingConnectionInfo,
     BankingConnectionStatus,
+    get_primary_access_token,
+    mark_connection_healthy,
+    mark_connection_unhealthy,
+    parse_banking_providers,
+    sanitize_connection_status,
+    should_refresh_token,
+    test_connection_health,
+    validate_mx_token,
+    validate_plaid_token,
+    validate_provider_token,
+    validate_teller_token,
 )

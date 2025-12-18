@@ -6,11 +6,9 @@ Organized by category for maintainability.
 """
 
 import re
-from typing import Optional
 
 from .models import CategoryRule
 from .taxonomy import Category
-
 
 # ===== HELPER FUNCTIONS (defined first) =====
 
@@ -306,7 +304,7 @@ COMPILED_REGEX_RULES = [
 # ===== PUBLIC FUNCTIONS =====
 
 
-def get_exact_match(merchant: str) -> Optional[Category]:
+def get_exact_match(merchant: str) -> Category | None:
     """
     Get category by exact match.
 
@@ -320,7 +318,7 @@ def get_exact_match(merchant: str) -> Optional[Category]:
     return EXACT_RULES_NORMALIZED.get(normalized)
 
 
-def get_regex_match(merchant: str) -> Optional[tuple[Category, int]]:
+def get_regex_match(merchant: str) -> tuple[Category, int] | None:
     """
     Get category by regex match.
 

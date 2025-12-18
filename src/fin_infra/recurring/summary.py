@@ -33,14 +33,12 @@ Integration with svc-infra:
 
 from __future__ import annotations
 
-from typing import Optional
-from datetime import datetime
 from collections import defaultdict
+from datetime import datetime
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
-from fin_infra.recurring.models import RecurringPattern, PatternType
-
+from fin_infra.recurring.models import PatternType, RecurringPattern
 
 __all__ = [
     "RecurringItem",
@@ -254,7 +252,7 @@ def _identify_cancellation_opportunities(
 def get_recurring_summary(
     user_id: str,
     patterns: list[RecurringPattern],
-    category_map: Optional[dict[str, str]] = None,
+    category_map: dict[str, str] | None = None,
 ) -> RecurringSummary:
     """Generate a comprehensive recurring transaction summary for a user.
 

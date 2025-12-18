@@ -22,9 +22,11 @@ from typing import TYPE_CHECKING, Literal
 if TYPE_CHECKING:
     from fastapi import FastAPI
 
-from ..providers.base import BrokerageProvider
-from pydantic import BaseModel, Field
 from decimal import Decimal
+
+from pydantic import BaseModel, Field
+
+from ..providers.base import BrokerageProvider
 
 
 # Request model for order submission (used by add_brokerage FastAPI routes)
@@ -127,7 +129,7 @@ def easy_brokerage(
 
 
 def add_brokerage(
-    app: "FastAPI",
+    app: FastAPI,
     *,
     provider: str | BrokerageProvider | None = None,
     mode: Literal["paper", "live"] = "paper",
@@ -206,9 +208,9 @@ def add_brokerage(
             >>> broker = add_brokerage(app, mode="live")
             >>> # Only use in production with proper safeguards and risk management
     """
-    from svc_infra.api.fastapi.dual.public import public_router
-    from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
     from fastapi import HTTPException, Query
+    from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
+    from svc_infra.api.fastapi.dual.public import public_router
 
     # Initialize provider if string or None
     if isinstance(provider, str):
@@ -234,7 +236,7 @@ def add_brokerage(
             account = brokerage_provider.get_account()
             return account
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error fetching account: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error fetching account: {e!s}")
 
     @router.get("/positions")
     async def list_positions():
@@ -246,7 +248,7 @@ def add_brokerage(
             positions = list(brokerage_provider.positions())  # Convert Iterable to list for len()
             return {"positions": positions, "count": len(positions)}
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error fetching positions: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error fetching positions: {e!s}")
 
     @router.get("/positions/{symbol}")
     async def get_position(symbol: str):
@@ -259,9 +261,7 @@ def add_brokerage(
             position = brokerage_provider.get_position(symbol)
             return position
         except Exception as e:
-            raise HTTPException(
-                status_code=404, detail=f"Position not found for {symbol}: {str(e)}"
-            )
+            raise HTTPException(status_code=404, detail=f"Position not found for {symbol}: {e!s}")
 
     @router.delete("/positions/{symbol}")
     async def close_position(symbol: str):
@@ -274,7 +274,7 @@ def add_brokerage(
             order = brokerage_provider.close_position(symbol)
             return {"message": f"Closing position for {symbol}", "order": order}
         except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Error closing position: {str(e)}")
+            raise HTTPException(status_code=400, detail=f"Error closing position: {e!s}")
 
     @router.post("/orders")
     async def submit_order(order_request: OrderRequest):
@@ -295,7 +295,7 @@ def add_brokerage(
             )
             return order
         except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Error submitting order: {str(e)}")
+            raise HTTPException(status_code=400, detail=f"Error submitting order: {e!s}")
 
     @router.get("/orders")
     async def list_orders(
@@ -312,7 +312,7 @@ def add_brokerage(
             orders = brokerage_provider.list_orders(status=status, limit=limit)
             return {"orders": orders, "count": len(orders)}
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error fetching orders: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error fetching orders: {e!s}")
 
     @router.get("/orders/{order_id}")
     async def get_order(order_id: str):
@@ -325,7 +325,7 @@ def add_brokerage(
             order = brokerage_provider.get_order(order_id)
             return order
         except Exception as e:
-            raise HTTPException(status_code=404, detail=f"Order not found: {str(e)}")
+            raise HTTPException(status_code=404, detail=f"Order not found: {e!s}")
 
     @router.delete("/orders/{order_id}")
     async def cancel_order(order_id: str):
@@ -338,7 +338,7 @@ def add_brokerage(
             brokerage_provider.cancel_order(order_id)
             return {"message": f"Order {order_id} canceled successfully"}
         except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Error canceling order: {str(e)}")
+            raise HTTPException(status_code=400, detail=f"Error canceling order: {e!s}")
 
     @router.get("/portfolio/history")
     async def get_portfolio_history(
@@ -355,9 +355,7 @@ def add_brokerage(
             history = brokerage_provider.get_portfolio_history(period=period, timeframe=timeframe)
             return history
         except Exception as e:
-            raise HTTPException(
-                status_code=500, detail=f"Error fetching portfolio history: {str(e)}"
-            )
+            raise HTTPException(status_code=500, detail=f"Error fetching portfolio history: {e!s}")
 
     # Watchlist routes
     @router.post("/watchlists")
@@ -375,7 +373,7 @@ def add_brokerage(
             watchlist = brokerage_provider.create_watchlist(name=name, symbols=symbols)
             return watchlist
         except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Error creating watchlist: {str(e)}")
+            raise HTTPException(status_code=400, detail=f"Error creating watchlist: {e!s}")
 
     @router.get("/watchlists")
     async def list_watchlists():
@@ -384,7 +382,7 @@ def add_brokerage(
             watchlists = brokerage_provider.list_watchlists()
             return {"watchlists": watchlists, "count": len(watchlists)}
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error fetching watchlists: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error fetching watchlists: {e!s}")
 
     @router.get("/watchlists/{watchlist_id}")
     async def get_watchlist(watchlist_id: str):
@@ -397,7 +395,7 @@ def add_brokerage(
             watchlist = brokerage_provider.get_watchlist(watchlist_id)
             return watchlist
         except Exception as e:
-            raise HTTPException(status_code=404, detail=f"Watchlist not found: {str(e)}")
+            raise HTTPException(status_code=404, detail=f"Watchlist not found: {e!s}")
 
     @router.delete("/watchlists/{watchlist_id}")
     async def delete_watchlist(watchlist_id: str):
@@ -410,7 +408,7 @@ def add_brokerage(
             brokerage_provider.delete_watchlist(watchlist_id)
             return {"message": f"Watchlist {watchlist_id} deleted successfully"}
         except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Error deleting watchlist: {str(e)}")
+            raise HTTPException(status_code=400, detail=f"Error deleting watchlist: {e!s}")
 
     @router.post("/watchlists/{watchlist_id}/symbols")
     async def add_to_watchlist(
@@ -426,7 +424,7 @@ def add_brokerage(
             watchlist = brokerage_provider.add_to_watchlist(watchlist_id, symbol)
             return watchlist
         except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Error adding symbol: {str(e)}")
+            raise HTTPException(status_code=400, detail=f"Error adding symbol: {e!s}")
 
     @router.delete("/watchlists/{watchlist_id}/symbols/{symbol}")
     async def remove_from_watchlist(watchlist_id: str, symbol: str):
@@ -440,7 +438,7 @@ def add_brokerage(
             watchlist = brokerage_provider.remove_from_watchlist(watchlist_id, symbol)
             return watchlist
         except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Error removing symbol: {str(e)}")
+            raise HTTPException(status_code=400, detail=f"Error removing symbol: {e!s}")
 
     # Mount router
     app.include_router(router, include_in_schema=True)
