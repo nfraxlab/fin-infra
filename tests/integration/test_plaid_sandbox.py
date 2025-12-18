@@ -59,9 +59,9 @@ class TestPlaidProviderMock:
         ]
 
         for method_name in expected_methods:
-            assert hasattr(BankingProvider, method_name) or method_name in dir(
-                BankingProvider
-            ), f"BankingProvider missing method: {method_name}"
+            assert hasattr(BankingProvider, method_name) or method_name in dir(BankingProvider), (
+                f"BankingProvider missing method: {method_name}"
+            )
 
     def test_account_model_structure(self):
         """Test Account model has expected fields."""
