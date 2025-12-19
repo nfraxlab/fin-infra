@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 This file is auto-generated from conventional commits using [git-cliff](https://git-cliff.org/).
 
+## [0.1.87] - 2025-12-19
+
+
+### Bug Fixes
+
+- Update bandit config to skip B324 (MD5 for cache keys)
+- Add type ignore comment for __init__ access
+
+
+### Features
+
+- Add deprecation policy and helpers
+
+
+### Miscellaneous
+
+- Track poetry.lock in git for reproducible builds
+
 ## [0.1.84] - 2025-12-18
 
 
