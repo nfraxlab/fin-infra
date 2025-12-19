@@ -31,7 +31,8 @@ repos:
       - id: detect-private-key
       - id: fix-byte-order-marker
       - id: check-added-large-files
-        args: ["--maxkb=500"]
+        args: ["--maxkb=700"]
+        exclude: "poetry.lock"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.11.0

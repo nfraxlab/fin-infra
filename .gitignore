@@ -56,7 +56,6 @@ ENV/
 env/
 
 # Poetry
-poetry.lock
 
 # mypy / ruff / tooling
 .mypy_cache/
