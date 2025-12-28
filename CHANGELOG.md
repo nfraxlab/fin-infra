@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 This file is auto-generated from conventional commits using [git-cliff](https://git-cliff.org/).
 
+## [0.1.91] - 2025-12-28
+
+
+### Bug Fixes
+
+- Detect x.y.0 releases and skip auto-bump to create GitHub Release
+- Only release x.y.0 versions, no auto-bump
+
 ## [0.1.88] - 2025-12-26
 
 
