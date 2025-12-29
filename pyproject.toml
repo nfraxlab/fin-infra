@@ -82,6 +82,7 @@ bandit = ">=1.7.0"
 types-requests = ">=2.31.0"
 pytest-cov = ">=4.0.0"
 aiosqlite = ">=0.20.0"
+python-semantic-release = ">=9.0.0"
 # Documentation
 mkdocs = ">=1.6.0"
 mkdocs-material = ">=9.5.0"
@@ -186,6 +187,20 @@ plugins = ["pydantic.mypy"]
 init_forbid_extra = true
 init_typed = true
 warn_required_dynamic_aliases = true
+
+# Semantic Release configuration
+[tool.semantic_release]
+version_toml = ["pyproject.toml:tool.poetry.version"]
+branch = "main"
+tag_format = "v{version}"
+changelog_file = "CHANGELOG.md"
+upload_to_pypi = false
+upload_to_release = false
+
+[tool.semantic_release.commit_parser_options]
+allowed_tags = ["feat", "fix", "perf", "refactor", "docs", "chore", "test", "build", "ci"]
+minor_tags = ["feat"]
+patch_tags = ["fix", "perf"]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
