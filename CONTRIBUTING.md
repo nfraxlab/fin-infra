@@ -99,54 +99,60 @@ Use `make pr` for the fastest workflow:
 # 1. Make your code changes
 # 2. Create a PR with one command:
 make pr m="feat: add your feature"
-
-# This automatically:
-# - Validates gh CLI + origin remote
-# - Fast-forwards main (no rebase on main)
-# - Creates branch: add-your-feature-12281430 (UTC timestamp)
-# - Commits and pushes
-# - Creates PR (or detects existing)
-# - Returns to main
 ```
 
-**Context-aware behavior:**
+### Two-Mode Workflow
+
+**Mode A: Start a new PR** (on default branch OR with `new=1`)
 ```bash
-# On main → creates new branch + PR
-make pr m="feat: add caching"
+# On main → creates new branch + PR, stays on new branch
+make pr m="feat: add trading integration"
 
-# On feature branch → commits + pushes; creates PR if none exists
-make pr m="feat: add more logic"
-
-# On feature branch, sync with main first:
-make pr m="feat: stuff" sync=1  # Rebases on main, force-pushes safely
+# On feature branch → split commits into new PR
+make pr m="feat: split this work" new=1
 ```
 
-### Manual Workflow
+**Mode B: Update current PR** (on feature branch)
+```bash
+# Add more commits to existing PR
+make pr m="fix: address review feedback"
 
-If you prefer manual git commands:
+# Sync with main before pushing (rebase + force-push)
+make pr m="fix: sync and update" sync=1
+```
+
+### All Options
+
+| Option | Example | Description |
+|--------|---------|-------------|
+| `m=` | `m="feat: add X"` | Commit message (required, conventional commits) |
+| `sync=1` | `sync=1` | Rebase on base branch before pushing |
+| `new=1` | `new=1` | Force create new PR from current HEAD |
+| `b=` | `b="my-branch"` | Use explicit branch name |
+| `draft=1` | `draft=1` | Create PR as draft |
+| `base=` | `base=develop` | Target different base branch |
+| `FORCE=1` | `FORCE=1` | Skip conventional commit validation |
+
+### Examples
 
 ```bash
-# 1. Create a branch
-git checkout -b feature/your-feature-name
+# Basic: create PR from main
+make pr m="feat: add brokerage integration"
 
-# 2. Make your changes
-# - Use Decimal for all money values
-# - Add idempotency keys for financial operations
-# - Never log credentials
-# - Add comprehensive tests
+# Add commits to existing PR
+make pr m="fix: handle edge case"
 
-# 3. Run quality checks
-ruff format
-ruff check
-mypy src
-pytest -q
+# Sync with main, then push
+make pr m="refactor: clean up" sync=1
 
-# 4. Commit and push
-git add -A
-git commit -m "feat: your feature"
-git push origin feature/your-feature-name
+# Create draft PR
+make pr m="feat: work in progress" draft=1
 
-# 5. Open a PR on GitHub
+# Target a release branch
+make pr m="fix: hotfix for release" base=release-v1
+
+# Split work into new PR
+make pr m="feat: extract this part" new=1
 ```
 
 ### Batching Multiple Commits
