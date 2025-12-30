@@ -75,8 +75,10 @@ jobs:
             }
 
             // Determine expected prefix (preserve type for breaking changes)
+            // If breaking but type is "other" (e.g., BREAKING CHANGE in body only), default to feat!:
+            const breakingType = best.type === "other" ? "feat" : best.type;
             const expectedPrefix = best.breaking
-              ? `${best.type}!:`
+              ? `${breakingType}!:`
               : `${best.type}:`;
 
             // Check current title
@@ -90,24 +92,24 @@ jobs:
               return;
             }
 
-            // Build corrected title
+            // Build corrected title (strip existing prefix if present, avoid double spaces)
             let newTitle = title;
             if (title.match(re)) {
-              newTitle = title.replace(re, `${expectedPrefix} `);
-            } else {
-              newTitle = `${expectedPrefix} ${title}`;
+              // Replace existing prefix, trim any extra whitespace
+              newTitle = title.replace(re, "").trim();
             }
+            newTitle = `${expectedPrefix} ${newTitle}`;
 
-            // Try to update, then FAIL to force rerun
+            // Try to update the title
             try {
               await github.rest.pulls.update({
                 owner, repo, pull_number: prNumber,
                 title: newTitle
               });
-              // Fail after update to prevent race-merge
-              core.setFailed(
-                `PR title was updated to: "${newTitle}"\n\n` +
-                `This check will pass on the next run. Please wait for checks to re-run before merging.`
+              // Pass - title is now correct, squash-merge will use updated title
+              core.warning(
+                `PR title was auto-updated to: "${newTitle}"\n` +
+                `The squash-merge commit will use this corrected title.`
               );
             } catch (err) {
               core.setFailed(
