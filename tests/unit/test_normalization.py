@@ -227,6 +227,20 @@ class TestCurrencyConverter:
 
             assert "Conversion failed: USD -> XYZ" in str(exc_info.value)
 
+    @pytest.mark.asyncio
+    async def test_get_rate_api_error_raises_currency_not_supported(self, converter):
+        """Test that get_rate API errors are wrapped in CurrencyNotSupportedError."""
+        with patch.object(
+            converter._client,
+            "get_rate",
+            new_callable=AsyncMock,
+            side_effect=ExchangeRateAPIError("API unavailable"),
+        ):
+            with pytest.raises(CurrencyNotSupportedError) as exc_info:
+                await converter.get_rate("USD", "XYZ")
+
+            assert "Rate not available: USD -> XYZ" in str(exc_info.value)
+
 
 class TestEasyNormalization:
     """Tests for easy_normalization builder."""
