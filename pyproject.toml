@@ -57,6 +57,8 @@ ai-infra = ">=0.1.142"
 yahooquery = { version = ">=2.3.0", optional = true }
 ccxt = { version = ">=4.0.0", optional = true }
 plaid-python = { version = ">=25.0.0", optional = true }
+fastapi-users = "^15.0.2"
+langchain-core = "^1.2.5"
 
 [tool.poetry.extras]
 # Market data providers
@@ -87,6 +89,7 @@ python-semantic-release = ">=9.0.0"
 mkdocs = ">=1.6.0"
 mkdocs-material = ">=9.5.0"
 mkdocstrings = {extras = ["python"], version = ">=0.25.0"}
+pip-audit = "^2.10.0"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
