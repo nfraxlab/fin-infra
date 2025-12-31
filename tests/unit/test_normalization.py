@@ -1,7 +1,10 @@
 """Unit tests for normalization module."""
 
+from unittest.mock import AsyncMock, patch
+
 import pytest
 
+from fin_infra.exceptions import CurrencyNotSupportedError, ExchangeRateAPIError
 from fin_infra.normalization import (
     CurrencyConverter,
     SymbolNotFoundError,
@@ -209,6 +212,20 @@ class TestCurrencyConverter:
         amounts = {"USD": 100}
         results = await converter.batch_convert(amounts, "USD")
         assert results["USD"] == 100.0
+
+    @pytest.mark.asyncio
+    async def test_convert_api_error_raises_currency_not_supported(self, converter):
+        """Test that API errors are wrapped in CurrencyNotSupportedError."""
+        with patch.object(
+            converter._client,
+            "get_rate",
+            new_callable=AsyncMock,
+            side_effect=ExchangeRateAPIError("API unavailable"),
+        ):
+            with pytest.raises(CurrencyNotSupportedError) as exc_info:
+                await converter.convert(100, "USD", "XYZ")
+
+            assert "Conversion failed: USD -> XYZ" in str(exc_info.value)
 
 
 class TestEasyNormalization:
