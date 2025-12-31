@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fin-infra"
-version = "0.1.92"
+version = "0.2.0"
 description = "Financial infrastructure toolkit: banking connections, market data, credit, cashflows, and brokerage integrations"
 authors = ["Ali Khatami <aliikhatami94@gmail.com>"]
 license = "MIT"
