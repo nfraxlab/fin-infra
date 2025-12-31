@@ -1,6 +1,6 @@
 # Cryptocurrency Module
 
-**Status**: ✅ Production-ready (Phase 3)  
+**Status**: [OK] Production-ready (Phase 3)  
 **Module**: `fin_infra.crypto`  
 **Dependencies**: svc-infra (cache, API), ai-infra (LLM for insights)
 
@@ -90,7 +90,7 @@ for insight in insights:
     print(f"[{insight.priority}] {insight.title}")
     print(f"  {insight.description}")
     if insight.action:
-        print(f"  ➡️ {insight.action}")
+        print(f"  -> {insight.action}")
 ```
 
 ### 3. FastAPI Integration
@@ -214,7 +214,7 @@ for coin in results:
 
 ## Portfolio Insights (AI-Powered)
 
-**Status**: ✅ Production-ready (Phase 3)  
+**Status**: [OK] Production-ready (Phase 3)  
 **Module**: `fin_infra.crypto.insights`  
 **Dependencies**: ai-infra (LLM)
 
@@ -398,10 +398,10 @@ Provide your insight:
 
 **Example AI Response**:
 ```
-Your crypto allocation (15% of portfolio) is aggressive but manageable. 
-Both BTC and ETH have strong gains—consider rebalancing to lock in 
-some profits while maintaining long-term exposure. Ensure you have 
-6+ months emergency fund in stable assets before increasing crypto 
+Your crypto allocation (15% of portfolio) is aggressive but manageable.
+Both BTC and ETH have strong gains—consider rebalancing to lock in
+some profits while maintaining long-term exposure. Ensure you have
+6+ months emergency fund in stable assets before increasing crypto
 exposure. Not financial advice—consult a certified financial advisor.
 ```
 
@@ -421,17 +421,17 @@ def test_generate_crypto_insights_with_llm():
     mock_response = Mock()
     mock_response.content = "Your crypto portfolio is well-diversified..."
     mock_llm.achat = AsyncMock(return_value=mock_response)
-    
+
     # Generate insights
     insights = await generate_crypto_insights(
         user_id="user_123",
         holdings=[...],
         llm=mock_llm,
     )
-    
+
     # Verify LLM was called
     mock_llm.achat.assert_called_once()
-    
+
     # Verify AI insight in results
     ai_insights = [i for i in insights if "AI Portfolio Analysis" in i.title]
     assert len(ai_insights) == 1
@@ -456,7 +456,7 @@ def test_generate_crypto_insights_with_llm():
 1. **Cache AI insights**: 24h TTL (crypto insights change slowly)
    ```python
    from svc_infra.cache import cache_read
-   
+
    @cache_read(suffix="crypto_insights", ttl=86400)  # 24 hours
    async def get_cached_insights(user_id: str):
        return await generate_crypto_insights(...)
@@ -530,7 +530,7 @@ insights = await generate_crypto_insights(
 
 # Display top 3 insights
 for insight in insights[:3]:
-    print(f"💡 {insight.title}: {insight.description}")
+    print(f" {insight.title}: {insight.description}")
 ```
 
 ### Example 2: Tax Reporting Integration
@@ -547,7 +547,7 @@ total_gains = Decimal("0")
 for holding in holdings:
     gain = holding.market_value - holding.cost_basis
     total_gains += gain
-    
+
     print(f"{holding.symbol}: ${gain:,.2f} gain")
 
 print(f"Total Crypto Gains: ${total_gains:,.2f}")
@@ -683,9 +683,9 @@ async def test_allocation_insights():
         CryptoHolding(symbol="BTC", quantity=Decimal("1"), market_value=Decimal("65000"), cost_basis=Decimal("50000")),
         CryptoHolding(symbol="ETH", quantity=Decimal("10"), market_value=Decimal("35000"), cost_basis=Decimal("30000")),
     ]
-    
+
     insights = await generate_crypto_insights(user_id="user_123", holdings=holdings)
-    
+
     # Should generate concentration warning (BTC is 65%)
     allocation_insights = [i for i in insights if i.category == "allocation"]
     assert len(allocation_insights) > 0
@@ -695,18 +695,18 @@ async def test_allocation_insights():
 async def test_ai_insights_with_mock_llm():
     """Test AI-powered insights with mocked LLM."""
     from unittest.mock import AsyncMock, Mock
-    
+
     mock_llm = Mock()
     mock_response = Mock()
     mock_response.content = "Your crypto portfolio is well-diversified..."
     mock_llm.achat = AsyncMock(return_value=mock_response)
-    
+
     holdings = [...]
     insights = await generate_crypto_insights(user_id="user_123", holdings=holdings, llm=mock_llm)
-    
+
     # Verify LLM was called
     mock_llm.achat.assert_called_once()
-    
+
     # Verify AI insight in results
     ai_insights = [i for i in insights if "AI" in i.title]
     assert len(ai_insights) == 1
@@ -722,7 +722,7 @@ def test_coingecko_ticker():
     """Test CoinGecko real API (rate limit: 10/min)."""
     crypto = easy_crypto(provider="coingecko")
     ticker = crypto.ticker("BTC/USDT")
-    
+
     assert ticker.symbol == "BTC/USDT"
     assert ticker.last > 0
     assert ticker.timestamp is not None
@@ -731,12 +731,12 @@ def test_coingecko_ticker():
 def test_crypto_insights_end_to_end():
     """Test full insights generation with real LLM (skip in CI)."""
     from ai_infra.llm import LLM
-    
+
     llm = LLM()
     holdings = [...]
-    
+
     insights = await generate_crypto_insights(user_id="test_user", holdings=holdings, llm=llm)
-    
+
     assert len(insights) > 0
     assert any("AI" in i.title for i in insights)  # At least one AI insight
 ```

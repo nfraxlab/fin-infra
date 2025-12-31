@@ -12,10 +12,10 @@ Banking connection utilities help applications manage user-to-provider token map
 - **Applications manage**: User models, token storage, authentication, user-specific connection state
 
 This separation ensures:
-- ✅ Applications control their security model (encryption, storage)
-- ✅ Applications control their user model schema
-- ✅ fin-infra utilities reduce boilerplate across all apps
-- ✅ No forced database schema or ORM dependencies
+- [OK] Applications control their security model (encryption, storage)
+- [OK] Applications control their user model schema
+- [OK] fin-infra utilities reduce boilerplate across all apps
+- [OK] No forced database schema or ORM dependencies
 
 ---
 
@@ -83,7 +83,7 @@ from fin_infra.banking import (
 async def get_status(user: User = Depends(get_current_user)):
     status = parse_banking_providers(user.banking_providers)
     safe_data = sanitize_connection_status(status)
-    return safe_data  # ✅ No access tokens exposed
+    return safe_data  # [OK] No access tokens exposed
 ```
 
 **Why?** Never expose access tokens to frontend. This utility ensures safety.
@@ -103,14 +103,14 @@ from fin_infra.banking import (
 # In background job
 try:
     accounts = await banking.get_accounts(access_token)
-    
+
     # Success - mark healthy
     user.banking_providers = mark_connection_healthy(
         user.banking_providers,
         "plaid"
     )
     user.banking_providers["plaid"]["last_synced_at"] = datetime.now().isoformat()
-    
+
 except Exception as e:
     # Error - mark unhealthy
     user.banking_providers = mark_connection_unhealthy(
@@ -191,7 +191,7 @@ async def connect_plaid(
     # Validate token format
     if not validate_provider_token("plaid", request.access_token):
         raise HTTPException(400, "Invalid token format")
-    
+
     # Store in user's banking_providers field
     banking_providers = user.banking_providers or {}
     banking_providers["plaid"] = {
@@ -202,7 +202,7 @@ async def connect_plaid(
         "error_message": None,
     }
     user.banking_providers = banking_providers
-    
+
     await session.commit()
     return {"success": True, "provider": "plaid"}
 ```
@@ -221,7 +221,7 @@ async def get_status(
     # Parse and sanitize
     status = parse_banking_providers(user.banking_providers)
     safe_data = sanitize_connection_status(status)
-    
+
     return {
         "user_id": str(user.id),
         **safe_data
@@ -271,14 +271,14 @@ async def sync_transactions_job():
                 User.banking_providers != {}
             )
         )
-        
+
         for user in users.scalars():
             # Get best available token
             access_token, provider = get_primary_access_token(user.banking_providers)
-            
+
             if not access_token:
                 continue
-            
+
             try:
                 # Fetch transactions
                 banking = easy_banking(provider=provider)
@@ -287,15 +287,15 @@ async def sync_transactions_job():
                     start_date=start_date,
                     end_date=end_date,
                 )
-                
+
                 # Store in database...
-                
+
                 # Mark healthy
                 user.banking_providers = mark_connection_healthy(
                     user.banking_providers,
                     provider
                 )
-                
+
             except Exception as e:
                 # Mark unhealthy
                 user.banking_providers = mark_connection_unhealthy(
@@ -304,7 +304,7 @@ async def sync_transactions_job():
                     str(e)
                 )
                 logger.error(f"Sync failed: {e}")
-        
+
         await session.commit()
 ```
 
@@ -344,10 +344,10 @@ from sqlalchemy.dialects.postgresql import JSON as PGJSON
 
 class User(Base):
     __tablename__ = "users"
-    
+
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(unique=True)
-    
+
     # Banking provider credentials
     banking_providers: Mapped[dict] = mapped_column(
         "banking_providers",
@@ -393,10 +393,10 @@ See: `fin-infra/src/fin_infra/security/encryption.py`
 Always use `sanitize_connection_status()` before returning to API:
 
 ```python
-# ❌ BAD - Exposes tokens
+# [X] BAD - Exposes tokens
 return {"providers": user.banking_providers}
 
-# ✅ GOOD - Sanitized
+# [OK] GOOD - Sanitized
 status = parse_banking_providers(user.banking_providers)
 return sanitize_connection_status(status)
 ```
@@ -502,9 +502,9 @@ def test_connection_status():
             "is_healthy": True,
         }
     }
-    
+
     status = parse_banking_providers(banking_providers)
-    
+
     assert status.has_any_connection == True
     assert status.primary_provider == "plaid"
     assert status.plaid.connected == True

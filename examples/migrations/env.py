@@ -1,4 +1,5 @@
 """Alembic async migrations environment for fin-infra-template."""
+
 from __future__ import annotations
 
 import importlib
@@ -10,7 +11,6 @@ import sys
 from alembic import context
 from sqlalchemy.engine import URL, make_url
 from sqlalchemy.ext.asyncio import create_async_engine
-
 from svc_infra.db.sql.utils import _ensure_ssl_default_async as _ensure_ssl_default
 from svc_infra.db.sql.utils import get_database_url_from_env
 
@@ -91,7 +91,7 @@ def _collect_metadata() -> list[object]:
         obj = getattr(mod, attr, None)
         if obj is not None:
             md = getattr(obj, "metadata", None) or obj
-            if hasattr(md, "tables") and getattr(md, "tables"):
+            if hasattr(md, "tables") and md.tables:
                 found.append(md)
                 break
 

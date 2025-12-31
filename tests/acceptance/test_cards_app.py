@@ -34,9 +34,9 @@ market = add_market_data(app, provider="yahoo")
 if __name__ == "__main__":
     import uvicorn
 
-    print("\n🚀 Starting test server...")
-    print("📍 Landing page with cards: http://localhost:8000/")
-    print("📊 Banking docs: http://localhost:8000/banking/docs")
-    print("📈 Market docs: http://localhost:8000/market/docs")
-    print("\n✅ Expected cards on landing page: Banking, Market Data")
+    print("\n Starting test server...")
+    print(" Landing page with cards: http://localhost:8000/")
+    print(" Banking docs: http://localhost:8000/banking/docs")
+    print(" Market docs: http://localhost:8000/market/docs")
+    print("\n[OK] Expected cards on landing page: Banking, Market Data")
     uvicorn.run(app, host="0.0.0.0", port=8000)

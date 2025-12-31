@@ -9,50 +9,44 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 
 import pytest
-from pydantic import ValidationError
-
 from fin_infra_template.db.schemas import (
-    # User schemas
-    UserBase,
-    UserCreate,
-    UserRead,
-    UserUpdate,
     # Account schemas
     AccountBase,
     AccountCreate,
     AccountRead,
     AccountUpdate,
+    # Budget schemas
+    BudgetBase,
+    BudgetCreate,
+    BudgetUpdate,
+    # Document schemas
+    DocumentBase,
+    DocumentCreate,
+    DocumentUpdate,
+    # Goal schemas
+    GoalBase,
+    GoalCreate,
+    GoalUpdate,
+    # NetWorthSnapshot schemas
+    NetWorthSnapshotBase,
+    NetWorthSnapshotCreate,
+    NetWorthSnapshotRead,
+    # Position schemas
+    PositionBase,
+    PositionCreate,
+    PositionUpdate,
     # Transaction schemas
     TransactionBase,
     TransactionCreate,
     TransactionRead,
     TransactionUpdate,
-    # Position schemas
-    PositionBase,
-    PositionCreate,
-    PositionRead,
-    PositionUpdate,
-    # Goal schemas
-    GoalBase,
-    GoalCreate,
-    GoalRead,
-    GoalUpdate,
-    # Budget schemas
-    BudgetBase,
-    BudgetCreate,
-    BudgetRead,
-    BudgetUpdate,
-    # Document schemas
-    DocumentBase,
-    DocumentCreate,
-    DocumentRead,
-    DocumentUpdate,
-    # NetWorthSnapshot schemas
-    NetWorthSnapshotBase,
-    NetWorthSnapshotCreate,
-    NetWorthSnapshotRead,
+    # User schemas
+    UserBase,
+    UserCreate,
+    UserRead,
+    UserUpdate,
 )
-
+from pydantic import ValidationError
 
 # ============================================================================
 # User Schema Tests
@@ -79,7 +73,7 @@ class TestUserSchemas:
         """Test UserBase email validation."""
         with pytest.raises(ValidationError) as exc_info:
             UserBase(email="invalid-email", full_name="Test User")
-        
+
         errors = exc_info.value.errors()
         assert any(err["loc"] == ("email",) for err in errors)
 
@@ -98,7 +92,7 @@ class TestUserSchemas:
         update = UserUpdate()
         assert update.email is None
         assert update.full_name is None
-        
+
         # Partial update
         update = UserUpdate(email="updated@example.com")
         assert update.email == "updated@example.com"
@@ -573,7 +567,7 @@ class TestCrossSchemaValidation:
         # Should be able to serialize to dict
         user_dict = user.model_dump()
         assert isinstance(user_dict["created_at"], datetime)
-        
+
         # Should be able to serialize to JSON
         user_json = user.model_dump_json()
         assert isinstance(user_json, str)

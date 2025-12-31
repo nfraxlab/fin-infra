@@ -41,10 +41,10 @@ The investments module provides **read-only access** to investment holdings, tra
 
 | Provider   | Status      | Coverage                          | Use Case                           |
 |------------|-------------|-----------------------------------|------------------------------------|
-| **Plaid**  | ✅ Current  | 12,000+ institutions (US)         | Production-ready, broad coverage   |
-| **SnapTrade** | ✅ Current | 5,000+ institutions (US/Canada) | Alternative to Plaid              |
-| **Teller** | 🚧 Future   | Limited coverage                  | Privacy-focused alternative        |
-| **MX**     | 🚧 Future   | 16,000+ institutions (US)         | Broader coverage for edge cases    |
+| **Plaid**  | [OK] Current  | 12,000+ institutions (US)         | Production-ready, broad coverage   |
+| **SnapTrade** | [OK] Current | 5,000+ institutions (US/Canada) | Alternative to Plaid              |
+| **Teller** |  Future   | Limited coverage                  | Privacy-focused alternative        |
+| **MX**     |  Future   | 16,000+ institutions (US)         | Broader coverage for edge cases    |
 
 ## Quick Start
 
@@ -330,7 +330,7 @@ Fetch detailed security information.
 
 ### Plaid
 
-**Status:** ✅ Production-ready
+**Status:** [OK] Production-ready
 
 **Coverage:**
 - 12,000+ institutions (US)
@@ -338,10 +338,10 @@ Fetch detailed security information.
 - 401(k) providers: ADP, Paychex, etc.
 
 **Data Quality:**
-- ✅ Cost basis: Available for most holdings
-- ✅ Update frequency: Real-time to daily
-- ✅ Transaction history: 2+ years
-- ⚠️ Limitations: Some 401(k)s have delayed updates
+- [OK] Cost basis: Available for most holdings
+- [OK] Update frequency: Real-time to daily
+- [OK] Transaction history: 2+ years
+- [!] Limitations: Some 401(k)s have delayed updates
 
 **Pricing:**
 - Sandbox: Free
@@ -354,7 +354,7 @@ Fetch detailed security information.
 
 ### SnapTrade
 
-**Status:** ✅ Production-ready
+**Status:** [OK] Production-ready
 
 **Coverage:**
 - 5,000+ institutions (US/Canada)
@@ -362,9 +362,9 @@ Fetch detailed security information.
 - Cryptocurrency exchanges
 
 **Data Quality:**
-- ✅ Cost basis: Available
-- ✅ Update frequency: Real-time
-- ✅ Trading: Supports order execution (brokerage)
+- [OK] Cost basis: Available
+- [OK] Update frequency: Real-time
+- [OK] Trading: Supports order execution (brokerage)
 
 **Pricing:**
 - Sandbox: Free
@@ -376,7 +376,7 @@ Fetch detailed security information.
 
 ### Teller (Future)
 
-**Status:** 🚧 Planned
+**Status:**  Planned
 
 **Coverage:**
 - Limited (privacy-focused)
@@ -389,7 +389,7 @@ Fetch detailed security information.
 
 ### MX (Future)
 
-**Status:** 🚧 Planned
+**Status:**  Planned
 
 **Coverage:**
 - 16,000+ institutions (US)
@@ -428,14 +428,14 @@ all_holdings = plaid_holdings + snaptrade_holdings
 ```python
 async def get_holdings_with_fallback(user_id: str) -> list[Holding]:
     """Fetch holdings with provider fallback."""
-    
+
     # Try primary provider (Plaid)
     try:
         plaid_token = get_user_plaid_token(user_id)
         return await plaid.get_holdings(access_token=plaid_token)
     except Exception as e:
         logging.warning(f"Plaid failed: {e}")
-    
+
     # Fall back to SnapTrade
     try:
         st_user_id, st_secret = get_snaptrade_creds(user_id)
@@ -456,11 +456,11 @@ from sqlalchemy import Column, String, JSON
 
 class UserInvestmentCredentials(Base):
     __tablename__ = "user_investment_credentials"
-    
+
     user_id = Column(String, primary_key=True)
     provider = Column(String, primary_key=True)  # "plaid", "snaptrade"
     credentials = Column(JSON)  # Encrypted tokens/secrets
-    
+
     # Example:
     # {
     #   "plaid": {"access_token": "access-sandbox-123..."},
@@ -592,15 +592,15 @@ from fin_infra.analytics.portfolio import portfolio_metrics_with_holdings
 
 async def get_portfolio_summary(user_id: str):
     """Generate portfolio summary for user."""
-    
+
     # Fetch holdings
     investments = easy_investments()
     token = get_user_plaid_token(user_id)
     holdings = await investments.get_holdings(access_token=token)
-    
+
     # Calculate metrics
     metrics = portfolio_metrics_with_holdings(holdings)
-    
+
     return {
         "total_value": metrics.total_value,
         "total_return": metrics.total_return,
@@ -617,24 +617,24 @@ async def get_portfolio_summary(user_id: str):
 ```python
 async def calculate_rebalancing_trades(user_id: str, target_allocation: dict):
     """Calculate trades needed to rebalance portfolio."""
-    
+
     # Fetch current holdings
     investments = easy_investments()
     holdings = await investments.get_holdings(access_token=token)
-    
+
     # Calculate current allocation
     metrics = portfolio_metrics_with_holdings(holdings)
     current_allocation = {
         a.asset_class: a.percentage
         for a in metrics.allocation_by_asset_class
     }
-    
+
     # Calculate rebalancing trades
     trades = []
     for asset_class, target_pct in target_allocation.items():
         current_pct = current_allocation.get(asset_class, 0)
         diff_pct = target_pct - current_pct
-        
+
         if abs(diff_pct) > 1.0:  # Rebalance if >1% off target
             trade_value = (diff_pct / 100) * metrics.total_value
             trades.append({
@@ -642,7 +642,7 @@ async def calculate_rebalancing_trades(user_id: str, target_allocation: dict):
                 "action": "buy" if diff_pct > 0 else "sell",
                 "amount": abs(trade_value),
             })
-    
+
     return trades
 ```
 
@@ -653,14 +653,14 @@ from datetime import datetime, timedelta
 
 async def generate_client_report(client_id: str) -> dict:
     """Generate monthly client report."""
-    
+
     investments = easy_investments()
     token = get_client_plaid_token(client_id)
-    
+
     # Current holdings
     holdings = await investments.get_holdings(access_token=token)
     metrics = portfolio_metrics_with_holdings(holdings)
-    
+
     # Transaction history
     end_date = datetime.now().date()
     start_date = end_date - timedelta(days=30)
@@ -669,7 +669,7 @@ async def generate_client_report(client_id: str) -> dict:
         start_date=start_date,
         end_date=end_date,
     )
-    
+
     return {
         "client_id": client_id,
         "report_date": end_date,
@@ -692,17 +692,17 @@ async def generate_client_report(client_id: str) -> dict:
 ```python
 async def generate_tax_report(user_id: str, tax_year: int) -> dict:
     """Generate tax report with cost basis and capital gains."""
-    
+
     investments = easy_investments()
     token = get_user_plaid_token(user_id)
-    
+
     # Fetch transactions for tax year
     transactions = await investments.get_transactions(
         access_token=token,
         start_date=f"{tax_year}-01-01",
         end_date=f"{tax_year}-12-31",
     )
-    
+
     # Calculate realized gains
     realized_gains = []
     for txn in transactions:
@@ -711,7 +711,7 @@ async def generate_tax_report(user_id: str, tax_year: int) -> dict:
             cost_basis = txn.quantity * txn.price  # Placeholder
             proceeds = txn.amount
             gain = proceeds - cost_basis
-            
+
             realized_gains.append({
                 "security": txn.security.ticker_symbol,
                 "date": txn.date,
@@ -719,14 +719,14 @@ async def generate_tax_report(user_id: str, tax_year: int) -> dict:
                 "cost_basis": cost_basis,
                 "gain_loss": gain,
             })
-    
+
     # Current unrealized gains
     holdings = await investments.get_holdings(access_token=token)
     unrealized_gains = sum(
         h.unrealized_gain_loss for h in holdings
         if h.unrealized_gain_loss
     )
-    
+
     return {
         "tax_year": tax_year,
         "realized_gains": realized_gains,
@@ -740,35 +740,35 @@ async def generate_tax_report(user_id: str, tax_year: int) -> dict:
 ```python
 async def calculate_net_worth(user_id: str) -> dict:
     """Calculate total net worth from all accounts."""
-    
+
     from fin_infra.banking import easy_banking
     from fin_infra.investments import easy_investments
-    
+
     token = get_user_plaid_token(user_id)
-    
+
     # Banking accounts (checking, savings, credit cards)
     banking = easy_banking(provider="plaid")
     bank_accounts = await banking.get_accounts(access_token=token)
-    
+
     # Investment accounts
     investments = easy_investments(provider="plaid")
     holdings = await investments.get_holdings(access_token=token)
-    
+
     # Calculate totals
     liquid_assets = sum(
         acc.balance for acc in bank_accounts
         if acc.type in ["depository"]
     )
-    
+
     investment_assets = sum(
         h.institution_value for h in holdings
     )
-    
+
     liabilities = sum(
         abs(acc.balance) for acc in bank_accounts
         if acc.type == "credit" and acc.balance < 0
     )
-    
+
     return {
         "liquid_assets": liquid_assets,
         "investment_assets": investment_assets,
@@ -793,19 +793,19 @@ Base = declarative_base()
 class UserHolding(Base):
     """Persist holdings for historical tracking."""
     __tablename__ = "user_holdings"
-    
+
     id = Column(String, primary_key=True)
     user_id = Column(String, index=True)
     account_id = Column(String)
     security_id = Column(String)
     snapshot_date = Column(Date, index=True)
-    
+
     # Holdings data
     quantity = Column(Float)
     institution_price = Column(Float)
     institution_value = Column(Float)
     cost_basis = Column(Float, nullable=True)
-    
+
     # Metadata
     security_data = Column(JSON)  # Full Security object
 ```
@@ -819,13 +819,13 @@ from datetime import datetime, timedelta
 
 async def store_daily_snapshot(user_id: str):
     """Store daily holdings snapshot."""
-    
+
     investments = easy_investments()
     token = get_user_plaid_token(user_id)
     holdings = await investments.get_holdings(access_token=token)
-    
+
     today = datetime.now().date()
-    
+
     for holding in holdings:
         db.add(UserHolding(
             id=f"{user_id}_{holding.account_id}_{holding.security.security_id}_{today}",
@@ -839,25 +839,25 @@ async def store_daily_snapshot(user_id: str):
             cost_basis=float(holding.cost_basis) if holding.cost_basis else None,
             security_data=holding.security.dict(),
         ))
-    
+
     db.commit()
 
 async def calculate_day_change(user_id: str):
     """Calculate day-over-day portfolio change."""
     from fin_infra.analytics.portfolio import calculate_day_change_with_snapshot
-    
+
     # Fetch current holdings
     investments = easy_investments()
     token = get_user_plaid_token(user_id)
     current_holdings = await investments.get_holdings(access_token=token)
-    
+
     # Load yesterday's snapshot
     yesterday = datetime.now().date() - timedelta(days=1)
     previous_snapshot = db.query(UserHolding).filter(
         UserHolding.user_id == user_id,
         UserHolding.snapshot_date == yesterday,
     ).all()
-    
+
     # Convert to Holding objects
     previous_holdings = [
         Holding(
@@ -870,7 +870,7 @@ async def calculate_day_change(user_id: str):
         )
         for snap in previous_snapshot
     ]
-    
+
     # Calculate change
     return calculate_day_change_with_snapshot(current_holdings, previous_holdings)
 ```
@@ -881,35 +881,35 @@ async def calculate_day_change(user_id: str):
 class PortfolioSnapshot(Base):
     """Time-series portfolio snapshots."""
     __tablename__ = "portfolio_snapshots"
-    
+
     id = Column(String, primary_key=True)
     user_id = Column(String, index=True)
     snapshot_date = Column(Date, index=True)
-    
+
     total_value = Column(Float)
     total_cost_basis = Column(Float)
     total_return = Column(Float)
     total_return_percent = Column(Float)
-    
+
     allocation = Column(JSON)  # Asset allocation breakdown
 
 async def calculate_ytd_return(user_id: str):
     """Calculate year-to-date return."""
     from datetime import datetime
-    
+
     # Current value
     investments = easy_investments()
     holdings = await investments.get_holdings(access_token=token)
     metrics = portfolio_metrics_with_holdings(holdings)
     current_value = metrics.total_value
-    
+
     # Jan 1 value
     jan_1 = datetime(datetime.now().year, 1, 1).date()
     jan_1_snapshot = db.query(PortfolioSnapshot).filter(
         PortfolioSnapshot.user_id == user_id,
         PortfolioSnapshot.snapshot_date == jan_1,
     ).first()
-    
+
     if jan_1_snapshot:
         ytd_return = current_value - jan_1_snapshot.total_value
         ytd_return_percent = (ytd_return / jan_1_snapshot.total_value) * 100
@@ -917,7 +917,7 @@ async def calculate_ytd_return(user_id: str):
             "ytd_return": ytd_return,
             "ytd_return_percent": ytd_return_percent,
         }
-    
+
     return None
 ```
 
@@ -927,12 +927,12 @@ async def calculate_ytd_return(user_id: str):
 class UserTransaction(Base):
     """Persist investment transactions."""
     __tablename__ = "user_transactions"
-    
+
     transaction_id = Column(String, primary_key=True)
     user_id = Column(String, index=True)
     account_id = Column(String)
     security_id = Column(String)
-    
+
     type = Column(String)  # buy, sell, dividend, etc.
     date = Column(Date, index=True)
     quantity = Column(Float)
@@ -942,13 +942,13 @@ class UserTransaction(Base):
 
 async def calculate_realized_gains(user_id: str, year: int):
     """Calculate realized gains for tax year."""
-    
+
     transactions = db.query(UserTransaction).filter(
         UserTransaction.user_id == user_id,
         UserTransaction.type.in_(["buy", "sell"]),
         UserTransaction.date.between(f"{year}-01-01", f"{year}-12-31"),
     ).all()
-    
+
     # Calculate realized gains (simplified - real implementation uses tax lots)
     realized_gains = 0.0
     for txn in transactions:
@@ -956,7 +956,7 @@ async def calculate_realized_gains(user_id: str, year: int):
             # Look up cost basis from buy transactions
             # ... tax lot matching logic ...
             pass
-    
+
     return realized_gains
 ```
 
@@ -972,11 +972,11 @@ holdings = await investments.get_holdings(access_token=token)
 for holding in holdings:
     current_value = holding.institution_value
     cost_basis = holding.cost_basis
-    
+
     if cost_basis:
         unrealized_gain = current_value - cost_basis
         unrealized_gain_percent = (unrealized_gain / cost_basis) * 100
-        
+
         print(f"{holding.security.ticker_symbol}:")
         print(f"  Current: ${current_value:,.2f}")
         print(f"  Cost basis: ${cost_basis:,.2f}")
@@ -1014,10 +1014,10 @@ for allocation in metrics.allocation_by_asset_class:
 ### What Requires Historical Data
 
 **Provided by holdings API:**
-- ✅ Current value
-- ✅ Cost basis
-- ✅ Unrealized P/L
-- ✅ Asset allocation
+- [OK] Current value
+- [OK] Cost basis
+- [OK] Unrealized P/L
+- [OK] Asset allocation
 
 **Requires persistence (applications must implement):**
 - ⏳ Day change (requires yesterday's snapshot)
@@ -1056,10 +1056,10 @@ for holding in holdings:
     if holding.cost_basis is None:
         # Option 1: Skip P/L calculation
         print(f"{holding.security.ticker_symbol}: Cost basis unavailable")
-        
+
         # Option 2: Estimate from recent transactions
         # ... look up buy transactions ...
-        
+
         # Option 3: Use current value as baseline
         estimated_cost = holding.institution_value
 ```
@@ -1166,7 +1166,7 @@ for holding in holdings:
     if not holding.security.ticker_symbol:
         # Missing ticker - may be mutual fund or custom security
         print(f"Warning: No ticker for {holding.security.name}")
-    
+
     if holding.security.type == "other":
         # Unknown security type - check security_id/cusip
         print(f"Unknown type: {holding.security.name} ({holding.security.security_id})")
@@ -1185,21 +1185,21 @@ for holding in holdings:
 
 ### Day Change Tracking
 
-**Status:** 🚧 Requires persistence layer
+**Status:**  Requires persistence layer
 
 **Implementation:**
 ```python
 # Applications must store daily snapshots
 async def enable_day_change_tracking():
     """Store daily snapshots for day change calculations."""
-    
+
     # Cron job: Daily at market close
     holdings = await investments.get_holdings(access_token=token)
     store_snapshot(user_id, date=today, holdings=holdings)
-    
+
     # Calculate day change
     from fin_infra.analytics.portfolio import calculate_day_change_with_snapshot
-    
+
     current = holdings
     previous = load_snapshot(user_id, date=yesterday)
     day_change = calculate_day_change_with_snapshot(current, previous)
@@ -1207,24 +1207,24 @@ async def enable_day_change_tracking():
 
 ### YTD/MTD Returns
 
-**Status:** 🚧 Requires time-series persistence
+**Status:**  Requires time-series persistence
 
 **Implementation:**
 ```python
 # Store monthly/yearly snapshots
 async def calculate_ytd_return():
     """Calculate year-to-date return."""
-    
+
     current_metrics = portfolio_metrics_with_holdings(current_holdings)
     jan_1_snapshot = load_snapshot(user_id, date=f"{year}-01-01")
-    
+
     ytd_return = current_metrics.total_value - jan_1_snapshot.total_value
     ytd_return_percent = (ytd_return / jan_1_snapshot.total_value) * 100
 ```
 
 ### Historical Performance
 
-**Status:** 🚧 Requires time-series database
+**Status:**  Requires time-series database
 
 **Features:**
 - Multi-year performance charts
@@ -1233,7 +1233,7 @@ async def calculate_ytd_return():
 
 ### Tax Lot Tracking
 
-**Status:** 🚧 Requires transaction history persistence
+**Status:**  Requires transaction history persistence
 
 **Features:**
 - FIFO/LIFO/Specific ID cost basis methods
@@ -1246,16 +1246,16 @@ async def calculate_ytd_return():
 class TaxLot(Base):
     """Track tax lots for capital gains calculations."""
     __tablename__ = "tax_lots"
-    
+
     id = Column(String, primary_key=True)
     user_id = Column(String)
     security_id = Column(String)
-    
+
     acquisition_date = Column(Date)
     quantity = Column(Float)
     cost_basis_per_share = Column(Float)
     total_cost_basis = Column(Float)
-    
+
     disposal_date = Column(Date, nullable=True)
     disposal_price = Column(Float, nullable=True)
     realized_gain_loss = Column(Float, nullable=True)
@@ -1263,7 +1263,7 @@ class TaxLot(Base):
 
 ### Dividend Tracking and Reinvestment
 
-**Status:** 🚧 Requires transaction monitoring
+**Status:**  Requires transaction monitoring
 
 **Features:**
 - Track dividend payments

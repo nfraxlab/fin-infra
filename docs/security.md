@@ -14,13 +14,13 @@ The `fin-infra` security module provides comprehensive protection for sensitive 
 
 ### Key Features
 
-- ✅ **Automatic PII Detection**: Regex + context + validation (Luhn for cards, ABA for routing)
-- ✅ **Zero Configuration**: One-line `add_financial_security(app)` setup
-- ✅ **Compliance-Ready**: Meets PCI-DSS, SOC 2, GDPR, GLBA, CCPA requirements
-- ✅ **Provider-Agnostic**: Works with all financial providers (Plaid, Alpaca, etc.)
-- ✅ **Key Rotation**: Support multiple encryption keys for zero-downtime rotation
-- ✅ **Reuses svc-infra**: Extends existing auth/logging without duplication
-- ✅ **Decimal Precision**: All money values use `Decimal` to prevent floating-point errors
+- [OK] **Automatic PII Detection**: Regex + context + validation (Luhn for cards, ABA for routing)
+- [OK] **Zero Configuration**: One-line `add_financial_security(app)` setup
+- [OK] **Compliance-Ready**: Meets PCI-DSS, SOC 2, GDPR, GLBA, CCPA requirements
+- [OK] **Provider-Agnostic**: Works with all financial providers (Plaid, Alpaca, etc.)
+- [OK] **Key Rotation**: Support multiple encryption keys for zero-downtime rotation
+- [OK] **Reuses svc-infra**: Extends existing auth/logging without duplication
+- [OK] **Decimal Precision**: All money values use `Decimal` to prevent floating-point errors
 
 ---
 
@@ -74,11 +74,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Before: Logs expose PII ❌
+# Before: Logs expose PII [X]
 logger.info("Processing SSN: 123-45-6789")
 # Output: Processing SSN: 123-45-6789  (PII LEAKED!)
 
-# After: PII automatically masked ✅
+# After: PII automatically masked [OK]
 logger.info("Processing SSN: 123-45-6789")
 # Output: Processing SSN: ***-**-6789  (PII SAFE!)
 ```
@@ -93,7 +93,7 @@ logger.info("Processing SSN: 123-45-6789")
 from decimal import Decimal
 from fin_infra.models import Transaction, Account
 
-# ✅ CORRECT: Use Decimal for all money values
+# [OK] CORRECT: Use Decimal for all money values
 tx = Transaction(
     id="tx-1",
     account_id="acct-1",
@@ -102,7 +102,7 @@ tx = Transaction(
     description="Purchase"
 )
 
-# ❌ WRONG: Float causes precision errors
+# [X] WRONG: Float causes precision errors
 # 0.1 + 0.2 == 0.30000000000000004 in float!
 
 # fin-infra models automatically coerce float to Decimal for safety,
@@ -372,7 +372,7 @@ async def get_user_ssn(
     current_user = Depends(get_current_user)
 ):
     """Get user's SSN (admin only)."""
-    
+
     # Log PII access
     await log_pii_access(
         user_id=current_user.id,
@@ -382,10 +382,10 @@ async def get_user_ssn(
         ip_address=request.client.host,
         user_agent=request.headers.get("user-agent")
     )
-    
+
     # Retrieve SSN (from encrypted storage)
     ssn = await get_user_ssn(user_id)
-    
+
     return {"ssn": ssn}
 ```
 
@@ -408,16 +408,16 @@ async def link_bank_account(
 ):
     """Exchange Plaid public token and store encrypted."""
     banking = easy_banking(provider="plaid")
-    
+
     # Exchange public token
     result = await banking.exchange_public_token(public_token)
     access_token = result["access_token"]
-    
+
     # Store encrypted
     await store_provider_token(
         db, user_id, "plaid", access_token, encryption
     )
-    
+
     return {"status": "linked"}
 
 @app.get("/banking/accounts")
@@ -429,10 +429,10 @@ async def get_accounts(
     """Get banking accounts using encrypted token."""
     # Retrieve decrypted token
     access_token = await get_provider_token(db, user_id, "plaid", encryption)
-    
+
     banking = easy_banking(provider="plaid")
     accounts = await banking.get_accounts(access_token)
-    
+
     return accounts
 ```
 
@@ -454,7 +454,7 @@ async def link_brokerage(
     # Encrypt API key and secret separately
     await store_provider_token(db, user_id, "alpaca_key", api_key, encryption)
     await store_provider_token(db, user_id, "alpaca_secret", api_secret, encryption)
-    
+
     return {"status": "linked"}
 
 @app.post("/brokerage/buy")
@@ -469,13 +469,13 @@ async def buy_stock(
     # Retrieve decrypted credentials
     api_key = await get_provider_token(db, user_id, "alpaca_key", encryption)
     api_secret = await get_provider_token(db, user_id, "alpaca_secret", encryption)
-    
+
     brokerage = easy_brokerage(
         provider="alpaca",
         api_key=api_key,
         api_secret=api_secret
     )
-    
+
     order = await brokerage.buy(symbol, quantity)
     return order
 ```
@@ -523,37 +523,37 @@ encryption = add_financial_security(
 ### Security
 
 1. **Store Encryption Key Securely**:
-   - ❌ Don't: Hardcode in source code
-   - ❌ Don't: Commit to Git
-   - ✅ Do: Use environment variables (development)
-   - ✅ Do: Use KMS (production): AWS KMS, Google Cloud KMS, Azure Key Vault
+   - [X] Don't: Hardcode in source code
+   - [X] Don't: Commit to Git
+   - [OK] Do: Use environment variables (development)
+   - [OK] Do: Use KMS (production): AWS KMS, Google Cloud KMS, Azure Key Vault
 
 2. **Rotate Keys Regularly**:
-   - ✅ Rotate encryption keys every 90 days
-   - ✅ Support multiple active keys for zero-downtime rotation
-   - ✅ Re-encrypt tokens after key rotation
+   - [OK] Rotate encryption keys every 90 days
+   - [OK] Support multiple active keys for zero-downtime rotation
+   - [OK] Re-encrypt tokens after key rotation
 
 3. **Audit PII Access**:
-   - ✅ Log every PII read/write/delete
-   - ✅ Include user_id, IP address, timestamp
-   - ✅ Retain logs for compliance period (90 days minimum)
+   - [OK] Log every PII read/write/delete
+   - [OK] Include user_id, IP address, timestamp
+   - [OK] Retain logs for compliance period (90 days minimum)
 
 ### Compliance
 
 1. **PCI-DSS (Credit Cards)**:
-   - ✅ Never log full card numbers (last 4 only)
-   - ✅ Never log CVV codes (fully masked)
-   - ✅ Encrypt card tokens at rest
+   - [OK] Never log full card numbers (last 4 only)
+   - [OK] Never log CVV codes (fully masked)
+   - [OK] Encrypt card tokens at rest
 
 2. **SOC 2 (Security Controls)**:
-   - ✅ Audit all PII access
-   - ✅ Encrypt sensitive data at rest and in transit
-   - ✅ Implement least privilege access
+   - [OK] Audit all PII access
+   - [OK] Encrypt sensitive data at rest and in transit
+   - [OK] Implement least privilege access
 
 3. **GDPR (Data Privacy)**:
-   - ✅ Track personal data access (audit logs)
-   - ✅ Support data deletion (delete tokens)
-   - ✅ Minimize data retention
+   - [OK] Track personal data access (audit logs)
+   - [OK] Support data deletion (delete tokens)
+   - [OK] Minimize data retention
 
 ### Performance
 
@@ -575,29 +575,29 @@ encryption = add_financial_security(
 
 | Requirement | Implementation |
 |-------------|----------------|
-| **3.2**: Mask PAN when displayed | ✅ `**** **** **** 1111` |
-| **3.3**: Mask PAN in logs | ✅ Automatic PII filter |
-| **3.4**: Render PAN unreadable | ✅ Token encryption |
-| **3.5**: Protect keys | ✅ KMS integration |
-| **10.2**: Implement audit trails | ✅ PII access logging |
+| **3.2**: Mask PAN when displayed | [OK] `**** **** **** 1111` |
+| **3.3**: Mask PAN in logs | [OK] Automatic PII filter |
+| **3.4**: Render PAN unreadable | [OK] Token encryption |
+| **3.5**: Protect keys | [OK] KMS integration |
+| **10.2**: Implement audit trails | [OK] PII access logging |
 
 ### SOC 2 Controls
 
 | Control | Implementation |
 |---------|----------------|
-| **CC6.1**: Logical access | ✅ svc-infra auth + audit logs |
-| **CC6.6**: Encryption | ✅ Token encryption at rest |
-| **CC6.7**: Transmission security | ✅ HTTPS for provider APIs |
-| **CC7.2**: Monitoring | ✅ PII access audit logs |
+| **CC6.1**: Logical access | [OK] svc-infra auth + audit logs |
+| **CC6.6**: Encryption | [OK] Token encryption at rest |
+| **CC6.7**: Transmission security | [OK] HTTPS for provider APIs |
+| **CC7.2**: Monitoring | [OK] PII access audit logs |
 
 ### GDPR Articles
 
 | Article | Implementation |
 |---------|----------------|
-| **Article 5**: Data minimization | ✅ Encrypt tokens, mask PII |
-| **Article 17**: Right to erasure | ✅ Delete provider tokens |
-| **Article 30**: Records of processing | ✅ PII access audit logs |
-| **Article 32**: Security measures | ✅ Encryption + masking |
+| **Article 5**: Data minimization | [OK] Encrypt tokens, mask PII |
+| **Article 17**: Right to erasure | [OK] Delete provider tokens |
+| **Article 30**: Records of processing | [OK] PII access audit logs |
+| **Article 32**: Security measures | [OK] Encryption + masking |
 
 ---
 
@@ -654,28 +654,28 @@ Encrypt/decrypt provider API tokens.
 ```python
 class ProviderTokenEncryption:
     def __init__(self, key: Optional[bytes] = None)
-    
+
     def encrypt(
         self,
         token: str,
         context: Optional[Dict[str, Any]] = None,
         key_id: Optional[str] = None
     ) -> str
-    
+
     def decrypt(
         self,
         encrypted_token: str,
         context: Optional[Dict[str, Any]] = None,
         verify_context: bool = True
     ) -> str
-    
+
     def rotate_key(
         self,
         encrypted_token: str,
         new_key: bytes,
         context: Optional[Dict[str, Any]] = None
     ) -> str
-    
+
     @staticmethod
     def generate_key() -> bytes
 ```

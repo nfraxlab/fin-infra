@@ -1,6 +1,6 @@
 # Transaction Categorization
 
-**Status**: ✅ Production Ready (V2)  
+**Status**: [OK] Production Ready (V2)  
 **Module**: `fin_infra.categorization`  
 **Accuracy**: 95-97% (V2 with LLM), 90% (V1 local-only)  
 
@@ -349,7 +349,7 @@ class Base(DeclarativeBase):
 class CategoryOverride(Base):
     """User-defined category override."""
     __tablename__ = "category_overrides"
-    
+
     user_id = Column(String, primary_key=True)
     merchant_name = Column(String, primary_key=True)
     category = Column(String, nullable=False)
@@ -379,13 +379,13 @@ async def categorize_uncategorized_transactions():
     """Categorize any uncategorized transactions."""
     # Fetch uncategorized transactions from DB
     transactions = get_uncategorized_transactions()
-    
+
     # Batch categorize
     for txn in transactions:
         result = categorizer.categorize(txn.merchant_name)
         if result.confidence >= 0.75:
             update_transaction_category(txn.id, result.category)
-    
+
     print(f"Categorized {len(transactions)} transactions")
 ```
 
@@ -566,9 +566,9 @@ Get categorization statistics.
 
 ---
 
-## V2: LLM-Powered Categorization ✅
+## V2: LLM-Powered Categorization [OK]
 
-**Status**: ✅ Production Ready (v2.0)  
+**Status**: [OK] Production Ready (v2.0)  
 **Integration**: ai-infra LLM  
 **Accuracy**: 95-97% (5-7% improvement over V1)  
 **Cost**: <$0.0002/transaction with caching  
@@ -608,7 +608,7 @@ print(result.reasoning)       # "Coffee in name suggests coffee shop category"
 
 | Provider | Model | Cost/txn | Latency | Accuracy | Recommendation |
 |----------|-------|----------|---------|----------|----------------|
-| **Google** | Gemini 2.0 Flash | **$0.00011** | 200-400ms | 90-95% | ✅ **Recommended** (cheapest) |
+| **Google** | Gemini 2.0 Flash | **$0.00011** | 200-400ms | 90-95% | [OK] **Recommended** (cheapest) |
 | **OpenAI** | GPT-4o-mini | $0.00021 | 300-500ms | 92-96% | Good balance |
 | **Anthropic** | Claude 3.5 Haiku | $0.00037 | 250-450ms | 93-97% | Best accuracy, higher cost |
 
@@ -623,17 +623,17 @@ categorizer = easy_categorization(
     # Model selection
     model="hybrid",                    # "local", "llm", "hybrid" (default)
     enable_ml=True,                    # Enable sklearn Layer 3
-    
+
     # LLM provider (Layer 4)
     llm_provider="google",             # "google", "openai", "anthropic", "none"
     llm_model="gemini-2.0-flash-exp",  # Override default model
     llm_confidence_threshold=0.6,      # Trigger LLM when sklearn < 0.6
-    
+
     # Cost controls
     llm_max_cost_per_day=0.10,         # $0.10/day budget (auto-disable)
     llm_max_cost_per_month=2.00,       # $2/month budget (auto-disable)
     llm_cache_ttl=86400,               # 24h cache (default)
-    
+
     # Future V3 features
     enable_personalization=False,      # User context injection (V3)
 )

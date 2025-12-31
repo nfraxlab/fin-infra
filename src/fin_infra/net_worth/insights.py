@@ -215,7 +215,7 @@ Response: {
   "confidence": 0.89
 }
 
-⚠️ This is AI-generated advice. Not a substitute for a certified financial advisor.
+[!] This is AI-generated advice. Not a substitute for a certified financial advisor.
 Verify calculations independently. For personalized advice, consult a professional."""
 
 DEBT_REDUCTION_SYSTEM_PROMPT = """You are a debt counselor using the avalanche method (highest APR first).
@@ -269,7 +269,7 @@ Response: {
   "confidence": 0.98
 }
 
-⚠️ This is AI-generated advice. Not a substitute for a certified financial advisor.
+[!] This is AI-generated advice. Not a substitute for a certified financial advisor.
 Verify calculations independently. For personalized advice, consult a professional."""
 
 GOAL_RECOMMENDATION_SYSTEM_PROMPT = """You are a financial planner validating goals and suggesting paths.
@@ -322,7 +322,7 @@ Response: {
   "confidence": 0.89
 }
 
-⚠️ This is AI-generated advice. Not a substitute for a certified financial advisor.
+[!] This is AI-generated advice. Not a substitute for a certified financial advisor.
 Verify calculations independently. For personalized advice, consult a professional."""
 
 ASSET_ALLOCATION_SYSTEM_PROMPT = """You are a portfolio advisor recommending asset allocation.
@@ -365,7 +365,7 @@ Response: {
   "confidence": 0.91
 }
 
-⚠️ This is AI-generated advice. Not a substitute for a certified financial advisor.
+[!] This is AI-generated advice. Not a substitute for a certified financial advisor.
 Verify calculations independently. For personalized advice, consult a professional."""
 
 

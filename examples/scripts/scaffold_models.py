@@ -28,7 +28,6 @@ import argparse
 import sys
 from pathlib import Path
 
-
 # Expected model classes
 EXPECTED_MODELS = [
     "User",
@@ -96,7 +95,7 @@ def validate_model_structure(models_file: Path) -> tuple[bool, list[str]]:
                 issues.append(f"{model_name}: Missing __tablename__ definition")
 
         # Check docstring
-        if f'class {model_name}(Base' in content:
+        if f"class {model_name}(Base" in content:
             # Look for docstring after class definition
             class_start = content.find(f"class {model_name}(Base")
             docstring_check = content[class_start : class_start + 200]
@@ -151,8 +150,8 @@ def main():
     project_root = script_dir.parent
     models_file = project_root / "src" / "fin_infra_template" / "db" / "models.py"
 
-    print("🔍 Scaffolding Financial Models")
-    print(f"📁 Project root: {project_root}")
+    print(" Scaffolding Financial Models")
+    print(f" Project root: {project_root}")
     print(f"📄 Models file: {models_file}")
     print()
 
@@ -162,49 +161,49 @@ def main():
         all_exist, found, missing = check_models_exist(models_file)
 
         if all_exist:
-            print(f"✅ All {len(EXPECTED_MODELS)} models exist:")
+            print(f"[OK] All {len(EXPECTED_MODELS)} models exist:")
             for model in found:
-                print(f"   ✓ {model}")
+                print(f"   [OK] {model}")
         else:
-            print(f"⚠️  Found {len(found)}/{len(EXPECTED_MODELS)} models")
+            print(f"[!]  Found {len(found)}/{len(EXPECTED_MODELS)} models")
             if found:
                 print("   Found:")
                 for model in found:
-                    print(f"   ✓ {model}")
+                    print(f"   [OK] {model}")
             if missing:
                 print("   Missing:")
                 for model in missing:
-                    print(f"   ✗ {model}")
+                    print(f"   [X] {model}")
 
         # Validate structure
         if all_exist and args.validate:
-            print("\n🔍 Validating model structure...")
+            print("\n Validating model structure...")
             is_valid, issues = validate_model_structure(models_file)
 
             if is_valid:
-                print("✅ All models have proper structure")
+                print("[OK] All models have proper structure")
             else:
-                print(f"⚠️  Found {len(issues)} structure issues:")
+                print(f"[!]  Found {len(issues)} structure issues:")
                 for issue in issues:
-                    print(f"   ⚠️  {issue}")
+                    print(f"   [!]  {issue}")
                 return 1
 
         return 0 if all_exist else 1
 
     # Overwrite mode
     if args.overwrite:
-        print("⚠️  OVERWRITE MODE")
+        print("[!]  OVERWRITE MODE")
         print("This will regenerate models.py from scratch!")
         print()
 
         # Check if file exists
         if models_file.exists():
-            print("📦 Creating backup...")
+            print(" Creating backup...")
             backup_path = backup_file(models_file)
-            print(f"   ✓ Backup created: {backup_path}")
+            print(f"   [OK] Backup created: {backup_path}")
             print()
 
-        print("❌ Model generation not yet implemented")
+        print("[X] Model generation not yet implemented")
         print("   Models already exist at:")
         print(f"   {models_file}")
         print()
@@ -215,7 +214,7 @@ def main():
         return 1
 
     # Default: validate
-    print("✅ Models validation complete")
+    print("[OK] Models validation complete")
     print()
     print("Run with --help for more options")
     return 0

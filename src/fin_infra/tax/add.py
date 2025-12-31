@@ -279,7 +279,7 @@ def add_tax_data(
         that can be sold to offset capital gains. Suggests replacement securities
         to maintain market exposure without triggering wash sale rules.
 
-        ⚠️ **DISCLAIMER**: Not a substitute for professional tax or financial advice.
+        [!] **DISCLAIMER**: Not a substitute for professional tax or financial advice.
         Consult a certified tax professional before executing TLH trades.
 
         Args:
@@ -344,7 +344,7 @@ def add_tax_data(
         Projects the outcome of executing provided TLH opportunities, including
         total tax savings, portfolio impact, and risk assessment.
 
-        ⚠️ **DISCLAIMER**: Not a substitute for professional tax or financial advice.
+        [!] **DISCLAIMER**: Not a substitute for professional tax or financial advice.
         Consult a certified tax professional before executing TLH trades.
 
         Args:

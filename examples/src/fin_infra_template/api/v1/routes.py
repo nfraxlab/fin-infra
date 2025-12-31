@@ -26,12 +26,11 @@ Note: Auto-generated CRUD endpoints are available at:
 
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any
 
 from fastapi import HTTPException
-from fin_infra_template.settings import settings
-
 from svc_infra.api.fastapi.dual.public import public_router
+
+from fin_infra_template.settings import settings
 
 # from svc_infra.api.fastapi.dual.protected import user_router  # For authenticated routes
 # from svc_infra.db.sql.session import SqlSessionDep  # For database dependency
@@ -103,7 +102,9 @@ async def status():
             "credit": {
                 "experian": bool(settings.experian_client_id and settings.experian_client_secret),
                 "equifax": bool(settings.equifax_client_id and settings.equifax_client_secret),
-                "transunion": bool(settings.transunion_client_id and settings.transunion_client_secret),
+                "transunion": bool(
+                    settings.transunion_client_id and settings.transunion_client_secret
+                ),
             },
             "brokerage": {
                 "alpaca": bool(settings.alpaca_api_key and settings.alpaca_secret_key),
@@ -563,7 +564,11 @@ async def get_investment_holdings():
         "total_cost_basis": 100000.00,
         "total_unrealized_gain_loss": 17419.54,
         "total_unrealized_gain_loss_percent": 17.42,
-        "provider": "plaid" if settings.plaid_client_id else "snaptrade" if settings.snaptrade_client_id else "demo",
+        "provider": "plaid"
+        if settings.plaid_client_id
+        else "snaptrade"
+        if settings.snaptrade_client_id
+        else "demo",
         "last_updated": datetime.utcnow().isoformat(),
         "note": "Configure PLAID or SNAPTRADE credentials for real holdings data",
     }
@@ -819,7 +824,7 @@ async def get_insights_feed():
             {
                 "id": "insight_3",
                 "type": "goal_progress",
-                "title": "You're on track for your emergency fund goal! 🎉",
+                "title": "You're on track for your emergency fund goal! ",
                 "description": (
                     "You've saved $8,500 toward your $10,000 emergency fund goal. "
                     "At your current rate, you'll reach it in 3 months."

@@ -197,11 +197,11 @@ def detect_cadence(transactions):
     for i in range(len(transactions) - 1):
         days = (transactions[i+1].date - transactions[i].date).days
         day_diffs.append(days)
-    
+
     # Use median (robust to outliers)
     median_days = median(day_diffs)
     std_dev = stdev(day_diffs)
-    
+
     # Match to cadence type
     if 13 <= median_days <= 15:
         return CadenceType.BIWEEKLY, std_dev
@@ -211,7 +211,7 @@ def detect_cadence(transactions):
         return CadenceType.QUARTERLY, std_dev
     elif 360 <= median_days <= 370:
         return CadenceType.ANNUAL, std_dev
-    
+
     return None, 0.0
 ```
 
@@ -284,31 +284,31 @@ def calculate_confidence(pattern):
         PatternType.VARIABLE: 0.70,
         PatternType.IRREGULAR: 0.60,
     }[pattern.pattern_type]
-    
+
     # Bonus for more occurrences (+0.05 each, max +0.15)
     occurrence_bonus = min((pattern.occurrence_count - 3) * 0.05, 0.15)
-    
+
     # Bonus for date consistency (+0.05 if std_dev < 2 days)
     date_consistency_bonus = 0.05 if pattern.date_std_dev < 2.0 else 0.0
-    
+
     # Bonus for amount consistency (+0.05 if variance < 1%)
     amount_bonus = 0.05 if pattern.amount_variance_pct < 0.01 else 0.0
-    
+
     # Penalty for high amount variance (-0.10 if > 10%)
     variance_penalty = -0.10 if pattern.amount_variance_pct > 0.10 else 0.0
-    
+
     # Penalty for generic merchant (-0.05)
     generic_penalty = -0.05 if is_generic_merchant(pattern.merchant_name) else 0.0
-    
+
     confidence = (
-        base_confidence 
-        + occurrence_bonus 
-        + date_consistency_bonus 
-        + amount_bonus 
-        + variance_penalty 
+        base_confidence
+        + occurrence_bonus
+        + date_consistency_bonus
+        + amount_bonus
+        + variance_penalty
         + generic_penalty
     )
-    
+
     return max(0.0, min(1.0, confidence))  # Clamp to [0, 1]
 ```
 
@@ -496,16 +496,16 @@ def easy_recurring_detection(
 ) -> RecurringDetector:
     """
     Create configured recurring transaction detector.
-    
+
     Args:
         min_occurrences: Minimum transactions to detect pattern (≥2, default: 3)
         amount_tolerance: Amount variance threshold (0.0-1.0, default: 0.02 = ±2%)
         date_tolerance_days: Date variance threshold (≥0, default: 7 days)
         **config: Reserved for future extensions (V2: enable_ml, llm_provider)
-    
+
     Returns:
         RecurringDetector with configured PatternDetector
-    
+
     Raises:
         ValueError: If parameters out of valid range
     """
@@ -548,23 +548,23 @@ Main detection engine.
 ```python
 class RecurringDetector:
     def detect_patterns(
-        self, 
+        self,
         transactions: list[dict]
     ) -> list[RecurringPattern]:
         """
         Detect recurring patterns in transaction history.
-        
+
         Args:
             transactions: List of dicts with keys: id, merchant, amount, date
-        
+
         Returns:
             List of detected patterns (sorted by confidence descending)
         """
-        
+
     def get_stats(self) -> dict:
         """
         Get detection statistics.
-        
+
         Returns:
             Dict with: total_detected, fixed_patterns, variable_patterns,
                       irregular_patterns, false_positives_filtered
@@ -711,20 +711,20 @@ async def detect_recurring_task():
     """Run daily at 2 AM."""
     # Fetch transactions from banking provider
     users = get_all_users()  # Your user retrieval logic
-    
+
     for user in users:
         # Get last 90 days of transactions
         transactions = await banking.get_transactions(
             user.access_token,
             days=90
         )
-        
+
         # Detect patterns
         patterns = recurring_detector.detect_patterns(transactions)
-        
+
         # Store in database
         save_patterns(user.id, patterns)
-        
+
         # Send alerts for new subscriptions
         new_patterns = [p for p in patterns if is_new(user.id, p)]
         if new_patterns:
@@ -888,14 +888,14 @@ Tested on M1 Mac with 1000 transactions:
 
 1. **Cache merchant normalization** (svc-infra.cache, 7 day TTL)
    - Reduces repeated normalization calls by 95%
-   
+
 2. **Batch process users** (svc-infra jobs daily at 2 AM)
    - Avoid real-time detection on every transaction
-   
+
 3. **Filter transactions** (only include candidates)
    - Skip ATM withdrawals, transfers (generic merchants)
    - Only include merchants with 2+ transactions
-   
+
 4. **Use pre-defined merchant groups** (KNOWN_MERCHANT_GROUPS)
    - Skips fuzzy matching for common subscriptions
    - Instant grouping for Netflix, Spotify, etc.
@@ -1031,7 +1031,7 @@ def get_normalized(merchant: str) -> str:
 
 ## Roadmap
 
-### V1 (Current) ✅
+### V1 (Current) [OK]
 
 - [x] Pattern-based detection (3-layer hybrid)
 - [x] Merchant normalization (fuzzy matching)
@@ -1112,20 +1112,20 @@ queue, scheduler = easy_jobs(app, driver="redis")
 async def daily_detection():
     """Run at 2 AM daily."""
     users = await get_all_users()
-    
+
     for user in users:
         # Fetch transactions
         transactions = await banking.get_transactions(
             user.plaid_access_token,
             days=90
         )
-        
+
         # Detect patterns
         patterns = recurring.detect_patterns(transactions)
-        
+
         # Save to database
         await save_patterns(user.id, patterns)
-        
+
         # Send alerts
         new_patterns = [p for p in patterns if is_new(user.id, p)]
         if new_patterns:
@@ -1294,7 +1294,7 @@ for category, cost in summary.by_category.items():
 **2. Cancellation Recommendations**
 ```python
 if summary.cancellation_opportunities:
-    print("💡 Potential Savings:")
+    print(" Potential Savings:")
     for opp in summary.cancellation_opportunities:
         print(f"  Cancel {opp.merchant_name}: Save ${opp.monthly_savings:.2f}/month")
         print(f"    Reason: {opp.reason}")
@@ -1348,16 +1348,16 @@ detector = add_recurring_detection(app, prefix="/recurring")
 @app.get("/recurring/summary")
 async def get_summary(user_id: str = Query(...)):
     """Get recurring spending summary for user"""
-    
+
     # Fetch transactions (from banking provider)
     transactions = await get_user_transactions(user_id, days=180)
-    
+
     # Detect patterns
     patterns = detector.detect_patterns(transactions)
-    
+
     # Generate summary
     summary = get_recurring_summary(user_id, patterns)
-    
+
     return summary
 ```
 
@@ -1392,7 +1392,7 @@ async def generate_all_summaries():
         transactions = await get_user_transactions(user.id, days=180)
         patterns = detector.detect_patterns(transactions)
         summary = get_recurring_summary(user.id, patterns)
-        
+
         # Cache for next day
         await cache_summary(user.id, summary)
 ```

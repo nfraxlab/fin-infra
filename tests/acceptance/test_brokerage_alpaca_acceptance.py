@@ -1,6 +1,6 @@
 """Acceptance tests for Alpaca brokerage provider.
 
-⚠️ TRADING WARNING: These tests use paper trading mode only.
+[!] TRADING WARNING: These tests use paper trading mode only.
 Never run with live trading credentials.
 
 These tests make real API calls when credentials are available:
@@ -86,7 +86,7 @@ class TestAlpacaBrokerageAcceptance:
         # Verify paper trading account
         assert account["status"] in ("ACTIVE", "INACTIVE")
         print(
-            f"✓ Alpaca account: Status={account['status']}, "
+            f"[OK] Alpaca account: Status={account['status']}, "
             f"Buying Power=${account['buying_power']}, "
             f"Portfolio Value=${account['portfolio_value']}"
         )
@@ -101,7 +101,7 @@ class TestAlpacaBrokerageAcceptance:
 
         assert isinstance(positions, list)
         # May be empty if no positions
-        print(f"✓ Alpaca positions: {len(positions)} open positions")
+        print(f"[OK] Alpaca positions: {len(positions)} open positions")
 
         if positions:
             pos = positions[0]
@@ -123,7 +123,7 @@ class TestAlpacaBrokerageAcceptance:
         orders = broker.list_orders(status="all", limit=10)
 
         assert isinstance(orders, list)
-        print(f"✓ Alpaca orders: {len(orders)} orders in history")
+        print(f"[OK] Alpaca orders: {len(orders)} orders in history")
 
         if orders:
             order = orders[0]
@@ -181,7 +181,7 @@ class TestAlpacaBrokerageAcceptance:
         assert order["type"] == "limit"
         assert order["status"] in ("new", "accepted", "pending_new")
         print(
-            f"✓ Order submitted: ID={order['id']}, Symbol={order['symbol']}, Status={order['status']}"
+            f"[OK] Order submitted: ID={order['id']}, Symbol={order['symbol']}, Status={order['status']}"
         )
 
         order_id = order["id"]
@@ -190,17 +190,17 @@ class TestAlpacaBrokerageAcceptance:
         fetched_order = broker.get_order(order_id)
         assert fetched_order["id"] == order_id
         assert fetched_order["symbol"] == "AAPL"
-        print(f"✓ Order fetched: ID={order_id}, Status={fetched_order['status']}")
+        print(f"[OK] Order fetched: ID={order_id}, Status={fetched_order['status']}")
 
         # Cancel the order
         broker.cancel_order(order_id)
-        print(f"✓ Order canceled: ID={order_id}")
+        print(f"[OK] Order canceled: ID={order_id}")
 
         # Verify cancellation
         canceled_order = broker.get_order(order_id)
         # Status may be "canceled" or "pending_cancel" depending on timing
         assert canceled_order["status"] in ("canceled", "pending_cancel")
-        print(f"✓ Order status after cancel: {canceled_order['status']}")
+        print(f"[OK] Order status after cancel: {canceled_order['status']}")
 
     def test_get_portfolio_history(self, broker):
         """Test getting portfolio history."""
@@ -223,7 +223,7 @@ class TestAlpacaBrokerageAcceptance:
 
         # May have data depending on account history
         timestamps = history.get("timestamp", [])
-        print(f"✓ Portfolio history: {len(timestamps)} data points over 1 week")
+        print(f"[OK] Portfolio history: {len(timestamps)} data points over 1 week")
 
         if timestamps:
             equity_values = history.get("equity", [])

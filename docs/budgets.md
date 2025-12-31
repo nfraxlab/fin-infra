@@ -863,7 +863,7 @@ Base = declarative_base()
 
 class BudgetModel(Base):
     __tablename__ = "budgets"
-    
+
     id = Column(String, primary_key=True)  # "bud_abc123"
     user_id = Column(String, index=True, nullable=False)
     name = Column(String, nullable=False)
@@ -884,7 +884,7 @@ class BudgetTracker:
     def __init__(self, db_engine: AsyncEngine):
         self.db_engine = db_engine
         self.session_maker = async_sessionmaker(db_engine, expire_on_commit=False)
-    
+
     async def create_budget(...) -> Budget:
         """Create new budget with validation"""
         # Validate inputs
@@ -892,23 +892,23 @@ class BudgetTracker:
         # Generate unique ID
         # Store in database
         pass
-    
+
     async def get_budgets(user_id: str, type: Optional[BudgetType] = None) -> list[Budget]:
         """List budgets with optional type filter"""
         pass
-    
+
     async def get_budget(budget_id: str) -> Budget:
         """Get single budget by ID"""
         pass
-    
+
     async def update_budget(budget_id: str, updates: dict) -> Budget:
         """Partial update of budget"""
         pass
-    
+
     async def delete_budget(budget_id: str) -> None:
         """Delete budget"""
         pass
-    
+
     async def get_budget_progress(budget_id: str) -> BudgetProgress:
         """Calculate spending progress"""
         # TODO: Fetch transactions from categorization module
@@ -929,21 +929,21 @@ def easy_budgets(
 ) -> BudgetTracker:
     """
     Easy setup for BudgetTracker with sensible defaults.
-    
+
     Args:
         db_url: Database URL (falls back to SQL_URL env var)
         pool_size: Connection pool size (default: 5)
         max_overflow: Max overflow connections (default: 10)
         pool_pre_ping: Test connections before use (default: True)
         echo: Log SQL statements (default: False)
-    
+
     Returns:
         Configured BudgetTracker instance
     """
     database_url = db_url or os.getenv("SQL_URL")
     if not database_url:
         raise ValueError("Database URL required (db_url or SQL_URL env var)")
-    
+
     engine = create_async_engine(
         database_url,
         pool_size=pool_size,
@@ -953,7 +953,7 @@ def easy_budgets(
         pool_recycle=3600,
         connect_args=_get_connect_args(database_url),
     )
-    
+
     return BudgetTracker(db_engine=engine)
 ```
 
@@ -968,30 +968,30 @@ def add_budgets(
 ) -> BudgetTracker:
     """
     Add budget management endpoints to FastAPI app.
-    
+
     Args:
         app: FastAPI application instance
         tracker: BudgetTracker instance (creates via easy_budgets if not provided)
         db_url: Database URL (used if tracker not provided)
         prefix: URL prefix for budget routes (default: "/budgets")
-    
+
     Returns:
         BudgetTracker instance for programmatic access
     """
     if tracker is None:
         tracker = easy_budgets(db_url=db_url)
-    
+
     app.state.budget_tracker = tracker
-    
+
     # Create router
     from fastapi import APIRouter
     router = APIRouter(prefix=prefix, tags=["Budget Management"])
-    
+
     # Mount 8 endpoints
     # ... (endpoint definitions)
-    
+
     app.include_router(router, include_in_schema=True)
-    
+
     # Register scoped docs
     try:
         from svc_infra.api.fastapi.docs.scoped import add_prefixed_docs
@@ -1004,7 +1004,7 @@ def add_budgets(
         )
     except ImportError:
         pass
-    
+
     return tracker
 ```
 
@@ -1019,7 +1019,7 @@ def add_budgets(
 @pytest.mark.asyncio
 async def test_create_budget():
     tracker = easy_budgets(db_url="sqlite+aiosqlite:///:memory:")
-    
+
     budget = await tracker.create_budget(
         user_id="user_123",
         name="November 2025",
@@ -1028,7 +1028,7 @@ async def test_create_budget():
         categories={"Groceries": 600.00},
         start_date=datetime(2025, 11, 1),
     )
-    
+
     assert budget.id.startswith("bud_")
     assert budget.name == "November 2025"
     assert budget.categories["Groceries"] == 600.00
@@ -1044,7 +1044,7 @@ def test_budget_workflow():
     app = FastAPI()
     add_budgets(app, db_url="sqlite+aiosqlite:///:memory:")
     client = TestClient(app)
-    
+
     # Create budget
     response = client.post("/budgets", json={
         "user_id": "user_123",
@@ -1056,11 +1056,11 @@ def test_budget_workflow():
     })
     assert response.status_code == 200
     budget_id = response.json()["id"]
-    
+
     # List budgets
     response = client.get("/budgets?user_id=user_123")
     assert len(response.json()) == 1
-    
+
     # Delete budget
     response = client.delete(f"/budgets/{budget_id}")
     assert response.status_code == 204
@@ -1163,7 +1163,7 @@ async def get_cached_progress(budget_id: str):
 
 ### Roadmap
 
-- **v1.0** (Current): Core CRUD, templates, alerts, API ✅
+- **v1.0** (Current): Core CRUD, templates, alerts, API [OK]
 - **v1.1**: Transaction linking, automatic spending tracking
 - **v1.2**: Budget sharing, multi-user access
 - **v1.3**: Analytics, insights, forecasting

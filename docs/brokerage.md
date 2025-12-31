@@ -2,7 +2,7 @@
 
 fin-infra provides unified interfaces for connecting to brokerage accounts for automated trading, portfolio management, and position tracking. The brokerage integration supports **paper trading** (sandbox) and **live trading** with built-in safety mechanisms.
 
-## ⚠️ Important Disclaimers
+## [!] Important Disclaimers
 
 **TRADING INVOLVES SUBSTANTIAL RISK**: This software is provided for educational and development purposes. Real trading involves risk of loss. Paper trading results DO NOT guarantee real trading success.
 
@@ -15,7 +15,7 @@ fin-infra provides unified interfaces for connecting to brokerage accounts for a
 ## Supported Providers
 
 ### Current
-- **Alpaca** (✅ Implemented)
+- **Alpaca** ([OK] Implemented)
   - Commission-free trading API
   - Full paper trading environment
   - Real-time market data
@@ -407,7 +407,7 @@ def submit_orders_with_throttle(orders_to_submit):
                 order = brokerage.submit_order(**order_params)
             else:
                 raise
-        
+
         # Small delay between orders
         sleep(0.3)  # 200 req/min = ~3 req/sec max
 ```
@@ -425,7 +425,7 @@ from fastapi.testclient import TestClient
 def test_submit_order_endpoint():
     """Test order submission via API."""
     app = FastAPI()
-    
+
     # Create mock provider
     mock_provider = Mock()
     mock_provider.submit_order.return_value = {
@@ -433,11 +433,11 @@ def test_submit_order_endpoint():
         "symbol": "AAPL",
         "status": "accepted"
     }
-    
+
     # Wire to app
     add_brokerage(app, provider=mock_provider)
     client = TestClient(app)
-    
+
     # Submit order
     response = client.post("/brokerage/orders", json={
         "symbol": "AAPL",
@@ -446,7 +446,7 @@ def test_submit_order_endpoint():
         "type": "market",
         "time_in_force": "day"
     })
-    
+
     assert response.status_code == 200
     data = response.json()
     assert data["id"] == "test-order-123"
@@ -466,12 +466,12 @@ from fin_infra.brokerage import easy_brokerage
 def test_real_paper_trading():
     """Test with real Alpaca paper trading API."""
     brokerage = easy_brokerage(mode="paper")
-    
+
     # Get account
     account = brokerage.get_account()
     assert account['status'] == 'ACTIVE'
     assert float(account['buying_power']) > 0
-    
+
     # Submit market order
     order = brokerage.submit_order(
         symbol="AAPL",
@@ -482,7 +482,7 @@ def test_real_paper_trading():
     )
     assert order['symbol'] == 'AAPL'
     assert order['status'] in ['accepted', 'new', 'filled']
-    
+
     # Cancel if not filled
     if order['status'] != 'filled':
         brokerage.cancel_order(order['id'])

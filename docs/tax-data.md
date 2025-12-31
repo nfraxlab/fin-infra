@@ -308,15 +308,15 @@ add_observability(app, metrics_path="/metrics")
 **Use Case**: Testing, local development, demos.
 
 **Features**:
-- ✅ Zero configuration
-- ✅ Realistic hardcoded data (W-2 $75k wages, 5x 1099 forms)
-- ✅ Full API coverage (all methods implemented)
-- ✅ Instant responses
+- [OK] Zero configuration
+- [OK] Realistic hardcoded data (W-2 $75k wages, 5x 1099 forms)
+- [OK] Full API coverage (all methods implemented)
+- [OK] Instant responses
 
 **Limitations**:
-- ❌ Static data (same for all users/years)
-- ❌ No real IRS integration
-- ❌ No document upload/parsing
+- [X] Static data (same for all users/years)
+- [X] No real IRS integration
+- [X] No document upload/parsing
 
 **Setup**:
 ```python
@@ -328,18 +328,18 @@ tax = easy_tax()  # or easy_tax(provider="mock")
 **Use Case**: Production apps requiring official IRS integration.
 
 **Features**:
-- ✅ Official IRS API access
-- ✅ Real-time form filing
-- ✅ Electronic signature (PKI)
-- ✅ Form validation
+- [OK] Official IRS API access
+- [OK] Real-time form filing
+- [OK] Electronic signature (PKI)
+- [OK] Form validation
 
 **Limitations**:
-- ❌ 6-8 week registration process
-- ❌ Requires EFIN (Electronic Filing Identification Number)
-- ❌ Requires TCC (Transmitter Control Code)
-- ❌ Requires PKI certificate
-- ❌ IP whitelist required
-- ❌ Annual renewal
+- [X] 6-8 week registration process
+- [X] Requires EFIN (Electronic Filing Identification Number)
+- [X] Requires TCC (Transmitter Control Code)
+- [X] Requires PKI certificate
+- [X] IP whitelist required
+- [X] Annual renewal
 
 **Registration**: [IRS e-Services](https://www.irs.gov/e-file-providers/e-services)
 
@@ -363,11 +363,11 @@ tax = easy_tax(provider="irs")
 **Use Case**: Fintech apps requiring crypto tax reporting (Coinbase, Robinhood, etc.).
 
 **Features**:
-- ✅ Comprehensive crypto tax calculations (FIFO/LIFO/HIFO)
-- ✅ Form 8949 generation
-- ✅ Multi-exchange aggregation
-- ✅ NFT and DeFi support
-- ✅ Tax-loss harvesting recommendations
+- [OK] Comprehensive crypto tax calculations (FIFO/LIFO/HIFO)
+- [OK] Form 8949 generation
+- [OK] Multi-exchange aggregation
+- [OK] NFT and DeFi support
+- [OK] Tax-loss harvesting recommendations
 
 **Pricing**:
 - **Small apps** (< 1,000 users): $50-$100/month + $1-$2/user
@@ -579,7 +579,7 @@ async def calculate_year_end_taxes(user_id: str, tax_year: int):
     """Calculate tax liability at year-end."""
     report = tax.calculate_crypto_gains(user_id, tax_year, "FIFO")
     liability = tax.calculate_tax_liability(user_id, tax_year, "single")
-    
+
     # Store results in database
     # Send email notification
     return {"report": report, "liability": liability}
@@ -604,7 +604,7 @@ add_webhooks(app, prefix="/webhooks")
 async def notify_tax_document_ready(user_id: str, document_id: str):
     """Webhook notification when tax document is ready."""
     from svc_infra.webhooks import send_webhook
-    
+
     document = tax.get_tax_document(document_id)
     await send_webhook(
         event="tax.document.ready",
@@ -629,7 +629,7 @@ from fin_infra.tax import easy_tax
 def test_mock_provider_w2():
     tax = easy_tax(provider="mock")
     docs = tax.get_tax_documents(user_id="user_123", tax_year=2024)
-    
+
     w2 = next(d for d in docs if d.form_type == "W-2")
     assert w2.wages == 75000.00
     assert w2.federal_income_tax_withheld == 12000.00
@@ -637,7 +637,7 @@ def test_mock_provider_w2():
 def test_crypto_gains_calculation():
     tax = easy_tax(provider="mock")
     report = tax.calculate_crypto_gains("user_123", 2024, "FIFO")
-    
+
     assert report.total_gain_loss == 11930.00
     assert report.short_term_gain_loss == 1930.00
     assert report.long_term_gain_loss == 10000.00
@@ -653,7 +653,7 @@ def test_tax_documents_endpoint():
     app = FastAPI()
     add_tax_data(app, provider="mock")
     client = TestClient(app)
-    
+
     response = client.get("/tax/documents?user_id=user_123&tax_year=2024")
     assert response.status_code == 200
     assert len(response.json()) == 5  # W-2 + 4x 1099 forms

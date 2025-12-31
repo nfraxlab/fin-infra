@@ -48,8 +48,8 @@ import argparse
 import asyncio
 import os
 import sys
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Tuple
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -69,22 +69,22 @@ class Colors:
 
 def print_success(message: str):
     """Print success message with green checkmark."""
-    print(f"{Colors.GREEN}✅ {message}{Colors.END}")
+    print(f"{Colors.GREEN}[OK] {message}{Colors.END}")
 
 
 def print_error(message: str):
     """Print error message with red X."""
-    print(f"{Colors.RED}❌ {message}{Colors.END}")
+    print(f"{Colors.RED}[X] {message}{Colors.END}")
 
 
 def print_warning(message: str):
     """Print warning message with yellow warning sign."""
-    print(f"{Colors.YELLOW}⚠️  {message}{Colors.END}")
+    print(f"{Colors.YELLOW}[!]  {message}{Colors.END}")
 
 
 def print_info(message: str):
     """Print info message with blue bullet."""
-    print(f"{Colors.BLUE}ℹ️  {message}{Colors.END}")
+    print(f"{Colors.BLUE}[i]  {message}{Colors.END}")
 
 
 def print_header(message: str):
@@ -93,7 +93,7 @@ def print_header(message: str):
     print("=" * 70)
 
 
-def check_env_vars(required: List[str]) -> Tuple[bool, List[str]]:
+def check_env_vars(required: list[str]) -> tuple[bool, list[str]]:
     """Check if required environment variables are set."""
     missing = [var for var in required if not os.getenv(var)]
     return len(missing) == 0, missing
@@ -240,7 +240,7 @@ async def test_credit(verbose: bool = False) -> bool:
     try:
         from fin_infra.credit import easy_credit
 
-        credit = easy_credit()
+        easy_credit()
         print_success("Credit score provider initialized")
         print_info("Note: Actual credit score testing requires user consent")
         return True
@@ -310,9 +310,7 @@ async def test_categorization(verbose: bool = False) -> bool:
         print_success("Categorization provider initialized")
 
         # Test categorization
-        result = categorizer.categorize(
-            description="STARBUCKS COFFEE", amount=5.75, user_id="test"
-        )
+        result = categorizer.categorize(description="STARBUCKS COFFEE", amount=5.75, user_id="test")
         if result and hasattr(result, "category"):
             print_success(f"Categorization working: 'STARBUCKS' → {result.category}")
             if verbose:
@@ -338,7 +336,7 @@ async def test_recurring(verbose: bool = False) -> bool:
     try:
         from fin_infra.recurring import easy_recurring
 
-        detector = easy_recurring()
+        easy_recurring()
         print_success("Recurring detection provider initialized")
         print_info("Note: Requires transaction history for pattern detection")
         return True
@@ -372,7 +370,7 @@ async def test_analytics(verbose: bool = False) -> bool:
     try:
         from fin_infra.analytics import easy_analytics
 
-        analytics = easy_analytics()
+        easy_analytics()
         print_success("Analytics provider initialized")
         print_info("Note: Full testing requires user transaction data")
         return True
@@ -391,7 +389,7 @@ async def test_cashflows(verbose: bool = False) -> bool:
     print_header("Testing Cashflow Calculations")
 
     try:
-        from fin_infra.cashflows import npv, irr
+        from fin_infra.cashflows import irr, npv
 
         # Test NPV
         result = npv(0.08, [-10000, 3000, 4000, 5000])
@@ -464,7 +462,7 @@ async def test_conversation(verbose: bool = False) -> bool:
     try:
         from fin_infra.chat import easy_financial_conversation
 
-        conversation = easy_financial_conversation()
+        easy_financial_conversation()
         print_success("AI conversation provider initialized")
         print_info("Note: Full testing requires user context and questions")
         return True
@@ -480,7 +478,7 @@ async def test_conversation(verbose: bool = False) -> bool:
 
 # ==================== Provider Registry ====================
 
-PROVIDERS: Dict[str, Callable] = {
+PROVIDERS: dict[str, Callable] = {
     "banking": test_banking,
     "market": test_market,
     "crypto": test_crypto,
@@ -498,9 +496,9 @@ PROVIDERS: Dict[str, Callable] = {
 # ==================== Main CLI ====================
 
 
-async def run_tests(provider: Optional[str] = None, verbose: bool = False) -> int:
+async def run_tests(provider: str | None = None, verbose: bool = False) -> int:
     """Run provider tests."""
-    print_header("🧪 FIN-INFRA PROVIDER TEST SUITE")
+    print_header(" FIN-INFRA PROVIDER TEST SUITE")
 
     if provider:
         # Test specific provider
@@ -519,12 +517,12 @@ async def run_tests(provider: Optional[str] = None, verbose: bool = False) -> in
             results[name] = await test_func(verbose)
 
         # Summary
-        print_header("📊 Test Summary")
+        print_header(" Test Summary")
         passed = sum(1 for success in results.values() if success)
         total = len(results)
 
         for name, success in results.items():
-            status = "✅ PASS" if success else "❌ FAIL"
+            status = "[OK] PASS" if success else "[X] FAIL"
             print(f"   {status}  {name}")
 
         print(f"\n{Colors.BOLD}Results: {passed}/{total} providers working{Colors.END}")
@@ -548,7 +546,9 @@ def main():
         epilog=__doc__,
     )
 
-    parser.add_argument("--provider", "-p", help="Test specific provider", choices=list(PROVIDERS.keys()))
+    parser.add_argument(
+        "--provider", "-p", help="Test specific provider", choices=list(PROVIDERS.keys())
+    )
 
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
 

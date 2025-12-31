@@ -9,10 +9,10 @@
 fin-infra extends svc-infra's observability stack with financial-specific route classification. This enables you to monitor financial provider endpoints separately from general API endpoints in your metrics and dashboards.
 
 **Key Features**:
-- 🏷️ Automatic route classification for financial endpoints
-- 📊 Seamless integration with svc-infra's Prometheus/Grafana stack
+- 🏷 Automatic route classification for financial endpoints
+-  Seamless integration with svc-infra's Prometheus/Grafana stack
 - 🔌 No hardcoded endpoints - extensible prefix patterns
-- 🎯 Filter metrics by route class: `financial`, `public`, `admin`, etc.
+-  Filter metrics by route class: `financial`, `public`, `admin`, etc.
 
 ## Quick Start
 
@@ -69,8 +69,8 @@ The difference is **only in the labeling**:
 
 | Option | Routes Instrumented | Route Label Format | Can Filter by Category? |
 |--------|---------------------|-------------------|-------------------------|
-| **Without classifier** | ✅ ALL (auto-discovered) | `route="/banking/accounts"` | ❌ No |
-| **With classifier** | ✅ ALL (auto-discovered) | `route="/banking/accounts\|financial"` | ✅ Yes |
+| **Without classifier** | [OK] ALL (auto-discovered) | `route="/banking/accounts"` | [X] No |
+| **With classifier** | [OK] ALL (auto-discovered) | `route="/banking/accounts\|financial"` | [OK] Yes |
 
 **Example with classifier:**
 
@@ -166,7 +166,7 @@ sum(rate(http_server_requests_total{route=~".*\\|public"}[5m]))
 sum(rate(http_server_requests_total[5m]))
 
 # P95 latency for financial routes only
-histogram_quantile(0.95, 
+histogram_quantile(0.95,
   rate(http_server_request_duration_seconds_bucket{route=~".*\\|financial"}[5m])
 )
 ```
@@ -174,7 +174,7 @@ histogram_quantile(0.95,
 **Without classifier,** you'd need to manually list every financial route:
 
 ```promql
-# ❌ Without classifier - must manually list all financial routes
+# [X] Without classifier - must manually list all financial routes
 sum(rate(http_server_requests_total{route=~"/banking/.*|/market/.*|/crypto/.*"}[5m]))
 ```
 
@@ -182,7 +182,7 @@ sum(rate(http_server_requests_total{route=~"/banking/.*|/market/.*|/crypto/.*"}[
 
 ### Use WITHOUT Route Classifier
 
-✅ **Good for:**
+[OK] **Good for:**
 - Simple apps with few routes
 - When you don't need to segment metrics by category
 - Quick prototypes or demos
@@ -195,7 +195,7 @@ add_observability(app)
 
 ### Use WITH Route Classifier
 
-✅ **Recommended for:**
+[OK] **Recommended for:**
 - Production fintech applications
 - Apps with mixed financial and non-financial routes
 - When you need different SLOs per route category
@@ -210,11 +210,11 @@ add_observability(app, route_classifier=financial_route_classifier)
 
 | Feature | Without Classifier | With Classifier |
 |---------|-------------------|-----------------|
-| **Routes instrumented** | ✅ ALL (auto-discovered) | ✅ ALL (auto-discovered) |
-| **Manual route registration** | ❌ Not needed | ❌ Not needed |
-| **Metrics collected** | ✅ Count, duration, status, size | ✅ Count, duration, status, size |
+| **Routes instrumented** | [OK] ALL (auto-discovered) | [OK] ALL (auto-discovered) |
+| **Manual route registration** | [X] Not needed | [X] Not needed |
+| **Metrics collected** | [OK] Count, duration, status, size | [OK] Count, duration, status, size |
 | **Route label format** | `route="/banking/accounts"` | `route="/banking/accounts\|financial"` |
-| **Filter by category in Grafana** | ❌ No - must list routes manually | ✅ Yes - filter by `\|financial`, `\|public` |
+| **Filter by category in Grafana** | [X] No - must list routes manually | [OK] Yes - filter by `\|financial`, `\|public` |
 | **Setup complexity** | Simple (fewer imports) | Slightly more (one extra import) |
 | **Best for** | Simple apps, prototypes | Production apps, segmented SLOs |
 
@@ -271,7 +271,7 @@ def my_classifier(route_path: str, method: str) -> str:
     cls = financial_route_classifier(route_path, method)
     if cls != "public":
         return cls
-    
+
     # Add custom logic
     if route_path.startswith("/admin"):
         return "admin"
@@ -279,7 +279,7 @@ def my_classifier(route_path: str, method: str) -> str:
         return "api_v1"
     if route_path.startswith("/api/v2"):
         return "api_v2"
-    
+
     return "public"
 
 add_observability(app, route_classifier=my_classifier)
@@ -339,7 +339,7 @@ sum(rate(http_server_requests_total{route=~".*\\|financial",code=~"5.."}[5m]))
 sum(rate(http_server_requests_total{route=~".*\\|financial"}[5m]))
 
 # P95 latency for financial routes
-histogram_quantile(0.95, 
+histogram_quantile(0.95,
   sum(rate(http_server_request_duration_seconds_bucket{route=~".*\\|financial"}[5m])) by (le)
 )
 
@@ -481,11 +481,11 @@ from fin_infra.obs import financial_route_classifier
 def test_financial_routes_emit_metrics(app):
     add_observability(app, route_classifier=financial_route_classifier)
     client = TestClient(app)
-    
+
     # Make request to financial endpoint
     response = client.get("/banking/accounts")
     assert response.status_code == 200
-    
+
     # Check metrics endpoint
     metrics = client.get("/metrics").text
     assert "http_server_requests_total" in metrics
@@ -506,36 +506,36 @@ def test_financial_routes_emit_metrics(app):
 
 | Feature | svc-infra | fin-infra Extension |
 |---------|-----------|---------------------|
-| Base metrics | ✅ HTTP, DB, HTTPX | ✅ Reuses all base metrics |
-| Route classification | ✅ Optional via `route_classifier` | ✅ Provides `financial_route_classifier` |
-| Financial prefix detection | ❌ | ✅ Automatic |
-| Grafana dashboards | ✅ Generic HTTP dashboard | ✅ Works with existing dashboards + route filters |
-| Prometheus integration | ✅ | ✅ Reuses existing integration |
-| OpenTelemetry | ⚠️ Removed in latest | ⚠️ N/A |
+| Base metrics | [OK] HTTP, DB, HTTPX | [OK] Reuses all base metrics |
+| Route classification | [OK] Optional via `route_classifier` | [OK] Provides `financial_route_classifier` |
+| Financial prefix detection | [X] | [OK] Automatic |
+| Grafana dashboards | [OK] Generic HTTP dashboard | [OK] Works with existing dashboards + route filters |
+| Prometheus integration | [OK] | [OK] Reuses existing integration |
+| OpenTelemetry | [!] Removed in latest | [!] N/A |
 
 ## Best Practices
 
 ### 1. Always Use Route Classification
 
 ```python
-# ✅ GOOD: Enable route classification
+# [OK] GOOD: Enable route classification
 add_observability(app, route_classifier=financial_route_classifier)
 
-# ❌ BAD: Skip route classification (can't filter by financial vs public)
+# [X] BAD: Skip route classification (can't filter by financial vs public)
 add_observability(app)
 ```
 
 ### 2. Compose Classifiers for Multi-Tenant Apps
 
 ```python
-# ✅ GOOD: Separate financial, admin, and public routes
+# [OK] GOOD: Separate financial, admin, and public routes
 classifier = compose_classifiers(
     financial_route_classifier,
     admin_classifier,
     tenant_classifier,
 )
 
-# ❌ BAD: One giant if-elif chain
+# [X] BAD: One giant if-elif chain
 def massive_classifier(path, method):
     if path.startswith("/banking") or path.startswith("/market") or ...:
         return "financial"
@@ -547,10 +547,10 @@ def massive_classifier(path, method):
 ### 3. Filter Metrics in Grafana by Route Class
 
 ```promql
-# ✅ GOOD: Filter by route class
+# [OK] GOOD: Filter by route class
 sum(rate(http_server_requests_total{route=~".*\\|financial"}[5m]))
 
-# ⚠️ OKAY: Filter by specific route (less flexible)
+# [!] OKAY: Filter by specific route (less flexible)
 sum(rate(http_server_requests_total{route="/banking/accounts"}[5m]))
 ```
 
@@ -603,7 +603,7 @@ add_observability(app, route_classifier=financial_route_classifier)
 
 **Cause**: Regex escaping issue or no financial routes have been called yet.
 
-**Solution**: 
+**Solution**:
 1. Verify the regex in Prometheus directly: `http_server_requests_total{route=~".*\\|financial"}`
 2. Make some requests to financial endpoints to generate metrics
 3. Check that route labels include the `|financial` suffix
@@ -616,7 +616,7 @@ add_observability(app, route_classifier=financial_route_classifier)
 
 ## Summary
 
-✅ **Use svc-infra for**: Base metrics, Prometheus setup, Grafana dashboards  
-✅ **Use fin-infra for**: Financial route classification, provider-specific labels  
-✅ **Integration**: One-liner: `add_observability(app, route_classifier=financial_route_classifier)`  
-✅ **Benefits**: Filter metrics by financial vs public routes in Grafana
+[OK] **Use svc-infra for**: Base metrics, Prometheus setup, Grafana dashboards  
+[OK] **Use fin-infra for**: Financial route classification, provider-specific labels  
+[OK] **Integration**: One-liner: `add_observability(app, route_classifier=financial_route_classifier)`  
+[OK] **Benefits**: Filter metrics by financial vs public routes in Grafana

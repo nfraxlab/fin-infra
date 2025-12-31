@@ -227,12 +227,12 @@ from svc_infra.db.sql.models import ModelBase
 
 class Budget(ModelBase):
     __tablename__ = "budgets"
-    
+
     # Scaffold-generated fields
     id: Mapped[str] = mapped_column(String(255), primary_key=True)
     user_id: Mapped[str] = mapped_column(String(255), nullable=False)
     # ... other scaffold fields
-    
+
     # YOUR CUSTOM FIELDS
     approval_status: Mapped[str] = mapped_column(String(50), default="pending")
     approved_by: Mapped[str | None] = mapped_column(String(255), nullable=True)
@@ -290,7 +290,7 @@ router = APIRouter()
 async def check_overspending(budget_id: str, repo=Depends(get_repo)):
     budget = await repo.get(budget_id)
     transactions = await get_transactions(budget.user_id, budget.period_start, budget.period_end)
-    
+
     # fin-infra provides calculation logic
     overspending = detect_overspending(
         budgeted=budget.categories,
@@ -320,19 +320,19 @@ class BudgetService:
             await notify_manager(budget_data)
         else:
             budget_data["approval_status"] = "approved"
-        
+
         # Use scaffold-generated repository
         budget = await self.repo.create(budget_data)
-        
+
         # Use fin-infra core function for validation
         overspending = detect_overspending(
             budgeted=budget.categories,
             actual=self.get_historical_spending(budget.user_id),
         )
-        
+
         if overspending:
             await send_warning_email(budget.user_id, overspending)
-        
+
         return budget
 ```
 
@@ -352,14 +352,14 @@ class BudgetService:
 
 ### Use Core Functions When:
 
-✅ **Need financial calculations**: Any time you need financial logic
+[OK] **Need financial calculations**: Any time you need financial logic
 ```python
 from fin_infra.budgets.core import detect_overspending
 from fin_infra.goals.core import check_goal_feasibility
 from fin_infra.cashflows import npv, irr
 ```
 
-✅ **Need projections**: Forecasting, feasibility checks, growth calculations
+[OK] **Need projections**: Forecasting, feasibility checks, growth calculations
 ```python
 from fin_infra.goals.core import project_completion_date
 
@@ -370,7 +370,7 @@ completion = project_completion_date(
 )
 ```
 
-✅ **Need provider integrations**: Banking, brokerage, market data
+[OK] **Need provider integrations**: Banking, brokerage, market data
 ```python
 from fin_infra.banking import easy_banking
 
@@ -378,7 +378,7 @@ banking = easy_banking(provider="plaid")
 accounts = await banking.get_accounts("access_token")
 ```
 
-✅ **Storage is app-specific**: In-memory, Redis, MongoDB, SQL, etc.
+[OK] **Storage is app-specific**: In-memory, Redis, MongoDB, SQL, etc.
 ```python
 # You fetch from YOUR database (any database)
 budget = await my_mongo_db.budgets.find_one({"user_id": "user123"})
@@ -389,12 +389,12 @@ overspending = detect_overspending(budget["categories"], actual_spending)
 
 ### Use Scaffold When:
 
-✅ **Need SQL persistence layer**: For budgets/goals/net-worth
+[OK] **Need SQL persistence layer**: For budgets/goals/net-worth
 ```bash
 fin-infra scaffold budgets --dest-dir app/models/budgets
 ```
 
-✅ **Want reference implementation**: Learn best practices
+[OK] **Want reference implementation**: Learn best practices
 ```bash
 # Generated code follows svc-infra conventions
 # - ModelBase for Alembic discovery
@@ -402,13 +402,13 @@ fin-infra scaffold budgets --dest-dir app/models/budgets
 # - Pydantic schemas for validation
 ```
 
-✅ **Building typical CRUD app**: FastAPI + SQLAlchemy + PostgreSQL
+[OK] **Building typical CRUD app**: FastAPI + SQLAlchemy + PostgreSQL
 ```python
 # Scaffold → migrate → ONE-LINER CRUD
 add_sql_resources(app, [SqlResource(model=Budget, prefix="/budgets")])
 ```
 
-✅ **Need multi-tenancy or soft delete**: Scaffold handles these patterns
+[OK] **Need multi-tenancy or soft delete**: Scaffold handles these patterns
 ```bash
 fin-infra scaffold budgets --include-tenant --include-soft-delete
 ```
@@ -578,7 +578,7 @@ The TODO comments you saw in fin-infra code (before Task 11) were **intentional 
 class BudgetTracker:
     def __init__(self):
         self.budgets: list[Budget] = []  # TODO: Store budgets in SQL database
-    
+
     async def create_budget(self, **kwargs) -> Budget:
         # TODO: Applications own database schema and persistence layer.
         # See docs/persistence.md for how to scaffold models/schemas/repositories.
@@ -604,14 +604,14 @@ from svc_infra.db.sql.models import ModelBase
 
 class Budget(ModelBase):
     __tablename__ = "budgets"
-    
+
     # Scaffold-generated (keep as-is or modify)
     id: Mapped[str] = mapped_column(String(255), primary_key=True)
     tenant_id: Mapped[str] = mapped_column(String(255), nullable=False)
     user_id: Mapped[str] = mapped_column(String(255), nullable=False)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     categories: Mapped[dict] = mapped_column(JSON, nullable=False)
-    
+
     # YOUR CUSTOM FIELDS
     approval_workflow: Mapped[str] = mapped_column(String(50), default="auto_approve")
     company_policy_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
@@ -627,22 +627,22 @@ from app.models.budgets import BudgetRepository
 class BudgetService:
     def __init__(self, session: AsyncSession):
         self.repo = BudgetRepository(session)
-    
+
     async def check_budget_status(self, budget_id: str) -> dict:
         # YOUR APP: Fetch from YOUR database
         budget = await self.repo.get(budget_id)
         transactions = await self.get_transactions(budget.user_id, budget.period_start, budget.period_end)
-        
+
         # fin-infra: Provide financial calculations
         overspending = detect_overspending(
             budgeted=budget.categories,
             actual=self.sum_by_category(transactions),
         )
-        
+
         # YOUR APP: Business logic and notifications
         if overspending:
             await self.send_alert(budget.user_id, overspending)
-        
+
         return {"budget": budget, "overspending": overspending}
 ```
 
@@ -681,9 +681,9 @@ async def budget_status(budget_id: str, service: BudgetService = Depends()):
 |--------|---------------|-------------------------|
 | **Storage** | In-memory list | SQL database (YOUR choice) |
 | **Models** | None (dict) | SQLAlchemy models (scaffold-generated) |
-| **Calculations** | ❌ Missing | ✅ Core functions (`detect_overspending()`) |
+| **Calculations** | [X] Missing | [OK] Core functions (`detect_overspending()`) |
 | **CRUD** | Manual list operations | Repository or `add_sql_resources()` |
-| **Production-ready** | ❌ No | ✅ Yes |
+| **Production-ready** | [X] No | [OK] Yes |
 
 ---
 
@@ -696,11 +696,11 @@ async def budget_status(budget_id: str, service: BudgetService = Depends()):
 # Hypothetical: If fin-infra was a framework (we're NOT doing this)
 from fin_infra.orm import FinInfraModel, FinInfraORM
 
-class Budget(FinInfraModel):  # ❌ Tied to fin-infra ORM
+class Budget(FinInfraModel):  # [X] Tied to fin-infra ORM
     name = FinInfraField(String)
     categories = FinInfraField(JSON)
 
-db = FinInfraORM(url="postgresql://...")  # ❌ Tied to fin-infra database layer
+db = FinInfraORM(url="postgresql://...")  # [X] Tied to fin-infra database layer
 ```
 
 **Problems**:
@@ -725,11 +725,11 @@ overspending = detect_overspending(budget["categories"], sum_by_category(transac
 ```
 
 **Benefits**:
-- ✅ Upgrade fin-infra independently (no database coupling)
-- ✅ Use any ORM (SQLAlchemy, Prisma, Mongo, raw SQL)
-- ✅ Use any database (PostgreSQL, MySQL, SQLite, MongoDB, Redis)
-- ✅ Customize persistence (your schema, your migrations, your patterns)
-- ✅ Test easily (mock data, no database required)
+- [OK] Upgrade fin-infra independently (no database coupling)
+- [OK] Use any ORM (SQLAlchemy, Prisma, Mongo, raw SQL)
+- [OK] Use any database (PostgreSQL, MySQL, SQLite, MongoDB, Redis)
+- [OK] Customize persistence (your schema, your migrations, your patterns)
+- [OK] Test easily (mock data, no database required)
 
 ### Scaffold: Best of Both Worlds
 
@@ -747,23 +747,23 @@ fin-infra scaffold budgets --dest-dir app/models/budgets
 ```
 
 **Benefits**:
-- ✅ Quick start (don't write boilerplate)
-- ✅ Best practices (follow svc-infra conventions)
-- ✅ Flexibility (customize generated code)
-- ✅ No lock-in (it's YOUR code after generation)
+- [OK] Quick start (don't write boilerplate)
+- [OK] Best practices (follow svc-infra conventions)
+- [OK] Flexibility (customize generated code)
+- [OK] No lock-in (it's YOUR code after generation)
 
 ### Comparison: Libraries vs Frameworks
 
 | Feature | fin-infra (Library) | Django (Framework) | Rails (Framework) |
 |---------|---------------------|-------------------|------------------|
-| **Database Management** | ❌ No | ✅ Yes (Django ORM) | ✅ Yes (ActiveRecord) |
-| **Migrations** | ❌ No (use svc-infra) | ✅ Yes (built-in) | ✅ Yes (built-in) |
-| **Schema Ownership** | ✅ Your app | ❌ Framework | ❌ Framework |
-| **ORM Choice** | ✅ Any | ❌ Django ORM only | ❌ ActiveRecord only |
-| **Financial Calculations** | ✅ Yes | ❌ No | ❌ No |
-| **Provider Integrations** | ✅ Yes | ❌ No | ❌ No |
-| **Scaffold** | ✅ Yes (optional) | ✅ Yes (required) | ✅ Yes (required) |
-| **Lock-in Risk** | ✅ Low | ❌ High | ❌ High |
+| **Database Management** | [X] No | [OK] Yes (Django ORM) | [OK] Yes (ActiveRecord) |
+| **Migrations** | [X] No (use svc-infra) | [OK] Yes (built-in) | [OK] Yes (built-in) |
+| **Schema Ownership** | [OK] Your app | [X] Framework | [X] Framework |
+| **ORM Choice** | [OK] Any | [X] Django ORM only | [X] ActiveRecord only |
+| **Financial Calculations** | [OK] Yes | [X] No | [X] No |
+| **Provider Integrations** | [OK] Yes | [X] No | [X] No |
+| **Scaffold** | [OK] Yes (optional) | [OK] Yes (required) | [OK] Yes (required) |
+| **Lock-in Risk** | [OK] Low | [X] High | [X] High |
 
 ---
 

@@ -11,20 +11,28 @@ TODO: Replace with proper fin-infra add_*() functions once Phase 3.5 is implemen
 """
 
 from typing import Any
+
 from fastapi import FastAPI
-from svc_infra.api.fastapi.dual.public import public_router
 from svc_infra.api.fastapi.dual.protected import user_router
+from svc_infra.api.fastapi.dual.public import public_router
 
 # Import the functions that already exist in fin-infra
 from fin_infra.analytics.add import add_analytics
-from fin_infra.documents.add import add_documents
-from fin_infra.recurring.add import add_recurring_detection
-from fin_infra.goals.add import add_goals
 from fin_infra.budgets.add import add_budgets
+from fin_infra.documents.add import add_documents
+from fin_infra.goals.add import add_goals
 from fin_infra.net_worth.add import add_net_worth_tracking
+from fin_infra.recurring.add import add_recurring_detection
 
 # Re-export them so they can be imported from this module
-__all__ = ["add_analytics", "add_documents", "add_recurring_detection", "add_goals", "add_budgets", "add_net_worth_tracking"]
+__all__ = [
+    "add_analytics",
+    "add_documents",
+    "add_recurring_detection",
+    "add_goals",
+    "add_budgets",
+    "add_net_worth_tracking",
+]
 
 
 def add_banking(app: FastAPI, provider: str | None = None, prefix: str = "/banking") -> Any:
@@ -147,12 +155,16 @@ def add_insights(app: FastAPI, prefix: str = "/insights") -> Any:
 
 def add_financial_security(app: FastAPI) -> None:
     """Temporary wrapper - Add financial security middleware."""
-    print("⚠️  Financial security middleware placeholder (not yet implemented)")
+    print("[!]  Financial security middleware placeholder (not yet implemented)")
 
 
-def add_data_lifecycle(app: FastAPI, *, retention_days: int = 2555, prefix: str = "/lifecycle") -> None:
+def add_data_lifecycle(
+    app: FastAPI, *, retention_days: int = 2555, prefix: str = "/lifecycle"
+) -> None:
     """Temporary wrapper - Add data lifecycle tracking."""
-    print(f"⚠️  Data lifecycle tracking placeholder (retention: {retention_days} days, not yet implemented)")
+    print(
+        f"[!]  Data lifecycle tracking placeholder (retention: {retention_days} days, not yet implemented)"
+    )
 
 
 def add_normalization(app: FastAPI, prefix: str = "/normalize") -> Any:
@@ -174,7 +186,7 @@ def add_normalization(app: FastAPI, prefix: str = "/normalize") -> Any:
 
 def add_cashflows(app: FastAPI, prefix: str = "/cashflows") -> None:
     """Temporary wrapper - Mount cashflow calculation routes."""
-    from fin_infra.cashflows.core import npv, irr
+    from fin_infra.cashflows.core import irr, npv
 
     router = public_router(prefix=prefix, tags=["Cashflows"])
 
@@ -189,7 +201,7 @@ def add_cashflows(app: FastAPI, prefix: str = "/cashflows") -> None:
         return {"irr": irr(cashflows)}
 
     app.include_router(router)
-    print("✅ Cashflow calculations enabled (NPV, IRR)")
+    print("[OK] Cashflow calculations enabled (NPV, IRR)")
 
 
 def easy_financial_conversation(app: FastAPI, prefix: str = "/chat") -> None:

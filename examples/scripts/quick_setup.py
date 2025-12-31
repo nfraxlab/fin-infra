@@ -33,6 +33,7 @@ from pathlib import Path
 # Load .env file if it exists
 try:
     from dotenv import load_dotenv
+
     env_file = Path(__file__).parent.parent / ".env"
     if env_file.exists():
         load_dotenv(env_file)
@@ -51,7 +52,9 @@ except ImportError:
                     os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
 
 
-def run_command(cmd: list[str], cwd: Path = None, check: bool = True) -> tuple[int, str, str]:
+def run_command(
+    cmd: list[str], cwd: Path | None = None, check: bool = True
+) -> tuple[int, str, str]:
     """
     Run a shell command and return (returncode, stdout, stderr).
     """
@@ -72,34 +75,34 @@ def check_sql_url() -> bool:
     """Check if SQL_URL is set."""
     sql_url = os.getenv("SQL_URL")
     if not sql_url:
-        print("❌ SQL_URL environment variable not set")
+        print("[X] SQL_URL environment variable not set")
         print("   Set it in .env or export it:")
         print('   export SQL_URL="postgresql+asyncpg://user:pass@localhost/dbname"')
         return False
-    print(f"✅ SQL_URL: {sql_url[:30]}...")
+    print(f"[OK] SQL_URL: {sql_url[:30]}...")
     return True
 
 
 def check_models(project_root: Path) -> bool:
     """Check if models exist using scaffold_models.py."""
-    print("🔍 Checking models...")
+    print(" Checking models...")
     scaffold_script = project_root / "scripts" / "scaffold_models.py"
 
     if not scaffold_script.exists():
-        print(f"❌ scaffold_models.py not found at {scaffold_script}")
+        print(f"[X] scaffold_models.py not found at {scaffold_script}")
         return False
 
-    returncode, stdout, stderr = run_command(
+    returncode, stdout, _stderr = run_command(
         [sys.executable, str(scaffold_script), "--check"],
         cwd=project_root,
         check=False,
     )
 
     if returncode == 0:
-        print("✅ All models exist")
+        print("[OK] All models exist")
         return True
     else:
-        print("⚠️  Some models missing or invalid")
+        print("[!]  Some models missing or invalid")
         print(stdout)
         return False
 
@@ -117,34 +120,34 @@ def check_alembic_initialized(project_root: Path) -> bool:
 def setup_and_migrate(project_root: Path) -> bool:
     """
     Run database setup and migrations.
-    
+
     This automatically:
     - Initializes Alembic (if needed)
     - Creates migration revision (if needed)
     - Applies migrations (upgrade to head)
-    
+
     Note: Uses alembic directly for now. Will migrate to svc-infra CLI
     once python -m svc_infra.db is fully implemented.
     """
-    print("🔧 Running database setup and migrations...")
-    
+    print(" Running database setup and migrations...")
+
     # Check if alembic is initialized
     if not check_alembic_initialized(project_root):
-        print("❌ Alembic not initialized. Run 'alembic init migrations' first.")
+        print("[X] Alembic not initialized. Run 'alembic init migrations' first.")
         return False
-    
+
     # Run alembic upgrade via poetry to ensure correct environment
     returncode, stdout, stderr = run_command(
         ["poetry", "run", "alembic", "upgrade", "head"],
         cwd=project_root,
         check=False,
     )
-    
+
     if returncode == 0:
-        print("✅ Database migrations complete")
+        print("[OK] Database migrations complete")
         return True
     else:
-        print("❌ Migrations failed")
+        print("[X] Migrations failed")
         if stdout:
             print("STDOUT:", stdout)
         if stderr:
@@ -178,7 +181,9 @@ def check_setup_status(project_root: Path) -> dict:
     versions_dir = project_root / "migrations" / "versions"
     if versions_dir.exists():
         migrations = list(versions_dir.glob("*.py"))
-        migrations = [m for m in migrations if m.name != "__init__.py" and "__pycache__" not in str(m)]
+        migrations = [
+            m for m in migrations if m.name != "__init__.py" and "__pycache__" not in str(m)
+        ]
         status["migrations"] = len(migrations) > 0
     else:
         status["migrations"] = False
@@ -209,36 +214,36 @@ def main():
     script_dir = Path(__file__).parent
     project_root = script_dir.parent
 
-    print("🚀 Quick Setup - fin-infra Template")
-    print(f"📁 Project root: {project_root}")
+    print(" Quick Setup - fin-infra Template")
+    print(f" Project root: {project_root}")
     print()
 
     start_time = time.time()
 
     # Check mode
     if args.check:
-        print("🔍 Checking setup status...")
+        print(" Checking setup status...")
         status = check_setup_status(project_root)
 
         print()
         print("Status:")
-        print(f"   SQL_URL:    {'✅' if status['sql_url'] else '❌'}")
-        print(f"   Models:     {'✅' if status['models'] else '❌'}")
-        print(f"   Alembic:    {'✅' if status['alembic'] else '❌'}")
-        print(f"   Migrations: {'✅' if status['migrations'] else '❌'}")
+        print(f"   SQL_URL:    {'[OK]' if status['sql_url'] else '[X]'}")
+        print(f"   Models:     {'[OK]' if status['models'] else '[X]'}")
+        print(f"   Alembic:    {'[OK]' if status['alembic'] else '[X]'}")
+        print(f"   Migrations: {'[OK]' if status['migrations'] else '[X]'}")
         print()
 
         all_good = all(status.values())
         if all_good:
-            print("✅ Setup complete!")
+            print("[OK] Setup complete!")
             return 0
         else:
-            print("⚠️  Setup incomplete")
+            print("[!]  Setup incomplete")
             print("   Run: python scripts/quick_setup.py")
             return 1
 
     # Full setup
-    print("📋 Running setup steps...")
+    print(" Running setup steps...")
     print()
 
     # Step 1: Check SQL_URL
@@ -247,7 +252,7 @@ def main():
 
     # Step 2: Check models
     if not check_models(project_root):
-        print("⚠️  Models check failed, but continuing...")
+        print("[!]  Models check failed, but continuing...")
 
     # Step 3: Setup and migrate (unless skipped)
     # This uses svc-infra's setup-and-migrate which does:
@@ -256,17 +261,17 @@ def main():
     # - Apply migrations (upgrade to head)
     if not args.skip_migrate:
         if not setup_and_migrate(project_root):
-            print("❌ Database setup and migrations failed")
+            print("[X] Database setup and migrations failed")
             return 1
     else:
-        print("⏭️  Skipping migrations (--skip-migrate)")
+        print("⏭  Skipping migrations (--skip-migrate)")
 
     elapsed = time.time() - start_time
     print()
-    print(f"✅ Setup complete in {elapsed:.2f}s")
+    print(f"[OK] Setup complete in {elapsed:.2f}s")
 
     if elapsed > 30:
-        print(f"⚠️  Setup took longer than 30s target")
+        print("[!]  Setup took longer than 30s target")
 
     return 0
 

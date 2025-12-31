@@ -182,7 +182,7 @@ Your response: {
   "confidence": 0.94
 }
 
-⚠️ This is AI-generated advice. Not a substitute for a certified financial advisor.
+[!] This is AI-generated advice. Not a substitute for a certified financial advisor.
 Verify calculations independently. For personalized advice, consult a professional."""
 
 GOAL_PROGRESS_SYSTEM_PROMPT = """You are a financial advisor reviewing goal progress.
@@ -237,7 +237,7 @@ Your response: {
   "projected_completion_date": "2029-06-01",
   "variance_from_target_days": -365,
   "course_corrections": [
-    "⚠️ 12 months behind! Current $1,000/month payment needs to increase to $1,500/month",
+    "[!] 12 months behind! Current $1,000/month payment needs to increase to $1,500/month",
     "Emergency: reduce expenses by $500/month (cancel subscriptions, cut entertainment)",
     "Contact debt counselor for consolidation or negotiation options",
     "Consider side income: gig work, selling unused items ($500/month target)",
@@ -246,7 +246,7 @@ Your response: {
   "confidence": 0.95
 }
 
-⚠️ This is AI-generated advice. Not a substitute for a certified financial advisor.
+[!] This is AI-generated advice. Not a substitute for a certified financial advisor.
 Verify calculations independently. For personalized advice, consult a professional."""
 
 

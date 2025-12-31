@@ -184,9 +184,9 @@ The system automatically checks wash sale rules:
 
 | Risk Level | Days Since Purchase | Action |
 |------------|-------------------|--------|
-| **none** | >60 days or never | ✅ Safe to sell |
-| **low** | 31-60 days | ⚠️ Caution: wait a few more days |
-| **medium** | 16-30 days | ⚠️ Risk: IRS may disallow loss |
+| **none** | >60 days or never | [OK] Safe to sell |
+| **low** | 31-60 days | [!] Caution: wait a few more days |
+| **medium** | 16-30 days | [!] Risk: IRS may disallow loss |
 | **high** | 0-15 days | 🚫 Avoid: wash sale rule applies |
 
 ```python
@@ -399,7 +399,7 @@ opportunities = find_tlh_opportunities(
 
 ```python
 DISCLAIMER = """
-⚠️ Tax-Loss Harvesting Disclaimer:
+[!] Tax-Loss Harvesting Disclaimer:
 This tool provides estimates only. Consult a certified tax professional before executing any tax-loss harvesting trades. The IRS wash sale rule is complex and depends on your specific situation. Replacement securities may have different risk profiles than original holdings.
 """
 
@@ -464,14 +464,14 @@ from fin_infra.tax import easy_tax
 @pytest.mark.asyncio
 async def test_calculate_tax():
     tax = easy_tax()
-    
+
     liability = await tax.calculate_tax_liability(
         user_id="test_user",
         income=100000,
         deductions=12000,
         filing_status="single"
     )
-    
+
     assert liability.total_tax > 0
 ```
 

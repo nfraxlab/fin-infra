@@ -2,7 +2,7 @@
 
 fin-infra provides unified interfaces for connecting to users' bank accounts, fetching transactions, balances, and identity information through various banking aggregation providers.
 
-## 📋 Table of Contents
+##  Table of Contents
 - [Supported Providers](#supported-providers)
 - [Quick Start](#quick-start)
 - [Provider Comparison](#provider-comparison)
@@ -16,11 +16,11 @@ fin-infra provides unified interfaces for connecting to users' bank accounts, fe
 
 ## Supported Providers
 
-### ✅ Production Ready
+### [OK] Production Ready
 - **Teller** (Default) - Certificate-based mTLS authentication, free tier (100 connections/month)
 - **Plaid** (Alternate) - Industry standard, OAuth-based, sandbox free
 
-### 🚧 Coming Soon
+###  Coming Soon
 - **MX** - Enterprise-grade aggregation
 - **Finicity** - Mastercard-backed aggregation
 
@@ -67,20 +67,20 @@ teller = TellerClient(
 
 | Feature | Teller | Plaid | MX |
 |---------|--------|-------|-----|
-| **Pricing** | ✅ Free 100 conn/mo<br>$0.25 after | ❌ $0.10-0.30/conn/mo<br>Min: $100-500/mo | 💰 Enterprise only<br>Contact sales |
-| **Auth Method** | 🔐 mTLS Certificates | 🔑 OAuth (client_id + secret) | 🔑 OAuth |
+| **Pricing** | [OK] Free 100 conn/mo<br>$0.25 after | [X] $0.10-0.30/conn/mo<br>Min: $100-500/mo |  Enterprise only<br>Contact sales |
+| **Auth Method** |  mTLS Certificates |  OAuth (client_id + secret) |  OAuth |
 | **Coverage** | 🇺🇸 US-only (4,000+ banks) | 🌍 US, CA, UK, EU (12,000+) | 🌍 16,000+ institutions |
-| **Setup Time** | ⚡ 5-10 minutes | ⚡ 10-15 minutes | 🐌 Days (sales process) |
+| **Setup Time** |  5-10 minutes |  10-15 minutes | 🐌 Days (sales process) |
 | **Best For** | MVP, startups, US-only | Production, international | Enterprise
 ## Authentication
 
 ### Teller (Certificate-Based mTLS)
 
 **Why certificates instead of API keys?**
-- 🔐 **Mutual TLS (mTLS)**: Both client and server verify each other's identity
-- ✅ **More secure**: Compromised API keys = full access; compromised cert = server can revoke
+-  **Mutual TLS (mTLS)**: Both client and server verify each other's identity
+- [OK] **More secure**: Compromised API keys = full access; compromised cert = server can revoke
 - 🚫 **No secrets in URLs**: Certificates never appear in logs/URLs
-- 🎯 **Defense in depth**: Certificate + private key required (two-factor at infrastructure level)
+-  **Defense in depth**: Certificate + private key required (two-factor at infrastructure level)
 
 **Setup Steps:**
 
@@ -101,7 +101,7 @@ teller = TellerClient(
    # Development: Project root (gitignored)
    cp teller_certificate.pem /path/to/fin-infra/
    cp teller_private_key.pem /path/to/fin-infra/
-   
+
    # Production: Environment variables pointing to secure storage
    export TELLER_CERTIFICATE_PATH="/run/secrets/teller.pem"
    export TELLER_PRIVATE_KEY_PATH="/run/secrets/teller.key"
@@ -115,7 +115,7 @@ teller = TellerClient(
    TELLER_ENVIRONMENT=sandbox  # or production
    ```
 
-⚠️ **SECURITY CRITICAL**: Never commit `.pem` or `.key` files to git! See [SECURITY.md](../../SECURITY.md) for emergency procedures if certificates are leaked.
+[!] **SECURITY CRITICAL**: Never commit `.pem` or `.key` files to git! See [SECURITY.md](../../SECURITY.md) for emergency procedures if certificates are leaked.
 
 ### Plaid (OAuth API Keys)
 
@@ -136,7 +136,7 @@ teller = TellerClient(
 3. **Initialize**
    ```python
    from fin_infra.banking import easy_banking
-   
+
    plaid = easy_banking(provider="plaid")
    ```
 
@@ -238,7 +238,7 @@ txn = Transaction(
 
 ### 3. Fetch Identity (PII)
 ```python
-# ⚠️ Handle PII carefully - see Security section
+# [!] Handle PII carefully - see Security section
 identity = banking.identity(access_token="user_access_token")
 
 for owner in identity.owners:
@@ -338,7 +338,7 @@ async def my_accounts(user = Depends(get_current_user)):
 ```python
 from fin_infra.banking import add_banking
 
-# ✅ Mount complete banking API with one call
+# [OK] Mount complete banking API with one call
 banking_provider = add_banking(
     app,
     provider="teller",  # or "plaid" (optional, defaults to env)
@@ -358,12 +358,12 @@ banking_provider = add_banking(
 ```
 
 **What `add_banking()` Does:**
-- ✅ Initializes banking provider (Teller/Plaid) with environment config
-- ✅ Mounts all 6 banking endpoints with proper request/response models
-- ✅ Uses `public_router()` from svc-infra (supports Bearer token auth)
-- ✅ Registers landing page documentation card
-- ✅ Stores provider instance on `app.state.banking_provider`
-- ✅ Returns provider for programmatic access
+- [OK] Initializes banking provider (Teller/Plaid) with environment config
+- [OK] Mounts all 6 banking endpoints with proper request/response models
+- [OK] Uses `public_router()` from svc-infra (supports Bearer token auth)
+- [OK] Registers landing page documentation card
+- [OK] Stores provider instance on `app.state.banking_provider`
+- [OK] Returns provider for programmatic access
 
 ## Integration Examples
 
@@ -420,7 +420,7 @@ async def my_accounts(user=Depends(get_current_user)):
     """Get current user's bank accounts (cached 60s)"""
     if not user.bank_access_token:
         raise HTTPException(status_code=404, detail="No bank connected")
-    
+
     # Use banking provider from app.state or returned instance
     accounts = banking_provider.accounts(access_token=user.bank_access_token)
     return {"accounts": accounts}
@@ -435,7 +435,7 @@ async def my_transactions(
     """Get current user's transactions (cached 5min)"""
     if not user.bank_access_token:
         raise HTTPException(status_code=404, detail="No bank connected")
-    
+
     txns = banking_provider.transactions(
         access_token=user.bank_access_token,
         start_date=start_date,
@@ -530,11 +530,11 @@ async def sync_bank_data(user_id: str, access_token: str):
         start_date="2025-01-01",
         end_date="2025-01-31"
     )
-    
+
     # Store in database (using svc-infra DB utilities)
     await db.save_accounts(user_id, accounts)
     await db.save_transactions(user_id, transactions)
-    
+
     return {"accounts": len(accounts), "transactions": len(transactions)}
 
 # Schedule daily sync
@@ -551,16 +551,16 @@ async def daily_bank_sync():
 ### PII Classification
 | Data Type | PII Level | GDPR/CCPA | Storage Rules |
 |-----------|-----------|-----------|---------------|
-| Account ID | Low | ✅ OK | Database OK |
-| Account Name | Low | ✅ OK | Database OK |
-| Balance | Medium | ⚠️ Sensitive | Encrypt at rest |
-| Transactions | Medium | ⚠️ Sensitive | Encrypt at rest |
-| Identity (name, email) | High | 🔴 Highly Sensitive | Encrypt + audit log |
-| SSN, tax IDs | Critical | 🔴 Highly Sensitive | Never store (pass-through only) |
+| Account ID | Low | [OK] OK | Database OK |
+| Account Name | Low | [OK] OK | Database OK |
+| Balance | Medium | [!] Sensitive | Encrypt at rest |
+| Transactions | Medium | [!] Sensitive | Encrypt at rest |
+| Identity (name, email) | High |  Highly Sensitive | Encrypt + audit log |
+| SSN, tax IDs | Critical |  Highly Sensitive | Never store (pass-through only) |
 
 ### Storage Best Practices
 
-**✅ DO:**
+**[OK] DO:**
 ```python
 from svc_infra.security import encrypt_field, decrypt_field
 
@@ -576,12 +576,12 @@ encrypted = await db.fetchone("SELECT token_encrypted FROM user_tokens WHERE use
 access_token = decrypt_field(encrypted[0], key=app_encryption_key)
 ```
 
-**❌ DON'T:**
+**[X] DON'T:**
 ```python
 # Never store plaintext tokens/PII
 await db.execute(
     "INSERT INTO users (user_id, access_token, ssn) VALUES (?, ?, ?)",
-    (user_id, access_token, ssn)  # ❌ SECURITY VIOLATION
+    (user_id, access_token, ssn)  # [X] SECURITY VIOLATION
 )
 ```
 
@@ -593,7 +593,7 @@ await db.execute(
 
 ### Certificate Security (Teller)
 - **Never commit**: `.pem` and `.key` files MUST NOT be in git
-- **Production storage**: 
+- **Production storage**:
   - Kubernetes: Use sealed secrets or external secret managers (AWS Secrets Manager, Vault)
   - Docker: Mount volumes with restricted permissions (chmod 600)
   - Railway/Heroku: Environment variables pointing to secure storage
@@ -769,14 +769,14 @@ app = FastAPI()
 @app.post("/webhooks/plaid")
 async def plaid_webhook(request: Request):
     payload = await request.json()
-    
+
     # Verify webhook signature
     if not verify_plaid_webhook(request.headers, payload):
         return {"error": "Invalid signature"}
-    
+
     webhook_type = payload.get("webhook_type")
     webhook_code = payload.get("webhook_code")
-    
+
     if webhook_type == "TRANSACTIONS":
         if webhook_code == "INITIAL_UPDATE":
             # Initial transaction data available
@@ -787,7 +787,7 @@ async def plaid_webhook(request: Request):
         elif webhook_code == "HISTORICAL_UPDATE":
             # Historical transaction data available
             pass
-    
+
     return {"status": "received"}
 ```
 
@@ -1021,13 +1021,13 @@ from svc_infra.db.sql import add_sql_db
 # Add to your database models:
 class BalanceHistoryModel(Base):
     __tablename__ = "balance_history"
-    
+
     id = Column(Integer, primary_key=True)
     account_id = Column(String, index=True)
     balance = Column(Float)
     date = Column(Date, index=True)
     currency = Column(String)
-    
+
     __table_args__ = (
         Index('idx_account_date', 'account_id', 'date'),
     )
@@ -1075,11 +1075,11 @@ from fin_infra.banking import easy_banking
 @pytest.mark.asyncio
 async def test_get_accounts():
     banking = easy_banking()
-    
+
     # Use sandbox credentials
     access_token = "access-sandbox-xxx"
     accounts = await banking.get_accounts(access_token)
-    
+
     assert len(accounts) > 0
     assert accounts[0].account_id is not None
 ```

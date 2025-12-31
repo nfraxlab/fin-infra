@@ -8,8 +8,8 @@ This module provides comprehensive financial analytics capabilities including:
 - Growth projections (net worth forecasting with scenarios)
 
 Feature Status:
-    ✅ STABLE: Core calculation functions (all analytics work with provided data)
-    ⚠️  INTEGRATION: Auto-fetching from providers requires setup:
+    [OK] STABLE: Core calculation functions (all analytics work with provided data)
+    [!]  INTEGRATION: Auto-fetching from providers requires setup:
         - Banking provider for transaction data
         - Brokerage provider for investment data
         - Categorization for expense categorization

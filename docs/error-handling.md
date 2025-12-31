@@ -38,13 +38,13 @@ Exception
 ### Never Silently Fail on Money Operations
 
 ```python
-# ❌ WRONG - User's net worth is wrong
+# [X] WRONG - User's net worth is wrong
 for asset in assets:
     if asset.currency != base_currency:
         continue  # Silent skip!
     total += asset.value
 
-# ✅ CORRECT - Fail loudly or handle explicitly
+# [OK] CORRECT - Fail loudly or handle explicitly
 for asset in assets:
     if asset.currency != base_currency:
         raise UnsupportedCurrencyError(f"Currency {asset.currency} not supported")

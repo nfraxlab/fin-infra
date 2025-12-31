@@ -2,41 +2,41 @@
 Main FastAPI application for fin-infra-template - COMPREHENSIVE FINTECH SHOWCASE.
 
 This example demonstrates ALL fin-infra capabilities with real implementations:
-✅ Banking aggregation (Plaid, Teller, MX)
-✅ Market data (Alpha Vantage, Yahoo Finance, Polygon)
-✅ Credit scores (Experian, Equifax, TransUnion)
-✅ Brokerage integration (Alpaca, Interactive Brokers, SnapTrade)
-✅ Tax data (IRS, TaxBit, document management)
-✅ Financial analytics (cash flow, savings rate, portfolio metrics)
-✅ Budget management (CRUD, tracking, overspending alerts)
-✅ Goal tracking (progress, milestones, recommendations)
-✅ Document management (OCR, AI analysis, tagging)
-✅ Net worth tracking (historical snapshots, trends)
-✅ Recurring detection (subscriptions, patterns)
-✅ Transaction categorization (rules + LLM-powered)
-✅ Insights feed (unified dashboard, AI-generated)
-✅ Crypto insights (AI-powered market analysis)
-✅ Portfolio rebalancing (tax-optimized strategies)
-✅ Scenario modeling (projections, what-if analysis)
+[OK] Banking aggregation (Plaid, Teller, MX)
+[OK] Market data (Alpha Vantage, Yahoo Finance, Polygon)
+[OK] Credit scores (Experian, Equifax, TransUnion)
+[OK] Brokerage integration (Alpaca, Interactive Brokers, SnapTrade)
+[OK] Tax data (IRS, TaxBit, document management)
+[OK] Financial analytics (cash flow, savings rate, portfolio metrics)
+[OK] Budget management (CRUD, tracking, overspending alerts)
+[OK] Goal tracking (progress, milestones, recommendations)
+[OK] Document management (OCR, AI analysis, tagging)
+[OK] Net worth tracking (historical snapshots, trends)
+[OK] Recurring detection (subscriptions, patterns)
+[OK] Transaction categorization (rules + LLM-powered)
+[OK] Insights feed (unified dashboard, AI-generated)
+[OK] Crypto insights (AI-powered market analysis)
+[OK] Portfolio rebalancing (tax-optimized strategies)
+[OK] Scenario modeling (projections, what-if analysis)
 
 Plus svc-infra backend features:
-✅ Database (SQLAlchemy 2.0 + Alembic migrations)
-✅ Caching (Redis with lifecycle management)
-✅ Observability (Prometheus metrics + OpenTelemetry)
-✅ Security (headers, CORS, session management)
-✅ Rate limiting & idempotency
-✅ Timeouts & resource limits
-✅ Graceful shutdown
+[OK] Database (SQLAlchemy 2.0 + Alembic migrations)
+[OK] Caching (Redis with lifecycle management)
+[OK] Observability (Prometheus metrics + OpenTelemetry)
+[OK] Security (headers, CORS, session management)
+[OK] Rate limiting & idempotency
+[OK] Timeouts & resource limits
+[OK] Graceful shutdown
 
 The setup follows svc-infra patterns for easy learning and customization.
 Each feature can be enabled/disabled via environment variables (.env file).
 """
 
-from fin_infra_template.settings import settings
-
 from svc_infra.api.fastapi import APIVersionSpec, ServiceInfo, setup_service_api
 from svc_infra.api.fastapi.openapi.models import Contact, License
 from svc_infra.app import LogLevelOptions, pick, setup_logging
+
+from fin_infra_template.settings import settings
 
 # ============================================================================
 # STEP 1: Logging Setup
@@ -98,7 +98,7 @@ app = setup_service_api(
 async def startup_event():
     """Application startup handler - Initialize all resources."""
     print("\n" + "=" * 80)
-    print("🚀 Starting fin-infra-template...")
+    print(" Starting fin-infra-template...")
     print("=" * 80)
 
     # Database initialization
@@ -106,7 +106,7 @@ async def startup_event():
         from fin_infra_template.db import get_engine
 
         get_engine()
-        print(f"✅ Database connected: {settings.sql_url.split('@')[-1]}")
+        print(f"[OK] Database connected: {settings.sql_url.split('@')[-1]}")
 
     # Cache initialization
     if settings.cache_configured:
@@ -119,25 +119,27 @@ async def startup_event():
             version=settings.cache_version,
             expose_state=True,
         )
-        print(f"✅ Cache connected: {settings.redis_url}")
+        print(f"[OK] Cache connected: {settings.redis_url}")
 
     # Provider status summary
-    print("\n📊 Financial Providers:")
-    print(f"   Banking: {'✅ Configured' if settings.banking_configured else '❌ Not configured'}")
+    print("\n Financial Providers:")
     print(
-        f"   Market Data: {'✅ Configured' if settings.market_data_configured else '❌ Not configured'}"
-    )
-    print(f"   Credit: {'✅ Configured' if settings.credit_configured else '❌ Not configured'}")
-    print(
-        f"   Brokerage: {'✅ Configured' if settings.brokerage_configured else '❌ Not configured'}"
+        f"   Banking: {'[OK] Configured' if settings.banking_configured else '[X] Not configured'}"
     )
     print(
-        f"   Investments: {'✅ Configured' if settings.investments_configured else '❌ Not configured'}"
+        f"   Market Data: {'[OK] Configured' if settings.market_data_configured else '[X] Not configured'}"
     )
-    print(f"   Tax: {'✅ Enabled' if settings.enable_tax else '❌ Disabled'}")
-    print(f"   AI/LLM: {'✅ Configured' if settings.llm_configured else '❌ Not configured'}")
+    print(f"   Credit: {'[OK] Configured' if settings.credit_configured else '[X] Not configured'}")
+    print(
+        f"   Brokerage: {'[OK] Configured' if settings.brokerage_configured else '[X] Not configured'}"
+    )
+    print(
+        f"   Investments: {'[OK] Configured' if settings.investments_configured else '[X] Not configured'}"
+    )
+    print(f"   Tax: {'[OK] Enabled' if settings.enable_tax else '[X] Disabled'}")
+    print(f"   AI/LLM: {'[OK] Configured' if settings.llm_configured else '[X] Not configured'}")
 
-    print("\n🎯 Enabled Features:")
+    print("\n Enabled Features:")
     enabled_features = [
         ("Analytics", settings.enable_analytics),
         ("Budgets", settings.enable_budgets),
@@ -153,14 +155,14 @@ async def startup_event():
         ("Scenarios", settings.enable_scenarios),
     ]
     for name, enabled in enabled_features:
-        status = "✅" if enabled else "❌"
+        status = "[OK]" if enabled else "[X]"
         print(f"   {status} {name}")
 
     print("\n" + "=" * 80)
-    print("🎉 Application startup complete!")
+    print(" Application startup complete!")
     print("=" * 80)
     print(f"\n📖 Documentation: http://localhost:{settings.api_port}/docs")
-    print(f"📊 Metrics: http://localhost:{settings.api_port}/metrics")
+    print(f" Metrics: http://localhost:{settings.api_port}/metrics")
     print(f"💚 Health: http://localhost:{settings.api_port}/ping\n")
 
 
@@ -177,10 +179,10 @@ async def shutdown_event():
 
         engine = get_engine()
         await engine.dispose()
-        print("✅ Database connections closed")
+        print("[OK] Database connections closed")
 
     print("=" * 80)
-    print("👋 Shutdown complete")
+    print(" Shutdown complete")
     print("=" * 80 + "\n")
 
 
@@ -188,11 +190,13 @@ async def shutdown_event():
 # STEP 4: Database Setup (SQLAlchemy + Alembic)
 # ============================================================================
 if settings.database_configured:
+    from svc_infra.api.fastapi.db.sql.add import add_sql_db, add_sql_health, add_sql_resources
+    from svc_infra.db.sql.resource import SqlResource
+
     from fin_infra_template.db import Base, get_engine
     from fin_infra_template.db.models import (
         Account,
         Budget,
-        Document,
         Goal,
         Holding,
         NetWorthSnapshot,
@@ -207,9 +211,6 @@ if settings.database_configured:
         BudgetCreate,
         BudgetRead,
         BudgetUpdate,
-        DocumentCreate,
-        DocumentRead,
-        DocumentUpdate,
         GoalCreate,
         GoalRead,
         GoalUpdate,
@@ -230,9 +231,6 @@ if settings.database_configured:
         UserUpdate,
     )
 
-    from svc_infra.api.fastapi.db.sql.add import add_sql_db, add_sql_health, add_sql_resources
-    from svc_infra.db.sql.resource import SqlResource
-
     # Add database session management
     add_sql_db(app, url=settings.sql_url)
 
@@ -247,7 +245,7 @@ if settings.database_configured:
         engine: AsyncEngine = get_engine()
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-        print("✅ Database tables verified/created")
+        print("[OK] Database tables verified/created")
 
     app.add_event_handler("startup", _create_db_tables)
 
@@ -415,7 +413,7 @@ if settings.metrics_enabled:
         skip_metric_paths=["/health", "/_health", "/ping", "/metrics"],
     )
 
-    print("✅ Observability (metrics) enabled")
+    print("[OK] Observability (metrics) enabled")
 
 # ============================================================================
 # STEP 6: Security Headers & CORS
@@ -430,7 +428,7 @@ if settings.security_enabled:
         install_session_middleware=False,  # Not using sessions in this template
     )
 
-    print("✅ Security headers & CORS enabled")
+    print("[OK] Security headers & CORS enabled")
 
 # ============================================================================
 # STEP 7: Timeouts & Resource Limits
@@ -446,14 +444,14 @@ if settings.timeout_handler_seconds or settings.timeout_body_read_seconds:
             HandlerTimeoutMiddleware,
             timeout_seconds=settings.timeout_handler_seconds,
         )
-        print(f"✅ Handler timeout enabled ({settings.timeout_handler_seconds}s)")
+        print(f"[OK] Handler timeout enabled ({settings.timeout_handler_seconds}s)")
 
     if settings.timeout_body_read_seconds:
         app.add_middleware(
             BodyReadTimeoutMiddleware,
             timeout_seconds=settings.timeout_body_read_seconds,
         )
-        print(f"✅ Body read timeout enabled ({settings.timeout_body_read_seconds}s)")
+        print(f"[OK] Body read timeout enabled ({settings.timeout_body_read_seconds}s)")
 
 # ============================================================================
 # STEP 8: Request Size Limiting
@@ -469,7 +467,7 @@ if settings.request_max_size_mb:
         max_bytes=max_bytes,
     )
 
-    print(f"✅ Request size limit enabled ({settings.request_max_size_mb}MB)")
+    print(f"[OK] Request size limit enabled ({settings.request_max_size_mb}MB)")
 
 # ============================================================================
 # STEP 9: Graceful Shutdown
@@ -479,7 +477,7 @@ if settings.graceful_shutdown_enabled:
 
     app.add_middleware(InflightTrackerMiddleware)
 
-    print("✅ Graceful shutdown tracking enabled")
+    print("[OK] Graceful shutdown tracking enabled")
 
 # ============================================================================
 # STEP 10: Rate Limiting
@@ -493,7 +491,7 @@ if settings.rate_limit_enabled:
         window=60,
     )
 
-    print("✅ Rate limiting enabled")
+    print("[OK] Rate limiting enabled")
 
 # ============================================================================
 # STEP 11: Idempotency
@@ -511,7 +509,7 @@ if settings.idempotency_enabled and settings.cache_configured:
         # store=None,  # Uses InMemoryIdempotencyStore by default
     )
 
-    print("✅ Idempotency enabled (in-memory store)")
+    print("[OK] Idempotency enabled (in-memory store)")
 
 # ============================================================================
 # STEP 5: Financial Capabilities (fin-infra)
@@ -521,7 +519,7 @@ if settings.idempotency_enabled and settings.cache_configured:
 #   1. Check settings.feature_configured
 #   2. Call add_feature(app, provider=..., prefix="/feature")
 #   3. Store provider on app.state.feature_provider
-#   4. Print status message with ✅/⏭️
+#   4. Print status message with [OK]/⏭
 
 # ==================== CORE FINANCIAL DATA (PROVIDER INTEGRATIONS) ====================
 
@@ -546,17 +544,18 @@ if settings.banking_configured:
         prefix="/banking",
     )
     app.state.banking_provider = banking
-    print(f"✅ Banking enabled (provider: {banking_provider})")
+    print(f"[OK] Banking enabled (provider: {banking_provider})")
 else:
-    print("⏭️  Banking skipped (set PLAID_CLIENT_ID or TELLER_API_KEY)")
+    print("⏭  Banking skipped (set PLAID_CLIENT_ID or TELLER_API_KEY)")
 
 # 5.2 Market Data - Equities, ETFs, indexes (Alpha Vantage, Yahoo, Polygon)
 # Endpoints: /market/quote/{symbol}, /market/historical/{symbol}, /market/search
 # Features: Real-time quotes, historical data, company info, 60s cache TTL
 # Providers: Alpha Vantage (premium), Yahoo Finance (free), Polygon (premium)
 # NOTE: Using inline wrapper until fin-infra add_market_data() is implemented (Phase 3.5)
-from fin_infra.markets import easy_market
 from svc_infra.api.fastapi.dual.public import public_router
+
+from fin_infra.markets import easy_market
 
 # Determine provider based on configuration (Yahoo is free fallback)
 if settings.alphavantage_api_key:
@@ -582,9 +581,9 @@ try:
 
     app.include_router(market_router)
     app.state.market_provider = market
-    print(f"✅ Market data enabled (provider: {market_provider})")
+    print(f"[OK] Market data enabled (provider: {market_provider})")
 except Exception as e:
-    print(f"⚠️  Market data failed to initialize: {e}")
+    print(f"[!]  Market data failed to initialize: {e}")
 
 # 5.3 Crypto Data - Cryptocurrency market data (CoinGecko, Yahoo, CCXT)
 # Endpoints: /crypto/quote/{symbol}, /crypto/portfolio, /crypto/insights
@@ -598,7 +597,7 @@ crypto = add_crypto_data(
     prefix="/crypto",
 )
 app.state.crypto_provider = crypto
-print("✅ Crypto data enabled (provider: coingecko - free tier)")
+print("[OK] Crypto data enabled (provider: coingecko - free tier)")
 
 # 5.4 Credit Scores - FICO/VantageScore (Experian, Equifax, TransUnion)
 # Endpoints: /credit/score, /credit/report, /credit/factors, /credit/monitoring
@@ -618,9 +617,9 @@ if settings.credit_configured:
         prefix="/credit",
     )
     app.state.credit_provider = credit
-    print(f"✅ Credit scores enabled (provider: {credit_provider})")
+    print(f"[OK] Credit scores enabled (provider: {credit_provider})")
 else:
-    print("⏭️  Credit scores skipped (set EXPERIAN_CLIENT_ID and EXPERIAN_CLIENT_SECRET)")
+    print("⏭  Credit scores skipped (set EXPERIAN_CLIENT_ID and EXPERIAN_CLIENT_SECRET)")
 
 # 5.5 Brokerage - Trading accounts (Alpaca, Interactive Brokers, SnapTrade)
 # Endpoints: /brokerage/portfolio, /brokerage/positions, /brokerage/orders
@@ -645,9 +644,9 @@ if settings.brokerage_configured:
     )
     app.state.brokerage_provider = brokerage
     mode = "paper" if paper_trading else "live"
-    print(f"✅ Brokerage enabled (provider: {brokerage_provider}, mode: {mode})")
+    print(f"[OK] Brokerage enabled (provider: {brokerage_provider}, mode: {mode})")
 else:
-    print("⏭️  Brokerage skipped (set ALPACA_API_KEY and ALPACA_SECRET_KEY)")
+    print("⏭  Brokerage skipped (set ALPACA_API_KEY and ALPACA_SECRET_KEY)")
 
 # 5.6 Investments - Investment holdings & portfolio data (Plaid, SnapTrade)
 # Endpoints: /investments/holdings, /investments/transactions, /investments/accounts,
@@ -660,7 +659,7 @@ else:
 # Note: READ-ONLY data (for trading see brokerage module)
 if settings.investments_configured:
     from fin_infra.investments import add_investments
-    
+
     # Determine provider (Plaid Investment API or SnapTrade)
     if settings.plaid_client_id and settings.plaid_secret:
         investments_provider = "plaid"
@@ -668,16 +667,18 @@ if settings.investments_configured:
         investments_provider = "snaptrade"
     else:
         investments_provider = "plaid"  # Default fallback
-    
+
     investments = add_investments(
         app,
         provider=investments_provider,
         prefix="/investments",
     )
     app.state.investments_provider = investments
-    print(f"✅ Investments enabled (provider: {investments_provider}, 5 endpoints: holdings, transactions, accounts, allocation, securities)")
+    print(
+        f"[OK] Investments enabled (provider: {investments_provider}, 5 endpoints: holdings, transactions, accounts, allocation, securities)"
+    )
 else:
-    print("⏭️  Investments skipped (requires PLAID credentials or SNAPTRADE credentials)")
+    print("⏭  Investments skipped (requires PLAID credentials or SNAPTRADE credentials)")
 
 # 5.7 Tax Data - Tax documents and calculations (IRS e-File, TaxBit, Mock)
 # Endpoints: /tax/documents, /tax/liability, /tax/tlh (tax-loss harvesting)
@@ -692,7 +693,7 @@ tax = add_tax_data(
     prefix="/tax",
 )
 app.state.tax_provider = tax
-print("✅ Tax data enabled (provider: mock)")
+print("[OK] Tax data enabled (provider: mock)")
 
 # ==================== FINANCIAL INTELLIGENCE (ANALYTICS & AI) ====================
 
@@ -711,7 +712,9 @@ from .helpers import add_analytics
 
 analytics = add_analytics(app, prefix="/analytics")
 app.state.analytics = analytics
-print("✅ Analytics enabled (7 endpoints: cash-flow, savings-rate, spending-insights, advice, portfolio, projections, rebalance)")
+print(
+    "[OK] Analytics enabled (7 endpoints: cash-flow, savings-rate, spending-insights, advice, portfolio, projections, rebalance)"
+)
 
 # 5.9 Categorization - Transaction categorization (56 MX categories, 100+ rules)
 # Endpoints: /categorize (single), /categorize/batch (multiple transactions)
@@ -723,7 +726,7 @@ from .helpers import add_categorization
 
 categorizer = add_categorization(app, prefix="/categorize")
 app.state.categorizer = categorizer
-print("✅ Categorization enabled (56 categories, 100+ rules, LLM fallback)")
+print("[OK] Categorization enabled (56 categories, 100+ rules, LLM fallback)")
 
 # 5.10 Recurring Detection - Subscription and bill identification
 # Endpoints: /recurring/detect, /recurring/insights
@@ -734,7 +737,7 @@ from .helpers import add_recurring_detection
 
 recurring = add_recurring_detection(app, prefix="/recurring")
 app.state.recurring = recurring
-print("✅ Recurring detection enabled (subscriptions, bills, annual charges)")
+print("[OK] Recurring detection enabled (subscriptions, bills, annual charges)")
 
 # 5.11 Insights Feed - Unified dashboard aggregating all insights
 # Endpoints: /insights/feed, /insights/priority
@@ -745,7 +748,7 @@ from .helpers import add_insights
 
 insights = add_insights(app, prefix="/insights")
 app.state.insights = insights
-print("✅ Insights feed enabled (unified dashboard, 7 data sources)")
+print("[OK] Insights feed enabled (unified dashboard, 7 data sources)")
 
 # ==================== FINANCIAL PLANNING (GOALS & BUDGETS) ====================
 
@@ -762,7 +765,7 @@ print("✅ Insights feed enabled (unified dashboard, 7 data sources)")
 from .helpers import add_budgets
 
 add_budgets(app, prefix="/budgets")
-print("✅ Budgets enabled (8 endpoints: CRUD, progress, alerts, templates)")
+print("[OK] Budgets enabled (8 endpoints: CRUD, progress, alerts, templates)")
 
 # 5.13 Goals - Financial goal tracking (13 endpoints)
 # Endpoints:
@@ -782,7 +785,7 @@ print("✅ Budgets enabled (8 endpoints: CRUD, progress, alerts, templates)")
 from .helpers import add_goals
 
 add_goals(app, prefix="/goals")
-print("✅ Goals enabled (13 endpoints: CRUD, milestones, funding, AI recommendations)")
+print("[OK] Goals enabled (13 endpoints: CRUD, milestones, funding, AI recommendations)")
 
 # 5.14 Net Worth Tracking - Multi-account net worth aggregation
 # Endpoints:
@@ -799,12 +802,14 @@ from fin_infra.net_worth.ease import easy_net_worth
 
 # Collect available providers
 banking_for_nw = app.state.banking_provider if hasattr(app.state, "banking_provider") else None
-brokerage_for_nw = app.state.brokerage_provider if hasattr(app.state, "brokerage_provider") else None
+brokerage_for_nw = (
+    app.state.brokerage_provider if hasattr(app.state, "brokerage_provider") else None
+)
 crypto_for_nw = app.state.crypto_provider if hasattr(app.state, "crypto_provider") else None
 
 if banking_for_nw or brokerage_for_nw or crypto_for_nw:
     from .helpers import add_net_worth_tracking
-    
+
     # Create tracker with available providers
     nw_tracker = easy_net_worth(
         banking=banking_for_nw,
@@ -819,11 +824,11 @@ if banking_for_nw or brokerage_for_nw or crypto_for_nw:
         providers_list.append("brokerage")
     if crypto_for_nw:
         providers_list.append("crypto")
-    print(f"✅ Net worth tracking enabled (providers: {', '.join(providers_list)}, 4 endpoints, automatic daily snapshots)")
-else:
     print(
-        "⏭️  Net worth tracking skipped (requires banking, brokerage, or crypto provider)"
+        f"[OK] Net worth tracking enabled (providers: {', '.join(providers_list)}, 4 endpoints, automatic daily snapshots)"
     )
+else:
+    print("⏭  Net worth tracking skipped (requires banking, brokerage, or crypto provider)")
 
 # ==================== COMPLIANCE & DOCUMENT MANAGEMENT ====================
 
@@ -839,7 +844,7 @@ from .helpers import add_documents
 
 documents = add_documents(app, prefix="/documents")
 app.state.documents = documents
-print("✅ Documents enabled (upload, OCR, AI analysis, retention policies)")
+print("[OK] Documents enabled (upload, OCR, AI analysis, retention policies)")
 
 # 5.16 Security - Financial-specific security middleware
 # Features: PII detection (SSN, account numbers), credit report access logging,
@@ -849,7 +854,7 @@ print("✅ Documents enabled (upload, OCR, AI analysis, retention policies)")
 from .helpers import add_financial_security
 
 add_financial_security(app)
-print("✅ Financial security middleware enabled (PII detection, audit logging)")
+print("[OK] Financial security middleware enabled (PII detection, audit logging)")
 
 # 5.17 Compliance - Data lifecycle and retention
 # Features: Automatic data retention (IRS: 7 years for tax), GDPR right to delete,
@@ -858,7 +863,7 @@ print("✅ Financial security middleware enabled (PII detection, audit logging)"
 from .helpers import add_data_lifecycle
 
 add_data_lifecycle(app, retention_days=2555)  # 7 years for IRS compliance
-print("✅ Data lifecycle enabled (7-year retention, GDPR compliance)")
+print("[OK] Data lifecycle enabled (7-year retention, GDPR compliance)")
 
 # ==================== UTILITIES ====================
 
@@ -873,7 +878,7 @@ from .helpers import add_normalization
 
 normalization = add_normalization(app, prefix="/normalize")
 app.state.normalization = normalization
-print("✅ Normalization enabled (merchants, symbols, institutions)")
+print("[OK] Normalization enabled (merchants, symbols, institutions)")
 
 # 5.18 Cashflows - Financial calculations
 # Endpoints:
@@ -888,7 +893,7 @@ from .helpers import add_cashflows
 
 cashflows = add_cashflows(app, prefix="/cashflows")
 app.state.cashflows = cashflows
-print("✅ Cashflows enabled (NPV, IRR, PMT, amortization)")
+print("[OK] Cashflows enabled (NPV, IRR, PMT, amortization)")
 
 # 5.19 Conversation - AI financial chat (via ai-infra)
 # Endpoints:
@@ -899,8 +904,9 @@ print("✅ Cashflows enabled (NPV, IRR, PMT, amortization)")
 # AI: Uses ai-infra LLM with conversation management
 # Cost: <$0.01/conversation with caching, budget limits enforced
 if settings.llm_configured:
-    from fin_infra.chat.ease import easy_financial_conversation
     from svc_infra.api.fastapi.dual.protected import user_router
+
+    from fin_infra.chat.ease import easy_financial_conversation
 
     conversation = easy_financial_conversation(provider="google_genai")
     app.state.conversation = conversation
@@ -921,9 +927,9 @@ if settings.llm_configured:
         return {"user_id": user_id, "messages": []}
 
     app.include_router(chat_router)
-    print("✅ AI conversation enabled (multi-turn Q&A, financial advice)")
+    print("[OK] AI conversation enabled (multi-turn Q&A, financial advice)")
 else:
-    print("⏭️  AI conversation skipped (set GOOGLE_API_KEY or OPENAI_API_KEY)")
+    print("⏭  AI conversation skipped (set GOOGLE_API_KEY or OPENAI_API_KEY)")
 
 # ============================================================================
 # STEP 6: Custom Endpoints
@@ -934,7 +940,7 @@ else:
 async def root():
     """
     Root endpoint with comprehensive service information.
-    
+
     Returns overview of all available capabilities, quick links to docs,
     and configuration status for each financial provider.
     """
@@ -991,7 +997,7 @@ async def root():
 async def list_features():
     """
     List all available financial capabilities with detailed status.
-    
+
     Shows which providers are configured, which features are enabled,
     and provides endpoint references for each capability.
     """
@@ -1003,176 +1009,224 @@ async def list_features():
 
     # Core Data Providers
     if hasattr(app.state, "banking_provider"):
-        features["capabilities"].append({
-            "name": "Banking",
-            "category": "Core Data",
-            "status": "enabled",
-            "provider": getattr(app.state.banking_provider, "provider_name", "unknown"),
-            "endpoints": ["/banking/link", "/banking/accounts", "/banking/transactions"],
-        })
+        features["capabilities"].append(
+            {
+                "name": "Banking",
+                "category": "Core Data",
+                "status": "enabled",
+                "provider": getattr(app.state.banking_provider, "provider_name", "unknown"),
+                "endpoints": ["/banking/link", "/banking/accounts", "/banking/transactions"],
+            }
+        )
         features["enabled_count"] += 1
 
     if hasattr(app.state, "market_provider"):
-        features["capabilities"].append({
-            "name": "Market Data",
-            "category": "Core Data",
-            "status": "enabled",
-            "provider": getattr(app.state.market_provider, "provider_name", "yahoo"),
-            "endpoints": ["/market/quote/{symbol}", "/market/historical/{symbol}", "/market/search"],
-        })
+        features["capabilities"].append(
+            {
+                "name": "Market Data",
+                "category": "Core Data",
+                "status": "enabled",
+                "provider": getattr(app.state.market_provider, "provider_name", "yahoo"),
+                "endpoints": [
+                    "/market/quote/{symbol}",
+                    "/market/historical/{symbol}",
+                    "/market/search",
+                ],
+            }
+        )
         features["enabled_count"] += 1
 
     if hasattr(app.state, "crypto_provider"):
-        features["capabilities"].append({
-            "name": "Crypto Data",
-            "category": "Core Data",
-            "status": "enabled",
-            "provider": "coingecko",
-            "endpoints": ["/crypto/quote/{symbol}", "/crypto/portfolio", "/crypto/insights"],
-        })
+        features["capabilities"].append(
+            {
+                "name": "Crypto Data",
+                "category": "Core Data",
+                "status": "enabled",
+                "provider": "coingecko",
+                "endpoints": ["/crypto/quote/{symbol}", "/crypto/portfolio", "/crypto/insights"],
+            }
+        )
         features["enabled_count"] += 1
 
     if hasattr(app.state, "credit_provider"):
-        features["capabilities"].append({
-            "name": "Credit Scores",
-            "category": "Core Data",
-            "status": "enabled",
-            "provider": "experian",
-            "endpoints": ["/credit/score", "/credit/report", "/credit/factors"],
-        })
+        features["capabilities"].append(
+            {
+                "name": "Credit Scores",
+                "category": "Core Data",
+                "status": "enabled",
+                "provider": "experian",
+                "endpoints": ["/credit/score", "/credit/report", "/credit/factors"],
+            }
+        )
         features["enabled_count"] += 1
 
     if hasattr(app.state, "brokerage_provider"):
-        features["capabilities"].append({
-            "name": "Brokerage",
-            "category": "Core Data",
-            "status": "enabled",
-            "provider": "alpaca",
-            "endpoints": ["/brokerage/portfolio", "/brokerage/positions", "/brokerage/orders"],
-        })
+        features["capabilities"].append(
+            {
+                "name": "Brokerage",
+                "category": "Core Data",
+                "status": "enabled",
+                "provider": "alpaca",
+                "endpoints": ["/brokerage/portfolio", "/brokerage/positions", "/brokerage/orders"],
+            }
+        )
         features["enabled_count"] += 1
 
     if hasattr(app.state, "tax_provider"):
-        features["capabilities"].append({
-            "name": "Tax Data",
-            "category": "Core Data",
-            "status": "enabled",
-            "provider": "mock",
-            "endpoints": ["/tax/documents", "/tax/liability", "/tax/tlh"],
-        })
+        features["capabilities"].append(
+            {
+                "name": "Tax Data",
+                "category": "Core Data",
+                "status": "enabled",
+                "provider": "mock",
+                "endpoints": ["/tax/documents", "/tax/liability", "/tax/tlh"],
+            }
+        )
         features["enabled_count"] += 1
 
     # Intelligence
     if hasattr(app.state, "analytics"):
-        features["capabilities"].append({
-            "name": "Analytics",
-            "category": "Intelligence",
-            "status": "enabled",
-            "endpoints": [
-                "/analytics/cash-flow",
-                "/analytics/savings-rate",
-                "/analytics/spending-insights",
-                "/analytics/advice",
-            ],
-        })
+        features["capabilities"].append(
+            {
+                "name": "Analytics",
+                "category": "Intelligence",
+                "status": "enabled",
+                "endpoints": [
+                    "/analytics/cash-flow",
+                    "/analytics/savings-rate",
+                    "/analytics/spending-insights",
+                    "/analytics/advice",
+                ],
+            }
+        )
         features["enabled_count"] += 1
 
     if hasattr(app.state, "categorizer"):
-        features["capabilities"].append({
-            "name": "Categorization",
-            "category": "Intelligence",
-            "status": "enabled",
-            "endpoints": ["/categorize", "/categorize/batch"],
-        })
+        features["capabilities"].append(
+            {
+                "name": "Categorization",
+                "category": "Intelligence",
+                "status": "enabled",
+                "endpoints": ["/categorize", "/categorize/batch"],
+            }
+        )
         features["enabled_count"] += 1
 
     if hasattr(app.state, "recurring"):
-        features["capabilities"].append({
-            "name": "Recurring Detection",
-            "category": "Intelligence",
-            "status": "enabled",
-            "endpoints": ["/recurring/detect", "/recurring/insights"],
-        })
+        features["capabilities"].append(
+            {
+                "name": "Recurring Detection",
+                "category": "Intelligence",
+                "status": "enabled",
+                "endpoints": ["/recurring/detect", "/recurring/insights"],
+            }
+        )
         features["enabled_count"] += 1
 
     if hasattr(app.state, "insights"):
-        features["capabilities"].append({
-            "name": "Insights Feed",
-            "category": "Intelligence",
-            "status": "enabled",
-            "endpoints": ["/insights/feed", "/insights/priority"],
-        })
+        features["capabilities"].append(
+            {
+                "name": "Insights Feed",
+                "category": "Intelligence",
+                "status": "enabled",
+                "endpoints": ["/insights/feed", "/insights/priority"],
+            }
+        )
         features["enabled_count"] += 1
 
     # Planning
     if hasattr(app.state, "budgets"):
-        features["capabilities"].append({
-            "name": "Budgets",
-            "category": "Planning",
-            "status": "enabled",
-            "endpoints": ["/budgets", "/budgets/{id}/progress", "/budgets/{id}/alerts", "/budgets/templates"],
-        })
+        features["capabilities"].append(
+            {
+                "name": "Budgets",
+                "category": "Planning",
+                "status": "enabled",
+                "endpoints": [
+                    "/budgets",
+                    "/budgets/{id}/progress",
+                    "/budgets/{id}/alerts",
+                    "/budgets/templates",
+                ],
+            }
+        )
         features["enabled_count"] += 1
 
     if hasattr(app.state, "goals"):
-        features["capabilities"].append({
-            "name": "Goals",
-            "category": "Planning",
-            "status": "enabled",
-            "endpoints": [
-                "/goals",
-                "/goals/{id}/progress",
-                "/goals/{id}/milestones",
-                "/goals/{id}/recommendations",
-            ],
-        })
+        features["capabilities"].append(
+            {
+                "name": "Goals",
+                "category": "Planning",
+                "status": "enabled",
+                "endpoints": [
+                    "/goals",
+                    "/goals/{id}/progress",
+                    "/goals/{id}/milestones",
+                    "/goals/{id}/recommendations",
+                ],
+            }
+        )
         features["enabled_count"] += 1
 
     if hasattr(app.state, "net_worth"):
-        features["capabilities"].append({
-            "name": "Net Worth Tracking",
-            "category": "Planning",
-            "status": "enabled",
-            "endpoints": ["/net-worth/current", "/net-worth/history", "/net-worth/breakdown"],
-        })
+        features["capabilities"].append(
+            {
+                "name": "Net Worth Tracking",
+                "category": "Planning",
+                "status": "enabled",
+                "endpoints": ["/net-worth/current", "/net-worth/history", "/net-worth/breakdown"],
+            }
+        )
         features["enabled_count"] += 1
 
     # Compliance
     if hasattr(app.state, "documents"):
-        features["capabilities"].append({
-            "name": "Documents",
-            "category": "Compliance",
-            "status": "enabled",
-            "endpoints": ["/documents", "/documents/{id}/analyze"],
-        })
+        features["capabilities"].append(
+            {
+                "name": "Documents",
+                "category": "Compliance",
+                "status": "enabled",
+                "endpoints": ["/documents", "/documents/{id}/analyze"],
+            }
+        )
         features["enabled_count"] += 1
 
     # Utilities
     if hasattr(app.state, "normalization"):
-        features["capabilities"].append({
-            "name": "Normalization",
-            "category": "Utilities",
-            "status": "enabled",
-            "endpoints": ["/normalize/merchant", "/normalize/symbol", "/normalize/institution"],
-        })
+        features["capabilities"].append(
+            {
+                "name": "Normalization",
+                "category": "Utilities",
+                "status": "enabled",
+                "endpoints": ["/normalize/merchant", "/normalize/symbol", "/normalize/institution"],
+            }
+        )
         features["enabled_count"] += 1
 
     if hasattr(app.state, "cashflows"):
-        features["capabilities"].append({
-            "name": "Cashflows",
-            "category": "Utilities",
-            "status": "enabled",
-            "endpoints": ["/cashflows/npv", "/cashflows/irr", "/cashflows/pmt", "/cashflows/amortization"],
-        })
+        features["capabilities"].append(
+            {
+                "name": "Cashflows",
+                "category": "Utilities",
+                "status": "enabled",
+                "endpoints": [
+                    "/cashflows/npv",
+                    "/cashflows/irr",
+                    "/cashflows/pmt",
+                    "/cashflows/amortization",
+                ],
+            }
+        )
         features["enabled_count"] += 1
 
     if hasattr(app.state, "conversation"):
-        features["capabilities"].append({
-            "name": "AI Conversation",
-            "category": "Utilities",
-            "status": "enabled",
-            "endpoints": ["/chat", "/chat/history"],
-        })
+        features["capabilities"].append(
+            {
+                "name": "AI Conversation",
+                "category": "Utilities",
+                "status": "enabled",
+                "endpoints": ["/chat", "/chat/history"],
+            }
+        )
         features["enabled_count"] += 1
 
     return features
@@ -1182,7 +1236,7 @@ async def list_features():
 async def health_check():
     """
     Comprehensive health check for all financial providers and backend services.
-    
+
     Returns status for database, cache, and each configured financial provider.
     """
     health = {
@@ -1217,32 +1271,32 @@ async def health_check():
 
 
 # ============================================================================
-# DONE! 🎉
+# DONE!
 # ============================================================================
 # The application is now fully configured with ALL fin-infra + svc-infra features:
 #
 # BACKEND INFRASTRUCTURE (svc-infra):
-#   ✅ 8 database models with auto-generated CRUD endpoints (/_sql/*)
-#   ✅ Observability (Prometheus metrics at /metrics)
-#   ✅ Security (CORS, headers, session middleware)
-#   ✅ Timeouts (handler, body read)
-#   ✅ Rate limiting (simple in-memory)
-#   ✅ Idempotency (in-memory store)
-#   ✅ Graceful shutdown (inflight request tracking)
+#   [OK] 8 database models with auto-generated CRUD endpoints (/_sql/*)
+#   [OK] Observability (Prometheus metrics at /metrics)
+#   [OK] Security (CORS, headers, session middleware)
+#   [OK] Timeouts (handler, body read)
+#   [OK] Rate limiting (simple in-memory)
+#   [OK] Idempotency (in-memory store)
+#   [OK] Graceful shutdown (inflight request tracking)
 #
 # FINANCIAL CAPABILITIES (fin-infra) - ALL 19 CAPABILITIES:
-#   ✅ Core Data (6): Banking, Market Data, Crypto, Credit, Brokerage, Tax
-#   ✅ Intelligence (4): Analytics, Categorization, Recurring, Insights
-#   ✅ Planning (3): Budgets, Goals, Net Worth Tracking
-#   ✅ Compliance (3): Documents, Security, Data Lifecycle
-#   ✅ Utilities (3): Normalization, Cashflows, AI Conversation
+#   [OK] Core Data (6): Banking, Market Data, Crypto, Credit, Brokerage, Tax
+#   [OK] Intelligence (4): Analytics, Categorization, Recurring, Insights
+#   [OK] Planning (3): Budgets, Goals, Net Worth Tracking
+#   [OK] Compliance (3): Documents, Security, Data Lifecycle
+#   [OK] Utilities (3): Normalization, Cashflows, AI Conversation
 #
 # ENDPOINTS:
-#   ✅ Root (/) - Service overview with capability status
-#   ✅ Features (/features) - Detailed capability listing with endpoints
-#   ✅ Health (/health) - Comprehensive health check
-#   ✅ OpenAPI docs (/docs) - Interactive API documentation
-#   ✅ Metrics (/metrics) - Prometheus metrics with financial classification
+#   [OK] Root (/) - Service overview with capability status
+#   [OK] Features (/features) - Detailed capability listing with endpoints
+#   [OK] Health (/health) - Comprehensive health check
+#   [OK] OpenAPI docs (/docs) - Interactive API documentation
+#   [OK] Metrics (/metrics) - Prometheus metrics with financial classification
 #
 # Next steps:
 #   1. Run: make setup (or: poetry install && alembic upgrade head)

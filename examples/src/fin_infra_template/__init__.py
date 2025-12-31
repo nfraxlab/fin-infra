@@ -15,7 +15,7 @@ This template demonstrates:
 Quick start:
     make setup  # Install dependencies and set up database
     make run    # Start the server
-    
+
     Then visit: http://localhost:8001/docs
 """
 

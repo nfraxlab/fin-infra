@@ -9,15 +9,15 @@ install: ## Install dependencies with Poetry
 	poetry install
 
 setup: install ## Complete project setup (scaffold models + migrations)
-	@echo "🚀 Setting up fin-infra template project..."
+	@echo " Setting up fin-infra template project..."
 	@if [ ! -f .env ]; then \
-		echo "📝 Creating .env from .env.example..."; \
+		echo " Creating .env from .env.example..."; \
 		cp .env.example .env; \
 	fi
-	@echo "🏗️  Running scaffolding and migrations..."
+	@echo "🏗  Running scaffolding and migrations..."
 	python3 scripts/quick_setup.py
 	@echo ""
-	@echo "✅ Setup complete! Next steps:"
+	@echo "[OK] Setup complete! Next steps:"
 	@echo "   1. Review .env and configure provider credentials"
 	@echo "   2. Enable desired providers (banking, market data, etc.)"
 	@echo "   3. Run: make run"
@@ -25,12 +25,12 @@ setup: install ## Complete project setup (scaffold models + migrations)
 
 run: ## Start the development server
 	@if [ ! -f .env ]; then \
-		echo "📝 Creating .env from .env.example..."; \
+		echo " Creating .env from .env.example..."; \
 		cp .env.example .env; \
 	fi
 	@if [ ! -d "migrations" ]; then \
 		echo ""; \
-		echo "⚠️  No database migrations found!"; \
+		echo "[!]  No database migrations found!"; \
 		echo "   Run 'make setup' first to scaffold models and initialize the database."; \
 		echo ""; \
 		exit 1; \
@@ -48,5 +48,5 @@ update: ## Update dependencies
 	poetry update
 
 test-providers: ## Test provider connections
-	@echo "🧪 Testing provider connections..."
+	@echo " Testing provider connections..."
 	python3 scripts/test_providers.py

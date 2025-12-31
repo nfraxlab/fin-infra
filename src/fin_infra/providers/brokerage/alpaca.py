@@ -1,6 +1,6 @@
 """Alpaca brokerage provider for paper and live trading.
 
-⚠️ IMPORTANT: This module provides real trading capabilities. Always use paper trading
+[!] IMPORTANT: This module provides real trading capabilities. Always use paper trading
 mode for development and testing. Live trading requires explicit opt-in.
 """
 

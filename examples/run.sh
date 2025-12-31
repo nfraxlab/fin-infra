@@ -17,9 +17,9 @@ fi
 # Default port
 PORT=${API_PORT:-8001}
 
-echo "🚀 Starting fin-infra-template server on port $PORT..."
+echo " Starting fin-infra-template server on port $PORT..."
 echo "📖 OpenAPI docs: http://localhost:$PORT/docs"
-echo "📊 Metrics: http://localhost:$PORT/metrics"
+echo " Metrics: http://localhost:$PORT/metrics"
 echo "🏥 Health: http://localhost:$PORT/_health"
 echo ""
 

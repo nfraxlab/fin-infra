@@ -254,7 +254,7 @@ from fin_infra.markets import easy_market_stream
 # WebSocket streaming (for supported providers)
 async with easy_market_stream() as stream:
     await stream.subscribe(["AAPL", "GOOGL", "TSLA"])
-    
+
     async for quote in stream:
         print(f"{quote.symbol}: ${quote.price}")
 ```
@@ -265,7 +265,7 @@ async with easy_market_stream() as stream:
 ```python
 from fin_infra.markets import add_market_data
 
-# ✅ Mount complete market data API with one call
+# [OK] Mount complete market data API with one call
 market_provider = add_market_data(
     app,
     provider="alphavantage",  # or "yahoo" (optional, defaults to env)
@@ -282,13 +282,13 @@ market_provider = add_market_data(
 ```
 
 **What `add_market_data()` Does:**
-- ✅ Initializes market data provider (Alpha Vantage/Yahoo) with environment config
-- ✅ Mounts all 3 market endpoints with proper request/response models
-- ✅ Uses `public_router()` from svc-infra (public market data, no auth)
-- ✅ Registers landing page documentation card
-- ✅ Stores provider instance on `app.state.market_provider`
-- ✅ Returns provider for programmatic access
-- ✅ Handles provider errors with proper HTTP status codes
+- [OK] Initializes market data provider (Alpha Vantage/Yahoo) with environment config
+- [OK] Mounts all 3 market endpoints with proper request/response models
+- [OK] Uses `public_router()` from svc-infra (public market data, no auth)
+- [OK] Registers landing page documentation card
+- [OK] Stores provider instance on `app.state.market_provider`
+- [OK] Returns provider for programmatic access
+- [OK] Handles provider errors with proper HTTP status codes
 
 ### Basic Setup (Using svc-infra)
 ```python
@@ -419,7 +419,7 @@ async def portfolio_value(symbols: str = Query(..., description="Comma-separated
     symbol_list = [s.strip().upper() for s in symbols.split(",")]
     total_value = 0
     quotes = []
-    
+
     for symbol in symbol_list:
         try:
             quote = market_provider.quote(symbol)
@@ -431,7 +431,7 @@ async def portfolio_value(symbols: str = Query(..., description="Comma-separated
             total_value += float(quote.price)
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Error fetching {symbol}: {str(e)}")
-    
+
     return {
         "symbols": symbol_list,
         "quotes": quotes,
@@ -443,7 +443,7 @@ async def price_alerts(symbol: str, target_price: float):
     """Check if symbol reached target price"""
     quote = market_provider.quote(symbol)
     current_price = float(quote.price)
-    
+
     if current_price >= target_price:
         return {
             "alert": True,
@@ -549,7 +549,7 @@ async def update_market_data(symbols: list[str]):
             await db.save_quote(quote)
         except Exception as e:
             print(f"Error fetching {symbol}: {e}")
-    
+
     return {"updated": len(quotes), "quotes": quotes}
 
 # Schedule updates every 5 minutes during market hours
@@ -565,7 +565,7 @@ async def end_of_day_summary():
     """Generate end-of-day market summary"""
     from datetime import date
     symbols = await db.get_all_tracked_symbols()
-    
+
     for symbol in symbols:
         candles = market.history(
             symbol=symbol,
@@ -618,7 +618,7 @@ from fin_infra.markets import easy_market
 def test_get_quote():
     market = easy_market()
     quote = market.quote("AAPL")
-    
+
     assert quote.symbol == "AAPL"
     assert quote.price > 0
     assert quote.volume > 0
@@ -627,7 +627,7 @@ def test_get_quote():
 def test_real_market_data():
     market = easy_market()
     quote = market.quote("AAPL")
-    
+
     # Test against real API
     assert quote is not None
 ```

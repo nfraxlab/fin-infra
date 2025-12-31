@@ -4,7 +4,7 @@ This module provides functionality to record and retrieve historical account bal
 snapshots over time. This enables balance trend analysis, sparklines, and time-series
 visualizations in fintech dashboards.
 
-⚠️ WARNING: This module uses IN-MEMORY storage by default. All data is LOST on restart.
+[!] WARNING: This module uses IN-MEMORY storage by default. All data is LOST on restart.
 For production use, integrate with svc-infra SQL database or set FIN_INFRA_STORAGE_BACKEND.
 
 Features:
@@ -57,7 +57,7 @@ __all__ = [
 _logger = logging.getLogger(__name__)
 
 # In-memory storage for testing (will be replaced with SQL database in production)
-# ⚠️ WARNING: All data is LOST on restart when using in-memory storage!
+# [!] WARNING: All data is LOST on restart when using in-memory storage!
 _balance_snapshots: list[BalanceSnapshot] = []
 _production_warning_logged = False
 
@@ -73,7 +73,7 @@ def _check_in_memory_warning() -> None:
 
     if env in ("production", "staging") and storage_backend == "memory":
         _logger.warning(
-            "⚠️ CRITICAL: Balance history using IN-MEMORY storage in %s environment! "
+            "[!] CRITICAL: Balance history using IN-MEMORY storage in %s environment! "
             "All balance snapshots will be LOST on restart. "
             "Set FIN_INFRA_STORAGE_BACKEND=sql for production persistence.",
             env,
@@ -114,7 +114,7 @@ def record_balance_snapshot(
     This function stores a point-in-time balance record for trend analysis.
     In production, this would write to a SQL database via svc-infra.
 
-    ⚠️ WARNING: Uses in-memory storage by default. Data is LOST on restart!
+    [!] WARNING: Uses in-memory storage by default. Data is LOST on restart!
 
     Args:
         account_id: Account identifier

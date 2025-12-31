@@ -478,20 +478,20 @@ from fin_infra.analytics import easy_analytics
 analytics = easy_analytics(
     # Default analysis period
     default_period_days=30,  # 30, 60, 90 days typical
-    
+
     # Cache TTL (seconds)
     cache_ttl=3600,  # 1 hour for real-time metrics
     # cache_ttl=86400,  # 24 hours for historical insights
-    
+
     # Provider overrides
     banking_provider=custom_banking,
     brokerage_provider=custom_brokerage,
     categorization_provider=custom_categorization,
-    
+
     # Savings rate defaults
     default_savings_definition="net",  # gross, net, discretionary
     historical_months=6,  # Trend analysis lookback
-    
+
     # Portfolio defaults
     default_benchmark="SPY",  # S&P 500
     risk_free_rate=0.03,  # For Sharpe ratio
@@ -679,7 +679,7 @@ For each category:
   average = mean(last 6 months)
   current = current month
   deviation = (current - average) / average
-  
+
   if deviation > 0.25:  # 25% higher
     flag as anomaly
 ```
@@ -688,7 +688,7 @@ For each category:
 ```
 For each category:
   slope = linear_regression(last 6 months)
-  
+
   if slope > 0.1:  trend = "increasing"
   elif slope < -0.1:  trend = "decreasing"
   else:  trend = "stable"
@@ -782,13 +782,13 @@ analytics = easy_analytics(
 All calculations use **keyword-only arguments** for cache key stability:
 
 ```python
-# ✅ CORRECT: Keyword-only (cache-friendly)
+# [OK] CORRECT: Keyword-only (cache-friendly)
 await analytics.cash_flow(
     user_id="user_123",
     period_days=30,
 )
 
-# ❌ WRONG: Positional args (breaks caching)
+# [X] WRONG: Positional args (breaks caching)
 await analytics.cash_flow("user_123", 30)
 ```
 
@@ -1025,7 +1025,7 @@ class AnalyticsService:
     def __init__(self, db, cache):
         self.db = db
         self.cache = cache
-    
+
     async def get_savings_rate(self, user_id):
         # 100+ lines of custom logic
         ...
@@ -1045,7 +1045,7 @@ analytics = add_analytics(app)
 
 ## Portfolio Rebalancing
 
-**Status**: ✅ Production-ready (Phase 3)  
+**Status**: [OK] Production-ready (Phase 3)  
 **Module**: `fin_infra.analytics.rebalancing`
 
 ### Overview
@@ -1225,7 +1225,7 @@ print(f"Tax Impact: ${plan.total_tax_impact:.2f}")  # Negative = tax savings
 
 ## Scenario Modeling
 
-**Status**: ✅ Production-ready (Phase 3)  
+**Status**: [OK] Production-ready (Phase 3)  
 **Module**: `fin_infra.analytics.scenarios`
 
 ### Overview
@@ -1261,11 +1261,11 @@ for point in result.data_points[:5]:  # First 5 years
 
 # AI-powered recommendations
 for rec in result.recommendations:
-    print(f"  💡 {rec}")
+    print(f"   {rec}")
 
 # Risk warnings
 for warning in result.warnings:
-    print(f"  ⚠️ {warning}")
+    print(f"  [!] {warning}")
 ```
 
 ### Scenario Types
@@ -1435,18 +1435,18 @@ The engine generates contextual recommendations based on:
 
 **Example Recommendations**:
 ```
-✅ On track to reach your retirement goal
-💡 Increasing monthly contributions by $500 would add $180,000 to your final balance
-💡 If you can achieve 8% returns (vs 7%), you'd reach your goal 2.3 years earlier
+[OK] On track to reach your retirement goal
+ Increasing monthly contributions by $500 would add $180,000 to your final balance
+ If you can achieve 8% returns (vs 7%), you'd reach your goal 2.3 years earlier
 ```
 
 ### Warnings
 
 **Example Warnings**:
 ```
-⚠️ Inflation will reduce purchasing power by 25% over 30 years
-⚠️ You're $250,000 short of your goal. Consider increasing contributions or extending timeline.
-⚠️ High return assumptions (10%+) may be unrealistic for conservative portfolios
+[!] Inflation will reduce purchasing power by 25% over 30 years
+[!] You're $250,000 short of your goal. Consider increasing contributions or extending timeline.
+[!] High return assumptions (10%+) may be unrealistic for conservative portfolios
 ```
 
 ### Production Considerations

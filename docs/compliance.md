@@ -1,6 +1,6 @@
 # Compliance & Data Governance
 
-**⚠️ DISCLAIMER**: This documentation provides technical guidance for handling financial data. It is **NOT a substitute for legal counsel**. Consult with qualified attorneys for compliance sign-off, especially for GLBA, FCRA, PCI-DSS, and GDPR requirements.
+**[!] DISCLAIMER**: This documentation provides technical guidance for handling financial data. It is **NOT a substitute for legal counsel**. Consult with qualified attorneys for compliance sign-off, especially for GLBA, FCRA, PCI-DSS, and GDPR requirements.
 
 ---
 
@@ -43,12 +43,12 @@ add_data_lifecycle(
 ### Tier 1: High-Sensitivity PII (GLBA/FCRA regulated)
 
 **Handled by fin-infra**:
-- ✅ Account numbers (checking, savings, credit cards)
-- ✅ Routing numbers
-- ✅ SSN/Tax ID (last 4 digits only via identity endpoints)
-- ✅ Credit scores and credit reports
-- ✅ Provider access tokens (Plaid, Teller, etc.)
-- ✅ Identity data (name, DOB, address when linked to financial accounts)
+- [OK] Account numbers (checking, savings, credit cards)
+- [OK] Routing numbers
+- [OK] SSN/Tax ID (last 4 digits only via identity endpoints)
+- [OK] Credit scores and credit reports
+- [OK] Provider access tokens (Plaid, Teller, etc.)
+- [OK] Identity data (name, DOB, address when linked to financial accounts)
 
 **Storage requirements**:
 - Encrypt at rest (use svc-infra DB encryption)
@@ -59,10 +59,10 @@ add_data_lifecycle(
 ### Tier 2: Moderate-Sensitivity Financial Data
 
 **Handled by fin-infra**:
-- ✅ Transaction history (amounts, dates, merchants, categories)
-- ✅ Account balances
-- ✅ Holdings (stocks, crypto positions)
-- ✅ Portfolio valuations
+- [OK] Transaction history (amounts, dates, merchants, categories)
+- [OK] Account balances
+- [OK] Holdings (stocks, crypto positions)
+- [OK] Portfolio valuations
 
 **Storage requirements**:
 - Encrypt at rest (recommended)
@@ -72,9 +72,9 @@ add_data_lifecycle(
 ### Tier 3: Public/Low-Sensitivity Data
 
 **Handled by fin-infra**:
-- ✅ Market data (stock quotes, crypto prices) - publicly available
-- ✅ Provider metadata (institution names, supported products)
-- ✅ Aggregated/anonymized analytics
+- [OK] Market data (stock quotes, crypto prices) - publicly available
+- [OK] Provider metadata (institution names, supported products)
+- [OK] Aggregated/anonymized analytics
 
 **Storage requirements**:
 - Cache with TTL (recommended: 15-60 minutes for market data)
@@ -87,10 +87,10 @@ add_data_lifecycle(
 ### Plaid
 
 **Key Requirements**:
-- ❌ **No data resale**: Cannot sell user financial data to third parties
-- ⏱️ **Limited retention**: Delete data when user deletes account or revokes access
-- 🏷️ **Attribution**: Must display "Powered by Plaid" in UI
-- 🔒 **Security**: Must use HTTPS, store tokens securely (encrypted at rest)
+- [X] **No data resale**: Cannot sell user financial data to third parties
+- ⏱ **Limited retention**: Delete data when user deletes account or revokes access
+- 🏷 **Attribution**: Must display "Powered by Plaid" in UI
+-  **Security**: Must use HTTPS, store tokens securely (encrypted at rest)
 
 **Implementation**:
 ```python
@@ -112,10 +112,10 @@ await run_erasure(session, user_id, financial_erasure_plan)
 ### Teller
 
 **Key Requirements**:
-- ❌ **No data resale**: Financial data is user property
-- ⏱️ **Minimal retention**: Delete access tokens after use or on user request
-- 🔐 **mTLS**: Certificate-based authentication required for production
-- 🔒 **Token security**: Store access tokens encrypted
+- [X] **No data resale**: Financial data is user property
+- ⏱ **Minimal retention**: Delete access tokens after use or on user request
+-  **mTLS**: Certificate-based authentication required for production
+-  **Token security**: Store access tokens encrypted
 
 **Implementation**:
 ```python
@@ -139,10 +139,10 @@ encrypted_token = encrypt_field(access_token, key=app.state.encryption_key)
 ### Alpha Vantage
 
 **Key Requirements**:
-- 🏷️ **Attribution**: Must credit "Alpha Vantage" for market data
-- ⏱️ **Rate limits**: Free tier 25 requests/day; respect limits
-- ❌ **No redistribution**: Cannot resell or redistribute raw data
-- ✅ **Caching allowed**: Can cache for reasonable TTL (recommend 15-60 min)
+- 🏷 **Attribution**: Must credit "Alpha Vantage" for market data
+- ⏱ **Rate limits**: Free tier 25 requests/day; respect limits
+- [X] **No redistribution**: Cannot resell or redistribute raw data
+- [OK] **Caching allowed**: Can cache for reasonable TTL (recommend 15-60 min)
 
 **Implementation**:
 ```python
@@ -343,10 +343,10 @@ log_compliance_event(
 - Pretexting Protection: Prevent unauthorized access through deception
 
 **fin-infra support**:
-- ✅ PII classification (Tier 1/2/3)
-- ✅ Encryption in transit (HTTPS, TLS, mTLS for Teller)
-- ✅ Access logging (compliance event tracking)
-- ⚠️ **Application responsible**: Privacy notices, opt-out mechanisms, encryption at rest
+- [OK] PII classification (Tier 1/2/3)
+- [OK] Encryption in transit (HTTPS, TLS, mTLS for Teller)
+- [OK] Access logging (compliance event tracking)
+- [!] **Application responsible**: Privacy notices, opt-out mechanisms, encryption at rest
 
 **Reference**: https://www.ftc.gov/business-guidance/privacy-security/gramm-leach-bliley-act
 
@@ -361,10 +361,10 @@ log_compliance_event(
 - Security: Protect credit report data from unauthorized access
 
 **fin-infra support**:
-- ✅ Credit report handling (via `easy_credit()`)
-- ✅ Compliance event logging for credit access
-- ✅ Retention policy guidance (2 years recommended)
-- ⚠️ **Application responsible**: Permissible purpose checks, adverse action notices, user consent
+- [OK] Credit report handling (via `easy_credit()`)
+- [OK] Compliance event logging for credit access
+- [OK] Retention policy guidance (2 years recommended)
+- [!] **Application responsible**: Permissible purpose checks, adverse action notices, user consent
 
 **Reference**: https://www.ftc.gov/legal-library/browse/statutes/fair-credit-reporting-act
 
@@ -381,10 +381,10 @@ log_compliance_event(
 - Maintain information security policy
 
 **fin-infra support**:
-- ✅ Does NOT handle raw card data (provider tokens only)
-- ✅ Encryption in transit (HTTPS/TLS)
-- ✅ Access logging (compliance tracking)
-- ⚠️ **Application responsible**: If storing card data, full PCI-DSS compliance required
+- [OK] Does NOT handle raw card data (provider tokens only)
+- [OK] Encryption in transit (HTTPS/TLS)
+- [OK] Access logging (compliance tracking)
+- [!] **Application responsible**: If storing card data, full PCI-DSS compliance required
 
 **Reference**: https://www.pcisecuritystandards.org/
 
@@ -399,10 +399,10 @@ log_compliance_event(
 - Privacy by design
 
 **fin-infra support**:
-- ✅ Erasure plans (via svc-infra.data)
-- ✅ Data export (via provider APIs: accounts, transactions)
-- ✅ Compliance event logging
-- ⚠️ **Application responsible**: Privacy policy, consent management, data export UI
+- [OK] Erasure plans (via svc-infra.data)
+- [OK] Data export (via provider APIs: accounts, transactions)
+- [OK] Compliance event logging
+- [!] **Application responsible**: Privacy policy, consent management, data export UI
 
 ---
 

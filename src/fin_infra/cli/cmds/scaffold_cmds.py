@@ -102,7 +102,7 @@ def cmd_scaffold(
     # Validate required parameters
     if dest_dir is None:
         typer.secho(
-            "❌ Error: --dest-dir is required",
+            "[X] Error: --dest-dir is required",
             fg=typer.colors.RED,
             err=True,
         )
@@ -137,7 +137,7 @@ def cmd_scaffold(
         )
     else:
         typer.secho(
-            f"❌ Unknown domain: {domain}. Must be one of: budgets, goals",
+            f"[X] Unknown domain: {domain}. Must be one of: budgets, goals",
             fg=typer.colors.RED,
             err=True,
         )
@@ -145,7 +145,7 @@ def cmd_scaffold(
 
     # Display results
     typer.echo("")
-    typer.secho("📦 Scaffold Results:", bold=True)
+    typer.secho(" Scaffold Results:", bold=True)
     typer.echo("")
 
     files = result.get("files", [])
@@ -157,7 +157,7 @@ def cmd_scaffold(
         action = file_info.get("action", "unknown")
 
         if action == "wrote":
-            typer.secho(f"  ✓ Created: {path}", fg=typer.colors.GREEN)
+            typer.secho(f"  [OK] Created: {path}", fg=typer.colors.GREEN)
             wrote_count += 1
         elif action == "skipped":
             reason = file_info.get("reason", "unknown")
@@ -168,7 +168,7 @@ def cmd_scaffold(
 
     # Summary
     typer.echo("")
-    typer.secho(f"✨ Done! Created {wrote_count} file(s), skipped {skipped_count}.", bold=True)
+    typer.secho(f" Done! Created {wrote_count} file(s), skipped {skipped_count}.", bold=True)
     typer.echo("")
 
     # Next steps
@@ -187,7 +187,7 @@ def cmd_scaffold(
         }
         route_prefix = prefix_map.get(domain, f"/{domain}")
 
-        typer.secho("📝 Next Steps:", bold=True)
+        typer.secho(" Next Steps:", bold=True)
         typer.echo("")
         typer.echo("  1. Review generated files and customize as needed")
         typer.echo("  2. Run migrations:")

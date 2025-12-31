@@ -547,7 +547,7 @@ for asset in assets:
 **Investments (stocks, bonds, ETFs)**: Always use `market_value` (current market price), NOT `balance` or `cost_basis`.
 
 ```python
-# ✅ CORRECT: Use market value for investments
+# [OK] CORRECT: Use market value for investments
 if asset.account_type == AssetCategory.INVESTMENTS:
     value = asset.market_value or asset.balance
 else:
@@ -873,7 +873,7 @@ class NetWorthSnapshot(Base):
     total_liabilities = Column(Float, nullable=False)
     change_from_previous = Column(Float)
     change_percentage = Column(Float)
-    
+
     # Asset breakdown (6 categories)
     cash = Column(Float, default=0.0)
     investments = Column(Float, default=0.0)
@@ -881,7 +881,7 @@ class NetWorthSnapshot(Base):
     real_estate = Column(Float, default=0.0)
     vehicles = Column(Float, default=0.0)
     other_assets = Column(Float, default=0.0)
-    
+
     # Liability breakdown (6 categories)
     credit_cards = Column(Float, default=0.0)
     mortgages = Column(Float, default=0.0)
@@ -1092,7 +1092,7 @@ goal = {
 
 # Get LLM-generated progress report
 progress = await tracker.check_goal_progress(user_id, goal)
-# "You're on track to reach $2M by 2050. Current savings rate: $1,500/month. 
+# "You're on track to reach $2M by 2050. Current savings rate: $1,500/month.
 #  To stay on track, maintain 7% investment returns and increase savings by $100/month."
 ```
 
@@ -1116,14 +1116,14 @@ V2 adds LLM-powered capabilities using [ai-infra's LLM](../../ai_infra/docs/llm.
 **Key Decision**: Conversation uses `achat()` **WITHOUT** `output_schema` for natural dialogue, while insights/goals use `with_structured_output()` for predictable structure.
 
 ```python
-# ✅ CONVERSATION: Natural dialogue (NO forced JSON)
+# [OK] CONVERSATION: Natural dialogue (NO forced JSON)
 response_text = await llm.achat(
     user_msg="How can I save more?",
     system="You are a helpful financial advisor...",
     # NO output_schema - allows natural, flexible responses
 )
 
-# ✅ INSIGHTS: Structured output (predictable schema)
+# [OK] INSIGHTS: Structured output (predictable schema)
 structured = llm.with_structured_output(
     schema=WealthTrendAnalysis,  # Pydantic model
     method="json_mode",
@@ -1321,11 +1321,11 @@ User: How can I save $10,000 in 2 years?
 Bot:  To save $10,000 in 2 years, you'd need to set aside approximately $417 per month.
       Based on your current net worth of $50,000, this seems achievable if you...
       [detailed advice with context]
-      
+
       Follow-up questions:
       - What if I want to save more aggressively?
       - Should I cut my spending or increase my income?
-      
+
       Confidence: 85%
 
 User: What if I want to save it in 1 year instead?
@@ -1401,9 +1401,9 @@ print(f"Recommendations: {', '.join(validation.recommendations)}")
 ```
 
 **LLM Context Around Local Math**:
-- ✅ Local functions calculate required savings, timelines (accurate math)
-- ✅ LLM provides context, alternatives, recommendations (creative reasoning)
-- ❌ LLM does NOT calculate numbers (prevents hallucination)
+- [OK] Local functions calculate required savings, timelines (accurate math)
+- [OK] LLM provides context, alternatives, recommendations (creative reasoning)
+- [X] LLM does NOT calculate numbers (prevents hallucination)
 
 **Example**:
 ```python
@@ -1461,7 +1461,7 @@ print(f"Recommendations: {', '.join(progress.recommendations)}")
 
 | Provider | Input | Output | Total (avg) | Notes |
 |----------|-------|--------|-------------|-------|
-| **Google Gemini 2.0 Flash** | $0.00035 | $0.0014 | ~$0.0009 | ✅ **Recommended** (best cost/performance) |
+| **Google Gemini 2.0 Flash** | $0.00035 | $0.0014 | ~$0.0009 | [OK] **Recommended** (best cost/performance) |
 | OpenAI GPT-4o mini | $0.00015 | $0.0006 | ~$0.0004 | Cheaper but less capable |
 | OpenAI GPT-4o | $0.0025 | $0.010 | ~$0.006 | 6x more expensive |
 | Anthropic Claude 3.5 Sonnet | $0.003 | $0.015 | ~$0.009 | 10x more expensive |
@@ -1476,7 +1476,7 @@ print(f"Recommendations: {', '.join(progress.recommendations)}")
 | **Goal Progress** | 4/month | 700 (400 in + 300 out) | $0.0006 | $0.0024 |
 | **Total** | | | | **$0.029/month** |
 
-**With Cache (95% hit rate)**: $0.029 × 5% = **$0.0015/user/month** ✅
+**With Cache (95% hit rate)**: $0.029 × 5% = **$0.0015/user/month** [OK]
 
 **Target**: <$0.10/user/month (well under target)
 
@@ -1488,9 +1488,9 @@ print(f"Recommendations: {', '.join(progress.recommendations)}")
    - Goal validation: Cache identical goals
 
 2. **Use Cost-Efficient Models**:
-   - ✅ Google Gemini 2.0 Flash (recommended)
-   - ✅ OpenAI GPT-4o mini (alternative)
-   - ❌ Avoid GPT-4o, Claude 3.5 (overkill for this use case)
+   - [OK] Google Gemini 2.0 Flash (recommended)
+   - [OK] OpenAI GPT-4o mini (alternative)
+   - [X] Avoid GPT-4o, Claude 3.5 (overkill for this use case)
 
 3. **Prompt Optimization**:
    - Keep prompts concise (<500 tokens)
@@ -1537,26 +1537,26 @@ INSIGHTS_MAX_DAYS=365  # Maximum days for trends
 ```python
 tracker = easy_net_worth(
     banking=banking,
-    
+
     # LLM Configuration
     enable_llm=True,
     llm_provider="google",  # 'google', 'openai', 'anthropic'
     llm_api_key="...",  # Or use env var
     llm_model="gemini-2.0-flash-exp",
-    
+
     # Cache Configuration
     cache_url="redis://localhost:6379/0",
     cache_ttl=86400,  # 24 hours
-    
+
     # Conversation Settings
     conversation_max_turns=10,
     conversation_context_ttl=86400,
-    
+
     # Insights Settings
     insights_cache_ttl=86400,
     insights_min_days=7,
     insights_max_days=365,
-    
+
     # Goal Settings
     goal_progress_frequency="weekly",  # 'daily', 'weekly', 'monthly'
 )
@@ -1627,10 +1627,10 @@ validation = await tracker.goal_tracker.validate_goal(goal, result)
 **Solution**: Check `enable_llm=True` and API key is set.
 
 ```python
-# ❌ WRONG: LLM not enabled
+# [X] WRONG: LLM not enabled
 tracker = easy_net_worth(banking=banking)  # enable_llm defaults to False
 
-# ✅ CORRECT: Enable LLM
+# [OK] CORRECT: Enable LLM
 tracker = easy_net_worth(
     banking=banking,
     enable_llm=True,
@@ -1663,7 +1663,7 @@ tracker = easy_net_worth(
 **Solution**: Verify local calculation functions are called (not LLM).
 
 ```python
-# ✅ CORRECT: Local calculation
+# [OK] CORRECT: Local calculation
 required_savings = calculate_retirement_goal(...)  # Accurate math
 
 # LLM only provides context
@@ -1677,7 +1677,7 @@ validation = await tracker.goal_tracker.validate_goal(goal, snapshot)
 
 **Cause**: Cache misconfigured or hit rate too low.
 
-**Solution**: 
+**Solution**:
 1. Verify Redis is running and cache is enabled
 2. Measure actual costs with simulation script
 3. Increase cache TTL for insights (24h recommended)
@@ -1725,10 +1725,10 @@ If legitimate question is blocked, adjust filter patterns or add exception.
 **Solution**: Ensure all accounts use `currency="USD"`.
 
 ```python
-# ❌ WRONG: EUR account skipped
+# [X] WRONG: EUR account skipped
 AssetDetail(currency="EUR", balance=5000.0)
 
-# ✅ CORRECT: Manually convert to USD
+# [OK] CORRECT: Manually convert to USD
 AssetDetail(currency="USD", balance=5500.0)  # 5000 EUR * 1.1 rate
 ```
 
@@ -1741,13 +1741,13 @@ AssetDetail(currency="USD", balance=5500.0)  # 5000 EUR * 1.1 rate
 **Solution**: Ensure brokerage provider returns `market_value`.
 
 ```python
-# ❌ WRONG: Uses cost basis ($40k)
+# [X] WRONG: Uses cost basis ($40k)
 AssetDetail(
     account_type=AssetCategory.INVESTMENTS,
     balance=40000.0,  # Cost basis
 )
 
-# ✅ CORRECT: Uses market value ($50k)
+# [OK] CORRECT: Uses market value ($50k)
 AssetDetail(
     account_type=AssetCategory.INVESTMENTS,
     balance=40000.0,  # Cost basis

@@ -1,7 +1,7 @@
 # Credit Score Monitoring
 
 **Provider**: Experian, Equifax (future), TransUnion (future)  
-**Status**: ✅ v1 Complete (mock implementation)  
+**Status**: [OK] v1 Complete (mock implementation)  
 **Regulation**: FCRA (Fair Credit Reporting Act)
 
 ## Overview
@@ -145,10 +145,10 @@ inquiry = CreditInquiry(
 
 | Feature | Experian (v1) | Equifax (v2) | TransUnion (v2) |
 |---------|---------------|--------------|-----------------|
-| **Credit Scores** | ✅ FICO 8 | ⏸️ FICO 8, VantageScore | ⏸️ FICO 8, VantageScore |
-| **Credit Reports** | ✅ Mock data | ⏸️ Full reports | ⏸️ Full reports |
-| **Sandbox** | ✅ Free tier | ⏸️ Enterprise | ⏸️ Enterprise |
-| **Webhooks** | ⏸️ v2 | ⏸️ v2 | ⏸️ v2 |
+| **Credit Scores** | [OK] FICO 8 | ⏸ FICO 8, VantageScore | ⏸ FICO 8, VantageScore |
+| **Credit Reports** | [OK] Mock data | ⏸ Full reports | ⏸ Full reports |
+| **Sandbox** | [OK] Free tier | ⏸ Enterprise | ⏸ Enterprise |
+| **Webhooks** | ⏸ v2 | ⏸ v2 | ⏸ v2 |
 | **Cost** | ~$0.50-$2.00/pull | ~$0.50-$2.00/pull | ~$0.50-$2.00/pull |
 | **API Docs** | [Experian Connect](https://developer.experian.com/) | [Equifax API](https://www.equifax.com/business/api/) | [TransUnion API](https://www.transunion.com/business/products-services/apis) |
 
@@ -285,12 +285,12 @@ credit_provider = add_credit(
 ```
 
 **What add_credit() does**:
-1. ✅ Mounts protected routes with `user_router()` (requires authentication)
-2. ✅ Wires cache with `@cache_read(ttl=86400)` (24h TTL, 90% cost savings)
-3. ✅ Publishes webhooks on score changes (`credit.score_changed`)
-4. ✅ Logs FCRA compliance events (structured JSON logs)
-5. ✅ Creates landing page card at `/docs`
-6. ✅ Stores provider on `app.state.credit_provider`
+1. [OK] Mounts protected routes with `user_router()` (requires authentication)
+2. [OK] Wires cache with `@cache_read(ttl=86400)` (24h TTL, 90% cost savings)
+3. [OK] Publishes webhooks on score changes (`credit.score_changed`)
+4. [OK] Logs FCRA compliance events (structured JSON logs)
+5. [OK] Creates landing page card at `/docs`
+6. [OK] Stores provider on `app.state.credit_provider`
 
 ### Error Handling
 
@@ -418,7 +418,7 @@ Credit bureau API pulls are expensive:
 - **Daily cost**: **$1,000**
 - **Monthly cost**: **$30,000**
 
-**Savings**: **$270,000/month (90% reduction)** 🎉
+**Savings**: **$270,000/month (90% reduction)**
 
 ### Cache TTL Comparison
 
@@ -428,7 +428,7 @@ Credit bureau API pulls are expensive:
 | **1 hour** | 2,400 | $72,000 | 76% |
 | **6 hours** | 1,600 | $48,000 | 84% |
 | **12 hours** | 1,200 | $36,000 | 88% |
-| **24 hours** ✅ | 1,000 | $30,000 | **90%** |
+| **24 hours** [OK] | 1,000 | $30,000 | **90%** |
 | **48 hours** | 800 | $24,000 | 92% |
 
 **Industry standard**: 24-hour cache (balances cost savings with data freshness)
@@ -477,7 +477,7 @@ credit = add_credit(app, cache_ttl=0)  # Every request hits bureau API
 
 ### Webhooks (Score Change Notifications)
 
-**Status**: ✅ Implemented via svc-infra webhooks (add_webhooks)
+**Status**: [OK] Implemented via svc-infra webhooks (add_webhooks)
 
 The `add_credit()` helper automatically wires webhook support. Users can subscribe to `credit.score_changed` events to receive notifications when credit scores change.
 
@@ -536,10 +536,10 @@ from fastapi import Request, HTTPException
 async def handle_credit_webhook(request: Request):
     # Get signature from headers
     signature = request.headers.get("X-Webhook-Signature")
-    
+
     # Get raw body
     body = await request.body()
-    
+
     # Verify signature
     secret = "your_webhook_secret"
     expected_sig = hmac.new(
@@ -547,23 +547,23 @@ async def handle_credit_webhook(request: Request):
         body,
         hashlib.sha256
     ).hexdigest()
-    
+
     if not hmac.compare_digest(f"sha256={expected_sig}", signature):
         raise HTTPException(status_code=401, detail="Invalid signature")
-    
+
     # Process webhook
     payload = await request.json()
     user_id = payload["data"]["user_id"]
     new_score = payload["data"]["score"]
-    
+
     print(f"User {user_id} score changed to {new_score}")
-    
+
     # Send notification to user
     await send_push_notification(
         user_id,
         f"Your credit score changed to {new_score}!"
     )
-    
+
     return {"ok": True}
 ```
 
@@ -631,9 +631,9 @@ webhook_svc.publish(
 ```
 
 **Event triggers**:
-- ✅ User requests credit score (POST /credit/score)
-- ✅ Score refresh endpoint called
-- ⏸️ Bureau push notifications (v3 - requires bureau webhook support)
+- [OK] User requests credit score (POST /credit/score)
+- [OK] Score refresh endpoint called
+- ⏸ Bureau push notifications (v3 - requires bureau webhook support)
 
 **Note**: Webhooks are only published when score data changes. Cached responses don't trigger events.
 
@@ -678,7 +678,7 @@ The **Fair Credit Reporting Act (FCRA) §604** restricts who can access consumer
 
 Credit reports may ONLY be accessed for the following purposes:
 
-1. **Consumer Request (§604(a)(2))** ✅ **Most common for fintech apps**
+1. **Consumer Request (§604(a)(2))** [OK] **Most common for fintech apps**
    - User requests their own credit report
    - No additional authorization required beyond user consent
    - Example: Credit monitoring apps like Credit Karma
@@ -727,7 +727,7 @@ async def grant_credit_consent(user_id: str, consent: bool):
     """User grants consent for credit monitoring."""
     if not consent:
         raise HTTPException(400, "User must consent to credit monitoring")
-    
+
     # Store consent in database
     await db.save_consent(
         user_id=user_id,
@@ -735,7 +735,7 @@ async def grant_credit_consent(user_id: str, consent: bool):
         granted_at=datetime.utcnow(),
         ip_address=request.client.host,
     )
-    
+
     return {"ok": True}
 ```
 
@@ -761,7 +761,7 @@ async def get_credit_score(user_id: str):
             "event_type": "credit_access",
         }
     )
-    
+
     # Fetch credit score
     score = await credit.get_credit_score(user_id)
     return score
@@ -989,7 +989,7 @@ EXPERIAN_API_KEY=sandbox_key poetry run pytest tests/acceptance/test_credit_expe
 
 ## v1 Implementation Status
 
-### Completed ✅
+### Completed [OK]
 
 - [x] ADR-0012: Credit monitoring architecture
 - [x] Data models: CreditScore, CreditReport, CreditAccount, CreditInquiry, PublicRecord
@@ -999,7 +999,7 @@ EXPERIAN_API_KEY=sandbox_key poetry run pytest tests/acceptance/test_credit_expe
 - [x] Unit tests (22 tests, all passing)
 - [x] Documentation (this file)
 
-### Deferred to v2 ⏸️
+### Deferred to v2 ⏸
 
 - [ ] Real Experian API integration (requires API key)
 - [ ] svc-infra.cache integration (24h TTL)

@@ -1,6 +1,6 @@
 # Unified Insights Feed
 
-**Status**: ✅ Production-ready (Phase 3)  
+**Status**: [OK] Production-ready (Phase 3)  
 **Module**: `fin_infra.insights`  
 **Dependencies**: svc-infra (cache, logging), ai-infra (LLM for crypto insights)
 
@@ -105,7 +105,7 @@ insight = Insight(
 ```python
 class InsightCategory(str, Enum):
     """Insight category for organization."""
-    
+
     NET_WORTH = "net_worth"         # Net worth changes, allocation shifts
     BUDGET = "budget"               # Budget tracking, overspending alerts
     GOAL = "goal"                   # Goal progress, milestones
@@ -123,7 +123,7 @@ class InsightCategory(str, Enum):
 ```python
 class InsightPriority(str, Enum):
     """Priority level for sorting."""
-    
+
     CRITICAL = "critical"  # Urgent action required (e.g., overdraft risk)
     HIGH = "high"          # Important but not urgent (e.g., goal achieved)
     MEDIUM = "medium"      # Nice to know (e.g., 50% goal progress)
@@ -550,10 +550,10 @@ page_size = 10
 while True:
     feed = aggregate_insights(user_id="user_123", goals=goals, page=page, page_size=page_size)
     all_insights.extend(feed.insights)
-    
+
     if not feed.has_more:
         break
-    
+
     page += 1
 
 print(f"Loaded {len(all_insights)} total insights")
@@ -583,21 +583,21 @@ feed = aggregate_insights(
 
 # Render in UI
 for insight in feed.insights:
-    print(f"🔔 [{insight.priority}] {insight.title}")
+    print(f" [{insight.priority}] {insight.title}")
     print(f"   {insight.description}")
     if insight.action:
-        print(f"   ➡️ {insight.action}")
+        print(f"   -> {insight.action}")
 ```
 
 **Output**:
 ```
-🔔 [HIGH] Goal 'Emergency Fund' Achieved!
+ [HIGH] Goal 'Emergency Fund' Achieved!
    You've reached your $10,000 goal
-   ➡️ Consider setting a new goal or increasing this one
+   -> Consider setting a new goal or increasing this one
 
-🔔 [HIGH] Net Worth Up 12% This Month
+ [HIGH] Net Worth Up 12% This Month
    $150,000 → $168,000 (+$18,000)
-   ➡️ Keep up the momentum
+   -> Keep up the momentum
 ```
 
 ### Example 2: Full Insights Feed Page
@@ -686,7 +686,7 @@ def get_insights_feed(user_id: str, page: int = 1, page_size: int = 20):
     # Gather data (these could also be cached separately)
     goals = get_goals(user_id=user_id)
     budgets = get_budgets(user_id=user_id)
-    
+
     return aggregate_insights(
         user_id=user_id,
         goals=goals,
@@ -718,7 +718,7 @@ feed2 = get_insights_feed(user_id="user_123")  # Cache HIT, instant
 2. **Parallel Data Fetching**:
    ```python
    import asyncio
-   
+
    async def gather_data(user_id: str):
        goals, budgets, recurring = await asyncio.gather(
            fetch_goals(user_id),
@@ -768,7 +768,7 @@ try:
     insight = Insight(
         id="insight_123",
         user_id="user_123",
-        category="INVALID_CATEGORY",  # ❌ Not in InsightCategory enum
+        category="INVALID_CATEGORY",  # [X] Not in InsightCategory enum
         priority=InsightPriority.HIGH,
         title="Test",
         description="Test insight",
@@ -799,9 +799,9 @@ def test_goal_achieved_insight():
             current_amount=10500.0,
         )
     ]
-    
+
     feed = aggregate_insights(user_id="user_123", goals=goals)
-    
+
     assert len(feed.insights) == 1
     assert feed.insights[0].priority == "high"
     assert "Achieved" in feed.insights[0].title
@@ -813,12 +813,12 @@ def test_priority_filtering():
         Goal(id="g1", name="G1", target_amount=100, current_amount=100),  # HIGH
         Goal(id="g2", name="G2", target_amount=100, current_amount=75),   # MEDIUM
     ]
-    
+
     # Filter for HIGH only
     feed_high = aggregate_insights(user_id="u123", goals=goals, priority_filter="high")
     assert len(feed_high.insights) == 1
     assert feed_high.insights[0].priority == "high"
-    
+
     # No filter: all insights
     feed_all = aggregate_insights(user_id="u123", goals=goals)
     assert len(feed_all.insights) == 2
@@ -826,13 +826,13 @@ def test_priority_filtering():
 def test_pagination():
     """Test pagination logic."""
     goals = [Goal(id=f"g{i}", name=f"G{i}", target_amount=100, current_amount=100) for i in range(50)]
-    
+
     # Page 1
     feed_p1 = aggregate_insights(user_id="u123", goals=goals, page=1, page_size=20)
     assert len(feed_p1.insights) == 20
     assert feed_p1.has_more is True
     assert feed_p1.total == 50
-    
+
     # Page 3 (last page)
     feed_p3 = aggregate_insights(user_id="u123", goals=goals, page=3, page_size=20)
     assert len(feed_p3.insights) == 10
@@ -851,7 +851,7 @@ client = TestClient(app)
 def test_insights_endpoint():
     """Test FastAPI insights endpoint (future integration)."""
     response = client.get("/insights?user_id=user_123&page=1&page_size=10")
-    
+
     assert response.status_code == 200
     data = response.json()
     assert "insights" in data

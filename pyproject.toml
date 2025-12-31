@@ -145,6 +145,9 @@ ignore = [
 "tests/**/*.py" = [
     "B018",    # useless expression in tests is fine
 ]
+"examples/**/*.py" = [
+    "E402",    # module level imports - examples show full context inline
+]
 
 [tool.ruff.lint.isort]
 known-first-party = ["fin_infra"]

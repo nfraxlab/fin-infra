@@ -189,7 +189,7 @@ Uses: `svc_infra.db setup-and-migrate`
 make db-reset
 ```
 
-⚠️ **Warning**: Deletes all data!
+[!] **Warning**: Deletes all data!
 
 ### Testing
 

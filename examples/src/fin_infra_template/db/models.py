@@ -10,10 +10,10 @@ Demonstrates fin-infra patterns for:
 
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Optional
 
 from sqlalchemy import DECIMAL, Date, DateTime, String, Text, func, inspect
 from sqlalchemy.orm import Mapped, mapped_column
+
 from fin_infra_template.db.base import (
     Base,
     SoftDeleteMixin,
@@ -40,7 +40,7 @@ class User(Base, TimestampMixin):
 
     # Financial preferences
     currency: Mapped[str] = mapped_column(String(3), nullable=False, default="USD")
-    risk_tolerance: Mapped[Optional[str]] = mapped_column(
+    risk_tolerance: Mapped[str | None] = mapped_column(
         String(20), nullable=True
     )  # conservative, moderate, aggressive
 
@@ -74,17 +74,15 @@ class Account(Base, TimestampMixin, SoftDeleteMixin, UserOwnedMixin):
     provider: Mapped[str] = mapped_column(
         String(50), nullable=False, index=True
     )  # plaid, teller, alpaca, manual
-    provider_account_id: Mapped[Optional[str]] = mapped_column(
-        String(255), nullable=True, index=True
-    )
+    provider_account_id: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
 
     # Account details
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     account_type: Mapped[str] = mapped_column(
         String(50), nullable=False, index=True
     )  # checking, savings, investment, credit_card, crypto
-    institution: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    account_number_last4: Mapped[Optional[str]] = mapped_column(String(4), nullable=True)
+    institution: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    account_number_last4: Mapped[str | None] = mapped_column(String(4), nullable=True)
 
     # Balance (current)
     balance: Mapped[Decimal] = mapped_column(DECIMAL(15, 2), nullable=False, default=0)
@@ -116,37 +114,33 @@ class Transaction(Base, TimestampMixin, UserOwnedMixin):
     account_id: Mapped[int] = mapped_column(nullable=False, index=True)
 
     # Provider info
-    provider_transaction_id: Mapped[Optional[str]] = mapped_column(
+    provider_transaction_id: Mapped[str | None] = mapped_column(
         String(255), nullable=True, index=True
     )
 
     # Transaction details
     date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
     description: Mapped[str] = mapped_column(String(500), nullable=False)
-    amount: Mapped[Decimal] = mapped_column(
-        DECIMAL(15, 2), nullable=False
-    )  # negative for expenses
+    amount: Mapped[Decimal] = mapped_column(DECIMAL(15, 2), nullable=False)  # negative for expenses
     currency: Mapped[str] = mapped_column(String(3), nullable=False, default="USD")
 
     # Categorization
-    category: Mapped[Optional[str]] = mapped_column(String(100), nullable=True, index=True)
-    subcategory: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    category: Mapped[str | None] = mapped_column(String(100), nullable=True, index=True)
+    subcategory: Mapped[str | None] = mapped_column(String(100), nullable=True)
     is_recurring: Mapped[bool] = mapped_column(default=False, nullable=False, index=True)
-    recurring_pattern: Mapped[Optional[str]] = mapped_column(
+    recurring_pattern: Mapped[str | None] = mapped_column(
         String(50), nullable=True
     )  # monthly, weekly, yearly
 
     # Metadata
-    merchant: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    location: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    merchant: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    location: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     def __repr__(self) -> str:
         state = inspect(self)
         if state.detached or state.expired:
             return f"<Transaction at {hex(id(self))}>"
-        return (
-            f"<Transaction(id={self.id}, date={self.date}, amount={self.amount}, desc={self.description[:30]!r})>"
-        )
+        return f"<Transaction(id={self.id}, date={self.date}, amount={self.amount}, desc={self.description[:30]!r})>"
 
 
 class Position(Base, TimestampMixin, UserOwnedMixin):
@@ -169,27 +163,21 @@ class Position(Base, TimestampMixin, UserOwnedMixin):
     asset_type: Mapped[str] = mapped_column(
         String(50), nullable=False, index=True
     )  # stock, crypto, bond, etf, mutual_fund
-    asset_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    asset_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     # Position details
     quantity: Mapped[Decimal] = mapped_column(DECIMAL(20, 8), nullable=False)
-    cost_basis: Mapped[Decimal] = mapped_column(
-        DECIMAL(15, 2), nullable=False
-    )  # total cost in USD
-    current_price: Mapped[Optional[Decimal]] = mapped_column(
+    cost_basis: Mapped[Decimal] = mapped_column(DECIMAL(15, 2), nullable=False)  # total cost in USD
+    current_price: Mapped[Decimal | None] = mapped_column(
         DECIMAL(15, 2), nullable=True
     )  # price per unit in USD
-    market_value: Mapped[Optional[Decimal]] = mapped_column(
+    market_value: Mapped[Decimal | None] = mapped_column(
         DECIMAL(15, 2), nullable=True
     )  # total value in USD
 
     # P&L tracking
-    unrealized_gain_loss: Mapped[Optional[Decimal]] = mapped_column(
-        DECIMAL(15, 2), nullable=True
-    )
-    unrealized_gain_loss_pct: Mapped[Optional[Decimal]] = mapped_column(
-        DECIMAL(8, 4), nullable=True
-    )
+    unrealized_gain_loss: Mapped[Decimal | None] = mapped_column(DECIMAL(15, 2), nullable=True)
+    unrealized_gain_loss_pct: Mapped[Decimal | None] = mapped_column(DECIMAL(8, 4), nullable=True)
 
     # Metadata
     last_updated: Mapped[datetime] = mapped_column(
@@ -212,7 +200,7 @@ class Holding(Base, TimestampMixin, UserOwnedMixin):
     - Cost basis and P/L tracking from external sources
     - Security metadata (ticker, name, type, price)
     - Multi-account aggregation
-    
+
     Note: Different from Position model:
     - Position: Internal brokerage positions (Alpaca trading)
     - Holding: External aggregated holdings (Plaid/SnapTrade 401k, IRA, retail brokerages)
@@ -231,14 +219,14 @@ class Holding(Base, TimestampMixin, UserOwnedMixin):
     provider_security_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
 
     # Security details
-    ticker_symbol: Mapped[Optional[str]] = mapped_column(String(20), nullable=True, index=True)
+    ticker_symbol: Mapped[str | None] = mapped_column(String(20), nullable=True, index=True)
     security_name: Mapped[str] = mapped_column(String(255), nullable=False)
     security_type: Mapped[str] = mapped_column(
         String(50), nullable=False, index=True
     )  # equity, etf, mutual_fund, bond, cash, derivative
-    cusip: Mapped[Optional[str]] = mapped_column(String(9), nullable=True)
-    isin: Mapped[Optional[str]] = mapped_column(String(12), nullable=True)
-    sector: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    cusip: Mapped[str | None] = mapped_column(String(9), nullable=True)
+    isin: Mapped[str | None] = mapped_column(String(12), nullable=True)
+    sector: Mapped[str | None] = mapped_column(String(100), nullable=True)
 
     # Position details
     quantity: Mapped[Decimal] = mapped_column(DECIMAL(20, 8), nullable=False)
@@ -248,22 +236,20 @@ class Holding(Base, TimestampMixin, UserOwnedMixin):
     institution_value: Mapped[Decimal] = mapped_column(
         DECIMAL(15, 2), nullable=False
     )  # total value from provider
-    cost_basis: Mapped[Optional[Decimal]] = mapped_column(
+    cost_basis: Mapped[Decimal | None] = mapped_column(
         DECIMAL(15, 2), nullable=True
     )  # total cost (may be unavailable)
     currency: Mapped[str] = mapped_column(String(3), nullable=False, default="USD")
 
     # Market data (latest close price from provider)
-    close_price: Mapped[Optional[Decimal]] = mapped_column(DECIMAL(15, 4), nullable=True)
-    close_price_as_of: Mapped[Optional[datetime]] = mapped_column(
+    close_price: Mapped[Decimal | None] = mapped_column(DECIMAL(15, 4), nullable=True)
+    close_price_as_of: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
 
     # P&L (calculated from cost_basis and institution_value)
-    unrealized_gain_loss: Mapped[Optional[Decimal]] = mapped_column(
-        DECIMAL(15, 2), nullable=True
-    )
-    unrealized_gain_loss_percent: Mapped[Optional[Decimal]] = mapped_column(
+    unrealized_gain_loss: Mapped[Decimal | None] = mapped_column(DECIMAL(15, 2), nullable=True)
+    unrealized_gain_loss_percent: Mapped[Decimal | None] = mapped_column(
         DECIMAL(8, 4), nullable=True
     )
 
@@ -298,7 +284,7 @@ class Goal(Base, TimestampMixin, SoftDeleteMixin, UserOwnedMixin):
 
     # Goal details
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
     goal_type: Mapped[str] = mapped_column(
         String(50), nullable=False, index=True
     )  # emergency, retirement, house, vacation, debt_payoff
@@ -307,17 +293,15 @@ class Goal(Base, TimestampMixin, SoftDeleteMixin, UserOwnedMixin):
     target_amount: Mapped[Decimal] = mapped_column(DECIMAL(15, 2), nullable=False)
     current_amount: Mapped[Decimal] = mapped_column(DECIMAL(15, 2), nullable=False, default=0)
     currency: Mapped[str] = mapped_column(String(3), nullable=False, default="USD")
-    target_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    target_date: Mapped[date | None] = mapped_column(Date, nullable=True)
 
     # Progress
     progress_pct: Mapped[Decimal] = mapped_column(DECIMAL(5, 2), nullable=False, default=0)
     is_completed: Mapped[bool] = mapped_column(default=False, nullable=False, index=True)
-    completed_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Linked accounts (optional)
-    linked_account_id: Mapped[Optional[int]] = mapped_column(nullable=True, index=True)
+    linked_account_id: Mapped[int | None] = mapped_column(nullable=True, index=True)
 
     def __repr__(self) -> str:
         state = inspect(self)
@@ -396,19 +380,17 @@ class Document(Base, TimestampMixin, SoftDeleteMixin, UserOwnedMixin):
     )  # local, s3, gcs
 
     # Analysis (OCR + AI)
-    extracted_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    ai_summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    key_fields: Mapped[Optional[str]] = mapped_column(
+    extracted_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    ai_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    key_fields: Mapped[str | None] = mapped_column(
         Text, nullable=True
     )  # JSON string of extracted fields
 
     # Metadata
-    document_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True, index=True)
-    tags: Mapped[Optional[str]] = mapped_column(
-        String(500), nullable=True
-    )  # comma-separated tags
-    related_transaction_id: Mapped[Optional[int]] = mapped_column(nullable=True, index=True)
-    related_account_id: Mapped[Optional[int]] = mapped_column(nullable=True, index=True)
+    document_date: Mapped[date | None] = mapped_column(Date, nullable=True, index=True)
+    tags: Mapped[str | None] = mapped_column(String(500), nullable=True)  # comma-separated tags
+    related_transaction_id: Mapped[int | None] = mapped_column(nullable=True, index=True)
+    related_account_id: Mapped[int | None] = mapped_column(nullable=True, index=True)
 
     def __repr__(self) -> str:
         state = inspect(self)
@@ -453,18 +435,14 @@ class NetWorthSnapshot(Base, TimestampMixin, UserOwnedMixin):
     currency: Mapped[str] = mapped_column(String(3), nullable=False, default="USD")
 
     # Change tracking
-    change_from_previous: Mapped[Optional[Decimal]] = mapped_column(
-        DECIMAL(15, 2), nullable=True
-    )
-    change_from_previous_pct: Mapped[Optional[Decimal]] = mapped_column(
-        DECIMAL(8, 4), nullable=True
-    )
+    change_from_previous: Mapped[Decimal | None] = mapped_column(DECIMAL(15, 2), nullable=True)
+    change_from_previous_pct: Mapped[Decimal | None] = mapped_column(DECIMAL(8, 4), nullable=True)
 
     # Metadata
     calculation_method: Mapped[str] = mapped_column(
         String(50), nullable=False, default="automatic"
     )  # automatic, manual
-    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     def __repr__(self) -> str:
         state = inspect(self)

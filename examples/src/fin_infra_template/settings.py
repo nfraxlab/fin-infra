@@ -5,7 +5,7 @@ All configuration is loaded from environment variables (.env file).
 Type-safe with Pydantic validation and defaults.
 """
 
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -70,19 +70,19 @@ class Settings(BaseSettings):
     enable_banking: bool = Field(default=False)
 
     # Plaid
-    plaid_client_id: Optional[str] = Field(default=None)
-    plaid_secret: Optional[str] = Field(default=None)
+    plaid_client_id: str | None = Field(default=None)
+    plaid_secret: str | None = Field(default=None)
     plaid_env: Literal["sandbox", "development", "production"] = Field(default="sandbox")
 
     # Teller
-    teller_api_key: Optional[str] = Field(default=None)
-    teller_certificate_path: Optional[str] = Field(default=None)
-    teller_private_key_path: Optional[str] = Field(default=None)
+    teller_api_key: str | None = Field(default=None)
+    teller_certificate_path: str | None = Field(default=None)
+    teller_private_key_path: str | None = Field(default=None)
     teller_env: Literal["sandbox", "production"] = Field(default="sandbox")
 
     # MX
-    mx_client_id: Optional[str] = Field(default=None)
-    mx_api_key: Optional[str] = Field(default=None)
+    mx_client_id: str | None = Field(default=None)
+    mx_api_key: str | None = Field(default=None)
     mx_env: Literal["sandbox", "production"] = Field(default="sandbox")
 
     # ========================================================================
@@ -91,10 +91,10 @@ class Settings(BaseSettings):
     enable_market_data: bool = Field(default=True)
 
     # Alpha Vantage
-    alphavantage_api_key: Optional[str] = Field(default=None)
+    alphavantage_api_key: str | None = Field(default=None)
 
     # Polygon
-    polygon_api_key: Optional[str] = Field(default=None)
+    polygon_api_key: str | None = Field(default=None)
 
     # ========================================================================
     # Credit Score Providers (fin-infra)
@@ -102,17 +102,17 @@ class Settings(BaseSettings):
     enable_credit: bool = Field(default=False)
 
     # Experian
-    experian_client_id: Optional[str] = Field(default=None)
-    experian_client_secret: Optional[str] = Field(default=None)
+    experian_client_id: str | None = Field(default=None)
+    experian_client_secret: str | None = Field(default=None)
     experian_base_url: str = Field(default="https://sandbox-us-api.experian.com")
 
     # Equifax
-    equifax_client_id: Optional[str] = Field(default=None)
-    equifax_client_secret: Optional[str] = Field(default=None)
+    equifax_client_id: str | None = Field(default=None)
+    equifax_client_secret: str | None = Field(default=None)
 
     # TransUnion
-    transunion_client_id: Optional[str] = Field(default=None)
-    transunion_client_secret: Optional[str] = Field(default=None)
+    transunion_client_id: str | None = Field(default=None)
+    transunion_client_secret: str | None = Field(default=None)
 
     # ========================================================================
     # Brokerage Providers (fin-infra)
@@ -120,17 +120,17 @@ class Settings(BaseSettings):
     enable_brokerage: bool = Field(default=False)
 
     # Alpaca
-    alpaca_api_key: Optional[str] = Field(default=None)
-    alpaca_secret_key: Optional[str] = Field(default=None)
+    alpaca_api_key: str | None = Field(default=None)
+    alpaca_secret_key: str | None = Field(default=None)
     alpaca_env: Literal["paper", "live"] = Field(default="paper")
 
     # Interactive Brokers
-    ib_username: Optional[str] = Field(default=None)
-    ib_password: Optional[str] = Field(default=None)
+    ib_username: str | None = Field(default=None)
+    ib_password: str | None = Field(default=None)
 
     # SnapTrade
-    snaptrade_client_id: Optional[str] = Field(default=None)
-    snaptrade_consumer_key: Optional[str] = Field(default=None)
+    snaptrade_client_id: str | None = Field(default=None)
+    snaptrade_consumer_key: str | None = Field(default=None)
 
     # ========================================================================
     # Investment Holdings Providers (fin-infra)
@@ -149,12 +149,12 @@ class Settings(BaseSettings):
     enable_tax: bool = Field(default=True)
 
     # IRS
-    irs_username: Optional[str] = Field(default=None)
-    irs_password: Optional[str] = Field(default=None)
+    irs_username: str | None = Field(default=None)
+    irs_password: str | None = Field(default=None)
 
     # TaxBit
-    taxbit_client_id: Optional[str] = Field(default=None)
-    taxbit_client_secret: Optional[str] = Field(default=None)
+    taxbit_client_id: str | None = Field(default=None)
+    taxbit_client_secret: str | None = Field(default=None)
     taxbit_base_url: str = Field(default="https://api.taxbit.com")
 
     # ========================================================================
@@ -164,11 +164,11 @@ class Settings(BaseSettings):
     enable_llm_categorization: bool = Field(default=False)
 
     # Google Gemini
-    google_api_key: Optional[str] = Field(default=None)
+    google_api_key: str | None = Field(default=None)
     google_model: str = Field(default="gemini-1.5-flash")
 
     # OpenAI
-    openai_api_key: Optional[str] = Field(default=None)
+    openai_api_key: str | None = Field(default=None)
     openai_model: str = Field(default="gpt-4o-mini")
 
     # ========================================================================
@@ -190,9 +190,9 @@ class Settings(BaseSettings):
     # ========================================================================
     # Timeouts & Resource Limits (svc-infra)
     # ========================================================================
-    timeout_handler_seconds: Optional[int] = Field(default=30)
-    timeout_body_read_seconds: Optional[int] = Field(default=10)
-    request_max_size_mb: Optional[int] = Field(default=10)
+    timeout_handler_seconds: int | None = Field(default=30)
+    timeout_body_read_seconds: int | None = Field(default=10)
+    request_max_size_mb: int | None = Field(default=10)
     graceful_shutdown_enabled: bool = Field(default=True)
 
     # ========================================================================
@@ -246,9 +246,7 @@ class Settings(BaseSettings):
     @property
     def credit_configured(self) -> bool:
         """Check if any credit provider is configured."""
-        return self.enable_credit and bool(
-            self.experian_client_id and self.experian_client_secret
-        )
+        return self.enable_credit and bool(self.experian_client_id and self.experian_client_secret)
 
     @property
     def brokerage_configured(self) -> bool:

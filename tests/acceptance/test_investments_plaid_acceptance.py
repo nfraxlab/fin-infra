@@ -92,7 +92,7 @@ class TestPlaidInvestmentsAcceptance:
         assert investments is not None
         assert hasattr(investments, "get_holdings")
         assert hasattr(investments, "get_transactions")
-        print("✓ easy_investments() auto-detected Plaid provider from env vars")
+        print("[OK] easy_investments() auto-detected Plaid provider from env vars")
 
     def test_get_holdings_with_sandbox(self, plaid_access_token):
         """Test fetching real holdings from Plaid sandbox.
@@ -126,7 +126,7 @@ class TestPlaidInvestmentsAcceptance:
         assert security.security_id
         assert security.type in SecurityType
 
-        print(f"✓ Fetched {len(holdings)} holdings from Plaid sandbox")
+        print(f"[OK] Fetched {len(holdings)} holdings from Plaid sandbox")
         print(
             f"  Sample holding: {security.name or security.ticker_symbol} - {holding.quantity} @ ${holding.institution_price}"
         )
@@ -158,7 +158,7 @@ class TestPlaidInvestmentsAcceptance:
             assert len(filtered_holdings) <= len(all_holdings)
 
             print(
-                f"✓ Account filtering: {len(filtered_holdings)}/{len(all_holdings)} holdings in account {first_account_id}"
+                f"[OK] Account filtering: {len(filtered_holdings)}/{len(all_holdings)} holdings in account {first_account_id}"
             )
 
         except Exception as e:
@@ -195,7 +195,7 @@ class TestPlaidInvestmentsAcceptance:
         assert transaction.transaction_type in TransactionType
         assert isinstance(transaction.transaction_date, date)
 
-        print(f"✓ Fetched {len(transactions)} transactions from Plaid sandbox")
+        print(f"[OK] Fetched {len(transactions)} transactions from Plaid sandbox")
         print(
             f"  Sample: {transaction.transaction_type.value} - {transaction.security.name or transaction.security.ticker_symbol}"
         )
@@ -221,7 +221,7 @@ class TestPlaidInvestmentsAcceptance:
         assert account.name
         assert account.total_value >= Decimal(0)
 
-        print(f"✓ Fetched {len(accounts)} investment accounts from Plaid sandbox")
+        print(f"[OK] Fetched {len(accounts)} investment accounts from Plaid sandbox")
         print(f"  Sample account: {account.name} - ${account.total_value:,.2f}")
 
     def test_get_allocation(self, plaid_access_token):
@@ -242,7 +242,7 @@ class TestPlaidInvestmentsAcceptance:
             f"Allocations should sum to 100%, got {total_percent}%"
         )
 
-        print("✓ Asset allocation calculated from Plaid sandbox holdings:")
+        print("[OK] Asset allocation calculated from Plaid sandbox holdings:")
         for alloc in allocation.allocation_by_asset_class:
             print(f"  {alloc.asset_class.value}: {alloc.percentage:.1f}% (${alloc.value:,.2f})")
 
@@ -273,7 +273,7 @@ class TestPlaidInvestmentsAcceptance:
             assert security.security_id
             assert security.type in SecurityType
 
-            print(f"✓ Fetched {len(securities)} securities from Plaid sandbox")
+            print(f"[OK] Fetched {len(securities)} securities from Plaid sandbox")
 
         except Exception as e:
             pytest.skip(f"Plaid sandbox API error: {e}")
@@ -304,7 +304,7 @@ class TestPlaidInvestmentsAcceptance:
             unrealized_gain = holding.institution_value - holding.cost_basis
             unrealized_percent = (unrealized_gain / holding.cost_basis) * 100
 
-            print("✓ Cost basis and P/L calculation:")
+            print("[OK] Cost basis and P/L calculation:")
             print(f"  Security: {holding.security.name or holding.security.ticker_symbol}")
             print(f"  Quantity: {holding.quantity}")
             print(f"  Cost basis: ${holding.cost_basis:,.2f}")
@@ -321,7 +321,7 @@ class TestPlaidInvestmentsAcceptance:
         with pytest.raises(ValueError, match="INVALID_ACCESS_TOKEN"):
             investments.get_holdings(access_token="invalid_token_12345")
 
-        print("✓ Error handling: Invalid access token raises ValueError")
+        print("[OK] Error handling: Invalid access token raises ValueError")
 
     def test_error_handling_missing_credentials(self):
         """Test error handling when Plaid credentials missing."""
@@ -333,7 +333,7 @@ class TestPlaidInvestmentsAcceptance:
             with pytest.raises(ValueError, match=r"PLAID_CLIENT_ID.*required"):
                 easy_investments(provider="plaid")
 
-            print("✓ Error handling: Missing credentials raises ValueError")
+            print("[OK] Error handling: Missing credentials raises ValueError")
 
         finally:
             # Restore environment variables
@@ -387,7 +387,7 @@ class TestPlaidSandboxSetup:
             f"PLAID_ENVIRONMENT should be 'sandbox', got '{PLAID_ENVIRONMENT}'"
         )
 
-        print("✓ Plaid environment variables configured:")
+        print("[OK] Plaid environment variables configured:")
         print(f"  PLAID_CLIENT_ID: {PLAID_CLIENT_ID[:8]}...")
         print(f"  PLAID_SECRET: {PLAID_SECRET[:8]}...")
         print(f"  PLAID_ENVIRONMENT: {PLAID_ENVIRONMENT}")

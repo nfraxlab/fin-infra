@@ -14,7 +14,7 @@ def wait_for(host: str, port: int, timeout: float = 30.0) -> None:
             with socket.create_connection((host, port), timeout=5.0):
                 print(f"[wait-for] {host}:{port} is up")
                 return
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             last_err = e
             time.sleep(0.5)
     raise SystemExit(f"[wait-for] Timeout waiting for {host}:{port} ({last_err})")

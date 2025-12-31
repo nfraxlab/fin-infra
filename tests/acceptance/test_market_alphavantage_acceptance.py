@@ -50,7 +50,7 @@ class TestAlphaVantageAcceptance:
         assert quote.symbol == "AAPL"
         assert quote.price > Decimal(0)
         assert quote.currency == "USD"
-        print(f"✓ Alpha Vantage quote: AAPL @ ${quote.price}")
+        print(f"[OK] Alpha Vantage quote: AAPL @ ${quote.price}")
 
     def test_history(self):
         """Test real historical data fetch from Alpha Vantage.
@@ -72,7 +72,7 @@ class TestAlphaVantageAcceptance:
         assert first_candle.ts > 0
         assert first_candle.close > Decimal(0)
         assert first_candle.volume >= Decimal(0)
-        print(f"✓ Alpha Vantage history: {len(candles)} candles for AAPL")
+        print(f"[OK] Alpha Vantage history: {len(candles)} candles for AAPL")
 
     def test_search(self):
         """Test real symbol search from Alpha Vantage.
@@ -96,7 +96,7 @@ class TestAlphaVantageAcceptance:
         assert "symbol" in first_result
         assert "name" in first_result
         assert "type" in first_result
-        print(f"✓ Alpha Vantage search: Found {len(results)} results for 'Apple'")
+        print(f"[OK] Alpha Vantage search: Found {len(results)} results for 'Apple'")
 
 
 @pytest.mark.skipif(not HAS_YAHOOQUERY, reason="yahooquery not installed")
@@ -116,7 +116,7 @@ class TestYahooFinanceAcceptance:
         assert isinstance(quote, Quote)
         assert quote.symbol == "AAPL"
         assert quote.price > Decimal(0)
-        print(f"✓ Yahoo Finance quote: AAPL @ ${quote.price}")
+        print(f"[OK] Yahoo Finance quote: AAPL @ ${quote.price}")
 
     def test_history(self):
         """Test real historical data fetch from Yahoo Finance."""
@@ -136,7 +136,7 @@ class TestYahooFinanceAcceptance:
         first_candle = candles[0]
         assert first_candle.ts > 0
         assert first_candle.close > Decimal(0)
-        print(f"✓ Yahoo Finance history: {len(candles)} candles for AAPL")
+        print(f"[OK] Yahoo Finance history: {len(candles)} candles for AAPL")
 
 
 class TestEasyMarketAcceptance:
@@ -161,7 +161,7 @@ class TestEasyMarketAcceptance:
             raise
         assert isinstance(quote, Quote)
         assert quote.price > Decimal(0)
-        print(f"✓ easy_market() zero-config: AAPL @ ${quote.price}")
+        print(f"[OK] easy_market() zero-config: AAPL @ ${quote.price}")
 
     @pytest.mark.skipif(
         not (os.getenv("ALPHA_VANTAGE_API_KEY") or os.getenv("ALPHAVANTAGE_API_KEY")),
@@ -180,7 +180,7 @@ class TestEasyMarketAcceptance:
             quote = market.quote("MSFT")
             assert isinstance(quote, Quote)
             assert quote.price > Decimal(0)
-            print(f"✓ easy_market() auto-detect: MSFT @ ${quote.price}")
+            print(f"[OK] easy_market() auto-detect: MSFT @ ${quote.price}")
         except ValueError as e:
             if "No data returned" in str(e) or "rate limit" in str(e).lower():
                 pytest.skip(f"Alpha Vantage API issue (likely rate limited): {e}")

@@ -173,7 +173,7 @@ Answer: "To assess your retirement progress, I need more information: (1) What's
 Follow-ups: ["I want to retire at 65 with $1.5M", "How much should I save monthly?", "What's a realistic retirement goal?"]
 Sources: []
 
-⚠️ This is AI-generated advice. Not a substitute for a certified financial advisor.
+[!] This is AI-generated advice. Not a substitute for a certified financial advisor.
 Verify calculations independently. For personalized advice, consult a professional."""
 
 

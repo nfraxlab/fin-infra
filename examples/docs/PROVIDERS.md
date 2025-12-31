@@ -29,19 +29,19 @@ fin-infra supports **20+ provider integrations** across 6 domains. Most provider
 ### Quick Start Priority
 
 **Test without any API keys** (works immediately):
-- ✅ Categorization (local rules)
-- ✅ Recurring detection (local algorithms)
-- ✅ Cashflows (numpy-financial calculations)
-- ✅ Normalization (offline symbol resolution)
+- [OK] Categorization (local rules)
+- [OK] Recurring detection (local algorithms)
+- [OK] Cashflows (numpy-financial calculations)
+- [OK] Normalization (offline symbol resolution)
 
 **Free tier** (sign up, add API key):
-- ✅ Alpha Vantage (market data) - 100/day free
-- ✅ CoinGecko (crypto data) - 50/min free
-- ✅ Google Gemini (AI insights) - Free with limits
+- [OK] Alpha Vantage (market data) - 100/day free
+- [OK] CoinGecko (crypto data) - 50/min free
+- [OK] Google Gemini (AI insights) - Free with limits
 
 **Sandbox mode** (test with fake data):
-- ✅ Plaid (banking) - Unlimited sandbox requests
-- ✅ Alpaca (brokerage) - Paper trading free
+- [OK] Plaid (banking) - Unlimited sandbox requests
+- [OK] Alpaca (brokerage) - Paper trading free
 
 **Production** (requires billing):
 - Plaid ($0.05-0.30 per item/month)
@@ -391,16 +391,16 @@ ANTHROPIC_API_KEY=your_api_key
 
 | Provider | Coverage | Free Tier | Production Cost | Sandbox |
 |----------|----------|-----------|-----------------|---------|
-| Plaid | 10K+ institutions | 100 items | $0.05-0.30/item/mo | ✅ |
-| Teller | 5K+ institutions | No | $0.10/item/mo | ✅ |
+| Plaid | 10K+ institutions | 100 items | $0.05-0.30/item/mo | [OK] |
+| Teller | 5K+ institutions | No | $0.10/item/mo | [OK] |
 
 ### Market Data
 
 | Provider | Coverage | Free Tier | Production Cost | Real-time |
 |----------|----------|-----------|-----------------|-----------|
-| Alpha Vantage | Global | 100/day | $50/mo (2000/day) | ❌ (15min delay) |
-| Yahoo Finance | Global | ~2000/hr | Free | ❌ (15min delay) |
-| Polygon | US | 5/min | $99/mo | ✅ |
+| Alpha Vantage | Global | 100/day | $50/mo (2000/day) | [X] (15min delay) |
+| Yahoo Finance | Global | ~2000/hr | Free | [X] (15min delay) |
+| Polygon | US | 5/min | $99/mo | [OK] |
 
 ### Crypto Data
 
@@ -425,22 +425,22 @@ ANTHROPIC_API_KEY=your_api_key
 
 ```bash
 # Total: $0/month
-✅ Plaid sandbox - Free
-✅ Alpha Vantage free tier - Free
-✅ CoinGecko free tier - Free
-✅ Google Gemini free tier - Free
-✅ Alpaca paper trading - Free
+[OK] Plaid sandbox - Free
+[OK] Alpha Vantage free tier - Free
+[OK] CoinGecko free tier - Free
+[OK] Google Gemini free tier - Free
+[OK] Alpaca paper trading - Free
 ```
 
 ### Small Production App (1000 users)
 
 ```bash
 # Assuming 50% user engagement
-✅ Plaid (500 items) - $25-150/mo
-✅ Alpha Vantage Premium - $50/mo
-✅ CoinGecko Pro - $0 (free tier sufficient)
-✅ Google Gemini pay-as-you-go - $5-10/mo
-✅ Alpaca live trading - $0 (commission-free)
+[OK] Plaid (500 items) - $25-150/mo
+[OK] Alpha Vantage Premium - $50/mo
+[OK] CoinGecko Pro - $0 (free tier sufficient)
+[OK] Google Gemini pay-as-you-go - $5-10/mo
+[OK] Alpaca live trading - $0 (commission-free)
 
 Total: $80-210/month
 ```
@@ -448,11 +448,11 @@ Total: $80-210/month
 ### Medium Production App (10K users)
 
 ```bash
-✅ Plaid (5000 items) - $250-1500/mo
-✅ Polygon Developer - $99/mo
-✅ CoinGecko Analyst - $129/mo
-✅ Google Gemini - $20-50/mo
-✅ Alpaca - $0
+[OK] Plaid (5000 items) - $250-1500/mo
+[OK] Polygon Developer - $99/mo
+[OK] CoinGecko Analyst - $129/mo
+[OK] Google Gemini - $20-50/mo
+[OK] Alpaca - $0
 
 Total: $500-1800/month
 ```

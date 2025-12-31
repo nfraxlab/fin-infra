@@ -18,15 +18,15 @@ These templates generate production-ready persistence code for investment holdin
 ## Why Historical Snapshots?
 
 **Investment data providers (Plaid, SnapTrade, etc.) only provide current/live data:**
-- ❌ No historical portfolio values from past dates
-- ❌ No historical performance metrics
-- ❌ Cannot answer "What was my portfolio worth 3 months ago?"
+- [X] No historical portfolio values from past dates
+- [X] No historical performance metrics
+- [X] Cannot answer "What was my portfolio worth 3 months ago?"
 
 **Solution: Store periodic snapshots in your database**
-- ✅ Track portfolio value changes over time
-- ✅ Calculate performance metrics (returns, growth)
-- ✅ Show trend charts and historical analysis
-- ✅ Works even if user disconnects provider
+- [OK] Track portfolio value changes over time
+- [OK] Calculate performance metrics (returns, growth)
+- [OK] Show trend charts and historical analysis
+- [OK] Works even if user disconnects provider
 
 ## Template Variables
 
@@ -148,12 +148,12 @@ async def capture_holdings_snapshot(
     holdings_data: list[dict],  # From Plaid/SnapTrade API
 ) -> None:
     """Capture current holdings as a snapshot for historical tracking."""
-    
+
     # Calculate aggregated metrics
     total_value = sum(Decimal(str(h.get("institution_value", 0))) for h in holdings_data)
     total_cost_basis = sum(Decimal(str(h.get("cost_basis", 0))) for h in holdings_data if h.get("cost_basis"))
     total_unrealized_gain_loss = sum(Decimal(str(h.get("unrealized_gain_loss", 0))) for h in holdings_data if h.get("unrealized_gain_loss"))
-    
+
     # Create snapshot
     service = create_holding_snapshot_service(session)
     snapshot = await service.create(HoldingSnapshotCreate(
@@ -167,7 +167,7 @@ async def capture_holdings_snapshot(
         provider="plaid",  # or "snaptrade"
         notes="Automatic daily snapshot"
     ))
-    
+
     await session.commit()
 ```
 
@@ -181,18 +181,18 @@ async def daily_holdings_snapshot():
     """Capture holdings snapshots for all users with investment accounts."""
     from sqlalchemy import select
     from my_app.models.user import User
-    
+
     async with AsyncSession(engine) as session:
         # Get all users with Plaid/SnapTrade connections
         stmt = select(User).where(User.banking_providers.isnot(None))
         result = await session.execute(stmt)
         users = result.scalars().all()
-        
+
         for user in users:
             try:
                 # Fetch current holdings from provider
                 holdings = await fetch_holdings_from_provider(user)
-                
+
                 # Create snapshot
                 await capture_holdings_snapshot(session, user.id, holdings)
             except Exception as e:
@@ -299,10 +299,10 @@ async def get_portfolio_performance_data(user_id: str):
     """Get data for portfolio performance dashboard."""
     async with AsyncSession(engine) as session:
         repo = create_holding_snapshot_service(session)
-        
+
         # Get last 12 months trend
         snapshots = await repo.get_trend(user_id=user_id, months=12)
-        
+
         # Calculate YTD performance
         today = date.today()
         year_start = date(today.year, 1, 1)
@@ -311,10 +311,10 @@ async def get_portfolio_performance_data(user_id: str):
             start_date=year_start,
             end_date=today
         )
-        
+
         # Get latest snapshot
         latest = await repo.get_latest(user_id=user_id)
-        
+
         return {
             "current_value": latest.total_value if latest else 0,
             "ytd_return": ytd_performance["percent_return"],

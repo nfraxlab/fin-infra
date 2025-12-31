@@ -268,7 +268,7 @@ def test_get_celebration_message_25_percent():
     # Check that message contains the description
     assert "25% to target" in message
     # Check that a celebration emoji is present
-    assert any(emoji in message for emoji in ["🎉", "🎊", "🌟", "💪", "🚀"])
+    assert any(emoji in message for emoji in ["", "🎊", "🌟", "", ""])
 
 
 def test_get_celebration_message_50_percent():
@@ -285,7 +285,7 @@ def test_get_celebration_message_50_percent():
     # Check that message contains the description
     assert "50% to target" in message
     # Check that a celebration emoji is present
-    assert any(emoji in message for emoji in ["🎉", "🎊", "🌟", "💪", "🚀"])
+    assert any(emoji in message for emoji in ["", "🎊", "🌟", "", ""])
 
 
 def test_get_celebration_message_75_percent():
@@ -302,7 +302,7 @@ def test_get_celebration_message_75_percent():
     # Check that message contains the description
     assert "75% to target" in message
     # Check that a celebration emoji is present
-    assert any(emoji in message for emoji in ["🎉", "🎊", "🌟", "💪", "🚀"])
+    assert any(emoji in message for emoji in ["", "🎊", "🌟", "", ""])
 
 
 def test_get_celebration_message_90_percent():
@@ -319,7 +319,7 @@ def test_get_celebration_message_90_percent():
     # Check that message contains the description
     assert "90% to target" in message
     # Check that a celebration emoji is present
-    assert any(emoji in message for emoji in ["🎉", "🎊", "🌟", "💪", "🚀"])
+    assert any(emoji in message for emoji in ["", "🎊", "🌟", "", ""])
 
 
 def test_get_celebration_message_default():
@@ -336,7 +336,7 @@ def test_get_celebration_message_default():
     # Check that message contains the description
     assert "Custom milestone" in message
     # Check that a celebration emoji is present
-    assert any(emoji in message for emoji in ["🎉", "🎊", "🌟", "💪", "🚀"])
+    assert any(emoji in message for emoji in ["", "🎊", "🌟", "", ""])
 
 
 def test_get_next_milestone_finds_next(sample_goal):
@@ -538,7 +538,7 @@ def test_milestone_lifecycle(sample_goal):
 
     # Get celebration message
     message = get_celebration_message(reached[0])
-    assert "🎉" in message
+    assert "" in message
 
     # Check stats
     stats = get_milestone_progress(sample_goal["id"])

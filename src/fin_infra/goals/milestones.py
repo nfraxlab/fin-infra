@@ -22,7 +22,7 @@ Example:
     # Check which milestones have been reached
     reached = check_milestones("goal_123")
     for m in reached:
-        print(f"🎉 Milestone reached: {m['description']}")
+        print(f" Milestone reached: {m['description']}")
 """
 
 from datetime import datetime
@@ -124,7 +124,7 @@ def check_milestones(goal_id: str) -> list[dict[str, Any]]:
 
         reached = check_milestones("goal_123")
         if reached:
-            print(f"🎉 {len(reached)} milestones reached!")
+            print(f" {len(reached)} milestones reached!")
             for m in reached:
                 print(f"   - {m['description']}: ${m['amount']:,.0f}")
 
@@ -184,17 +184,17 @@ def get_celebration_message(milestone: dict[str, Any]) -> str:
 
     Example:
         message = get_celebration_message(milestone)
-        # "🎉 Milestone reached! You've hit $25,000 - 25% to target!"
+        # " Milestone reached! You've hit $25,000 - 25% to target!"
     """
     amount = milestone["amount"]
     description = milestone["description"]
 
     messages = [
-        f"🎉 Milestone reached! You've hit ${amount:,.0f} - {description}!",
+        f" Milestone reached! You've hit ${amount:,.0f} - {description}!",
         f"🎊 Congratulations! ${amount:,.0f} milestone achieved - {description}",
         f"🌟 Great progress! You reached ${amount:,.0f} - {description}",
-        f"💪 Keep going! ${amount:,.0f} milestone completed - {description}",
-        f"🚀 Amazing! You hit ${amount:,.0f} - {description}",
+        f" Keep going! ${amount:,.0f} milestone completed - {description}",
+        f" Amazing! You hit ${amount:,.0f} - {description}",
     ]
 
     # Use amount to pick consistent message for same milestone

@@ -5,7 +5,6 @@ Provides Base/Create/Read/Update schemas for all financial models.
 
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
@@ -20,7 +19,7 @@ class UserBase(BaseModel):
     email: EmailStr
     full_name: str
     currency: str = "USD"
-    risk_tolerance: Optional[str] = None
+    risk_tolerance: str | None = None
 
 
 class UserCreate(UserBase):
@@ -32,10 +31,10 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     """Schema for updating a user (all fields optional)."""
 
-    email: Optional[EmailStr] = None
-    full_name: Optional[str] = None
-    currency: Optional[str] = None
-    risk_tolerance: Optional[str] = None
+    email: EmailStr | None = None
+    full_name: str | None = None
+    currency: str | None = None
+    risk_tolerance: str | None = None
 
 
 class UserRead(UserBase):
@@ -62,9 +61,9 @@ class AccountBase(BaseModel):
     name: str
     account_type: str
     provider: str = "manual"
-    provider_account_id: Optional[str] = None
-    institution: Optional[str] = None
-    account_number_last4: Optional[str] = None
+    provider_account_id: str | None = None
+    institution: str | None = None
+    account_number_last4: str | None = None
     balance: Decimal = Field(default=Decimal("0.00"), decimal_places=2)
     currency: str = "USD"
     is_active: bool = True
@@ -73,27 +72,27 @@ class AccountBase(BaseModel):
 class AccountCreate(AccountBase):
     """Schema for creating a new account."""
 
-    user_id: Optional[int] = None
+    user_id: int | None = None
 
 
 class AccountUpdate(BaseModel):
     """Schema for updating an account (all fields optional)."""
 
-    name: Optional[str] = None
-    account_type: Optional[str] = None
-    balance: Optional[Decimal] = None
-    currency: Optional[str] = None
-    is_active: Optional[bool] = None
+    name: str | None = None
+    account_type: str | None = None
+    balance: Decimal | None = None
+    currency: str | None = None
+    is_active: bool | None = None
 
 
 class AccountRead(AccountBase):
     """Schema for reading an account (includes metadata)."""
 
     id: int
-    user_id: Optional[int] = None
+    user_id: int | None = None
     created_at: datetime
     updated_at: datetime
-    deleted_at: Optional[datetime] = None
+    deleted_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -111,41 +110,41 @@ class TransactionBase(BaseModel):
     description: str
     amount: Decimal = Field(decimal_places=2)
     currency: str = "USD"
-    provider_transaction_id: Optional[str] = None
-    category: Optional[str] = None
-    subcategory: Optional[str] = None
+    provider_transaction_id: str | None = None
+    category: str | None = None
+    subcategory: str | None = None
     is_recurring: bool = False
-    recurring_pattern: Optional[str] = None
-    merchant: Optional[str] = None
-    location: Optional[str] = None
+    recurring_pattern: str | None = None
+    merchant: str | None = None
+    location: str | None = None
 
 
 class TransactionCreate(TransactionBase):
     """Schema for creating a new transaction."""
 
-    user_id: Optional[int] = None
+    user_id: int | None = None
 
 
 class TransactionUpdate(BaseModel):
     """Schema for updating a transaction (all fields optional)."""
 
-    date: Optional[date] = None
-    description: Optional[str] = None
-    amount: Optional[Decimal] = None
-    currency: Optional[str] = None
-    category: Optional[str] = None
-    subcategory: Optional[str] = None
-    is_recurring: Optional[bool] = None
-    recurring_pattern: Optional[str] = None
-    merchant: Optional[str] = None
-    location: Optional[str] = None
+    date: date | None = None
+    description: str | None = None
+    amount: Decimal | None = None
+    currency: str | None = None
+    category: str | None = None
+    subcategory: str | None = None
+    is_recurring: bool | None = None
+    recurring_pattern: str | None = None
+    merchant: str | None = None
+    location: str | None = None
 
 
 class TransactionRead(TransactionBase):
     """Schema for reading a transaction (includes metadata)."""
 
     id: int
-    user_id: Optional[int] = None
+    user_id: int | None = None
     created_at: datetime
     updated_at: datetime
 
@@ -163,37 +162,37 @@ class PositionBase(BaseModel):
     account_id: int
     symbol: str
     asset_type: str
-    asset_name: Optional[str] = None
+    asset_name: str | None = None
     quantity: Decimal = Field(decimal_places=8)
     cost_basis: Decimal = Field(decimal_places=2)
-    current_price: Optional[Decimal] = Field(default=None, decimal_places=2)
-    market_value: Optional[Decimal] = Field(default=None, decimal_places=2)
-    unrealized_gain_loss: Optional[Decimal] = Field(default=None, decimal_places=2)
-    unrealized_gain_loss_pct: Optional[Decimal] = Field(default=None, decimal_places=4)
+    current_price: Decimal | None = Field(default=None, decimal_places=2)
+    market_value: Decimal | None = Field(default=None, decimal_places=2)
+    unrealized_gain_loss: Decimal | None = Field(default=None, decimal_places=2)
+    unrealized_gain_loss_pct: Decimal | None = Field(default=None, decimal_places=4)
 
 
 class PositionCreate(PositionBase):
     """Schema for creating a new position."""
 
-    user_id: Optional[int] = None
+    user_id: int | None = None
 
 
 class PositionUpdate(BaseModel):
     """Schema for updating a position (all fields optional)."""
 
-    quantity: Optional[Decimal] = None
-    cost_basis: Optional[Decimal] = None
-    current_price: Optional[Decimal] = None
-    market_value: Optional[Decimal] = None
-    unrealized_gain_loss: Optional[Decimal] = None
-    unrealized_gain_loss_pct: Optional[Decimal] = None
+    quantity: Decimal | None = None
+    cost_basis: Decimal | None = None
+    current_price: Decimal | None = None
+    market_value: Decimal | None = None
+    unrealized_gain_loss: Decimal | None = None
+    unrealized_gain_loss_pct: Decimal | None = None
 
 
 class PositionRead(PositionBase):
     """Schema for reading a position (includes metadata)."""
 
     id: int
-    user_id: Optional[int] = None
+    user_id: int | None = None
     last_updated: datetime
     created_at: datetime
     updated_at: datetime
@@ -213,49 +212,49 @@ class HoldingBase(BaseModel):
     provider: str  # plaid, snaptrade, teller
     provider_account_id: str
     provider_security_id: str
-    ticker_symbol: Optional[str] = None
+    ticker_symbol: str | None = None
     security_name: str
     security_type: str  # equity, etf, mutual_fund, bond, cash, derivative
-    cusip: Optional[str] = None
-    isin: Optional[str] = None
-    sector: Optional[str] = None
+    cusip: str | None = None
+    isin: str | None = None
+    sector: str | None = None
     quantity: Decimal = Field(decimal_places=8)
     institution_price: Decimal = Field(decimal_places=4)
     institution_value: Decimal = Field(decimal_places=2)
-    cost_basis: Optional[Decimal] = Field(default=None, decimal_places=2)
+    cost_basis: Decimal | None = Field(default=None, decimal_places=2)
     currency: str = "USD"
-    close_price: Optional[Decimal] = Field(default=None, decimal_places=4)
-    close_price_as_of: Optional[datetime] = None
-    unrealized_gain_loss: Optional[Decimal] = Field(default=None, decimal_places=2)
-    unrealized_gain_loss_percent: Optional[Decimal] = Field(default=None, decimal_places=4)
+    close_price: Decimal | None = Field(default=None, decimal_places=4)
+    close_price_as_of: datetime | None = None
+    unrealized_gain_loss: Decimal | None = Field(default=None, decimal_places=2)
+    unrealized_gain_loss_percent: Decimal | None = Field(default=None, decimal_places=4)
     sync_status: str = "synced"  # synced, pending, failed
 
 
 class HoldingCreate(HoldingBase):
     """Schema for creating a new holding."""
 
-    user_id: Optional[int] = None
+    user_id: int | None = None
 
 
 class HoldingUpdate(BaseModel):
     """Schema for updating a holding (all fields optional)."""
 
-    quantity: Optional[Decimal] = None
-    institution_price: Optional[Decimal] = None
-    institution_value: Optional[Decimal] = None
-    cost_basis: Optional[Decimal] = None
-    close_price: Optional[Decimal] = None
-    close_price_as_of: Optional[datetime] = None
-    unrealized_gain_loss: Optional[Decimal] = None
-    unrealized_gain_loss_percent: Optional[Decimal] = None
-    sync_status: Optional[str] = None
+    quantity: Decimal | None = None
+    institution_price: Decimal | None = None
+    institution_value: Decimal | None = None
+    cost_basis: Decimal | None = None
+    close_price: Decimal | None = None
+    close_price_as_of: datetime | None = None
+    unrealized_gain_loss: Decimal | None = None
+    unrealized_gain_loss_percent: Decimal | None = None
+    sync_status: str | None = None
 
 
 class HoldingRead(HoldingBase):
     """Schema for reading a holding (includes metadata)."""
 
     id: int
-    user_id: Optional[int] = None
+    user_id: int | None = None
     last_synced_at: datetime
     created_at: datetime
     updated_at: datetime
@@ -272,45 +271,45 @@ class GoalBase(BaseModel):
     """Base goal fields."""
 
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     goal_type: str
     target_amount: Decimal = Field(decimal_places=2)
     current_amount: Decimal = Field(default=Decimal("0.00"), decimal_places=2)
     currency: str = "USD"
-    target_date: Optional[date] = None
-    linked_account_id: Optional[int] = None
+    target_date: date | None = None
+    linked_account_id: int | None = None
 
 
 class GoalCreate(GoalBase):
     """Schema for creating a new goal."""
 
-    user_id: Optional[int] = None
+    user_id: int | None = None
 
 
 class GoalUpdate(BaseModel):
     """Schema for updating a goal (all fields optional)."""
 
-    name: Optional[str] = None
-    description: Optional[str] = None
-    goal_type: Optional[str] = None
-    target_amount: Optional[Decimal] = None
-    current_amount: Optional[Decimal] = None
-    currency: Optional[str] = None
-    target_date: Optional[date] = None
-    linked_account_id: Optional[int] = None
+    name: str | None = None
+    description: str | None = None
+    goal_type: str | None = None
+    target_amount: Decimal | None = None
+    current_amount: Decimal | None = None
+    currency: str | None = None
+    target_date: date | None = None
+    linked_account_id: int | None = None
 
 
 class GoalRead(GoalBase):
     """Schema for reading a goal (includes metadata)."""
 
     id: int
-    user_id: Optional[int] = None
+    user_id: int | None = None
     progress_pct: Decimal
     is_completed: bool
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
-    deleted_at: Optional[datetime] = None
+    deleted_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -337,31 +336,31 @@ class BudgetBase(BaseModel):
 class BudgetCreate(BudgetBase):
     """Schema for creating a new budget."""
 
-    user_id: Optional[int] = None
+    user_id: int | None = None
 
 
 class BudgetUpdate(BaseModel):
     """Schema for updating a budget (all fields optional)."""
 
-    name: Optional[str] = None
-    category: Optional[str] = None
-    planned_amount: Optional[Decimal] = None
-    actual_amount: Optional[Decimal] = None
-    currency: Optional[str] = None
-    period_start: Optional[date] = None
-    period_end: Optional[date] = None
-    is_active: Optional[bool] = None
+    name: str | None = None
+    category: str | None = None
+    planned_amount: Decimal | None = None
+    actual_amount: Decimal | None = None
+    currency: str | None = None
+    period_start: date | None = None
+    period_end: date | None = None
+    is_active: bool | None = None
 
 
 class BudgetRead(BudgetBase):
     """Schema for reading a budget (includes metadata)."""
 
     id: int
-    user_id: Optional[int] = None
+    user_id: int | None = None
     is_overspent: bool
     created_at: datetime
     updated_at: datetime
-    deleted_at: Optional[datetime] = None
+    deleted_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -380,43 +379,43 @@ class DocumentBase(BaseModel):
     file_size: int
     storage_path: str
     storage_provider: str = "local"
-    extracted_text: Optional[str] = None
-    ai_summary: Optional[str] = None
-    key_fields: Optional[str] = None
-    document_date: Optional[date] = None
-    tags: Optional[str] = None
-    related_transaction_id: Optional[int] = None
-    related_account_id: Optional[int] = None
+    extracted_text: str | None = None
+    ai_summary: str | None = None
+    key_fields: str | None = None
+    document_date: date | None = None
+    tags: str | None = None
+    related_transaction_id: int | None = None
+    related_account_id: int | None = None
 
 
 class DocumentCreate(DocumentBase):
     """Schema for creating a new document."""
 
-    user_id: Optional[int] = None
+    user_id: int | None = None
 
 
 class DocumentUpdate(BaseModel):
     """Schema for updating a document (all fields optional)."""
 
-    filename: Optional[str] = None
-    document_type: Optional[str] = None
-    extracted_text: Optional[str] = None
-    ai_summary: Optional[str] = None
-    key_fields: Optional[str] = None
-    document_date: Optional[date] = None
-    tags: Optional[str] = None
-    related_transaction_id: Optional[int] = None
-    related_account_id: Optional[int] = None
+    filename: str | None = None
+    document_type: str | None = None
+    extracted_text: str | None = None
+    ai_summary: str | None = None
+    key_fields: str | None = None
+    document_date: date | None = None
+    tags: str | None = None
+    related_transaction_id: int | None = None
+    related_account_id: int | None = None
 
 
 class DocumentRead(DocumentBase):
     """Schema for reading a document (includes metadata)."""
 
     id: int
-    user_id: Optional[int] = None
+    user_id: int | None = None
     created_at: datetime
     updated_at: datetime
-    deleted_at: Optional[datetime] = None
+    deleted_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -439,38 +438,38 @@ class NetWorthSnapshotBase(BaseModel):
     net_worth: Decimal = Field(decimal_places=2)
     currency: str = "USD"
     calculation_method: str = "automatic"
-    notes: Optional[str] = None
+    notes: str | None = None
 
 
 class NetWorthSnapshotCreate(NetWorthSnapshotBase):
     """Schema for creating a new net worth snapshot."""
 
-    user_id: Optional[int] = None
+    user_id: int | None = None
 
 
 class NetWorthSnapshotUpdate(BaseModel):
     """Schema for updating a net worth snapshot (all fields optional)."""
 
-    snapshot_date: Optional[date] = None
-    total_assets: Optional[Decimal] = None
-    liquid_assets: Optional[Decimal] = None
-    investment_assets: Optional[Decimal] = None
-    total_liabilities: Optional[Decimal] = None
-    credit_card_debt: Optional[Decimal] = None
-    loan_debt: Optional[Decimal] = None
-    net_worth: Optional[Decimal] = None
-    currency: Optional[str] = None
-    calculation_method: Optional[str] = None
-    notes: Optional[str] = None
+    snapshot_date: date | None = None
+    total_assets: Decimal | None = None
+    liquid_assets: Decimal | None = None
+    investment_assets: Decimal | None = None
+    total_liabilities: Decimal | None = None
+    credit_card_debt: Decimal | None = None
+    loan_debt: Decimal | None = None
+    net_worth: Decimal | None = None
+    currency: str | None = None
+    calculation_method: str | None = None
+    notes: str | None = None
 
 
 class NetWorthSnapshotRead(NetWorthSnapshotBase):
     """Schema for reading a net worth snapshot (includes metadata)."""
 
     id: int
-    user_id: Optional[int] = None
-    change_from_previous: Optional[Decimal] = None
-    change_from_previous_pct: Optional[Decimal] = None
+    user_id: int | None = None
+    change_from_previous: Decimal | None = None
+    change_from_previous_pct: Decimal | None = None
     created_at: datetime
     updated_at: datetime
 

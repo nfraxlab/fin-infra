@@ -56,15 +56,15 @@ See [examples/demo_api/](../examples/demo_api/) for a complete working demo.
 │ fin-infra             │  │ svc-infra              │
 │ (Financial Layer)     │  │ (Infrastructure Layer) │
 ├───────────────────────┤  ├────────────────────────┤
-│ ✅ Banking providers  │  │ ✅ FastAPI scaffolding │
-│ ✅ Market data        │  │ ✅ Auth & sessions     │
-│ ✅ Credit scores      │  │ ✅ Database & ORM      │
-│ ✅ Brokerage          │  │ ✅ Caching (Redis)     │
-│ ✅ Tax data           │  │ ✅ Observability       │
-│ ✅ Cashflow calcs     │  │ ✅ Background jobs     │
-│ ✅ Provider adapters  │  │ ✅ Webhooks            │
-│                       │  │ ✅ Rate limiting       │
-│                       │  │ ✅ Logging             │
+│ [OK] Banking providers  │  │ [OK] FastAPI scaffolding │
+│ [OK] Market data        │  │ [OK] Auth & sessions     │
+│ [OK] Credit scores      │  │ [OK] Database & ORM      │
+│ [OK] Brokerage          │  │ [OK] Caching (Redis)     │
+│ [OK] Tax data           │  │ [OK] Observability       │
+│ [OK] Cashflow calcs     │  │ [OK] Background jobs     │
+│ [OK] Provider adapters  │  │ [OK] Webhooks            │
+│                       │  │ [OK] Rate limiting       │
+│                       │  │ [OK] Logging             │
 └───────────────────────┘  └────────────────────────┘
 ```
 
@@ -159,10 +159,10 @@ async def get_dashboard(user_id: str):
     # Use fin-infra providers
     accounts = await banking.get_accounts(user_id)
     credit_score = await credit.get_score(user_id)
-    
+
     # Business logic
     total_balance = sum(a.balance for a in accounts)
-    
+
     return {
         "balance": total_balance,
         "credit_score": credit_score,
@@ -239,23 +239,23 @@ if __name__ == "__main__":
 
 | Feature | Package | Status |
 |---------|---------|--------|
-| **API Framework** | svc-infra | ✅ Use `setup_service_api` or `easy_service_app` |
-| **Auth & Sessions** | svc-infra | ✅ Use `add_auth_users` |
-| **Database & Migrations** | svc-infra | ✅ Use `svc-infra db` CLI |
-| **Caching** | svc-infra | ✅ Use `init_cache` |
-| **Observability** | svc-infra | ✅ Use `add_observability` |
-| **Background Jobs** | svc-infra | ✅ Use `easy_jobs` |
-| **Webhooks** | svc-infra | ✅ Use `add_webhooks` |
-| **Rate Limiting** | svc-infra | ✅ Middleware available |
-| **Logging** | svc-infra | ✅ Use `setup_logging` |
-| **Security Headers** | svc-infra | ✅ Use `add_security` |
-| **Banking** | fin-infra | ✅ Use `add_banking` or `easy_banking` |
-| **Market Data** | fin-infra | ✅ Use `add_market_data` or `easy_market` |
-| **Credit Scores** | fin-infra | ✅ Use `add_credit_monitoring` or `easy_credit` |
-| **Brokerage** | fin-infra | ✅ Use `add_brokerage` or `easy_brokerage` |
-| **Tax Data** | fin-infra | ⚠️ Coming soon |
-| **Cashflow Calculations** | fin-infra | ✅ Direct functions: `npv`, `irr`, etc. |
-| **Financial Route Classification** | fin-infra | ✅ Use `financial_route_classifier` |
+| **API Framework** | svc-infra | [OK] Use `setup_service_api` or `easy_service_app` |
+| **Auth & Sessions** | svc-infra | [OK] Use `add_auth_users` |
+| **Database & Migrations** | svc-infra | [OK] Use `svc-infra db` CLI |
+| **Caching** | svc-infra | [OK] Use `init_cache` |
+| **Observability** | svc-infra | [OK] Use `add_observability` |
+| **Background Jobs** | svc-infra | [OK] Use `easy_jobs` |
+| **Webhooks** | svc-infra | [OK] Use `add_webhooks` |
+| **Rate Limiting** | svc-infra | [OK] Middleware available |
+| **Logging** | svc-infra | [OK] Use `setup_logging` |
+| **Security Headers** | svc-infra | [OK] Use `add_security` |
+| **Banking** | fin-infra | [OK] Use `add_banking` or `easy_banking` |
+| **Market Data** | fin-infra | [OK] Use `add_market_data` or `easy_market` |
+| **Credit Scores** | fin-infra | [OK] Use `add_credit_monitoring` or `easy_credit` |
+| **Brokerage** | fin-infra | [OK] Use `add_brokerage` or `easy_brokerage` |
+| **Tax Data** | fin-infra | [!] Coming soon |
+| **Cashflow Calculations** | fin-infra | [OK] Direct functions: `npv`, `irr`, etc. |
+| **Financial Route Classification** | fin-infra | [OK] Use `financial_route_classifier` |
 
 ## Common Patterns
 
@@ -357,7 +357,7 @@ import os
 @pytest.mark.skipif(not os.getenv("PLAID_CLIENT_ID"), reason="Plaid not configured")
 def test_plaid_integration():
     from fin_infra.banking import easy_banking
-    
+
     banking = easy_banking(provider="plaid")
     # Test with sandbox credentials
     ...
@@ -391,12 +391,12 @@ class Settings(BaseSettings):
     # svc-infra
     app_env: str = "local"
     log_level: str = "INFO"
-    
+
     # fin-infra
     plaid_client_id: str
     plaid_secret: str
     alphavantage_api_key: str
-    
+
     class Config:
         env_file = ".env"
 
@@ -494,10 +494,10 @@ sum(rate(http_server_requests_total{code=~"5..", route=~".*\\|financial"}[5m]))
 ### 1. Always Use svc-infra for Backend Infrastructure
 
 ```python
-# ✅ GOOD: Use svc-infra for logging
+# [OK] GOOD: Use svc-infra for logging
 from svc_infra.logging import setup_logging
 
-# ❌ BAD: Don't create custom logging (fin-infra doesn't provide it)
+# [X] BAD: Don't create custom logging (fin-infra doesn't provide it)
 import logging
 logging.basicConfig(...)  # NO!
 ```
@@ -505,17 +505,17 @@ logging.basicConfig(...)  # NO!
 ### 2. Use fin-infra Only for Financial Integrations
 
 ```python
-# ✅ GOOD: Use fin-infra for banking
+# [OK] GOOD: Use fin-infra for banking
 from fin_infra.banking import add_banking
 
-# ❌ BAD: Don't use fin-infra for generic caching (use svc-infra)
+# [X] BAD: Don't use fin-infra for generic caching (use svc-infra)
 from fin_infra.cache import ...  # Doesn't exist!
 ```
 
 ### 3. Compose with Route Classification
 
 ```python
-# ✅ GOOD: Compose financial classifier with custom classifiers
+# [OK] GOOD: Compose financial classifier with custom classifiers
 from fin_infra.obs import financial_route_classifier, compose_classifiers
 
 def admin_classifier(path, method):
@@ -532,11 +532,11 @@ add_observability(app, route_classifier=classifier)
 ### 4. Use Easy Builders for Development
 
 ```python
-# ✅ GOOD for development: Use easy_* builders
+# [OK] GOOD for development: Use easy_* builders
 from fin_infra.banking import easy_banking
 banking = easy_banking()
 
-# ✅ GOOD for production: Use add_* FastAPI helpers
+# [OK] GOOD for production: Use add_* FastAPI helpers
 from fin_infra.banking import add_banking
 banking = add_banking(app)
 ```
@@ -591,7 +591,7 @@ add_observability(app, route_classifier=financial_route_classifier)
 
 ## Summary
 
-✅ **Use svc-infra** for all backend infrastructure (API, auth, DB, cache, jobs, webhooks)  
-✅ **Use fin-infra** for financial data integrations (banking, market, credit, brokerage)  
-✅ **Compose both** for production-ready fintech APIs  
-✅ **Follow patterns** in examples/demo_api/ and svc-infra/examples/
+[OK] **Use svc-infra** for all backend infrastructure (API, auth, DB, cache, jobs, webhooks)  
+[OK] **Use fin-infra** for financial data integrations (banking, market, credit, brokerage)  
+[OK] **Compose both** for production-ready fintech APIs  
+[OK] **Follow patterns** in examples/demo_api/ and svc-infra/examples/

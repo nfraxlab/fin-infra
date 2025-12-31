@@ -4,18 +4,18 @@ Comprehensive technical documentation for all 20+ fin-infra capabilities.
 
 ## Table of Contents
 
-### 🏦 Banking & Accounts
+###  Banking & Accounts
 - [Banking Integration](#banking-integration)
 
-### 📈 Markets & Trading
+###  Markets & Trading
 - [Market Data (Stocks/ETFs)](#market-data)
 - [Crypto Data](#crypto-data)
 - [Brokerage Integration](#brokerage-integration)
 
-### 💳 Credit & Identity
+###  Credit & Identity
 - [Credit Scores](#credit-scores)
 
-### 💰 Tax & Compliance
+###  Tax & Compliance
 - [Tax Data](#tax-data)
 
 ### 🧠 Financial Intelligence
@@ -24,7 +24,7 @@ Comprehensive technical documentation for all 20+ fin-infra capabilities.
 - [Recurring Detection](#recurring-detection)
 - [Insights Feed](#insights-feed)
 
-### 📊 Planning & Tracking
+###  Planning & Tracking
 - [Budgets](#budgets)
 - [Goals](#goals)
 - [Net Worth Tracking](#net-worth-tracking)
@@ -33,7 +33,7 @@ Comprehensive technical documentation for all 20+ fin-infra capabilities.
 - [Documents](#documents)
 - [Security](#security)
 
-### 🛠️ Utilities
+### 🛠 Utilities
 - [Normalization](#normalization)
 - [Cashflows](#cashflows)
 - [Conversation (AI Chat)](#conversation)
@@ -980,7 +980,7 @@ GET /security/audit-logs
 
 ### Overview
 
-Resolve stock symbols (ticker ↔ CUSIP ↔ ISIN) and convert currencies.
+Resolve stock symbols (ticker <-> CUSIP <-> ISIN) and convert currencies.
 
 ### Endpoints
 

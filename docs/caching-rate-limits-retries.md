@@ -352,14 +352,14 @@ from datetime import datetime, timedelta
 
 class CircuitBreaker:
     """Simple circuit breaker for provider APIs."""
-    
+
     def __init__(self, failure_threshold: int = 5, timeout: int = 60):
         self.failure_threshold = failure_threshold
         self.timeout = timeout
         self.failures = 0
         self.last_failure_time = None
         self.state = "closed"  # closed, open, half-open
-    
+
     async def call(self, func, *args, **kwargs):
         """Execute function with circuit breaker protection."""
         if self.state == "open":
@@ -367,7 +367,7 @@ class CircuitBreaker:
                 self.state = "half-open"
             else:
                 raise Exception(f"Circuit breaker OPEN for provider")
-        
+
         try:
             result = await func(*args, **kwargs)
             self.failures = 0
@@ -424,7 +424,7 @@ async def startup():
         prefix="finapi",
         version="v1"
     )
-    
+
     # 2. Rate limiting
     rate_limit_store = RedisRateLimitStore(redis_url="redis://localhost:6379/1")
     app.add_middleware(
@@ -433,7 +433,7 @@ async def startup():
         default_limit=100,
         default_window=60
     )
-    
+
     # 3. Observability
     add_observability(app)
 
@@ -539,7 +539,7 @@ async def get_portfolio_history(period: str = "1W"):
 
 ## Best Practices
 
-### ✅ DO
+### [OK] DO
 - **Use svc-infra cache for all caching** (never implement custom cache)
 - **Cache slow/expensive provider calls** (market data, account lists)
 - **Use short TTLs for volatile data** (crypto prices: 1min, stocks: 5min)
@@ -549,7 +549,7 @@ async def get_portfolio_history(period: str = "1W"):
 - **Use circuit breakers** for unreliable providers
 - **Monitor cache hit rates** via svc-infra observability
 
-### ❌ DON'T
+### [X] DON'T
 - **DON'T cache trading account balances** (changes with every trade)
 - **DON'T cache real-time positions** (critical for trading decisions)
 - **DON'T cache sensitive PII** without encryption

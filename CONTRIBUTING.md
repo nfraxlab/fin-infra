@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing to fin-infra! This document provides guidelines and instructions for contributing.
 
-## ⚠️ Financial Software Warning
+## [!] Financial Software Warning
 
 **fin-infra is financial infrastructure. Bugs here can cause real money loss.**
 
@@ -50,7 +50,7 @@ mypy src
 **ALWAYS use Decimal for money. Never float.**
 
 ```python
-# ✅ Correct
+# [OK] Correct
 from decimal import Decimal
 
 class Transaction(BaseModel):
@@ -58,7 +58,7 @@ class Transaction(BaseModel):
 
 total = sum(Decimal(str(v)) for v in values)
 
-# ❌ WRONG - Will cause rounding errors
+# [X] WRONG - Will cause rounding errors
 class Transaction(BaseModel):
     amount: float  # $0.01 + $0.02 != $0.03
 ```
@@ -68,11 +68,11 @@ class Transaction(BaseModel):
 All financial operations must be idempotent:
 
 ```python
-# ✅ Correct - Required idempotency key
+# [OK] Correct - Required idempotency key
 def submit_order(symbol: str, qty: Decimal, client_order_id: str):
     ...
 
-# ❌ WRONG - Can cause double orders
+# [X] WRONG - Can cause double orders
 def submit_order(symbol: str, qty: Decimal, client_order_id: str | None = None):
     ...
 ```
@@ -82,10 +82,10 @@ def submit_order(symbol: str, qty: Decimal, client_order_id: str | None = None):
 Never expose secrets:
 
 ```python
-# ❌ WRONG - Logged everywhere
+# [X] WRONG - Logged everywhere
 raise ValueError(f"Failed with key: {api_key}")
 
-# ✅ Correct - No sensitive data
+# [OK] Correct - No sensitive data
 raise ValueError("Authentication failed")
 ```
 

@@ -111,7 +111,7 @@ candle = Candle(
 ```python
 from fin_infra.crypto import add_crypto_data
 
-# ✅ Mount complete crypto API with one call
+# [OK] Mount complete crypto API with one call
 crypto_provider = add_crypto_data(
     app,
     provider="coingecko",  # optional, defaults to coingecko
@@ -127,13 +127,13 @@ crypto_provider = add_crypto_data(
 ```
 
 **What `add_crypto_data()` Does:**
-- ✅ Initializes crypto provider (CoinGecko) with environment config
-- ✅ Mounts 2 crypto endpoints with proper request/response models
-- ✅ Uses `public_router()` from svc-infra (public crypto data, no auth)
-- ✅ Registers landing page documentation card
-- ✅ Stores provider instance on `app.state.crypto_provider`
-- ✅ Returns provider for programmatic access
-- ✅ Handles provider errors with proper HTTP status codes
+- [OK] Initializes crypto provider (CoinGecko) with environment config
+- [OK] Mounts 2 crypto endpoints with proper request/response models
+- [OK] Uses `public_router()` from svc-infra (public crypto data, no auth)
+- [OK] Registers landing page documentation card
+- [OK] Stores provider instance on `app.state.crypto_provider`
+- [OK] Returns provider for programmatic access
+- [OK] Handles provider errors with proper HTTP status codes
 
 ### Basic Setup (Using svc-infra)
 ```python
@@ -249,13 +249,13 @@ async def crypto_portfolio(symbols: str = Query(..., description="Comma-separate
     symbol_list = [s.strip().upper() for s in symbols.split(",")]
     total_value = 0
     tickers = []
-    
+
     for symbol in symbol_list:
         try:
             # Normalize symbol format (add /USDT if no quote currency)
             if "/" not in symbol and "-" not in symbol:
                 symbol = f"{symbol}/USDT"
-            
+
             ticker = crypto_provider.ticker(symbol)
             tickers.append({
                 "symbol": ticker.symbol,
@@ -264,7 +264,7 @@ async def crypto_portfolio(symbols: str = Query(..., description="Comma-separate
             total_value += float(ticker.price)
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Error fetching {symbol}: {str(e)}")
-    
+
     return {
         "symbols": symbol_list,
         "tickers": tickers,
@@ -276,7 +276,7 @@ async def price_alert(symbol: str, target_price: float):
     """Check if crypto reached target price"""
     ticker = crypto_provider.ticker(symbol)
     current_price = float(ticker.price)
-    
+
     if current_price >= target_price:
         return {
             "alert": True,
@@ -376,7 +376,7 @@ async def update_crypto_data(symbols: list[str]):
             await db.save_ticker(ticker)
         except Exception as e:
             print(f"Error fetching {symbol}: {e}")
-    
+
     return {"updated": len(tickers), "tickers": tickers}
 
 # Schedule updates every minute (crypto markets 24/7)
@@ -391,7 +391,7 @@ async def frequent_update():
 async def hourly_candles():
     """Store hourly candles for trend analysis"""
     symbols = await db.get_all_tracked_crypto()
-    
+
     for symbol in symbols:
         candles = crypto.ohlcv(symbol, timeframe="1h", limit=1)
         if candles:
@@ -479,7 +479,7 @@ from fin_infra.crypto import easy_crypto
 def test_get_ticker():
     crypto = easy_crypto()
     ticker = crypto.ticker("BTC/USDT")
-    
+
     assert ticker.symbol == "BTC/USDT"
     assert ticker.price > 0
 
@@ -487,7 +487,7 @@ def test_get_ticker():
 def test_real_crypto_data():
     crypto = easy_crypto()
     ticker = crypto.ticker("BTC/USDT")
-    
+
     # Test against real API
     assert ticker is not None
     assert ticker.price > 1000  # BTC should be > $1000

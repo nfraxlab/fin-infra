@@ -2,7 +2,7 @@
 
 A comprehensive example demonstrating **ALL** fin-infra capabilities for building production-ready fintech applications.
 
-## ⚡ Quick Setup
+##  Quick Setup
 
 **Get started in 2 commands:**
 
@@ -12,53 +12,53 @@ make setup    # Installs deps, scaffolds models, runs migrations
 make run      # Starts the server at http://localhost:8001
 ```
 
-**✨ Features:**
-- 🛡️ Safe: Won't overwrite existing models (use `--overwrite` if needed)
+** Features:**
+- 🛡 Safe: Won't overwrite existing models (use `--overwrite` if needed)
 - 📚 Educational: Demonstrates ALL 20+ fin-infra capabilities with inline documentation
-- 🎯 Complete: Full integration with svc-infra backend and ai-infra LLM features
-- 🚀 Production-Ready: Shows best practices for fintech application development
+-  Complete: Full integration with svc-infra backend and ai-infra LLM features
+-  Production-Ready: Shows best practices for fintech application development
 
 📖 **See [QUICKSTART.md](QUICKSTART.md)** - 5-minute setup guide  
 📚 **See [USAGE.md](USAGE.md)** - Detailed feature usage examples  
-🛠️ **See [Make Commands](#-available-make-commands)** - All available commands
+🛠 **See [Make Commands](#-available-make-commands)** - All available commands
 
-## 🎯 What This Template Showcases
+##  What This Template Showcases
 
 This is a **complete, working example** that demonstrates **ALL 20+ fin-infra capabilities**:
 
-### 🏦 Core Financial Data (Provider Integrations)
-✅ **Banking Integration** - Plaid/Teller/MX account aggregation (6 endpoints)  
-✅ **Market Data** - Alpha Vantage/Yahoo/Polygon stocks & ETFs (3 endpoints)  
-✅ **Crypto Data** - CoinGecko/Yahoo/CCXT crypto market data (3 endpoints)  
-✅ **Credit Scores** - Experian FICO/VantageScore monitoring (4 endpoints)  
-✅ **Brokerage** - Alpaca paper/live trading (4 endpoints)  
-✅ **Investments** - Plaid/SnapTrade holdings, real P/L, cost basis (5 endpoints) **NEW**  
-✅ **Tax Data** - IRS/TaxBit forms & calculations (5 endpoints)
+###  Core Financial Data (Provider Integrations)
+[OK] **Banking Integration** - Plaid/Teller/MX account aggregation (6 endpoints)  
+[OK] **Market Data** - Alpha Vantage/Yahoo/Polygon stocks & ETFs (3 endpoints)  
+[OK] **Crypto Data** - CoinGecko/Yahoo/CCXT crypto market data (3 endpoints)  
+[OK] **Credit Scores** - Experian FICO/VantageScore monitoring (4 endpoints)  
+[OK] **Brokerage** - Alpaca paper/live trading (4 endpoints)  
+[OK] **Investments** - Plaid/SnapTrade holdings, real P/L, cost basis (5 endpoints) **NEW**  
+[OK] **Tax Data** - IRS/TaxBit forms & calculations (5 endpoints)
 
 ### 🧠 Financial Intelligence (Analytics & AI)
-✅ **Analytics** - Cash flow, savings rate, spending insights, AI advice (7 endpoints)  
-✅ **Categorization** - 56 MX categories, 100+ rules, LLM fallback (2 endpoints)  
-✅ **Recurring Detection** - Fixed subscriptions, variable bills (2 endpoints)  
-✅ **Insights Feed** - Unified dashboard from 7 sources (2 endpoints)
+[OK] **Analytics** - Cash flow, savings rate, spending insights, AI advice (7 endpoints)  
+[OK] **Categorization** - 56 MX categories, 100+ rules, LLM fallback (2 endpoints)  
+[OK] **Recurring Detection** - Fixed subscriptions, variable bills (2 endpoints)  
+[OK] **Insights Feed** - Unified dashboard from 7 sources (2 endpoints)
 
-### 📊 Financial Planning (Goals & Budgets)
-✅ **Budgets** - Multi-type, templates (50/30/20, Zero-Based), rollover (8 endpoints)  
-✅ **Goals** - Milestones, multi-account funding, progress tracking (13 endpoints)  
-✅ **Net Worth Tracking** - Multi-provider aggregation, snapshots (4 endpoints)
+###  Financial Planning (Goals & Budgets)
+[OK] **Budgets** - Multi-type, templates (50/30/20, Zero-Based), rollover (8 endpoints)  
+[OK] **Goals** - Milestones, multi-account funding, progress tracking (13 endpoints)  
+[OK] **Net Worth Tracking** - Multi-provider aggregation, snapshots (4 endpoints)
 
 ### 📄 Document & Compliance
-✅ **Documents** - OCR (Tesseract/Textract), AI analysis (3 endpoints)  
-✅ **Security** - PII detection, encryption, audit logging (middleware)  
-✅ **Compliance** - PII classification, data retention, erasure workflows
+[OK] **Documents** - OCR (Tesseract/Textract), AI analysis (3 endpoints)  
+[OK] **Security** - PII detection, encryption, audit logging (middleware)  
+[OK] **Compliance** - PII classification, data retention, erasure workflows
 
-### 🛠️ Utilities & Cross-Cutting
-✅ **Normalization** - Symbol resolution, currency conversion (2 endpoints)  
-✅ **Observability** - Financial route metrics, provider tracking  
-✅ **Cashflows** - NPV, IRR, PMT, FV, PV calculations (5 endpoints)  
-✅ **Conversation** - AI financial chat via ai-infra (3 endpoints)  
-✅ **Scaffolding** - Code generation CLI for models/schemas/repos
+### 🛠 Utilities & Cross-Cutting
+[OK] **Normalization** - Symbol resolution, currency conversion (2 endpoints)  
+[OK] **Observability** - Financial route metrics, provider tracking  
+[OK] **Cashflows** - NPV, IRR, PMT, FV, PV calculations (5 endpoints)  
+[OK] **Conversation** - AI financial chat via ai-infra (3 endpoints)  
+[OK] **Scaffolding** - Code generation CLI for models/schemas/repos
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Option 1: Automated Setup with Make (Recommended)
 
@@ -117,7 +117,7 @@ Server starts at **http://localhost:8001**
 - **[docs/PROVIDERS.md](docs/PROVIDERS.md)** - Provider configuration guide
 - **[docs/CLI.md](docs/CLI.md)** - fin-infra CLI reference
 
-## 🔧 Configuration
+##  Configuration
 
 ### Environment Variables
 
@@ -162,7 +162,7 @@ METRICS_ENABLED=true
 
 **See [docs/PROVIDERS.md](docs/PROVIDERS.md)** for complete provider setup instructions.
 
-## 🧪 Testing Features
+##  Testing Features
 
 ### Banking Integration
 
@@ -219,7 +219,7 @@ curl -X POST http://localhost:8001/cashflows/irr \
 
 **See [USAGE.md](USAGE.md)** for complete examples for ALL 20+ capabilities.
 
-## 📦 Project Structure
+##  Project Structure
 
 ```
 examples/
@@ -254,7 +254,7 @@ examples/
     └── test_main.py
 ```
 
-## 🛠️ Available Make Commands
+## 🛠 Available Make Commands
 
 ```bash
 make help              # Show all commands with descriptions
@@ -270,40 +270,40 @@ make scaffold-models   # Generate database models
 make db-migrate        # Run database migrations
 ```
 
-## 🏗️ Architecture Highlights
+## 🏗 Architecture Highlights
 
 ### Backend Integration (svc-infra)
 
 This template fully integrates with **svc-infra** for backend infrastructure:
 
-- ✅ **Dual Routers** - Uses `user_router` and `public_router` for consistent auth
-- ✅ **Observability** - Prometheus metrics with financial route classification
-- ✅ **Caching** - Redis integration with 24h TTL for expensive operations
-- ✅ **Background Jobs** - For heavy computations and scheduled tasks
-- ✅ **Structured Logging** - Environment-aware with request ID tracking
-- ✅ **Health Checks** - Liveness, readiness, startup probes
-- ✅ **Scoped Docs** - Each capability has its own OpenAPI documentation
+- [OK] **Dual Routers** - Uses `user_router` and `public_router` for consistent auth
+- [OK] **Observability** - Prometheus metrics with financial route classification
+- [OK] **Caching** - Redis integration with 24h TTL for expensive operations
+- [OK] **Background Jobs** - For heavy computations and scheduled tasks
+- [OK] **Structured Logging** - Environment-aware with request ID tracking
+- [OK] **Health Checks** - Liveness, readiness, startup probes
+- [OK] **Scoped Docs** - Each capability has its own OpenAPI documentation
 
 ### AI Integration (ai-infra)
 
 Powered by **ai-infra** for LLM features:
 
-- ✅ **LLM** - Multi-provider support (Google Gemini default)
-- ✅ **FinancialPlanningConversation** - Multi-turn Q&A with context
-- ✅ **Structured Output** - Pydantic schema validation for categorization
-- ✅ **Cost Tracking** - Budget enforcement ($0.10/day, $2/month caps)
-- ✅ **Safety Filters** - Sensitive question detection (SSN, passwords)
+- [OK] **LLM** - Multi-provider support (Google Gemini default)
+- [OK] **FinancialPlanningConversation** - Multi-turn Q&A with context
+- [OK] **Structured Output** - Pydantic schema validation for categorization
+- [OK] **Cost Tracking** - Budget enforcement ($0.10/day, $2/month caps)
+- [OK] **Safety Filters** - Sensitive question detection (SSN, passwords)
 
 ### Financial Domain Logic (fin-infra)
 
 Demonstrates **fin-infra** financial primitives:
 
-- ✅ **Provider Abstraction** - Easy switching between providers
-- ✅ **Data Normalization** - Unified models across providers
-- ✅ **Financial Calculations** - NPV, IRR, compound interest, FIFO/LIFO
-- ✅ **Transaction Categorization** - Rule-based + ML hybrid
-- ✅ **Recurring Detection** - Subscription and bill identification
-- ✅ **Net Worth Tracking** - Multi-account aggregation with snapshots
+- [OK] **Provider Abstraction** - Easy switching between providers
+- [OK] **Data Normalization** - Unified models across providers
+- [OK] **Financial Calculations** - NPV, IRR, compound interest, FIFO/LIFO
+- [OK] **Transaction Categorization** - Rule-based + ML hybrid
+- [OK] **Recurring Detection** - Subscription and bill identification
+- [OK] **Net Worth Tracking** - Multi-account aggregation with snapshots
 
 ## 🎓 Learning Path
 
@@ -314,7 +314,7 @@ Demonstrates **fin-infra** financial primitives:
 5. **Add custom logic** - Extend `api/v1/routes.py` with your business logic
 6. **Customize models** - Modify `db/models.py` for your domain
 
-## 📈 Cost Estimates (with real providers)
+##  Cost Estimates (with real providers)
 
 ### Development (Free/Sandbox)
 - **Banking**: Plaid sandbox (free)
@@ -333,7 +333,7 @@ Demonstrates **fin-infra** financial primitives:
 
 **See [docs/PROVIDERS.md](docs/PROVIDERS.md)** for detailed pricing breakdown.
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 ### Server won't start
 
@@ -372,7 +372,7 @@ poetry run alembic upgrade head
 
 **See [docs/CAPABILITIES.md](docs/CAPABILITIES.md)** for capability-specific troubleshooting.
 
-## 🤝 Contributing
+##  Contributing
 
 This template is part of the fin-infra project. Contributions welcome!
 
@@ -386,7 +386,7 @@ This template is part of the fin-infra project. Contributions welcome!
 
 This template is part of fin-infra and follows the same license.
 
-## 🔗 Related Projects
+##  Related Projects
 
 - **[svc-infra](https://github.com/yourusername/svc-infra)** - Backend infrastructure primitives
 - **[ai-infra](https://github.com/yourusername/ai-infra)** - AI/LLM infrastructure
@@ -400,4 +400,4 @@ This template is part of fin-infra and follows the same license.
 
 ---
 
-**Built with ❤️ using fin-infra, svc-infra, and ai-infra**
+**Built with ❤ using fin-infra, svc-infra, and ai-infra**

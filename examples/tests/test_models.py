@@ -16,23 +16,23 @@ Run:
     pytest tests/test_models.py::TestUserModel -v
 """
 
-import pytest
 from datetime import date, datetime
 from decimal import Decimal
-from sqlalchemy import create_engine, select
-from sqlalchemy.orm import Session
 
+import pytest
 from fin_infra_template.db.base import Base
 from fin_infra_template.db.models import (
-    User,
     Account,
-    Transaction,
-    Position,
-    Goal,
     Budget,
     Document,
+    Goal,
     NetWorthSnapshot,
+    Position,
+    Transaction,
+    User,
 )
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import Session
 
 
 # Fixtures

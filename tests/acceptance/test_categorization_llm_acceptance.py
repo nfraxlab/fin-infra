@@ -84,7 +84,7 @@ class TestGoogleGeminiLLM:
         assert result.category == Category.VAR_COFFEE_SHOPS
 
         print(
-            f"✅ Google Gemini: {result.merchant_name} → {result.category} (confidence: {result.confidence:.2f})"
+            f"[OK] Google Gemini: {result.merchant_name} → {result.category} (confidence: {result.confidence:.2f})"
         )
 
     @pytest.mark.asyncio
@@ -103,12 +103,12 @@ class TestGoogleGeminiLLM:
             result = await categorizer.categorize(merchant)
             if result.category == expected_category:
                 correct += 1
-                print(f"✅ {merchant} → {result.category} (expected: {expected_category})")
+                print(f"[OK] {merchant} → {result.category} (expected: {expected_category})")
             else:
-                print(f"❌ {merchant} → {result.category} (expected: {expected_category})")
+                print(f"[X] {merchant} → {result.category} (expected: {expected_category})")
 
         accuracy = correct / total
-        print(f"\n📊 Google Gemini Accuracy: {accuracy:.1%} ({correct}/{total})")
+        print(f"\n Google Gemini Accuracy: {accuracy:.1%} ({correct}/{total})")
 
         # Target: >90% accuracy
         assert accuracy >= 0.90, f"Accuracy {accuracy:.1%} below 90% threshold"
@@ -138,7 +138,7 @@ class TestGoogleGeminiLLM:
         cost_per_txn = categorizer.llm_categorizer.daily_cost
         assert cost_per_txn < 0.001, f"Cost per transaction too high: ${cost_per_txn}"
 
-        print(f"💰 Google Gemini cost: ${cost_per_txn:.6f} per transaction")
+        print(f" Google Gemini cost: ${cost_per_txn:.6f} per transaction")
 
 
 @pytest.mark.acceptance
@@ -166,7 +166,7 @@ class TestOpenAIGPT4oMini:
         assert result.category == Category.VAR_GROCERIES
 
         print(
-            f"✅ OpenAI GPT-4o-mini: {result.merchant_name} → {result.category} (confidence: {result.confidence:.2f})"
+            f"[OK] OpenAI GPT-4o-mini: {result.merchant_name} → {result.category} (confidence: {result.confidence:.2f})"
         )
 
     @pytest.mark.asyncio
@@ -185,12 +185,12 @@ class TestOpenAIGPT4oMini:
             result = await categorizer.categorize(merchant)
             if result.category == expected_category:
                 correct += 1
-                print(f"✅ {merchant} → {result.category}")
+                print(f"[OK] {merchant} → {result.category}")
             else:
-                print(f"❌ {merchant} → {result.category} (expected: {expected_category})")
+                print(f"[X] {merchant} → {result.category} (expected: {expected_category})")
 
         accuracy = correct / total
-        print(f"\n📊 OpenAI GPT-4o-mini Accuracy: {accuracy:.1%} ({correct}/{total})")
+        print(f"\n OpenAI GPT-4o-mini Accuracy: {accuracy:.1%} ({correct}/{total})")
 
         # Target: >90% accuracy
         assert accuracy >= 0.90, f"Accuracy {accuracy:.1%} below 90% threshold"
@@ -211,7 +211,7 @@ class TestOpenAIGPT4oMini:
         assert cost_per_txn > 0
         assert cost_per_txn < 0.001, f"Cost per transaction too high: ${cost_per_txn}"
 
-        print(f"💰 OpenAI GPT-4o-mini cost: ${cost_per_txn:.6f} per transaction")
+        print(f" OpenAI GPT-4o-mini cost: ${cost_per_txn:.6f} per transaction")
 
 
 @pytest.mark.acceptance
@@ -239,7 +239,7 @@ class TestAnthropicClaude:
         assert result.category == Category.FIXED_SUBSCRIPTIONS
 
         print(
-            f"✅ Anthropic Claude: {result.merchant_name} → {result.category} (confidence: {result.confidence:.2f})"
+            f"[OK] Anthropic Claude: {result.merchant_name} → {result.category} (confidence: {result.confidence:.2f})"
         )
 
     @pytest.mark.asyncio
@@ -258,12 +258,12 @@ class TestAnthropicClaude:
             result = await categorizer.categorize(merchant)
             if result.category == expected_category:
                 correct += 1
-                print(f"✅ {merchant} → {result.category}")
+                print(f"[OK] {merchant} → {result.category}")
             else:
-                print(f"❌ {merchant} → {result.category} (expected: {expected_category})")
+                print(f"[X] {merchant} → {result.category} (expected: {expected_category})")
 
         accuracy = correct / total
-        print(f"\n📊 Anthropic Claude Accuracy: {accuracy:.1%} ({correct}/{total})")
+        print(f"\n Anthropic Claude Accuracy: {accuracy:.1%} ({correct}/{total})")
 
         # Target: >90% accuracy
         assert accuracy >= 0.90, f"Accuracy {accuracy:.1%} below 90% threshold"
@@ -284,7 +284,7 @@ class TestAnthropicClaude:
         assert cost_per_txn > 0
         assert cost_per_txn < 0.001, f"Cost per transaction too high: ${cost_per_txn}"
 
-        print(f"💰 Anthropic Claude cost: ${cost_per_txn:.6f} per transaction")
+        print(f" Anthropic Claude cost: ${cost_per_txn:.6f} per transaction")
 
 
 @pytest.mark.acceptance
@@ -316,7 +316,7 @@ class TestHybridWithLLM:
         # Method could be "ml" or "llm" depending on sklearn confidence
         assert result3.method.value in ["ml", "llm"]
 
-        print("✅ Hybrid flow test passed:")
+        print("[OK] Hybrid flow test passed:")
         print(f"  - Exact: {result1.merchant_name} → {result1.category} ({result1.method.value})")
         print(f"  - Regex: {result2.merchant_name} → {result2.category} ({result2.method.value})")
         print(f"  - Unknown: {result3.merchant_name} → {result3.category} ({result3.method.value})")
@@ -344,7 +344,7 @@ class TestHybridWithLLM:
         total = sum(stats.values())
         assert total == 3
 
-        print(f"📊 Hybrid stats: {stats}")
+        print(f" Hybrid stats: {stats}")
 
     @pytest.mark.asyncio
     async def test_hybrid_accuracy(self):
@@ -380,7 +380,7 @@ class TestHybridWithLLM:
         local_accuracy = local_correct / total
         improvement = hybrid_accuracy - local_accuracy
 
-        print("\n📊 Accuracy Comparison:")
+        print("\n Accuracy Comparison:")
         print(f"  - Hybrid (with LLM): {hybrid_accuracy:.1%} ({hybrid_correct}/{total})")
         print(f"  - Local only: {local_accuracy:.1%} ({local_correct}/{total})")
         print(f"  - Improvement: {improvement:+.1%}")
@@ -414,7 +414,7 @@ class TestBudgetEnforcement:
         with pytest.raises(RuntimeError, match="budget exceeded"):
             await categorizer.categorize("Another Merchant")
 
-        print("✅ Daily budget cap enforced")
+        print("[OK] Daily budget cap enforced")
 
     @pytest.mark.asyncio
     async def test_cost_per_transaction(self):
@@ -434,7 +434,7 @@ class TestBudgetEnforcement:
         total_cost = categorizer.llm_categorizer.daily_cost
         cost_per_txn = total_cost / len(merchants)
 
-        print("\n💰 Cost Analysis (5 transactions):")
+        print("\n Cost Analysis (5 transactions):")
         print(f"  - Total cost: ${total_cost:.6f}")
         print(f"  - Cost per transaction: ${cost_per_txn:.6f}")
 

@@ -83,7 +83,7 @@ class TestInvestmentsAPIStructure:
         paths = schema["paths"]
         assert "/investments/holdings" in paths or any("holdings" in p for p in paths)
 
-        print("✓ OpenAPI schema includes investments endpoints")
+        print("[OK] OpenAPI schema includes investments endpoints")
 
     def test_docs_page_accessible(self, client):
         """Test that /docs page is accessible."""
@@ -91,7 +91,7 @@ class TestInvestmentsAPIStructure:
         assert response.status_code == 200
         assert "Investment" in response.text or "holdings" in response.text
 
-        print("✓ /docs page accessible with investments endpoints")
+        print("[OK] /docs page accessible with investments endpoints")
 
     def test_all_endpoints_present(self, client):
         """Test that all expected endpoints are registered."""
@@ -105,7 +105,7 @@ class TestInvestmentsAPIStructure:
         for endpoint in expected_endpoints:
             assert any(endpoint in path for path in paths), f"Missing endpoint: {endpoint}"
 
-        print(f"✓ All {len(expected_endpoints)} investment endpoints registered")
+        print(f"[OK] All {len(expected_endpoints)} investment endpoints registered")
 
 
 @skip_if_no_plaid
@@ -136,7 +136,7 @@ class TestInvestmentsAPIWithPlaidSandbox:
         assert "quantity" in holding
         assert "institution_value" in holding
 
-        print(f"✓ POST /investments/holdings returned {len(data)} holdings")
+        print(f"[OK] POST /investments/holdings returned {len(data)} holdings")
 
     def test_post_holdings_with_account_filter(self, client):
         """Test holdings endpoint with account_ids filter."""
@@ -168,7 +168,7 @@ class TestInvestmentsAPIWithPlaidSandbox:
         assert all(h["account_id"] == account_ids[0] for h in filtered)
         assert len(filtered) <= len(all_holdings)
 
-        print(f"✓ Account filtering: {len(filtered)}/{len(all_holdings)} holdings in account")
+        print(f"[OK] Account filtering: {len(filtered)}/{len(all_holdings)} holdings in account")
 
     def test_post_transactions_endpoint(self, client):
         """Test POST /investments/transactions with date range."""
@@ -203,7 +203,7 @@ class TestInvestmentsAPIWithPlaidSandbox:
         assert "transaction_type" in transaction
         assert "transaction_date" in transaction
 
-        print(f"✓ POST /investments/transactions returned {len(data)} transactions")
+        print(f"[OK] POST /investments/transactions returned {len(data)} transactions")
 
     def test_post_accounts_endpoint(self, client):
         """Test POST /investments/accounts endpoint."""
@@ -226,7 +226,7 @@ class TestInvestmentsAPIWithPlaidSandbox:
         assert "name" in account
         assert "total_value" in account
 
-        print(f"✓ POST /investments/accounts returned {len(data)} accounts")
+        print(f"[OK] POST /investments/accounts returned {len(data)} accounts")
 
     def test_post_allocation_endpoint(self, client):
         """Test POST /investments/allocation endpoint."""
@@ -246,7 +246,7 @@ class TestInvestmentsAPIWithPlaidSandbox:
         total_percent = sum(alloc["percentage"] for alloc in data["allocation_by_asset_class"])
         assert 99.0 <= total_percent <= 101.0
 
-        print("✓ POST /investments/allocation returned asset allocation:")
+        print("[OK] POST /investments/allocation returned asset allocation:")
         for alloc in data["allocation_by_asset_class"]:
             print(f"  {alloc['asset_class']}: {alloc['percentage']:.1f}%")
 
@@ -284,7 +284,7 @@ class TestInvestmentsAPIWithPlaidSandbox:
         assert "security_id" in security
         assert "type" in security
 
-        print(f"✓ POST /investments/securities returned {len(data)} securities")
+        print(f"[OK] POST /investments/securities returned {len(data)} securities")
 
     def test_error_handling_invalid_token(self, client):
         """Test API error handling with invalid access token."""
@@ -299,7 +299,7 @@ class TestInvestmentsAPIWithPlaidSandbox:
         assert "detail" in data
         assert "INVALID" in data["detail"] or "invalid" in data["detail"].lower()
 
-        print("✓ API error handling: Invalid token returns appropriate error")
+        print("[OK] API error handling: Invalid token returns appropriate error")
 
     def test_error_handling_missing_required_fields(self, client):
         """Test API validation for missing required fields."""
@@ -312,7 +312,7 @@ class TestInvestmentsAPIWithPlaidSandbox:
         data = response.json()
         assert "detail" in data
 
-        print("✓ API validation: Missing required fields returns 422")
+        print("[OK] API validation: Missing required fields returns 422")
 
     def test_error_handling_invalid_date_range(self, client):
         """Test API validation for invalid date ranges in transactions."""
@@ -331,7 +331,7 @@ class TestInvestmentsAPIWithPlaidSandbox:
         # Should return 400 or 422 for invalid date range
         assert response.status_code in [400, 422]
 
-        print("✓ API validation: Invalid date range returns error")
+        print("[OK] API validation: Invalid date range returns error")
 
 
 @skip_if_no_plaid
@@ -353,7 +353,7 @@ class TestInvestmentsAPIPerformance:
         # Should respond within 5 seconds (Plaid sandbox can be slow)
         assert elapsed < 5.0, f"Holdings endpoint took {elapsed:.2f}s (should be <5s)"
 
-        print(f"✓ Holdings endpoint response time: {elapsed:.2f}s")
+        print(f"[OK] Holdings endpoint response time: {elapsed:.2f}s")
 
     def test_multiple_concurrent_requests(self, client):
         """Test that API can handle multiple concurrent requests."""
@@ -371,7 +371,7 @@ class TestInvestmentsAPIPerformance:
         success_count = sum(1 for r in responses if r.status_code == 200)
         error_count = sum(1 for r in responses if r.status_code in [429, 500])
 
-        print(f"✓ Concurrent requests: {success_count} succeeded, {error_count} errors")
+        print(f"[OK] Concurrent requests: {success_count} succeeded, {error_count} errors")
 
         # At least some should succeed (Plaid may rate limit)
         assert success_count > 0 or error_count > 0, "All requests failed unexpectedly"

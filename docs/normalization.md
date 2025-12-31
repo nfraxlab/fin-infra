@@ -12,7 +12,7 @@ The normalization module provides **symbol resolution** and **currency conversio
 
 ### What It Does
 
-- **Symbol Resolution**: Ticker ↔ CUSIP ↔ ISIN conversions
+- **Symbol Resolution**: Ticker <-> CUSIP <-> ISIN conversions
 - **Provider Normalization**: Yahoo's `BTC-USD` → CoinGecko's `bitcoin` → Alpaca's `BTCUSD` → `BTC`
 - **Currency Conversion**: USD → EUR with live exchange rates
 - **Metadata Enrichment**: Ticker → company name, sector, exchange
@@ -301,11 +301,11 @@ portfolio_summary = []
 for position in positions:
     # Normalize symbol to standard ticker
     ticker = await resolver.normalize(position.symbol, provider="alpaca")
-    
+
     # Get current quote
     market = easy_market()
     quote = market.quote(ticker)
-    
+
     # Convert to USD if needed
     if position.currency != "USD":
         value_usd = await converter.convert(
@@ -315,9 +315,9 @@ for position in positions:
         )
     else:
         value_usd = position.market_value
-    
+
     total_value_usd += value_usd
-    
+
     portfolio_summary.append({
         "ticker": ticker,
         "shares": position.qty,
@@ -345,17 +345,17 @@ async def resolve_symbol(identifier: str):
     try:
         ticker = await resolver.to_ticker(identifier)
         metadata = await resolver.get_metadata(ticker)
-        
+
         try:
             cusip = await resolver.to_cusip(ticker)
         except SymbolNotFoundError:
             cusip = None
-            
+
         try:
             isin = await resolver.to_isin(ticker)
         except SymbolNotFoundError:
             isin = None
-        
+
         return {
             "input": identifier,
             "ticker": ticker,
@@ -413,7 +413,7 @@ for holding in portfolio:
     # Get historical price (simplified - would use historical API)
     quote = market.quote(holding["ticker"])
     value_usd = quote.price * holding["shares"]
-    
+
     # Convert to EUR using historical rate
     value_eur = await converter.convert(
         value_usd,
@@ -422,7 +422,7 @@ for holding in portfolio:
         date=backtest_date
     )
     total_eur += value_eur
-    
+
     print(f"{holding['ticker']}: €{value_eur:,.2f}")
 
 print(f"\nTotal Portfolio Value (Jan 1, 2023): €{total_eur:,.2f}")
@@ -556,7 +556,7 @@ async def safe_convert(amount, from_curr, to_curr):
 
 ## Best Practices
 
-### ✅ DO
+### [OK] DO
 
 - **Use easy_normalization() once**: It returns singletons, reuse them throughout your app
 - **Cache exchange rates**: Use svc-infra cache (TTL: 5-15 minutes)
@@ -566,7 +566,7 @@ async def safe_convert(amount, from_curr, to_curr):
 - **Normalize early**: Convert provider symbols to standard tickers at ingestion
 - **Use custom mappings**: Add symbols not in pre-cached list with `add_mapping()`
 
-### ❌ DON'T
+### [X] DON'T
 
 - **Don't query APIs excessively**: Use caching to reduce API calls
 - **Don't assume all symbols resolve**: Handle SymbolNotFoundError

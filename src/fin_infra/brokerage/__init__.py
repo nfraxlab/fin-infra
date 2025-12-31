@@ -1,6 +1,6 @@
 """Brokerage module - easy setup for trading operations.
 
-⚠️ **TRADING WARNING**: This module provides real trading capabilities.
+[!] **TRADING WARNING**: This module provides real trading capabilities.
 Always use paper trading mode for development and testing.
 Live trading requires explicit opt-in and involves real financial risk.
 
@@ -51,7 +51,7 @@ def easy_brokerage(
 ) -> BrokerageProvider:
     """Create a brokerage provider with paper/live trading support.
 
-    ⚠️ **SAFETY**: Defaults to paper trading mode. Live trading requires explicit mode="live".
+    [!] **SAFETY**: Defaults to paper trading mode. Live trading requires explicit mode="live".
 
     Auto-detects provider based on environment variables:
     1. If ALPACA_API_KEY and ALPACA_API_SECRET are set → Alpaca
@@ -138,7 +138,7 @@ def add_brokerage(
 ) -> BrokerageProvider:
     """Wire brokerage provider to FastAPI app with routes and safety checks.
 
-    ⚠️ **TRADING WARNING**: This mounts trading API endpoints.
+    [!] **TRADING WARNING**: This mounts trading API endpoints.
     Always use paper trading mode for development.
     Live trading requires explicit mode="live" and proper safeguards.
 
@@ -280,7 +280,7 @@ def add_brokerage(
     async def submit_order(order_request: OrderRequest):
         """Submit a new order.
 
-        ⚠️ **TRADING WARNING**: This endpoint executes real trades in live mode.
+        [!] **TRADING WARNING**: This endpoint executes real trades in live mode.
         """
         try:
             order = brokerage_provider.submit_order(
@@ -447,7 +447,7 @@ def add_brokerage(
     add_prefixed_docs(
         app,
         prefix=prefix,
-        title="Brokerage" + (" (Paper Trading)" if mode == "paper" else " ⚠️ LIVE"),
+        title="Brokerage" + (" (Paper Trading)" if mode == "paper" else " [!] LIVE"),
         auto_exclude_from_root=True,
         visible_envs=None,  # Show in all environments
     )

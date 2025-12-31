@@ -4,7 +4,7 @@ Detailed examples for each fin-infra capability with copy-paste code snippets.
 
 ## Table of Contents
 
-### 🏦 Provider Integrations
+###  Provider Integrations
 - [Banking Integration](#banking-integration)
 - [Market Data](#market-data)
 - [Crypto Data](#crypto-data)
@@ -18,7 +18,7 @@ Detailed examples for each fin-infra capability with copy-paste code snippets.
 - [Recurring Detection](#recurring-detection)
 - [Insights Feed](#insights-feed)
 
-### 📊 Financial Planning
+###  Financial Planning
 - [Budgets](#budgets)
 - [Goals](#goals)
 - [Net Worth Tracking](#net-worth-tracking)
@@ -28,7 +28,7 @@ Detailed examples for each fin-infra capability with copy-paste code snippets.
 - [Security](#security)
 - [Compliance](#compliance)
 
-### 🛠️ Utilities
+### 🛠 Utilities
 - [Normalization](#normalization)
 - [Cashflows](#cashflows)
 - [Conversation](#conversation)

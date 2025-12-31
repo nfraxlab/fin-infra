@@ -22,18 +22,18 @@
 ### Library vs Framework
 
 **fin-infra is a library**, like `stripe-python` or `plaid-python`:
-- ✅ Provides financial provider integrations (Plaid, Alpaca, market data)
-- ✅ Provides financial calculations (NPV, IRR, portfolio analytics)
-- ✅ Provides domain models (Transaction, Account, NetWorthSnapshot schemas)
-- ✅ **Does NOT** manage your database
-- ✅ **Does NOT** require specific database schema
-- ✅ **Does NOT** run migrations on your behalf
+- [OK] Provides financial provider integrations (Plaid, Alpaca, market data)
+- [OK] Provides financial calculations (NPV, IRR, portfolio analytics)
+- [OK] Provides domain models (Transaction, Account, NetWorthSnapshot schemas)
+- [OK] **Does NOT** manage your database
+- [OK] **Does NOT** require specific database schema
+- [OK] **Does NOT** run migrations on your behalf
 
 **Contrast with frameworks** like Django or Rails:
-- ❌ Impose ORM (ActiveRecord, Django ORM)
-- ❌ Manage database migrations
-- ❌ Couple application to framework database layer
-- ❌ Require specific schema conventions
+- [X] Impose ORM (ActiveRecord, Django ORM)
+- [X] Manage database migrations
+- [X] Couple application to framework database layer
+- [X] Require specific schema conventions
 
 ### Benefits of Stateless Design
 
@@ -47,12 +47,12 @@
 
 | Feature | fin-infra (Library) | stripe-python | plaid-python | Django (Framework) | Rails (Framework) |
 |---------|---------------------|---------------|--------------|-------------------|-------------------|
-| **Database Management** | ❌ No | ❌ No | ❌ No | ✅ Yes (ORM) | ✅ Yes (ActiveRecord) |
-| **Schema Ownership** | ✅ Your app | ✅ Your app | ✅ Your app | ❌ Framework | ❌ Framework |
-| **Migration Tool** | ✅ Your choice | ✅ Your choice | ✅ Your choice | ❌ Django migrations | ❌ Rails migrations |
-| **ORM Flexibility** | ✅ Any ORM | ✅ Any ORM | ✅ Any ORM | ❌ Django ORM only | ❌ ActiveRecord only |
-| **Provider Integrations** | ✅ Yes | ✅ Yes | ✅ Yes | ❌ No | ❌ No |
-| **Financial Calculations** | ✅ Yes | ❌ No | ❌ No | ❌ No | ❌ No |
+| **Database Management** | [X] No | [X] No | [X] No | [OK] Yes (ORM) | [OK] Yes (ActiveRecord) |
+| **Schema Ownership** | [OK] Your app | [OK] Your app | [OK] Your app | [X] Framework | [X] Framework |
+| **Migration Tool** | [OK] Your choice | [OK] Your choice | [OK] Your choice | [X] Django migrations | [X] Rails migrations |
+| **ORM Flexibility** | [OK] Any ORM | [OK] Any ORM | [OK] Any ORM | [X] Django ORM only | [X] ActiveRecord only |
+| **Provider Integrations** | [OK] Yes | [OK] Yes | [OK] Yes | [X] No | [X] No |
+| **Financial Calculations** | [OK] Yes | [X] No | [X] No | [X] No | [X] No |
 
 ---
 
@@ -85,11 +85,11 @@ app/models/budgets/
 ```
 
 **What you get**:
-- ✅ SQLAlchemy model with `tenant_id` field, indexes, constraints
-- ✅ Pydantic schemas for validation (Create, Read, Update)
-- ✅ Repository with full CRUD: `create()`, `get()`, `list()`, `update()`, `delete()`
-- ✅ Type hints and docstrings throughout
-- ✅ Production-ready patterns (UUID primary keys, timestamps, soft delete support)
+- [OK] SQLAlchemy model with `tenant_id` field, indexes, constraints
+- [OK] Pydantic schemas for validation (Create, Read, Update)
+- [OK] Repository with full CRUD: `create()`, `get()`, `list()`, `update()`, `delete()`
+- [OK] Type hints and docstrings throughout
+- [OK] Production-ready patterns (UUID primary keys, timestamps, soft delete support)
 
 #### Step 2: Run svc-infra Migrations
 
@@ -161,11 +161,11 @@ For full details on `add_sql_resources()` configuration, see:
 
 ### Use Scaffold CLI When:
 
-✅ **Quick start**: Need working models/schemas/repository in seconds  
-✅ **Standard patterns**: Budget, Goal, NetWorthSnapshot follow common patterns  
-✅ **Rapid prototyping**: Iterate on schema quickly without manual boilerplate  
-✅ **Learning**: Understand best practices from generated code  
-✅ **Consistency**: Ensure all domains follow same conventions  
+[OK] **Quick start**: Need working models/schemas/repository in seconds  
+[OK] **Standard patterns**: Budget, Goal, NetWorthSnapshot follow common patterns  
+[OK] **Rapid prototyping**: Iterate on schema quickly without manual boilerplate  
+[OK] **Learning**: Understand best practices from generated code  
+[OK] **Consistency**: Ensure all domains follow same conventions  
 
 **Example scenarios**:
 - New fintech startup building MVP
@@ -175,11 +175,11 @@ For full details on `add_sql_resources()` configuration, see:
 
 ### Use Manual Templates When:
 
-✅ **Full customization**: Need complex business logic not in scaffold templates  
-✅ **Existing codebase**: Integrating fin-infra into legacy system with established patterns  
-✅ **Complex schemas**: Many-to-many relationships, polymorphic associations, JSON fields  
-✅ **Performance optimization**: Hand-tuned queries, custom indexes, materialized views  
-✅ **Non-standard ORM**: Using Prisma, Tortoise ORM, raw SQL instead of SQLAlchemy  
+[OK] **Full customization**: Need complex business logic not in scaffold templates  
+[OK] **Existing codebase**: Integrating fin-infra into legacy system with established patterns  
+[OK] **Complex schemas**: Many-to-many relationships, polymorphic associations, JSON fields  
+[OK] **Performance optimization**: Hand-tuned queries, custom indexes, materialized views  
+[OK] **Non-standard ORM**: Using Prisma, Tortoise ORM, raw SQL instead of SQLAlchemy  
 
 **Example scenarios**:
 - Migrating from Django/Rails to FastAPI
@@ -255,7 +255,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 class Budget(ModelBase):
     __tablename__ = "budgets"
-    
+
     id: Mapped[str] = mapped_column(String(255), primary_key=True)
     user_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -298,23 +298,23 @@ from typing import Optional, List
 class BudgetRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
-    
+
     async def create(self, budget: BudgetCreate) -> BudgetRead:
         """Create new budget."""
         # ... implementation
-    
+
     async def get(self, budget_id: str) -> Optional[BudgetRead]:
         """Get budget by ID."""
         # ... implementation
-    
+
     async def list(self, user_id: str, limit: int = 100) -> List[BudgetRead]:
         """List user's budgets."""
         # ... implementation
-    
+
     async def update(self, budget_id: str, updates: BudgetUpdate) -> BudgetRead:
         """Update budget."""
         # ... implementation
-    
+
     async def delete(self, budget_id: str, soft: bool = False) -> None:
         """Delete budget (soft or hard)."""
         # ... implementation
@@ -327,7 +327,7 @@ class BudgetRepository:
 # budget.py
 class Budget(ModelBase):
     # ... existing fields ...
-    
+
     # Add custom fields
     approval_status: Mapped[str] = mapped_column(String(50), default="pending")
     approved_by: Mapped[str | None] = mapped_column(String(255), nullable=True)
@@ -339,7 +339,7 @@ class Budget(ModelBase):
 # budget_repository.py
 class BudgetRepository:
     # ... existing methods ...
-    
+
     async def get_pending_approval(self, user_id: str) -> List[BudgetRead]:
         """Get budgets pending approval."""
         stmt = (
@@ -359,7 +359,7 @@ from pydantic import field_validator
 
 class BudgetCreate(BudgetBase):
     user_id: str
-    
+
     @field_validator('categories')
     @classmethod
     def validate_categories(cls, v):
@@ -430,10 +430,10 @@ class Budget(ModelBase):
 ```
 
 **Benefits**:
-- ✅ Automatic Alembic discovery (no need to manually import models)
-- ✅ Common base fields (id, created_at, updated_at)
-- ✅ Consistent conventions across all models
-- ✅ SQLAlchemy 2.0 modern style (Mapped, mapped_column)
+- [OK] Automatic Alembic discovery (no need to manually import models)
+- [OK] Common base fields (id, created_at, updated_at)
+- [OK] Consistent conventions across all models
+- [OK] SQLAlchemy 2.0 modern style (Mapped, mapped_column)
 
 ### Alembic env.py Configuration
 
@@ -508,10 +508,10 @@ svc-infra downgrade abc123      # Rollback to specific version
 ### When to Use --include-tenant Flag
 
 Use multi-tenancy when:
-- ✅ Building SaaS application with multiple customers
-- ✅ Need data isolation between organizations
-- ✅ Want to use PostgreSQL Row-Level Security (RLS)
-- ✅ Application serves multiple teams/workspaces
+- [OK] Building SaaS application with multiple customers
+- [OK] Need data isolation between organizations
+- [OK] Want to use PostgreSQL Row-Level Security (RLS)
+- [OK] Application serves multiple teams/workspaces
 
 **Example**: Budgeting SaaS where each company has separate budgets.
 
@@ -527,7 +527,7 @@ fin-infra scaffold budgets --dest-dir app/models/budgets --include-tenant
 ```python
 class Budget(ModelBase):
     __tablename__ = "budgets"
-    
+
     id: Mapped[str] = mapped_column(String(255), primary_key=True)
     tenant_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)  # Added
     user_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
@@ -627,10 +627,10 @@ async def get_budget_summary(
 ### When to Use --include-soft-delete Flag
 
 Use soft delete when:
-- ✅ Need audit trail of deleted records
-- ✅ Want to support "undo" or "restore" functionality
-- ✅ Compliance requires retention of deleted data
-- ✅ Need to preserve foreign key integrity after deletion
+- [OK] Need audit trail of deleted records
+- [OK] Want to support "undo" or "restore" functionality
+- [OK] Compliance requires retention of deleted data
+- [OK] Need to preserve foreign key integrity after deletion
 
 **Example**: Budgets that can be archived and later restored.
 
@@ -644,7 +644,7 @@ fin-infra scaffold budgets --dest-dir app/models/budgets --include-soft-delete
 ```python
 class Budget(ModelBase):
     __tablename__ = "budgets"
-    
+
     id: Mapped[str] = mapped_column(String(255), primary_key=True)
     user_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     # ... other fields
@@ -660,7 +660,7 @@ async def delete(self, budget_id: str, soft: bool = True) -> None:
     budget = await self.get(budget_id)
     if not budget:
         raise ValueError(f"Budget not found: {budget_id}")
-    
+
     if soft:
         # Soft delete: set deleted_at timestamp
         budget.deleted_at = datetime.now(timezone.utc)
@@ -677,10 +677,10 @@ async def list(
 ) -> List[BudgetRead]:
     """List budgets (exclude soft-deleted by default)."""
     stmt = select(Budget).where(Budget.user_id == user_id)
-    
+
     if not include_deleted:
         stmt = stmt.where(Budget.deleted_at.is_(None))  # Filter soft-deleted
-    
+
     # ... rest of query
 ```
 
@@ -714,13 +714,13 @@ async def list_deleted(self, user_id: str) -> List[BudgetRead]:
 
 | Feature | Soft Delete | Hard Delete |
 |---------|-------------|-------------|
-| **Recoverability** | ✅ Can restore | ❌ Permanent loss |
-| **Audit Trail** | ✅ Full history | ❌ No record |
-| **Query Performance** | ❌ Slower (more rows) | ✅ Faster |
-| **Storage** | ❌ More space | ✅ Less space |
-| **Compliance** | ✅ Better (retention) | ❌ Worse |
-| **Foreign Keys** | ✅ No cascade issues | ❌ Cascade deletes |
-| **Unique Constraints** | ❌ Complex (need NULL) | ✅ Simple |
+| **Recoverability** | [OK] Can restore | [X] Permanent loss |
+| **Audit Trail** | [OK] Full history | [X] No record |
+| **Query Performance** | [X] Slower (more rows) | [OK] Faster |
+| **Storage** | [X] More space | [OK] Less space |
+| **Compliance** | [OK] Better (retention) | [X] Worse |
+| **Foreign Keys** | [OK] No cascade issues | [X] Cascade deletes |
+| **Unique Constraints** | [X] Complex (need NULL) | [OK] Simple |
 
 **Best practice**: Use soft delete by default, add hard delete option for cleanup:
 
@@ -758,12 +758,12 @@ async def restore_budget(
     stmt = select(Budget).where(Budget.id == budget_id)
     result = await session.execute(stmt)
     budget = result.scalars().first()
-    
+
     if not budget:
         raise HTTPException(404, "Budget not found")
     if budget.deleted_at is None:
         raise HTTPException(400, "Budget not deleted")
-    
+
     budget.deleted_at = None  # Restore
     await session.commit()
     return {"message": "Budget restored"}
@@ -785,7 +785,7 @@ from fin_infra.budgets.tracker import BudgetTracker
 @pytest.mark.asyncio
 async def test_budget_creation():
     tracker = BudgetTracker()  # In-memory storage
-    
+
     budget = await tracker.create_budget(
         user_id="user123",
         name="November 2025",
@@ -793,16 +793,16 @@ async def test_budget_creation():
         period_end=datetime(2025, 11, 30),
         categories={"Groceries": 600.00, "Dining": 200.00},
     )
-    
+
     assert budget.user_id == "user123"
     assert budget.name == "November 2025"
     assert budget.categories["Groceries"] == 600.00
 ```
 
 **Benefits**:
-- ✅ Fast (no database I/O)
-- ✅ Isolated (no test pollution)
-- ✅ Simple (no fixtures or migrations)
+- [OK] Fast (no database I/O)
+- [OK] Isolated (no test pollution)
+- [OK] Simple (no fixtures or migrations)
 
 ### Integration Tests with Test Database
 
@@ -819,22 +819,22 @@ from app.models.budgets import Budget, BudgetRepository, BudgetCreate
 async def test_session():
     # Create in-memory SQLite database
     engine = create_async_engine("sqlite+aiosqlite:///:memory:")
-    
+
     # Create tables
     async with engine.begin() as conn:
         await conn.run_sync(Budget.metadata.create_all)
-    
+
     # Create session
     async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
     async with async_session() as session:
         yield session
-    
+
     await engine.dispose()
 
 @pytest.mark.asyncio
 async def test_budget_repository_create(test_session):
     repo = BudgetRepository(test_session)
-    
+
     budget_create = BudgetCreate(
         user_id="user123",
         name="Test Budget",
@@ -842,18 +842,18 @@ async def test_budget_repository_create(test_session):
         period_end=datetime(2025, 11, 30),
         categories={"Groceries": 600.00},
     )
-    
+
     budget = await repo.create(budget_create)
-    
+
     assert budget.id is not None
     assert budget.user_id == "user123"
     assert budget.name == "Test Budget"
 ```
 
 **Benefits**:
-- ✅ Fast (in-memory SQLite)
-- ✅ Real database (tests SQL queries)
-- ✅ Isolated (each test gets clean DB)
+- [OK] Fast (in-memory SQLite)
+- [OK] Real database (tests SQL queries)
+- [OK] Isolated (each test gets clean DB)
 
 ### Acceptance Tests with Real Database
 
@@ -876,7 +876,7 @@ async def test_client(postgres_container):
     # Apply migrations to test database
     database_url = postgres_container.get_connection_url()
     # Run: svc-infra upgrade head
-    
+
     client = TestClient(app)
     yield client
 
@@ -891,12 +891,12 @@ def test_budget_crud_e2e(test_client):
     })
     assert response.status_code == 200
     budget_id = response.json()["id"]
-    
+
     # Get budget
     response = test_client.get(f"/budgets/{budget_id}")
     assert response.status_code == 200
     assert response.json()["name"] == "November 2025"
-    
+
     # List budgets
     response = test_client.get("/budgets")
     assert response.status_code == 200
@@ -904,9 +904,9 @@ def test_budget_crud_e2e(test_client):
 ```
 
 **Benefits**:
-- ✅ Full integration (real PostgreSQL)
-- ✅ Tests migrations
-- ✅ Catches database-specific issues
+- [OK] Full integration (real PostgreSQL)
+- [OK] Tests migrations
+- [OK] Catches database-specific issues
 
 ### Fixture Patterns for Repositories
 
@@ -1204,7 +1204,7 @@ async def list(self, user_id: str, limit: int = 100, offset: int = 0):
 class Budget(ModelBase):
     user_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)  # Index
     tenant_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)  # Index
-    
+
     __table_args__ = (
         Index("ix_budget_user_tenant", "user_id", "tenant_id"),  # Composite index
     )
@@ -1249,7 +1249,7 @@ svc-infra upgrade head
 # 3. Wire CRUD (one function call)
 add_sql_resources(app, [SqlResource(model=Budget, prefix="/budgets")])
 
-# Done! Full CRUD API ready 🚀
+# Done! Full CRUD API ready
 ```
 
 For more details, see:

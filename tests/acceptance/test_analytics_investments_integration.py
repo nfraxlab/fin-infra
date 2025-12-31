@@ -71,7 +71,7 @@ class TestAnalyticsWithRealHoldings:
         total_percent = sum(a.percentage for a in metrics.allocation_by_asset_class)
         assert 99.0 <= total_percent <= 101.0
 
-        print(f"✓ Portfolio metrics calculated from {len(holdings)} real holdings:")
+        print(f"[OK] Portfolio metrics calculated from {len(holdings)} real holdings:")
         print(f"  Total value: ${metrics.total_value:,.2f}")
 
         # Check if we have cost basis for P/L calculation
@@ -110,7 +110,7 @@ class TestAnalyticsWithRealHoldings:
         holdings_with_cost = [h for h in holdings if h.cost_basis is not None]
         holdings_without_cost = [h for h in holdings if h.cost_basis is None]
 
-        print(f"✓ Handled {len(holdings)} holdings:")
+        print(f"[OK] Handled {len(holdings)} holdings:")
         print(f"  With cost basis: {len(holdings_with_cost)}")
         print(f"  Without cost basis: {len(holdings_without_cost)} (treated as 0)")
 
@@ -147,7 +147,7 @@ class TestAnalyticsWithRealHoldings:
             assert abs(alloc.value - expected_value) < Decimal("0.01")
             assert abs(alloc.percentage - expected_percent) < 0.01
 
-        print("✓ Asset allocation calculations match holdings distribution")
+        print("[OK] Asset allocation calculations match holdings distribution")
 
     def test_day_change_calculation_with_snapshots(self):
         """Test day change calculation with simulated previous snapshot."""
@@ -182,7 +182,7 @@ class TestAnalyticsWithRealHoldings:
         assert day_change["day_change_dollars"] > 0
         assert day_change["day_change_percent"] > 0
 
-        print("✓ Day change calculation:")
+        print("[OK] Day change calculation:")
         print(
             f"  Day change: ${day_change['day_change_dollars']:,.2f} ({day_change['day_change_percent']:+.2f}%)"
         )
@@ -227,13 +227,13 @@ class TestAnalyticsWithRealHoldings:
             total_value_with_cost = sum(h.institution_value for h in holdings_with_cost)
             total_return = total_value_with_cost - total_cost
             total_return_pct = (total_return / total_cost * 100) if total_cost > 0 else 0
-            print(f"  Cost basis: ${total_cost:,.2f} ✓")
-            print(f"  Total return: ${total_return:,.2f} ({total_return_pct:+.2f}%) ✓")
+            print(f"  Cost basis: ${total_cost:,.2f} [OK]")
+            print(f"  Total return: ${total_return:,.2f} ({total_return_pct:+.2f}%) [OK]")
         else:
             print("  Cost basis: Not available in sandbox")
             print("  Total return: Cannot calculate")
 
-        print("  Asset allocation: REAL from securities ✓")
+        print("  Asset allocation: REAL from securities [OK]")
         for alloc in real_metrics.allocation_by_asset_class:
             print(f"    {alloc.asset_class.value}: {alloc.percentage:.1f}%")
 
@@ -299,7 +299,7 @@ class TestAnalyticsAPIWithHoldings:
         # analytics_response = client.get("/analytics/portfolio?user_id=user123")
         # Would test enhanced endpoint with with_holdings=true
 
-        print(f"✓ Integration test: Fetched {len(holdings)} holdings")
+        print(f"[OK] Integration test: Fetched {len(holdings)} holdings")
         print("  Note: Analytics API enhancement with with_holdings parameter in Task 8")
 
     def test_combined_workflow_holdings_to_metrics(self, client):
@@ -323,7 +323,7 @@ class TestAnalyticsAPIWithHoldings:
         allocation = allocation_response.json()
 
         # 3. Verify workflow
-        print("✓ Complete workflow - Holdings to Metrics:")
+        print("[OK] Complete workflow - Holdings to Metrics:")
         print(f"  1. Fetched {len(holdings_data)} holdings via investments API")
         print("  2. Calculated asset allocation:")
         for alloc in allocation["allocation_by_asset_class"]:
@@ -367,10 +367,10 @@ AFTER (with real holdings):
   metrics = portfolio_metrics_with_holdings(holdings)
 
   # Now you have:
-  # ✓ Real cost basis from provider
-  # ✓ Accurate P/L calculations
-  # ✓ Real asset allocation from securities
-  # ✓ Unrealized gains/losses
+  # [OK] Real cost basis from provider
+  # [OK] Accurate P/L calculations
+  # [OK] Real asset allocation from securities
+  # [OK] Unrealized gains/losses
 
   print(f"Total value: ${metrics.total_value:,.2f}")
   print(f"Total return: ${metrics.total_return:,.2f} ({metrics.total_return_percent:.2f}%)")

@@ -5,11 +5,11 @@ Calculates net worth by aggregating balances from multiple financial providers
 (banking, brokerage, crypto) with historical snapshots and change detection.
 
 **Feature Status**:
-    ✅ STABLE: Core calculation (works with provided data)
-    ✅ STABLE: Banking integration (Plaid, Teller)
-    ⚠️  INTEGRATION: Brokerage integration (requires provider setup)
-    ⚠️  INTEGRATION: Crypto integration (requires provider setup)
-    ⚠️  INTEGRATION: Currency conversion (pass exchange_rate manually)
+    [OK] STABLE: Core calculation (works with provided data)
+    [OK] STABLE: Banking integration (Plaid, Teller)
+    [!]  INTEGRATION: Brokerage integration (requires provider setup)
+    [!]  INTEGRATION: Crypto integration (requires provider setup)
+    [!]  INTEGRATION: Currency conversion (pass exchange_rate manually)
 
 **Key Features**:
 - Multi-provider aggregation (banking + brokerage + crypto)

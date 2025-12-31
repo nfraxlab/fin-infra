@@ -1,7 +1,6 @@
 """SQLAlchemy declarative base and common mixins for fin-infra-template."""
 
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column
@@ -31,7 +30,7 @@ class TimestampMixin:
 class SoftDeleteMixin:
     """Mixin for soft delete support."""
 
-    deleted_at: Mapped[Optional[datetime]] = mapped_column(
+    deleted_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True),
         nullable=True,
         default=None,
@@ -45,9 +44,9 @@ class SoftDeleteMixin:
 
 class UserOwnedMixin:
     """Mixin for user-owned resources (financial data).
-    
+
     Note: user_id is nullable for simple testing. Set to nullable=False
     in production when authentication is required.
     """
 
-    user_id: Mapped[Optional[int]] = mapped_column(nullable=True, index=True)
+    user_id: Mapped[int | None] = mapped_column(nullable=True, index=True)
