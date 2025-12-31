@@ -54,7 +54,7 @@ def easy_normalization(
     Example:
         >>> from fin_infra.normalization import easy_normalization
         >>> resolver, converter = easy_normalization()
-        >>> ticker = await resolver.to_ticker("037833100")  # CUSIP → AAPL
+        >>> ticker = await resolver.to_ticker("037833100")  # CUSIP -> AAPL
         >>> eur = await converter.convert(100, "USD", "EUR")  # 92.0
     """
     global _resolver_instance, _converter_instance
@@ -107,7 +107,7 @@ def add_normalization(
         >>> resolver, converter = add_normalization(app)
         >>>
         >>> # Routes available:
-        >>> # GET /normalize/symbol/037833100 → {"ticker": "AAPL", ...}
+        >>> # GET /normalize/symbol/037833100 -> {"ticker": "AAPL", ...}
         >>> # GET /normalize/convert?amount=100&from_currency=USD&to_currency=EUR
 
     Integration with svc-infra:

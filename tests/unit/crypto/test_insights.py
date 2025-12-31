@@ -164,7 +164,7 @@ async def test_generate_insights_diversified_portfolio(btc_holding, eth_holding,
 @pytest.mark.asyncio
 async def test_generate_insights_significant_gains(btc_holding):
     """Test performance insight for significant gains (>25%)."""
-    # BTC: cost_basis=40000, current_price=45000 → +12.5% gain
+    # BTC: cost_basis=40000, current_price=45000 -> +12.5% gain
     # Modify to have >25% gain
     btc_holding.current_price = Decimal("60000")  # 50% gain
     btc_holding.market_value = Decimal("30000")
@@ -185,7 +185,7 @@ async def test_generate_insights_significant_gains(btc_holding):
 @pytest.mark.asyncio
 async def test_generate_insights_significant_losses(eth_holding):
     """Test risk insight for significant losses (>25%)."""
-    # ETH: cost_basis=3000, current_price=2000 → -33% loss
+    # ETH: cost_basis=3000, current_price=2000 -> -33% loss
     insights = await generate_crypto_insights("user_123", [eth_holding])
 
     # Find risk insight

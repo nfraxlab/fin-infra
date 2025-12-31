@@ -98,9 +98,9 @@ Detects subscriptions with consistent amounts:
 - Date consistency within ±7 days (configurable)
 
 **Examples**:
-- Netflix: $15.99/month → Fixed pattern, 0.95 confidence
-- Spotify: $9.99/month → Fixed pattern, 0.92 confidence
-- Gym: $45.00/month → Fixed pattern, 0.90 confidence
+- Netflix: $15.99/month -> Fixed pattern, 0.95 confidence
+- Spotify: $9.99/month -> Fixed pattern, 0.92 confidence
+- Gym: $45.00/month -> Fixed pattern, 0.90 confidence
 
 **Output**:
 ```python
@@ -128,9 +128,9 @@ Detects bills with regular patterns but fluctuating amounts:
 - Not fixed (failed Layer 1 check)
 
 **Examples**:
-- Electric bill: $45-$70/month → Variable pattern, 0.75 confidence
-- Phone bill: $60-$85/month (with overages) → Variable pattern, 0.72 confidence
-- Water bill: $25-$40/month → Variable pattern, 0.70 confidence
+- Electric bill: $45-$70/month -> Variable pattern, 0.75 confidence
+- Phone bill: $60-$85/month (with overages) -> Variable pattern, 0.72 confidence
+- Water bill: $25-$40/month -> Variable pattern, 0.70 confidence
 
 **Output**:
 ```python
@@ -159,9 +159,9 @@ Detects quarterly and annual patterns:
 - Minimum 2 occurrences (annual needs 2 years data)
 
 **Examples**:
-- Amazon Prime: $139.00/year → Irregular/Annual, 0.68 confidence
-- Car insurance: $450.00/quarter → Irregular/Quarterly, 0.65 confidence
-- Professional membership: $299.00/year → Irregular/Annual, 0.62 confidence
+- Amazon Prime: $139.00/year -> Irregular/Annual, 0.68 confidence
+- Car insurance: $450.00/quarter -> Irregular/Quarterly, 0.65 confidence
+- Professional membership: $299.00/year -> Irregular/Annual, 0.62 confidence
 
 **Output**:
 ```python
@@ -221,12 +221,12 @@ Groups merchant name variants using 5-step pipeline + fuzzy matching:
 
 #### Normalization Pipeline
 
-1. **Lowercase**: `"NETFLIX.COM"` → `"netflix.com"`
-2. **Remove domain suffixes**: `"netflix.com"` → `"netflix"`
-3. **Remove special chars**: `"netflix*subscription"` → `"netflix subscription"`
-4. **Remove store numbers**: `"starbucks #12345"` → `"starbucks"`
-5. **Remove legal entities**: `"netflix inc"` → `"netflix"`
-6. **Normalize whitespace**: `"  netflix  "` → `"netflix"`
+1. **Lowercase**: `"NETFLIX.COM"` -> `"netflix.com"`
+2. **Remove domain suffixes**: `"netflix.com"` -> `"netflix"`
+3. **Remove special chars**: `"netflix*subscription"` -> `"netflix subscription"`
+4. **Remove store numbers**: `"starbucks #12345"` -> `"starbucks"`
+5. **Remove legal entities**: `"netflix inc"` -> `"netflix"`
+6. **Normalize whitespace**: `"  netflix  "` -> `"netflix"`
 
 #### Fuzzy Matching
 
@@ -239,11 +239,11 @@ matcher = FuzzyMatcher(similarity_threshold=80)
 
 # Check if two merchants are the same
 is_same = matcher.is_same_merchant("NETFLIX.COM", "Netflix Inc")
-# → True (after normalization + fuzzy match)
+# -> True (after normalization + fuzzy match)
 
 # Find similar merchants
 similar = matcher.find_similar("netflix", ["netflix", "hulu", "spotify"])
-# → [("netflix", 100.0)]
+# -> [("netflix", 100.0)]
 
 # Group variants
 groups = matcher.group_merchants([
@@ -251,7 +251,7 @@ groups = matcher.group_merchants([
     "Netflix Inc",
     "NFLX*SUBSCRIPTION"
 ])
-# → {"NETFLIX.COM": ["NETFLIX.COM", "Netflix Inc", "NFLX*SUBSCRIPTION"]}
+# -> {"NETFLIX.COM": ["NETFLIX.COM", "Netflix Inc", "NFLX*SUBSCRIPTION"]}
 ```
 
 #### Pre-defined Merchant Groups
@@ -498,9 +498,9 @@ def easy_recurring_detection(
     Create configured recurring transaction detector.
 
     Args:
-        min_occurrences: Minimum transactions to detect pattern (≥2, default: 3)
+        min_occurrences: Minimum transactions to detect pattern (>=2, default: 3)
         amount_tolerance: Amount variance threshold (0.0-1.0, default: 0.02 = ±2%)
-        date_tolerance_days: Date variance threshold (≥0, default: 7 days)
+        date_tolerance_days: Date variance threshold (>=0, default: 7 days)
         **config: Reserved for future extensions (V2: enable_ml, llm_provider)
 
     Returns:
@@ -1043,7 +1043,7 @@ def get_normalized(merchant: str) -> str:
 ### V2 (Planned) - LLM Enhancement
 
 - [ ] **LLM merchant normalization** (few-shot with Google Gemini)
-  - Handles edge cases: "SQ *COFFEE SHOP" → "Square Coffee Shop"
+  - Handles edge cases: "SQ *COFFEE SHOP" -> "Square Coffee Shop"
   - Accuracy: 90-95% (vs 80-85% with fuzzy matching)
   - Cost: ~$0.00003/merchant with 95% cache hit
 
@@ -1257,11 +1257,11 @@ All recurring patterns are normalized to monthly equivalents for easy comparison
 
 | Cadence | Formula | Example |
 |---------|---------|---------|
-| **Monthly** | amount × 1 | $15.99/mo → $15.99/mo |
-| **Quarterly** | amount × 4 / 12 | $60/qtr → $20/mo |
-| **Biweekly** | amount × 26 / 12 | $2000 biweekly → $4333.33/mo |
-| **Weekly** | amount × 52 / 12 | $100/week → $433.33/mo |
-| **Annual** | amount / 12 | $120/year → $10/mo |
+| **Monthly** | amount × 1 | $15.99/mo -> $15.99/mo |
+| **Quarterly** | amount × 4 / 12 | $60/qtr -> $20/mo |
+| **Biweekly** | amount × 26 / 12 | $2000 biweekly -> $4333.33/mo |
+| **Weekly** | amount × 52 / 12 | $100/week -> $433.33/mo |
+| **Annual** | amount / 12 | $120/year -> $10/mo |
 
 ### FastAPI Endpoint
 
@@ -1324,7 +1324,7 @@ if len(summary.cancellation_opportunities) > 0:
 The summary automatically identifies potential savings:
 
 **Duplicate Streaming Services** (>2 detected):
-- Netflix + Hulu + Disney+ + HBO Max → Suggests canceling cheapest
+- Netflix + Hulu + Disney+ + HBO Max -> Suggests canceling cheapest
 
 **High-Cost Subscriptions** (>$50/month):
 - Identifies subscriptions over $50/month for review
@@ -1406,7 +1406,7 @@ The core recurring detection system above is fully algorithmic. For additional a
 ### Overview
 
 V2 adds LLM-assisted capabilities:
-- **Merchant Normalization**: Clean up messy merchant names ("NFLX*SUB" → "Netflix")
+- **Merchant Normalization**: Clean up messy merchant names ("NFLX*SUB" -> "Netflix")
 - **Variable Amount Detection**: Identify utility-style recurring charges with varying amounts
 - **Subscription Insights**: AI-generated summaries and savings recommendations
 
@@ -1421,7 +1421,7 @@ from fin_infra.recurring.insights import SubscriptionInsightsGenerator
 
 # Normalize merchant names
 norm = MerchantNormalizer(provider="google", enable_cache=False)
-result = await norm.normalize("NFLX*SUB")  # → "Netflix"
+result = await norm.normalize("NFLX*SUB")  # -> "Netflix"
 
 # Detect variable recurring patterns
 det = VariableDetectorLLM(provider="google")

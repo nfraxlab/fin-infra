@@ -116,8 +116,8 @@ class FinancialPIIFilter(logging.Filter):
         Mask Social Security Numbers.
 
         Examples:
-            123-45-6789 → ***-**-6789
-            123456789 → *****6789 (with context)
+            123-45-6789 -> ***-**-6789
+            123456789 -> *****6789 (with context)
         """
         # With dashes (high confidence)
         text = SSN_PATTERN.sub(lambda m: f"***-**-{m.group()[-4:]}", text)
@@ -145,7 +145,7 @@ class FinancialPIIFilter(logging.Filter):
         Mask Employer Identification Numbers.
 
         Example:
-            12-3456789 → **-****789
+            12-3456789 -> **-****789
         """
         return EIN_PATTERN.sub(lambda m: f"**-****{m.group()[-3:]}", text)
 
@@ -154,8 +154,8 @@ class FinancialPIIFilter(logging.Filter):
         Mask credit card numbers using Luhn validation.
 
         Examples:
-            4111 1111 1111 1111 → **** **** **** 1111
-            4111111111111111 → ************1111
+            4111 1111 1111 1111 -> **** **** **** 1111
+            4111111111111111 -> ************1111
         """
 
         def mask_card_match(match):
@@ -182,7 +182,7 @@ class FinancialPIIFilter(logging.Filter):
         Mask ABA routing numbers with checksum validation.
 
         Example:
-            021000021 → ******021
+            021000021 -> ******021
         """
 
         def mask_routing_match(match):
@@ -207,7 +207,7 @@ class FinancialPIIFilter(logging.Filter):
         Mask bank account numbers.
 
         Example:
-            1234567890 → ******7890
+            1234567890 -> ******7890
         """
 
         def mask_account_match(match):
@@ -231,7 +231,7 @@ class FinancialPIIFilter(logging.Filter):
         Mask CVV codes (context-dependent).
 
         Example:
-            CVV: 123 → CVV: ***
+            CVV: 123 -> CVV: ***
         """
 
         def mask_cvv_match(match):
@@ -255,7 +255,7 @@ class FinancialPIIFilter(logging.Filter):
         Mask email addresses.
 
         Example:
-            user@example.com → u***@example.com
+            user@example.com -> u***@example.com
         """
 
         def mask_email_match(match):
@@ -272,7 +272,7 @@ class FinancialPIIFilter(logging.Filter):
         Mask phone numbers.
 
         Example:
-            (555) 123-4567 → (***) ***-4567
+            (555) 123-4567 -> (***) ***-4567
         """
 
         def mask_phone_match(match):

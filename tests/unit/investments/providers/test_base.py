@@ -343,7 +343,7 @@ class TestCalculatePortfolioMetrics:
         assert metrics["total_value"] == pytest.approx(100.0, abs=0.01)  # Rounded
         assert metrics["total_cost_basis"] == pytest.approx(90.12, abs=0.01)  # Rounded
         assert metrics["total_unrealized_gain_loss"] == pytest.approx(9.88, abs=0.01)  # Rounded
-        # (9.876543 / 90.123456) * 100 = 10.95967... → 10.96
+        # (9.876543 / 90.123456) * 100 = 10.95967... -> 10.96
         assert metrics["total_unrealized_gain_loss_percent"] == pytest.approx(10.96, abs=0.01)
 
 

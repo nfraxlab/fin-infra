@@ -8,7 +8,7 @@ Handles cryptic merchant names that fail pattern-based normalization:
 - Legal entities: Inc, LLC, Corp, Ltd
 
 Uses ai-infra LLM with few-shot prompting for 90-95% accuracy.
-Caches results for 7 days (95% hit rate expected) → <1ms latency.
+Caches results for 7 days (95% hit rate expected) -> <1ms latency.
 Falls back to RapidFuzz if LLM fails or disabled.
 """
 
@@ -93,26 +93,26 @@ Common patterns:
 - POS systems: TST* (Toast), CLOVER*, SQUARE*
 
 Examples:
-1. "NFLX*SUB #12345" → Netflix (streaming)
-2. "Netflix Inc" → Netflix (streaming)
-3. "NETFLIX.COM" → Netflix (streaming)
-4. "SQ *COZY CAFE" → Cozy Cafe (coffee_shop, Square processor)
-5. "TST* STARBUCKS" → Starbucks (coffee_shop, Toast POS)
-6. "AMZN MKTP US" → Amazon (online_shopping)
-7. "SPFY*PREMIUM" → Spotify (streaming)
-8. "UBER *TRIP 12345" → Uber (rideshare)
-9. "LYFT   *RIDE ABC" → Lyft (rideshare)
-10. "CLOVER* PIZZA PLACE" → Pizza Place (restaurant, Clover POS)
-11. "AAPL* ICLOUD STORAGE" → Apple iCloud (cloud_storage)
-12. "MSFT*MICROSOFT 365" → Microsoft 365 (software_subscription)
-13. "DISNEY PLUS #123" → Disney Plus (streaming)
-14. "PRIME VIDEO" → Amazon Prime Video (streaming)
-15. "CITY ELECTRIC #456" → City Electric (utility_electric)
-16. "T-MOBILE USA" → T-Mobile (phone_service)
-17. "VERIZON WIRELESS" → Verizon (phone_service)
-18. "WHOLE FOODS MKT #789" → Whole Foods (grocery)
-19. "STARBUCKS #1234" → Starbucks (coffee_shop)
-20. "LA FITNESS #567" → LA Fitness (gym)
+1. "NFLX*SUB #12345" -> Netflix (streaming)
+2. "Netflix Inc" -> Netflix (streaming)
+3. "NETFLIX.COM" -> Netflix (streaming)
+4. "SQ *COZY CAFE" -> Cozy Cafe (coffee_shop, Square processor)
+5. "TST* STARBUCKS" -> Starbucks (coffee_shop, Toast POS)
+6. "AMZN MKTP US" -> Amazon (online_shopping)
+7. "SPFY*PREMIUM" -> Spotify (streaming)
+8. "UBER *TRIP 12345" -> Uber (rideshare)
+9. "LYFT   *RIDE ABC" -> Lyft (rideshare)
+10. "CLOVER* PIZZA PLACE" -> Pizza Place (restaurant, Clover POS)
+11. "AAPL* ICLOUD STORAGE" -> Apple iCloud (cloud_storage)
+12. "MSFT*MICROSOFT 365" -> Microsoft 365 (software_subscription)
+13. "DISNEY PLUS #123" -> Disney Plus (streaming)
+14. "PRIME VIDEO" -> Amazon Prime Video (streaming)
+15. "CITY ELECTRIC #456" -> City Electric (utility_electric)
+16. "T-MOBILE USA" -> T-Mobile (phone_service)
+17. "VERIZON WIRELESS" -> Verizon (phone_service)
+18. "WHOLE FOODS MKT #789" -> Whole Foods (grocery)
+19. "STARBUCKS #1234" -> Starbucks (coffee_shop)
+20. "LA FITNESS #567" -> LA Fitness (gym)
 
 Output format (JSON):
 {
@@ -131,8 +131,8 @@ class MerchantNormalizer:
     LLM-based merchant name normalizer with caching and fallback.
 
     Layer 2 of 4-layer hybrid architecture:
-    1. Check cache first (95% hit rate, 7-day TTL) → <1ms
-    2. Call LLM if cache miss → 200-400ms
+    1. Check cache first (95% hit rate, 7-day TTL) -> <1ms
+    2. Call LLM if cache miss -> 200-400ms
     3. Cache result for 7 days
     4. Return MerchantNormalized
 
@@ -221,9 +221,9 @@ class MerchantNormalizer:
         Normalize merchant name using LLM with caching.
 
         Flow:
-        1. Check cache (95% hit rate) → <1ms
+        1. Check cache (95% hit rate) -> <1ms
         2. Check budget (daily/monthly caps)
-        3. Call LLM if cache miss → 200-400ms
+        3. Call LLM if cache miss -> 200-400ms
         4. Validate confidence threshold
         5. Cache result (7-day TTL)
         6. Return MerchantNormalized
@@ -386,7 +386,7 @@ class MerchantNormalizer:
         # Remove special characters
         normalized = normalized.replace("*", " ").replace("#", " ").replace(".", " ")
 
-        # Remove store numbers (e.g., "starbucks 1234" → "starbucks")
+        # Remove store numbers (e.g., "starbucks 1234" -> "starbucks")
         import re
 
         normalized = re.sub(r"\b\d{3,}\b", "", normalized)

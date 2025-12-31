@@ -281,7 +281,7 @@ encrypted = encryption.encrypt(
     context={"user_id": "user123", "provider": "plaid"}
 )
 
-# Decrypt with WRONG context → ValueError
+# Decrypt with WRONG context -> ValueError
 try:
     encryption.decrypt(
         encrypted,

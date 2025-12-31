@@ -109,7 +109,7 @@ def add_recurring_detection(
         Detect recurring patterns in transaction history.
 
         Analyzes transaction history for recurring subscriptions and bills using
-        3-layer hybrid detection (fixed → variable → irregular).
+        3-layer hybrid detection (fixed -> variable -> irregular).
 
         **Example Request:**
         ```json

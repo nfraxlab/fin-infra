@@ -519,7 +519,7 @@ def test_get_goal_progress_date_arithmetic():
 
 
 def test_full_goal_lifecycle(sample_deadline):
-    """Test complete CRUD lifecycle: create → read → update → delete."""
+    """Test complete CRUD lifecycle: create -> read -> update -> delete."""
     # Create
     goal = create_goal(
         user_id="user_789",

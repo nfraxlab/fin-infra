@@ -33,8 +33,8 @@ def easy_market(
     """Create a market data provider with zero or minimal configuration.
 
     Auto-detects provider based on environment variables:
-    1. If ALPHA_VANTAGE_API_KEY or ALPHAVANTAGE_API_KEY is set → Alpha Vantage
-    2. Otherwise → Yahoo Finance (no key needed)
+    1. If ALPHA_VANTAGE_API_KEY or ALPHAVANTAGE_API_KEY is set -> Alpha Vantage
+    2. Otherwise -> Yahoo Finance (no key needed)
 
     Args:
         provider: Provider name ("alphavantage" or "yahoo").

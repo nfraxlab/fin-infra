@@ -3,7 +3,7 @@ Net Worth Calculator Module
 
 Provides core calculation functions for net worth tracking:
 - Net worth calculation (assets - liabilities)
-- Currency normalization (all currencies → base currency)
+- Currency normalization (all currencies -> base currency)
 - Asset allocation breakdown
 - Change detection (amount + percentage)
 

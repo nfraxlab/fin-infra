@@ -418,7 +418,7 @@ def test_create_from_template_invalid_name(client):
 
 # Test: Full workflow integration
 def test_full_budget_workflow(client):
-    """Test complete budget lifecycle: create → list → get → update → progress → delete."""
+    """Test complete budget lifecycle: create -> list -> get -> update -> progress -> delete."""
     user_id = "user_workflow"
 
     # 1. Create budget

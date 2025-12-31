@@ -74,8 +74,8 @@ def easy_investments(
         InvestmentProvider instance for fetching holdings, transactions, securities.
 
     Environment detection order:
-        1. If PLAID_CLIENT_ID set → Plaid
-        2. If SNAPTRADE_CLIENT_ID set → SnapTrade
+        1. If PLAID_CLIENT_ID set -> Plaid
+        2. If SNAPTRADE_CLIENT_ID set -> SnapTrade
         3. Default: Plaid (most common)
 
     Examples:

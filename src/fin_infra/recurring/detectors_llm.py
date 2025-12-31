@@ -100,30 +100,30 @@ Examples:
 1. Merchant: "City Electric"
    Amounts: [$45, $52, $48, $55, $50, $49]
    Dates: Monthly (15th ±7 days)
-   → is_recurring: true, cadence: "monthly", range: (40, 60),
+   -> is_recurring: true, cadence: "monthly", range: (40, 60),
      reasoning: "Seasonal winter heating variation", confidence: 0.85
 
 2. Merchant: "T-Mobile"
    Amounts: [$50, $50, $50, $78, $50, $50]
    Dates: Monthly (20th ±3 days)
-   → is_recurring: true, cadence: "monthly", range: (50, 80),
+   -> is_recurring: true, cadence: "monthly", range: (50, 80),
      reasoning: "Occasional overage charge spike", confidence: 0.80
 
 3. Merchant: "Random Store"
    Amounts: [$10, $45, $23, $67, $12]
    Dates: Irregular
-   → is_recurring: false, reasoning: "Too much variance, no pattern", confidence: 0.95
+   -> is_recurring: false, reasoning: "Too much variance, no pattern", confidence: 0.95
 
 4. Merchant: "Gas Company"
    Amounts: [$45, $48, $50, $52, $120, $115]
    Dates: Monthly
-   → is_recurring: true, cadence: "monthly", range: (40, 120),
+   -> is_recurring: true, cadence: "monthly", range: (40, 120),
      reasoning: "Winter heating season doubles bill", confidence: 0.80
 
 5. Merchant: "Gym Membership"
    Amounts: [$40, $40, $0, $40, $40]
    Dates: Monthly
-   → is_recurring: true, cadence: "monthly", range: (0, 40),
+   -> is_recurring: true, cadence: "monthly", range: (0, 40),
      reasoning: "Annual fee waived one month", confidence: 0.75
 
 Output format (JSON):

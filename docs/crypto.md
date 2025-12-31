@@ -131,8 +131,8 @@ crypto = easy_crypto(
 ```
 
 **Auto-Detection**:
-1. If `COINGECKO_API_KEY` environment variable is set → CoinGecko Pro
-2. Otherwise → CoinGecko Free (no key needed, rate limits apply)
+1. If `COINGECKO_API_KEY` environment variable is set -> CoinGecko Pro
+2. Otherwise -> CoinGecko Free (no key needed, rate limits apply)
 
 ### `ticker(symbol: str) -> Ticker`
 
@@ -262,7 +262,7 @@ for insight in insights:
 - `llm` (LLM | None): ai-infra LLM instance (optional, enables AI insights)
 - `total_portfolio_value` (Decimal | None): Total portfolio value across all assets (optional)
 
-**Returns**: `list[CryptoInsight]` sorted by priority (high → medium → low)
+**Returns**: `list[CryptoInsight]` sorted by priority (high -> medium -> low)
 
 ### `CryptoHolding` Model
 
@@ -344,9 +344,9 @@ Insight:
 ```
 
 **Logic**:
-- If any holding > 50% of crypto portfolio → concentration warning
-- If crypto < 5% of total portfolio → "Low crypto exposure, consider increasing"
-- If crypto > 30% of total portfolio → "High crypto exposure, ensure emergency fund"
+- If any holding > 50% of crypto portfolio -> concentration warning
+- If crypto < 5% of total portfolio -> "Low crypto exposure, consider increasing"
+- If crypto > 30% of total portfolio -> "High crypto exposure, ensure emergency fund"
 
 #### Performance Insights
 
@@ -361,9 +361,9 @@ Insight:
 ```
 
 **Logic**:
-- If unrealized gain > 20% → profit-taking opportunity
-- If unrealized loss > 20% → tax-loss harvesting opportunity
-- If gain > 50% → strong performer highlight
+- If unrealized gain > 20% -> profit-taking opportunity
+- If unrealized loss > 20% -> tax-loss harvesting opportunity
+- If gain > 50% -> strong performer highlight
 
 ### AI-Powered Insights
 

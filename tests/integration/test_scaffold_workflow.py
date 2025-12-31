@@ -1,7 +1,7 @@
 """
 Integration tests for scaffold workflow.
 
-Tests the full workflow: scaffold → compile → type check → import.
+Tests the full workflow: scaffold -> compile -> type check -> import.
 """
 
 import subprocess
@@ -16,7 +16,7 @@ from fin_infra.scaffold.goals import scaffold_goals_core
 
 
 class TestScaffoldCompileWorkflow:
-    """Test scaffold → compile workflow."""
+    """Test scaffold -> compile workflow."""
 
     @pytest.mark.parametrize(
         "scaffold_func,domain,entity",
@@ -92,7 +92,7 @@ class TestScaffoldCompileWorkflow:
 
 
 class TestScaffoldImportWorkflow:
-    """Test scaffold → import workflow.
+    """Test scaffold -> import workflow.
 
     Note: Import tests are skipped because generated __init__.py files
     reference non-existent create_*_service functions. This is a known
@@ -144,7 +144,7 @@ class TestScaffoldImportWorkflow:
 
 
 class TestScaffoldInstantiateWorkflow:
-    """Test scaffold → instantiate workflow.
+    """Test scaffold -> instantiate workflow.
 
     Note: Instantiation tests are skipped because they depend on imports,
     which fail due to __init__.py referencing non-existent functions.

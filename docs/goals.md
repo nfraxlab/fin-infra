@@ -132,7 +132,7 @@ print(f"Funding Sources: {len(funding)}")
 for source in funding:
     print(f"  {source['account_name']}: {source['allocation_percent']}%")
 
-# Update allocation (validation: total ≤ 100%)
+# Update allocation (validation: total <= 100%)
 await manager.update_account_allocation(
     goal_id=goal["id"],
     account_id="savings_001",
@@ -239,8 +239,8 @@ Goals progress through 4 lifecycle statuses:
 
 | Status | Description | Transitions |
 |--------|-------------|-------------|
-| `ACTIVE` | In progress, being tracked | → PAUSED, COMPLETED, ABANDONED |
-| `PAUSED` | Temporarily suspended | → ACTIVE, ABANDONED |
+| `ACTIVE` | In progress, being tracked | -> PAUSED, COMPLETED, ABANDONED |
+| `PAUSED` | Temporarily suspended | -> ACTIVE, ABANDONED |
 | `COMPLETED` | Target achieved | Final state (no transitions) |
 | `ABANDONED` | Goal given up | Final state (no transitions) |
 
@@ -320,7 +320,7 @@ progress = await manager.get_milestone_progress(goal_id=goal["id"])
 Link multiple accounts to goals with percentage-based allocation. Supports:
 - **Split funding**: Multiple accounts fund one goal
 - **Shared accounts**: One account funds multiple goals
-- **Validation**: Total allocation per goal ≤ 100%
+- **Validation**: Total allocation per goal <= 100%
 
 **Funding Structure**
 ```python
@@ -375,7 +375,7 @@ await manager.link_account_to_goal(
 # - Down payment: 40%
 # Total from savings_001: 130% (OK - different goals)
 
-# But total allocation PER GOAL must be ≤ 100%
+# But total allocation PER GOAL must be <= 100%
 ```
 
 ---
@@ -1127,7 +1127,7 @@ Location: `tests/unit/goals/`
 
 **test_funding.py** (29 tests)
 - Funding CRUD: link, get, update, remove
-- Allocation validation: total ≤ 100%
+- Allocation validation: total <= 100%
 - Multi-account scenarios: split funding
 - Shared accounts: one account, multiple goals
 - Edge cases: not found, validation errors
@@ -1170,7 +1170,7 @@ poetry run pytest tests/unit/goals tests/integration/test_goals_api.py -v
 1. **Plain APIRouter**: Use plain FastAPI router (not svc-infra user_router) to avoid database dependencies
 2. **In-Memory Storage**: Use dictionary stores for testing; production apps should use SQL/Mongo via svc-infra
 3. **Auto-Completion**: Milestones auto-mark as reached when current_amount exceeds milestone amount
-4. **Allocation Validation**: Total funding per goal ≤ 100%; no limit on total per account across goals
+4. **Allocation Validation**: Total funding per goal <= 100%; no limit on total per account across goals
 5. **Generic Design**: Support 6 goal types for diverse fintech use cases (not application-specific)
 
 ---

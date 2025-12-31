@@ -84,7 +84,7 @@ class TestGoogleGeminiLLM:
         assert result.category == Category.VAR_COFFEE_SHOPS
 
         print(
-            f"[OK] Google Gemini: {result.merchant_name} → {result.category} (confidence: {result.confidence:.2f})"
+            f"[OK] Google Gemini: {result.merchant_name} -> {result.category} (confidence: {result.confidence:.2f})"
         )
 
     @pytest.mark.asyncio
@@ -103,9 +103,9 @@ class TestGoogleGeminiLLM:
             result = await categorizer.categorize(merchant)
             if result.category == expected_category:
                 correct += 1
-                print(f"[OK] {merchant} → {result.category} (expected: {expected_category})")
+                print(f"[OK] {merchant} -> {result.category} (expected: {expected_category})")
             else:
-                print(f"[X] {merchant} → {result.category} (expected: {expected_category})")
+                print(f"[X] {merchant} -> {result.category} (expected: {expected_category})")
 
         accuracy = correct / total
         print(f"\n Google Gemini Accuracy: {accuracy:.1%} ({correct}/{total})")
@@ -166,7 +166,7 @@ class TestOpenAIGPT4oMini:
         assert result.category == Category.VAR_GROCERIES
 
         print(
-            f"[OK] OpenAI GPT-4o-mini: {result.merchant_name} → {result.category} (confidence: {result.confidence:.2f})"
+            f"[OK] OpenAI GPT-4o-mini: {result.merchant_name} -> {result.category} (confidence: {result.confidence:.2f})"
         )
 
     @pytest.mark.asyncio
@@ -185,9 +185,9 @@ class TestOpenAIGPT4oMini:
             result = await categorizer.categorize(merchant)
             if result.category == expected_category:
                 correct += 1
-                print(f"[OK] {merchant} → {result.category}")
+                print(f"[OK] {merchant} -> {result.category}")
             else:
-                print(f"[X] {merchant} → {result.category} (expected: {expected_category})")
+                print(f"[X] {merchant} -> {result.category} (expected: {expected_category})")
 
         accuracy = correct / total
         print(f"\n OpenAI GPT-4o-mini Accuracy: {accuracy:.1%} ({correct}/{total})")
@@ -239,7 +239,7 @@ class TestAnthropicClaude:
         assert result.category == Category.FIXED_SUBSCRIPTIONS
 
         print(
-            f"[OK] Anthropic Claude: {result.merchant_name} → {result.category} (confidence: {result.confidence:.2f})"
+            f"[OK] Anthropic Claude: {result.merchant_name} -> {result.category} (confidence: {result.confidence:.2f})"
         )
 
     @pytest.mark.asyncio
@@ -258,9 +258,9 @@ class TestAnthropicClaude:
             result = await categorizer.categorize(merchant)
             if result.category == expected_category:
                 correct += 1
-                print(f"[OK] {merchant} → {result.category}")
+                print(f"[OK] {merchant} -> {result.category}")
             else:
-                print(f"[X] {merchant} → {result.category} (expected: {expected_category})")
+                print(f"[X] {merchant} -> {result.category} (expected: {expected_category})")
 
         accuracy = correct / total
         print(f"\n Anthropic Claude Accuracy: {accuracy:.1%} ({correct}/{total})")
@@ -294,7 +294,7 @@ class TestHybridWithLLM:
 
     @pytest.mark.asyncio
     async def test_hybrid_flow(self):
-        """Test full hybrid flow: exact → regex → sklearn → LLM."""
+        """Test full hybrid flow: exact -> regex -> sklearn -> LLM."""
         categorizer = easy_categorization(
             model="hybrid",
             enable_ml=True,
@@ -317,9 +317,11 @@ class TestHybridWithLLM:
         assert result3.method.value in ["ml", "llm"]
 
         print("[OK] Hybrid flow test passed:")
-        print(f"  - Exact: {result1.merchant_name} → {result1.category} ({result1.method.value})")
-        print(f"  - Regex: {result2.merchant_name} → {result2.category} ({result2.method.value})")
-        print(f"  - Unknown: {result3.merchant_name} → {result3.category} ({result3.method.value})")
+        print(f"  - Exact: {result1.merchant_name} -> {result1.category} ({result1.method.value})")
+        print(f"  - Regex: {result2.merchant_name} -> {result2.category} ({result2.method.value})")
+        print(
+            f"  - Unknown: {result3.merchant_name} -> {result3.category} ({result3.method.value})"
+        )
 
     @pytest.mark.asyncio
     async def test_hybrid_stats(self):

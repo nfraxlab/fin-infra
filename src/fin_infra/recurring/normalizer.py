@@ -26,12 +26,12 @@ def normalize_merchant(raw_name: str) -> str:
     Normalize merchant name for grouping.
 
     Pipeline:
-    1. Lowercase: "NETFLIX.COM" → "netflix.com"
-    2. Remove domain suffixes: "netflix.com" → "netflix"
-    3. Remove special chars: "netflix*subscription" → "netflix subscription"
-    4. Remove store/transaction numbers: "starbucks #12345" → "starbucks"
-    5. Remove legal entities: "netflix inc" → "netflix"
-    6. Strip whitespace: "  netflix  " → "netflix"
+    1. Lowercase: "NETFLIX.COM" -> "netflix.com"
+    2. Remove domain suffixes: "netflix.com" -> "netflix"
+    3. Remove special chars: "netflix*subscription" -> "netflix subscription"
+    4. Remove store/transaction numbers: "starbucks #12345" -> "starbucks"
+    5. Remove legal entities: "netflix inc" -> "netflix"
+    6. Strip whitespace: "  netflix  " -> "netflix"
 
     Args:
         raw_name: Original merchant name

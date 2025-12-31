@@ -16,7 +16,7 @@ Net Worth = Total Assets - Total Liabilities
 - **Asset Categories**: Cash, investments, crypto, real estate, vehicles, other assets (6 types)
 - **Liability Categories**: Credit cards, mortgages, auto loans, student loans, personal loans, lines of credit (6 types)
 - **Historical Tracking**: Daily snapshots with configurable retention policies
-- **Change Detection**: Alert when net worth changes by ≥5% OR ≥$10k (configurable thresholds)
+- **Change Detection**: Alert when net worth changes by >=5% OR >=$10k (configurable thresholds)
 - **REST API**: 4 endpoints for current net worth, historical snapshots, breakdowns, and manual snapshots
 - **svc-infra Integration**: Uses svc-infra for jobs (daily snapshots), DB (storage), and cache (1h TTL)
 
@@ -128,7 +128,7 @@ Net worth tracking supports **6 asset categories** with automatic categorization
 
 **Categorization**:
 ```python
-# Banking provider account types → CASH
+# Banking provider account types -> CASH
 account_types = ["depository", "checking", "savings", "money_market"]
 ```
 
@@ -157,7 +157,7 @@ AssetDetail(
 
 **Categorization**:
 ```python
-# Brokerage provider account types → INVESTMENTS
+# Brokerage provider account types -> INVESTMENTS
 account_types = ["brokerage", "retirement", "401k", "ira"]
 ```
 
@@ -192,7 +192,7 @@ AssetDetail(
 
 **Categorization**:
 ```python
-# Crypto provider account types → CRYPTO
+# Crypto provider account types -> CRYPTO
 account_types = ["crypto", "wallet", "exchange"]
 ```
 
@@ -224,7 +224,7 @@ AssetDetail(
 
 **Categorization**:
 ```python
-# Manual entry or real estate API → REAL_ESTATE
+# Manual entry or real estate API -> REAL_ESTATE
 account_types = ["real_estate", "property"]
 ```
 
@@ -256,7 +256,7 @@ AssetDetail(
 
 **Categorization**:
 ```python
-# Manual entry or KBB API → VEHICLES
+# Manual entry or KBB API -> VEHICLES
 account_types = ["vehicle", "auto"]
 ```
 
@@ -288,7 +288,7 @@ AssetDetail(
 
 **Categorization**:
 ```python
-# Manual entry → OTHER
+# Manual entry -> OTHER
 account_types = ["collectible", "precious_metal", "art", "other"]
 ```
 
@@ -323,7 +323,7 @@ Net worth tracking supports **6 liability categories**:
 
 **Categorization**:
 ```python
-# Banking provider account types → CREDIT_CARD
+# Banking provider account types -> CREDIT_CARD
 account_types = ["credit", "credit_card"]
 ```
 
@@ -354,7 +354,7 @@ LiabilityDetail(
 
 **Categorization**:
 ```python
-# Banking provider account types → MORTGAGE
+# Banking provider account types -> MORTGAGE
 account_types = ["mortgage", "home_loan"]
 ```
 
@@ -385,7 +385,7 @@ LiabilityDetail(
 
 **Categorization**:
 ```python
-# Banking provider account types → AUTO_LOAN
+# Banking provider account types -> AUTO_LOAN
 account_types = ["auto", "vehicle_loan", "car_loan"]
 ```
 
@@ -416,7 +416,7 @@ LiabilityDetail(
 
 **Categorization**:
 ```python
-# Banking provider account types → STUDENT_LOAN
+# Banking provider account types -> STUDENT_LOAN
 account_types = ["student", "education_loan"]
 ```
 
@@ -447,7 +447,7 @@ LiabilityDetail(
 
 **Categorization**:
 ```python
-# Banking provider account types → PERSONAL_LOAN
+# Banking provider account types -> PERSONAL_LOAN
 account_types = ["personal", "unsecured_loan"]
 ```
 
@@ -478,7 +478,7 @@ LiabilityDetail(
 
 **Categorization**:
 ```python
-# Banking provider account types → LINE_OF_CREDIT
+# Banking provider account types -> LINE_OF_CREDIT
 account_types = ["line_of_credit", "heloc", "loc"]
 ```
 
@@ -571,7 +571,7 @@ Net worth tracking creates **snapshots** at regular intervals to track progress 
 - `"daily"`: Create snapshot every 24 hours at midnight UTC (default)
 - `"weekly"`: Create snapshot every 7 days on Sunday at midnight UTC
 - `"monthly"`: Create snapshot on 1st of each month at midnight UTC
-- `"on_change"`: Create snapshot only when significant change detected (≥5% OR ≥$10k)
+- `"on_change"`: Create snapshot only when significant change detected (>=5% OR >=$10k)
 
 **Example**:
 ```python
@@ -586,21 +586,21 @@ tracker = easy_net_worth(
 Net worth tracking detects **significant changes** and triggers alerts (webhooks, notifications).
 
 **Thresholds** (configurable):
-- **Percentage Threshold**: Default 5% (trigger if net worth changes by ≥5%)
-- **Amount Threshold**: Default $10,000 (trigger if net worth changes by ≥$10k)
+- **Percentage Threshold**: Default 5% (trigger if net worth changes by >=5%)
+- **Amount Threshold**: Default $10,000 (trigger if net worth changes by >=$10k)
 
 **Logic**: Change is significant if **EITHER** threshold is exceeded (OR logic).
 
 ```python
-# Example 1: 10% increase on $60k → significant (exceeds 5% threshold)
+# Example 1: 10% increase on $60k -> significant (exceeds 5% threshold)
 is_significant = detect_significant_change(66000.0, 60000.0)
 # Result: True (10% > 5%)
 
-# Example 2: 3% increase on $500k → significant (exceeds $10k threshold)
+# Example 2: 3% increase on $500k -> significant (exceeds $10k threshold)
 is_significant = detect_significant_change(515000.0, 500000.0)
 # Result: True ($15k > $10k)
 
-# Example 3: 2% increase on $50k → not significant (below both thresholds)
+# Example 3: 2% increase on $50k -> not significant (below both thresholds)
 is_significant = detect_significant_change(51000.0, 50000.0)
 # Result: False (2% < 5% AND $1k < $10k)
 ```
@@ -985,7 +985,7 @@ new Chart(ctx, {
 });
 ```
 
-**Result**: Line chart showing net worth trend ($56k → $58k → $60k over 90 days).
+**Result**: Line chart showing net worth trend ($56k -> $58k -> $60k over 90 days).
 
 ---
 
@@ -1150,7 +1150,7 @@ banking = easy_banking(provider="plaid", client_id="...", secret="...")
 tracker = easy_net_worth(
     banking=banking,
     base_currency="USD",
-    enable_llm=True,  # ← Enable LLM insights
+    enable_llm=True,  # <- Enable LLM insights
     llm_provider="google",  # Google Gemini (recommended)
     llm_api_key="...",  # Or set GOOGLE_API_KEY env
     llm_model="gemini-2.0-flash-exp",  # Cost-optimized model
@@ -1564,7 +1564,7 @@ tracker = easy_net_worth(
 
 ---
 
-### Migration Guide (V1 → V2)
+### Migration Guide (V1 -> V2)
 
 #### V1 (Calculation Only)
 
@@ -1586,7 +1586,7 @@ print(f"Net Worth: ${result['total_net_worth']:,.2f}")
 # V2: Add LLM features (backward compatible)
 tracker = easy_net_worth(
     banking=banking,
-    enable_llm=True,  # ← Add this line
+    enable_llm=True,  # <- Add this line
     llm_provider="google",
     llm_api_key=os.getenv("GOOGLE_API_KEY"),
 )

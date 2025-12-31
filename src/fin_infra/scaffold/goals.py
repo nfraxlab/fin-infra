@@ -178,10 +178,10 @@ def scaffold_goals_core(
     Scaffold goals domain files: models, schemas, repository (optional), and __init__.py.
 
     Generates production-ready code from templates in fin_infra.goals.scaffold_templates:
-    - models.py.tmpl → Goal model with progress tracking, status, priority, milestones
-    - schemas.py.tmpl → GoalBase, GoalCreate, GoalUpdate, GoalRead with status validation
-    - repository.py.tmpl → GoalRepository with CRUD + domain methods (get_active, update_progress)
-    - README.md → Complete usage guide with examples
+    - models.py.tmpl -> Goal model with progress tracking, status, priority, milestones
+    - schemas.py.tmpl -> GoalBase, GoalCreate, GoalUpdate, GoalRead with status validation
+    - repository.py.tmpl -> GoalRepository with CRUD + domain methods (get_active, update_progress)
+    - README.md -> Complete usage guide with examples
 
     Args:
         dest_dir: Destination directory (will be created if missing)

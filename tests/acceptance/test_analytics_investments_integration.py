@@ -303,7 +303,7 @@ class TestAnalyticsAPIWithHoldings:
         print("  Note: Analytics API enhancement with with_holdings parameter in Task 8")
 
     def test_combined_workflow_holdings_to_metrics(self, client):
-        """Test complete workflow: fetch holdings → calculate metrics."""
+        """Test complete workflow: fetch holdings -> calculate metrics."""
         # 1. Fetch holdings via investments API
         holdings_response = client.post(
             "/investments/holdings", json={"access_token": PLAID_ACCESS_TOKEN}

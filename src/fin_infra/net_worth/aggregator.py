@@ -59,7 +59,7 @@ class NetWorthAggregator:
     - Multi-provider support (banking, brokerage, crypto)
     - Parallel account fetching (faster performance)
     - Graceful error handling (continue if one provider fails)
-    - Currency normalization (all → base currency)
+    - Currency normalization (all -> base currency)
     - Market value calculation (stocks/crypto)
 
     **Example**:

@@ -2,7 +2,7 @@
 Transaction categorization module.
 
 Provides ML-based categorization of merchant transactions into 56 categories
-using a hybrid approach (exact match → regex → sklearn Naive Bayes → LLM).
+using a hybrid approach (exact match -> regex -> sklearn Naive Bayes -> LLM).
 
 Basic usage:
     from fin_infra.categorization import categorize

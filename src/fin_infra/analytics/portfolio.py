@@ -527,10 +527,10 @@ def portfolio_metrics_with_holdings(holdings: list) -> PortfolioMetrics:
         PortfolioMetrics with real portfolio analysis
 
     Real Data Advantages:
-        - Actual cost basis → accurate P/L calculations
-        - Real security types → precise asset allocation
-        - Current market values → live portfolio value
-        - No mock data → production-ready analytics
+        - Actual cost basis -> accurate P/L calculations
+        - Real security types -> precise asset allocation
+        - Current market values -> live portfolio value
+        - No mock data -> production-ready analytics
 
     Limitations:
         - Day/YTD/MTD returns require historical snapshots (not in holdings)
@@ -652,7 +652,7 @@ def calculate_day_change_with_snapshot(
         Function matches holdings by account_id + security_id for accurate tracking
         of individual position changes (accounts for buys/sells, not just price moves).
     """
-    # Build lookup map for previous snapshot: (account_id, security_id) → value
+    # Build lookup map for previous snapshot: (account_id, security_id) -> value
     previous_map = {}
     for holding in previous_snapshot:
         key = (holding.account_id, holding.security.security_id)
@@ -703,13 +703,13 @@ def _calculate_allocation_from_holdings(
         list[AssetAllocation] with asset_class, value, and percentage
 
     Asset Class Mapping:
-        - equity → Stocks
-        - etf → Stocks (equity ETFs grouped with stocks)
-        - mutual_fund → Bonds (conservative assumption)
-        - bond → Bonds
-        - cash → Cash
-        - derivative → Other
-        - other → Other
+        - equity -> Stocks
+        - etf -> Stocks (equity ETFs grouped with stocks)
+        - mutual_fund -> Bonds (conservative assumption)
+        - bond -> Bonds
+        - cash -> Cash
+        - derivative -> Other
+        - other -> Other
     """
     from collections import defaultdict
 

@@ -406,7 +406,7 @@ class TestPlaidSandboxSetup:
    https://dashboard.plaid.com/signup
 
 2. Get sandbox credentials:
-   - Navigate to Team Settings → Keys
+   - Navigate to Team Settings -> Keys
    - Copy your client_id
    - Copy your sandbox secret (NOT production secret!)
 

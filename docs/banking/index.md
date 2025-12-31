@@ -93,7 +93,7 @@ teller = TellerClient(
    ```
 
 2. **Submit CSR to Teller**
-   - Login to Teller dashboard → API Settings → Upload CSR
+   - Login to Teller dashboard -> API Settings -> Upload CSR
    - Download signed certificate: `teller_certificate.pem`
 
 3. **Store Certificates Securely**
@@ -123,7 +123,7 @@ teller = TellerClient(
 
 1. **Get Credentials**
    - Sign up at [plaid.com/dashboard](https://plaid.com/dashboard)
-   - Create application → Copy client_id and secret
+   - Create application -> Copy client_id and secret
 
 2. **Configure Environment**
    ```bash
@@ -158,8 +158,8 @@ PLAID_ENVIRONMENT=sandbox  # sandbox | development | production
 
 ### Auto-Detection Logic
 `easy_banking()` checks in order:
-1. `TELLER_CERTIFICATE_PATH` exists → Use Teller
-2. `PLAID_CLIENT_ID` set → Use Plaid
+1. `TELLER_CERTIFICATE_PATH` exists -> Use Teller
+2. `PLAID_CLIENT_ID` set -> Use Plaid
 3. Fallback: Error (no credentials found)
 
 ## Core Operations
@@ -679,15 +679,15 @@ load_dotenv()
 ### API Errors
 **Problem**: `401 Unauthorized`
 
-**Teller**: Certificate not accepted → Re-upload CSR in dashboard
-**Plaid**: Wrong environment → Check `PLAID_ENVIRONMENT` matches token (sandbox tokens won't work in production)
+**Teller**: Certificate not accepted -> Re-upload CSR in dashboard
+**Plaid**: Wrong environment -> Check `PLAID_ENVIRONMENT` matches token (sandbox tokens won't work in production)
 
 **Problem**: `400 Bad Request - Invalid access token`
 
 **Solutions**:
-1. Token expired → Refresh using provider's token refresh flow
-2. Token revoked → User must re-authenticate
-3. Wrong provider → Ensure token from Teller isn't used with Plaid client
+1. Token expired -> Refresh using provider's token refresh flow
+2. Token revoked -> User must re-authenticate
+3. Wrong provider -> Ensure token from Teller isn't used with Plaid client
 
 ### Debugging
 ```python

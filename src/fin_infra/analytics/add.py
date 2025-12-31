@@ -239,9 +239,9 @@ def add_analytics(
 
         Note:
             Real holdings provide:
-            - Accurate cost basis → real profit/loss
-            - Security types → precise asset allocation
-            - Current values → live portfolio tracking
+            - Accurate cost basis -> real profit/loss
+            - Security types -> precise asset allocation
+            - Current values -> live portfolio tracking
         """
         # If with_holdings requested and investment provider available
         if with_holdings:

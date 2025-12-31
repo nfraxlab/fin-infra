@@ -84,7 +84,7 @@ class TestMerchantNormalizer:
 
     @pytest.mark.asyncio
     async def test_normalize_cryptic_merchant_name(self, normalizer, mock_llm):
-        """Test normalization of cryptic merchant names (NFLX*SUB → Netflix)."""
+        """Test normalization of cryptic merchant names (NFLX*SUB -> Netflix)."""
         # Mock LLM response
         mock_response = MagicMock()
         mock_response.structured = MerchantNormalized(
@@ -120,7 +120,7 @@ class TestMerchantNormalizer:
 
     @pytest.mark.asyncio
     async def test_normalize_payment_processor_prefix(self, normalizer, mock_llm):
-        """Test normalization of payment processor prefixes (SQ *CAFE → Cozy Cafe)."""
+        """Test normalization of payment processor prefixes (SQ *CAFE -> Cozy Cafe)."""
         # Mock LLM response
         mock_response = MagicMock()
         mock_response.structured = MerchantNormalized(

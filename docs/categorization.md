@@ -51,13 +51,13 @@ categorizer = easy_categorization()
 merchants = ["Starbucks", "McDonald's", "Uber", "Netflix"]
 for merchant in merchants:
     result = categorizer.categorize(merchant)
-    print(f"{merchant} → {result.category.value}")
+    print(f"{merchant} -> {result.category.value}")
 
 # Output:
-# Starbucks → Coffee Shops
-# McDonald's → Fast Food
-# Uber → Rideshare & Taxis
-# Netflix → Subscriptions
+# Starbucks -> Coffee Shops
+# McDonald's -> Fast Food
+# Uber -> Rideshare & Taxis
+# Netflix -> Subscriptions
 ```
 
 ### FastAPI Integration
@@ -247,14 +247,14 @@ transactions = [
 results = [categorizer.categorize(txn) for txn in transactions]
 
 for txn, result in zip(transactions, results):
-    print(f"{txn:30} → {result.category.value:20} ({result.confidence:.2f})")
+    print(f"{txn:30} -> {result.category.value:20} ({result.confidence:.2f})")
 
 # Output:
-# STARBUCKS #12345               → Coffee Shops        (1.00)
-# CHEVRON #98765                 → Gas & Fuel          (1.00)
-# WHOLE FOODS MARKET             → Groceries           (1.00)
-# UBER TRIP 123                  → Rideshare & Taxis   (0.90)
-# NFLX*SUBSCRIPTION              → Subscriptions       (0.90)
+# STARBUCKS #12345               -> Coffee Shops        (1.00)
+# CHEVRON #98765                 -> Gas & Fuel          (1.00)
+# WHOLE FOODS MARKET             -> Groceries           (1.00)
+# UBER TRIP 123                  -> Rideshare & Taxis   (0.90)
+# NFLX*SUBSCRIPTION              -> Subscriptions       (0.90)
 ```
 
 ### Alternative Predictions
@@ -578,7 +578,7 @@ Get categorization statistics.
 V2 adds **Layer 4 (LLM Fallback)** using ai-infra's LLM for edge cases where traditional methods fail. This improves accuracy from 90% (V1) to **95-97%** (V2) with minimal cost impact.
 
 **How It Works**:
-1. **Layers 1-3** (exact → regex → sklearn) handle 95-99% of merchants
+1. **Layers 1-3** (exact -> regex -> sklearn) handle 95-99% of merchants
 2. **Layer 4 (LLM)** only activates when sklearn confidence < 0.6
 3. **Few-shot prompting** with 20 examples achieves 85-95% accuracy on unknown merchants
 4. **Aggressive caching** (24h TTL) reduces 90% of LLM costs
@@ -647,7 +647,7 @@ categorizer = easy_categorization(
 ```python
 categorizer = easy_categorization(model="local", enable_ml=True)
 result = await categorizer.categorize("Starbucks")
-# Uses: exact → regex → sklearn (90% accuracy, $0 cost)
+# Uses: exact -> regex -> sklearn (90% accuracy, $0 cost)
 ```
 
 #### 2. LLM Only (Experimental)
@@ -665,7 +665,7 @@ result = await categorizer.categorize("Unknown Merchant")
 ```python
 categorizer = easy_categorization(model="hybrid", enable_ml=True)
 result = await categorizer.categorize("Unknown Merchant")
-# Uses: exact → regex → sklearn → LLM (95-97% accuracy, <$0.0002/txn with caching)
+# Uses: exact -> regex -> sklearn -> LLM (95-97% accuracy, <$0.0002/txn with caching)
 ```
 
 ### Cost Management
@@ -679,7 +679,7 @@ categorizer = easy_categorization(
     llm_max_cost_per_month=1.00,  # $1/month cap
 )
 
-# Budget exceeded → raises RuntimeError
+# Budget exceeded -> raises RuntimeError
 try:
     result = await categorizer.categorize("Merchant")
 except RuntimeError as e:
@@ -718,7 +718,7 @@ init_cache(
 # LLM predictions cached for 24h (default)
 # Cache key: MD5(normalized_merchant_name)
 # Cache hit rate: 85-90% (typical)
-# Effective cost: 10x reduction ($0.00011 → $0.000011)
+# Effective cost: 10x reduction ($0.00011 -> $0.000011)
 ```
 
 ### Prompt Engineering (Few-Shot)
@@ -732,9 +732,9 @@ You are a transaction categorization expert. Given a merchant name,
 predict the most likely category from 56 options.
 
 # Examples (20 merchants):
-- "Starbucks" → Coffee Shops (confidence: 0.95)
-- "Amazon" → Online Shopping (confidence: 0.90)
-- "Uber" → Rideshare & Taxis (confidence: 0.98)
+- "Starbucks" -> Coffee Shops (confidence: 0.95)
+- "Amazon" -> Online Shopping (confidence: 0.90)
+- "Uber" -> Rideshare & Taxis (confidence: 0.98)
 ...
 
 # All Categories (56):
@@ -773,7 +773,7 @@ class CategoryPrediction(BaseModel):
 **Overall**:
 - **Accuracy**: 95-97% (V2 hybrid) vs 90% (V1 local)
 - **Latency**: P50 <1ms, P99 ~10ms (with caching), LLM fallback ~200-500ms
-- **Cost**: $0.003/year (1k txns) → $2.64/year (1M txns)
+- **Cost**: $0.003/year (1k txns) -> $2.64/year (1M txns)
 
 ### Acceptance Tests
 
@@ -851,7 +851,7 @@ poetry run pytest -m acceptance tests/acceptance/test_categorization_llm_accepta
 
 ### Issue: Incorrect Category
 
-**Symptom**: Merchant categorized incorrectly (e.g., "Target" → Groceries, but user shops for clothes)
+**Symptom**: Merchant categorized incorrectly (e.g., "Target" -> Groceries, but user shops for clothes)
 
 **Solutions**:
 1. User override (future v2 feature): Store in CategoryOverride table
@@ -862,7 +862,7 @@ poetry run pytest -m acceptance tests/acceptance/test_categorization_llm_accepta
 **Symptom**: Slow categorization (>10ms per prediction)
 
 **Solutions**:
-1. Enable caching (svc-infra.cache): 90-95% cache hit rate → <1ms effective latency
+1. Enable caching (svc-infra.cache): 90-95% cache hit rate -> <1ms effective latency
 2. Batch categorize: Process multiple transactions at once
 3. Profile: Check if ML model is accidentally enabled (10x slower than rules)
 
@@ -928,7 +928,7 @@ To add new categories (requires taxonomy update):
 1. **Edit `taxonomy.py`**: Add to `Category` enum
 2. **Update `CATEGORY_GROUPS`**: Assign to appropriate group
 3. **Add Metadata**: Create `CategoryMetadata` entry
-4. **Update Tests**: Verify 56 → 57 categories
+4. **Update Tests**: Verify 56 -> 57 categories
 5. **Update Docs**: Add to taxonomy reference
 
 ---

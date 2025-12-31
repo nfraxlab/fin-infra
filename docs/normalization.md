@@ -8,14 +8,14 @@
 
 ## Overview
 
-The normalization module provides **symbol resolution** and **currency conversion** for financial applications. Convert between ticker formats (AAPL → CUSIP → ISIN), normalize provider-specific symbols, and handle multi-currency portfolios.
+The normalization module provides **symbol resolution** and **currency conversion** for financial applications. Convert between ticker formats (AAPL -> CUSIP -> ISIN), normalize provider-specific symbols, and handle multi-currency portfolios.
 
 ### What It Does
 
 - **Symbol Resolution**: Ticker <-> CUSIP <-> ISIN conversions
-- **Provider Normalization**: Yahoo's `BTC-USD` → CoinGecko's `bitcoin` → Alpaca's `BTCUSD` → `BTC`
-- **Currency Conversion**: USD → EUR with live exchange rates
-- **Metadata Enrichment**: Ticker → company name, sector, exchange
+- **Provider Normalization**: Yahoo's `BTC-USD` -> CoinGecko's `bitcoin` -> Alpaca's `BTCUSD` -> `BTC`
+- **Currency Conversion**: USD -> EUR with live exchange rates
+- **Metadata Enrichment**: Ticker -> company name, sector, exchange
 - **Batch Operations**: Resolve multiple symbols efficiently
 
 ###Quick Start
@@ -27,18 +27,18 @@ from fin_infra.normalization import easy_normalization
 resolver, converter = easy_normalization()
 
 # Convert between identifier types
-ticker = await resolver.to_ticker("037833100")  # CUSIP → AAPL
-cusip = await resolver.to_cusip("AAPL")        # AAPL → 037833100
-isin = await resolver.to_isin("AAPL")          # AAPL → US0378331005
+ticker = await resolver.to_ticker("037833100")  # CUSIP -> AAPL
+cusip = await resolver.to_cusip("AAPL")        # AAPL -> 037833100
+isin = await resolver.to_isin("AAPL")          # AAPL -> US0378331005
 
 # Normalize provider symbols
-btc = await resolver.normalize("BTC-USD", "yahoo")      # → BTC
-btc = await resolver.normalize("bitcoin", "coingecko")  # → BTC
-btc = await resolver.normalize("BTCUSD", "alpaca")      # → BTC
+btc = await resolver.normalize("BTC-USD", "yahoo")      # -> BTC
+btc = await resolver.normalize("bitcoin", "coingecko")  # -> BTC
+btc = await resolver.normalize("BTCUSD", "alpaca")      # -> BTC
 
 # Currency conversion
-eur = await converter.convert(100, "USD", "EUR")  # → 92.0
-rate = await converter.get_rate("USD", "EUR")     # → 0.92
+eur = await converter.convert(100, "USD", "EUR")  # -> 92.0
+rate = await converter.get_rate("USD", "EUR")     # -> 0.92
 ```
 
 ### Key Use Cases
@@ -60,25 +60,25 @@ from fin_infra.normalization import easy_normalization
 
 resolver, _ = easy_normalization()
 
-# Ticker → CUSIP
+# Ticker -> CUSIP
 cusip = await resolver.to_cusip("AAPL")
-# → "037833100"
+# -> "037833100"
 
-# Ticker → ISIN
+# Ticker -> ISIN
 isin = await resolver.to_isin("TSLA")
-# → "US88160R1014"
+# -> "US88160R1014"
 
-# CUSIP → Ticker
+# CUSIP -> Ticker
 ticker = await resolver.to_ticker("037833100")
-# → "AAPL"
+# -> "AAPL"
 
-# ISIN → Ticker
+# ISIN -> Ticker
 ticker = await resolver.to_ticker("US88160R1014")
-# → "TSLA"
+# -> "TSLA"
 
 # Exchange-qualified symbols
 ticker = await resolver.to_ticker("NASDAQ:AAPL")
-# → "AAPL"
+# -> "AAPL"
 ```
 
 ### Provider Symbol Normalization
@@ -88,15 +88,15 @@ Different providers use different symbol formats. The resolver normalizes them:
 ```python
 # Yahoo Finance: Uses dashes for crypto
 yahoo_btc = await resolver.normalize("BTC-USD", "yahoo")
-# → "BTC"
+# -> "BTC"
 
 # CoinGecko: Uses full names
 coingecko_btc = await resolver.normalize("bitcoin", "coingecko")
-# → "BTC"
+# -> "BTC"
 
 # Alpaca: No separators
 alpaca_btc = await resolver.normalize("BTCUSD", "alpaca")
-# → "BTC"
+# -> "BTC"
 
 # All normalize to the same standard ticker: BTC
 ```
@@ -162,7 +162,7 @@ resolver.add_mapping(
 
 # Now resolves like any other symbol
 cusip = await resolver.to_cusip("CUSTOM")
-# → "999999999"
+# -> "999999999"
 ```
 
 ---
@@ -178,11 +178,11 @@ _, converter = easy_normalization()
 
 # Convert amount
 eur = await converter.convert(100, "USD", "EUR")
-# → 92.0 (live exchange rate)
+# -> 92.0 (live exchange rate)
 
 # Get exchange rate only
 rate = await converter.get_rate("USD", "EUR")
-# → 0.92
+# -> 0.92
 ```
 
 ### Detailed Conversion
@@ -261,7 +261,7 @@ print(usd_amounts)
 # }
 
 total_usd = sum(usd_amounts.values())
-# → 399.4 USD
+# -> 399.4 USD
 ```
 
 ### Supported Currencies
@@ -594,24 +594,24 @@ async def safe_convert(amount, from_curr, to_curr):
 
 | Method | Description | Example |
 |--------|-------------|---------|
-| `to_ticker(identifier)` | Convert any ID to ticker | `"037833100"` → `"AAPL"` |
-| `to_cusip(ticker)` | Convert ticker to CUSIP | `"AAPL"` → `"037833100"` |
-| `to_isin(ticker)` | Convert ticker to ISIN | `"AAPL"` → `"US0378331005"` |
-| `normalize(symbol, provider)` | Normalize provider symbol | `("BTC-USD", "yahoo")` → `"BTC"` |
-| `get_metadata(ticker)` | Get company metadata | `"AAPL"` → `SymbolMetadata(...)` |
-| `resolve_batch(symbols)` | Batch resolve symbols | `["AAPL", "037833100"]` → `{...}` |
+| `to_ticker(identifier)` | Convert any ID to ticker | `"037833100"` -> `"AAPL"` |
+| `to_cusip(ticker)` | Convert ticker to CUSIP | `"AAPL"` -> `"037833100"` |
+| `to_isin(ticker)` | Convert ticker to ISIN | `"AAPL"` -> `"US0378331005"` |
+| `normalize(symbol, provider)` | Normalize provider symbol | `("BTC-USD", "yahoo")` -> `"BTC"` |
+| `get_metadata(ticker)` | Get company metadata | `"AAPL"` -> `SymbolMetadata(...)` |
+| `resolve_batch(symbols)` | Batch resolve symbols | `["AAPL", "037833100"]` -> `{...}` |
 | `add_mapping(...)` | Add custom symbol | Manual symbol override |
 
 ### CurrencyConverter
 
 | Method | Description | Example |
 |--------|-------------|---------|
-| `convert(amount, from, to)` | Convert amount | `(100, "USD", "EUR")` → `92.0` |
-| `get_rate(from, to)` | Get exchange rate | `("USD", "EUR")` → `0.92` |
-| `get_rates(base)` | Get all rates | `"USD"` → `{"EUR": 0.92, ...}` |
+| `convert(amount, from, to)` | Convert amount | `(100, "USD", "EUR")` -> `92.0` |
+| `get_rate(from, to)` | Get exchange rate | `("USD", "EUR")` -> `0.92` |
+| `get_rates(base)` | Get all rates | `"USD"` -> `{"EUR": 0.92, ...}` |
 | `convert_with_details(...)` | Convert with metadata | Returns `CurrencyConversionResult` |
 | `supported_currencies()` | List currencies | Returns `["USD", "EUR", ...]` |
-| `batch_convert(amounts, to)` | Batch convert | `{...}` → `{...}` |
+| `batch_convert(amounts, to)` | Batch convert | `{...}` -> `{...}` |
 
 ---
 

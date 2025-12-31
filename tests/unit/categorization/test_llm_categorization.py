@@ -6,7 +6,7 @@ Tests LLMCategorizer with mocked ai-infra responses:
 - Retry logic with transient failures
 - Budget tracking and cost enforcement
 - Graceful fallback to sklearn when LLM fails
-- Hybrid flow (exact → regex → sklearn → LLM)
+- Hybrid flow (exact -> regex -> sklearn -> LLM)
 """
 
 from unittest.mock import AsyncMock, patch

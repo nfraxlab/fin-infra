@@ -589,7 +589,7 @@ Webhooks use svc-infra's built-in retry system:
 - **Retries**: 3 attempts with exponential backoff (1s, 2s, 4s)
 - **Timeout**: 30 seconds per attempt
 - **Success**: HTTP 200-299 response
-- **Failure**: HTTP 4xx/5xx or timeout → retry
+- **Failure**: HTTP 4xx/5xx or timeout -> retry
 - **Dead Letter**: After 3 failed attempts, webhook stored in dead-letter queue
 
 #### List Subscriptions

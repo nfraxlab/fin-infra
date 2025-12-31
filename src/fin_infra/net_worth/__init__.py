@@ -13,7 +13,7 @@ Calculates net worth by aggregating balances from multiple financial providers
 
 **Key Features**:
 - Multi-provider aggregation (banking + brokerage + crypto)
-- Currency normalization (all currencies → USD)
+- Currency normalization (all currencies -> USD)
 - Historical snapshots (daily at midnight UTC)
 - Change detection (>5% or >$10k triggers webhook)
 - Asset allocation breakdown (pie charts)

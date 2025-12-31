@@ -61,7 +61,7 @@ fin-infra supports **20+ provider integrations** across 6 domains. Most provider
 #### Setup
 
 1. **Sign up**: https://dashboard.plaid.com/signup
-2. **Get credentials**: Dashboard → Keys
+2. **Get credentials**: Dashboard -> Keys
 3. **Configure** `.env`:
 
 ```bash
@@ -533,8 +533,8 @@ curl http://localhost:8001/banking/link
 
 fin-infra automatically falls back:
 
-- **Market data**: Alpha Vantage → Yahoo Finance
-- **Crypto data**: CoinGecko → CCXT (if configured)
+- **Market data**: Alpha Vantage -> Yahoo Finance
+- **Crypto data**: CoinGecko -> CCXT (if configured)
 
 Check logs for fallback messages:
 ```bash

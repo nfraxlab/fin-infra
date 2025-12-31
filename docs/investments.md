@@ -291,13 +291,13 @@ Calculate asset allocation breakdown by asset class.
 ```
 
 **Asset Class Mapping:**
-- `equity` → Stocks
-- `etf` → Stocks (most ETFs)
-- `mutual_fund` → Bonds (conservative)
-- `bond` → Bonds
-- `cash` → Cash
-- `derivative` → Other
-- `other` → Other
+- `equity` -> Stocks
+- `etf` -> Stocks (most ETFs)
+- `mutual_fund` -> Bonds (conservative)
+- `bond` -> Bonds
+- `cash` -> Cash
+- `derivative` -> Other
+- `other` -> Other
 
 ### GET /investments/securities
 
@@ -518,9 +518,9 @@ for allocation in metrics.allocation_by_asset_class:
 ```
 
 **Benefits over mock data:**
-- Accurate cost basis → real P/L
-- Real security types → precise allocation
-- Current market values → live tracking
+- Accurate cost basis -> real P/L
+- Real security types -> precise allocation
+- Current market values -> live tracking
 
 ### Brokerage Module: Unified Portfolio View
 

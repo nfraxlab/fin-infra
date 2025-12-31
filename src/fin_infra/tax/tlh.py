@@ -456,7 +456,7 @@ def _suggest_replacement(symbol: str, asset_class: str) -> str:
     # Simple rule-based suggestions (v1)
     # TODO: Replace with ai-infra LLM for intelligent suggestions
     replacements = {
-        # Tech stocks → sector ETFs
+        # Tech stocks -> sector ETFs
         "AAPL": "VGT",  # Tech ETF
         "MSFT": "VGT",
         "GOOGL": "VGT",
@@ -464,19 +464,19 @@ def _suggest_replacement(symbol: str, asset_class: str) -> str:
         "META": "VGT",
         "NVDA": "SOXX",  # Semiconductor ETF
         "AMD": "SOXX",
-        # Auto/EV → sector alternatives
+        # Auto/EV -> sector alternatives
         "TSLA": "ARKK",  # Innovation ETF
         "F": "XLI",  # Industrials ETF
         "GM": "XLI",
-        # Finance → sector ETF
+        # Finance -> sector ETF
         "JPM": "XLF",  # Financials ETF
         "BAC": "XLF",
         "GS": "XLF",
-        # Healthcare → sector ETF
+        # Healthcare -> sector ETF
         "JNJ": "XLV",  # Healthcare ETF
         "PFE": "XLV",
         "MRNA": "XBI",  # Biotech ETF
-        # Crypto → broad exposure
+        # Crypto -> broad exposure
         "BTC": "ETH",  # Ethereum (different asset)
         "ETH": "BTC",  # Bitcoin (different asset)
     }

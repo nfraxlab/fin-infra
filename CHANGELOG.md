@@ -1251,11 +1251,11 @@ Changes: - Remove NotImplementedError stubs for easy_analytics() and add_analyti
   up __all__ to include AnalyticsEngine
 
 Tasks 8 and 9 were completed in ease.py and add.py but __init__.py was never updated to use them.
-  This fix ensures: - from fin_infra.analytics import easy_analytics - ✅ works - from
-  fin_infra.analytics import add_analytics - ✅ works - from fin_infra.analytics import
-  AnalyticsEngine - ✅ works
+  This fix ensures: - from fin_infra.analytics import easy_analytics - [OK] works - from
+  fin_infra.analytics import add_analytics - [OK] works - from fin_infra.analytics import
+  AnalyticsEngine - [OK] works
 
-Verification: - mypy passes ✅ - ruff check passes ✅ - Import test passes ✅
+Verification: - mypy passes [OK] - ruff check passes [OK] - Import test passes [OK]
 
 ### Chores
 
@@ -1264,24 +1264,24 @@ Verification: - mypy passes ✅ - ruff check passes ✅ - Import test passes ✅
 
 Updates completion checklist with actual status:
 
-Testing: - ✅ Unit tests: 112 tests passing (test_tracker, test_alerts, test_templates, test_ease,
-  test_add) - ✅ Coverage: 88% (exceeds 80% target) - ✅ Router tests: Verified plain APIRouter usage
-  - ✅ OpenAPI tests: add_prefixed_docs() called - 📝 Integration tests: Created 17 tests in
-  test_budgets_api.py (requires aiosqlite) - 📝 Acceptance tests: TODO (optional for production
+Testing: - [OK] Unit tests: 112 tests passing (test_tracker, test_alerts, test_templates, test_ease,
+  test_add) - [OK] Coverage: 88% (exceeds 80% target) - [OK] Router tests: Verified plain APIRouter usage
+  - [OK] OpenAPI tests: add_prefixed_docs() called -  Integration tests: Created 17 tests in
+  test_budgets_api.py (requires aiosqlite) -  Acceptance tests: TODO (optional for production
   readiness)
 
-Code Quality: - ✅ ruff format passes - ✅ ruff check passes (no errors) - ✅ mypy passes (full type
+Code Quality: - [OK] ruff format passes - [OK] ruff check passes (no errors) - [OK] mypy passes (full type
   coverage)
 
-Documentation: - ✅ budgets.md created (~1200 lines comprehensive guide) - ✅ ADR 0024 created (~780
-  lines architecture decision) - ✅ README updated (budgets added to Helper Index table) - 📝
+Documentation: - [OK] budgets.md created (~1200 lines comprehensive guide) - [OK] ADR 0024 created (~780
+  lines architecture decision) - [OK] README updated (budgets added to Helper Index table) -
   Examples: TODO - budgets_demo.py (optional)
 
-API Compliance: - ✅ add_prefixed_docs() confirmed in add.py - 📝 Manual verification: TODO - visit
-  /docs landing page - 📝 API testing: TODO - curl/httpie/Postman tests - ✅ Trailing slash: Handled
+API Compliance: - [OK] add_prefixed_docs() confirmed in add.py -  Manual verification: TODO - visit
+  /docs landing page -  API testing: TODO - curl/httpie/Postman tests - [OK] Trailing slash: Handled
   by plain APIRouter
 
-Module Status: Core implementation complete (Tasks 13-18 ✅). Optional items: integration/acceptance
+Module Status: Core implementation complete (Tasks 13-18 [OK]). Optional items: integration/acceptance
   tests, manual API verification, examples demo. Module ready for initial production use in any
   fintech application.
 
@@ -1302,7 +1302,7 @@ Fixes: - Fix ease.py SQLite handling: Skip pool_size/max_overflow for SQLite (us
   patterns - ADR 0023: 400+ lines on design philosophy, calculation methodologies, caching -
   README.md: Added analytics capability card to Helper Index
 
-🧪 Quality Gates Passed: - Tests: 229 tests passing (207 unit + 22 integration) - Coverage: 96% (682
+ Quality Gates Passed: - Tests: 229 tests passing (207 unit + 22 integration) - Coverage: 96% (682
   stmts, 28 miss) - EXCEEDS 80% target - Linting: ruff format + ruff check passing - Type checking:
   mypy passing (full type coverage) - Router: Uses svc-infra public_router (no generic APIRouter)
 
@@ -1314,12 +1314,12 @@ Fixes: - Fix ease.py SQLite handling: Skip pool_size/max_overflow for SQLite (us
   issues and solutions - Generic design: Serves personal finance, wealth management, banking,
   investment apps
 
-🏗️ Architecture Decision (ADR 0023): - svc-infra reuse: public_router, caching, logging,
+ Architecture Decision (ADR 0023): - svc-infra reuse: public_router, caching, logging,
   observability - ai-infra reuse: CoreLLM for spending advice (no custom LLM client) - fin-infra
   provides: Financial calculations, prompts, schemas - Type C (Hybrid): Backend from svc-infra,
   financial logic from fin-infra
 
-✅ All Task 10 checklist items completed ✅ Ready for Task 11 (Budgets Module)
+[OK] All Task 10 checklist items completed [OK] Ready for Task 11 (Budgets Module)
 
 - **budgets**: Complete Task 18 - Comprehensive budget management documentation
   ([`1ce58f3`](https://github.com/nfraxlab/fin-infra/commit/1ce58f39822089072d015a4ac4cd6cfd7b0df5a7))
@@ -1364,10 +1364,10 @@ Task 18 complete: budgets.md, ADR 0024, README update
 - **plans**: Mark budgets integration and acceptance tests complete
   ([`ee6dc11`](https://github.com/nfraxlab/fin-infra/commit/ee6dc11b83692d6ffe31c2a5ca80fdaae7b2e0ea))
 
-Updated budgets completion checklist: - ✅ Integration tests: 17 tests passing (test_budgets_api.py)
-  - ✅ Acceptance tests: 7 tests passing (test_budgets_acceptance.py) - ✅ Total: 136 tests passing
-  (112 unit + 17 integration + 7 acceptance) - ✅ Coverage: 88% (exceeds 80% target) - ✅ In-memory
-  persistence: BudgetTracker uses _budgets dict storage - ✅ Dependencies: aiosqlite ^0.21.0 added
+Updated budgets completion checklist: - [OK] Integration tests: 17 tests passing (test_budgets_api.py)
+  - [OK] Acceptance tests: 7 tests passing (test_budgets_acceptance.py) - [OK] Total: 136 tests passing
+  (112 unit + 17 integration + 7 acceptance) - [OK] Coverage: 88% (exceeds 80% target) - [OK] In-memory
+  persistence: BudgetTracker uses _budgets dict storage - [OK] Dependencies: aiosqlite ^0.21.0 added
 
 All MANDATORY completion criteria met. Module ready for production use.
 
@@ -1384,27 +1384,27 @@ All checklist items now properly marked as complete.
 - **budgets**: Complete Task 11 - Create budgets module structure
   ([`68009f8`](https://github.com/nfraxlab/fin-infra/commit/68009f8e141d26b1c616100378836ca4b9655353))
 
-📁 Module Structure Created: - src/fin_infra/budgets/__init__.py (lazy imports, comprehensive docs) -
+ Module Structure Created: - src/fin_infra/budgets/__init__.py (lazy imports, comprehensive docs) -
   src/fin_infra/budgets/models.py (BudgetType, BudgetPeriod enums) -
   src/fin_infra/budgets/tracker.py (placeholder for Task 13) - src/fin_infra/budgets/alerts.py
   (placeholder for Task 14) - src/fin_infra/budgets/templates.py (placeholder for Task 15) -
   src/fin_infra/budgets/ease.py (placeholder for Task 16) - src/fin_infra/budgets/add.py
   (placeholder for Task 17)
 
-🎯 Design Decisions: - Generic design: Serves personal finance, household, business, project apps -
+ Design Decisions: - Generic design: Serves personal finance, household, business, project apps -
   Lazy imports: Performance optimization (imports only when accessed) - Comprehensive docstrings:
   Clear module purpose and integration points - Enums defined: BudgetType (5 types), BudgetPeriod (5
   periods) - TODOs placed: Clear tasks for subsequent implementation
 
-🔗 Integration Points Documented: - svc-infra SQL: Budget persistence - svc-infra webhooks: Alert
+ Integration Points Documented: - svc-infra SQL: Budget persistence - svc-infra webhooks: Alert
   delivery - fin-infra categorization: Transaction mapping - fin-infra analytics: Spending insights
 
-✅ Task 11 complete - Ready for Task 12 (Define Pydantic models)
+[OK] Task 11 complete - Ready for Task 12 (Define Pydantic models)
 
 - **budgets**: Complete Task 12 - Define all Pydantic models
   ([`4439ebb`](https://github.com/nfraxlab/fin-infra/commit/4439ebb250c2d0c6570809c90217f99af7b3d8c5))
 
-✅ Task 12 Complete: Define Pydantic models for budgets
+[OK] Task 12 Complete: Define Pydantic models for budgets
 
 Models Defined (7 total): 1. Budget: Core budget entity (12 fields with validation) - Fields: id,
   user_id, name, type, period, categories, dates, rollover, timestamps - Validation: min_length,
@@ -1433,7 +1433,7 @@ All Models Include: - Comprehensive docstrings with use cases and examples - Pyd
   Full type annotations for mypy compatibility - Generic design for
   personal/household/business/project apps
 
-Quality Gates: ✅ PASS - mypy: No type errors in models.py - ruff format: 2 files reformatted - ruff
+Quality Gates: [OK] PASS - mypy: No type errors in models.py - ruff format: 2 files reformatted - ruff
   check: All checks passed (lazy import noqa added)
 
 Files Changed: - src/fin_infra/budgets/models.py: Added 353 lines (7 models + 2 enums) -
@@ -1445,7 +1445,7 @@ Next: Task 13 - Implement BudgetTracker class with CRUD methods
 - **budgets**: Complete Task 13 - Implement BudgetTracker class
   ([`32b4843`](https://github.com/nfraxlab/fin-infra/commit/32b484384107a5c4cc4009bb09d6653ff08ec2dc))
 
-✅ Task 13 Complete: Implement BudgetTracker with all CRUD methods
+[OK] Task 13 Complete: Implement BudgetTracker with all CRUD methods
 
 Implementation (src/fin_infra/budgets/tracker.py): 1. BudgetTracker Class (~450 lines): -
   Constructor with db_engine (SQLAlchemy async engine) - Session maker for async database operations
@@ -1487,7 +1487,7 @@ Unit Tests (tests/unit/budgets/test_tracker.py - 25 tests): - TestBudgetTrackerI
 Pydantic V2 Migration: - Migrated all 5 models from class-based Config to ConfigDict - Fixed
   Pydantic deprecation warnings - Added ConfigDict import to models.py
 
-Quality Gates: ✅ ALL PASS - Tests: 25/25 passing (100%) - mypy: No type errors - ruff: No lint
+Quality Gates: [OK] ALL PASS - Tests: 25/25 passing (100%) - mypy: No type errors - ruff: No lint
   issues - No Pydantic warnings
 
 Design Notes: - Generic across personal/household/business/project apps - Follows svc-infra
@@ -1506,7 +1506,7 @@ Next: Task 14 - Implement budget alerts (check_budget_alerts function)
 - **budgets**: Complete Task 14 - Implement budget alerts
   ([`0651f4a`](https://github.com/nfraxlab/fin-infra/commit/0651f4a761f8321533152573cd2da884e751f833))
 
-✅ Task 14 Complete: Budget alert detection with configurable thresholds
+[OK] Task 14 Complete: Budget alert detection with configurable thresholds
 
 Implementation (src/fin_infra/budgets/alerts.py - 310 lines):
 
@@ -1564,7 +1564,7 @@ Unit Tests (tests/unit/budgets/test_alerts.py - 15 tests):
 5. TestAlertIntegration (1 test): - Full workflow with multiple alert types - Verify severity levels
   - Verify alert counts and categories
 
-Quality Gates: ✅ ALL PASS - Tests: 15/15 passing (100%) - mypy: No type errors - ruff: No lint
+Quality Gates: [OK] ALL PASS - Tests: 15/15 passing (100%) - mypy: No type errors - ruff: No lint
   issues - Coverage: All alert types and edge cases
 
 Design Philosophy: - Generic: Works for any budget type - Configurable: Per-category thresholds -
@@ -1673,7 +1673,7 @@ Implementation: - add_budgets(): Main setup function - Creates/uses BudgetTracke
   /budgets/templates/list: List available templates 8. POST /budgets/from-template: Create budget
   from template
 
-- Error Handling: - ValueError → 400 (validation) or 404 (not found) - General exceptions → 500 -
+- Error Handling: - ValueError -> 400 (validation) or 404 (not found) - General exceptions -> 500 -
   Proper HTTP status codes throughout - Detailed error messages in responses
 
 Tests (21 total, 100% passing): - TestCreateBudget: 2 tests (success, validation) - TestListBudgets:
@@ -1714,8 +1714,8 @@ BudgetTracker Implementation: - Added in-memory storage (_budgets dict) for Task
 
 Dependencies: - Added aiosqlite ^0.21.0 for async SQLite testing
 
-All budgets module testing requirements now complete: - ✅ Integration tests: 17 tests passing - ✅
-  Acceptance tests: 7 tests passing - ✅ Unit tests: 112 tests (88% coverage) - ✅ Documentation:
+All budgets module testing requirements now complete: - [OK] Integration tests: 17 tests passing - [OK]
+  Acceptance tests: 7 tests passing - [OK] Unit tests: 112 tests (88% coverage) - [OK] Documentation:
   budgets.md, ADR 0024, README updated
 
 Ready for Task 18 completion check-off.
@@ -1728,13 +1728,13 @@ Ready for Task 18 completion check-off.
 - **tests**: Fix projection realistic values test and add Alpha Vantage rate limit handling
   ([`150ef5d`](https://github.com/nfraxlab/fin-infra/commit/150ef5d1e07575336648fa43a6c0d00b94850b83))
 
-ISSUE 1: Projection test failure ✅ FIXED - Test: test_project_net_worth_realistic_values was failing
+ISSUE 1: Projection test failure [OK] FIXED - Test: test_project_net_worth_realistic_values was failing
   with growth multiple 108x > 100x - Root cause: With 11% annual return + monthly contributions over
   30 years, 100x+ is realistic - Fix: Increased upper bound from 100.0 to 150.0 to accommodate
   aggressive scenario - Validation: 30 years at 11% compound + contributions can realistically
   achieve 108x-150x growth
 
-ISSUE 2: Alpha Vantage acceptance tests ✅ FIXED - Tests failing due to Alpha Vantage free tier rate
+ISSUE 2: Alpha Vantage acceptance tests [OK] FIXED - Tests failing due to Alpha Vantage free tier rate
   limits (5 req/min, 500/day) - Alpha Vantage API returning HTTP 200 with empty data (soft rate
   limit) - These are acceptance tests hitting real external APIs, so intermittent failures expected
 
@@ -1770,8 +1770,8 @@ AFTER: - make test: unit + integration + acceptance - All test suites (170 unit 
   acceptance) run together - make integration: run only integration tests - make integrationv: run
   integration tests with verbose output
 
-VERIFICATION: ✅ make integration: 57 passed ✅ make test: unit (170) + integration (57) + acceptance
-  all pass ✅ make help: displays updated commands
+VERIFICATION: [OK] make integration: 57 passed [OK] make test: unit (170) + integration (57) + acceptance
+  all pass [OK] make help: displays updated commands
 
 This ensures CI/CD and local development workflows run the full test suite.
 
@@ -1785,7 +1785,7 @@ This ensures CI/CD and local development workflows run the full test suite.
 - **analytics**: Add LLM-powered spending insights (Task 5 optional)
   ([`42f99f8`](https://github.com/nfraxlab/fin-infra/commit/42f99f89f4d2edfb0c90ef2129ad29d77506211a))
 
-TASK 5 OPTIONAL: LLM-powered personalized spending insights ✅
+TASK 5 OPTIONAL: LLM-powered personalized spending insights [OK]
 
 IMPLEMENTATION: - Added generate_spending_insights() to src/fin_infra/analytics/spending.py (272 new
   lines) - Uses ai-infra CoreLLM with structured output for personalized financial advice - Graceful
@@ -1822,32 +1822,32 @@ COST MANAGEMENT: - Structured output for predictable token usage - Prompt-based 
   (24h TTL)
 
 UNIT TESTS (24 tests, all passing): - Created tests/unit/analytics/test_spending_llm.py (710 lines)
-  - TestGenerateSpendingInsights (8 tests): * LLM-powered generation ✅ * User context integration
-  (budget, income, goals) ✅ * ImportError fallback ✅ * LLM error fallback ✅ * Dict and Pydantic
-  response handling ✅ * System message validation (financial disclaimer) ✅ - TestBuildPrompt (6
-  tests): * Basic spending data ✅ * Trends inclusion ✅ * Anomalies inclusion ✅ * User context
-  (budget, income, goals) ✅ * Few-shot examples ✅ * Anomaly limiting (top 3) ✅ -
-  TestRuleBasedInsights (10 tests): * Basic generation ✅ * High category detection ✅ * Trend
-  analysis (increasing/decreasing) ✅ * Anomaly alerts ✅ * Budget comparison ✅ * Default content ✅ *
-  List length limiting ✅ * Alert prioritization ✅
+  - TestGenerateSpendingInsights (8 tests): * LLM-powered generation [OK] * User context integration
+  (budget, income, goals) [OK] * ImportError fallback [OK] * LLM error fallback [OK] * Dict and Pydantic
+  response handling [OK] * System message validation (financial disclaimer) [OK] - TestBuildPrompt (6
+  tests): * Basic spending data [OK] * Trends inclusion [OK] * Anomalies inclusion [OK] * User context
+  (budget, income, goals) [OK] * Few-shot examples [OK] * Anomaly limiting (top 3) [OK] -
+  TestRuleBasedInsights (10 tests): * Basic generation [OK] * High category detection [OK] * Trend
+  analysis (increasing/decreasing) [OK] * Anomaly alerts [OK] * Budget comparison [OK] * Default content [OK] *
+  List length limiting [OK] * Alert prioritization [OK]
 
-Result: 24 passed in <0.1s ✅
+Result: 24 passed in <0.1s [OK]
 
 INTEGRATION TESTS (12 tests, all passing): - Created
   tests/integration/analytics/test_spending_llm_integration.py (380 lines) - TestEndToEnd (2 tests):
-  * analyze_spending() → generate_spending_insights() pipeline ✅ * High spending category detection
-  ✅ - TestAnomalies (1 test): * Anomaly-driven insights ✅ - TestBudget (1 test): * Budget comparison
-  with user context ✅ - TestPrompt (1 test): * Prompt includes all context ✅ - TestCategories (1
-  test): * Category-filtered insights ✅ - TestFallback (1 test): * Rule-based fallback without LLM ✅
-  - TestConsistency (1 test): * Multiple calls produce consistent structure ✅ -
-  TestMultipleAnomalies (1 test): * Handles multiple anomalies ✅ - TestSchema (1 test): * Output
-  schema validation ✅ - TestPositiveHabits (1 test): * Recognizes positive spending behaviors ✅ -
-  TestPeriods (1 test): * Different time periods (7d, 90d) ✅
+  * analyze_spending() -> generate_spending_insights() pipeline [OK] * High spending category detection
+  [OK] - TestAnomalies (1 test): * Anomaly-driven insights [OK] - TestBudget (1 test): * Budget comparison
+  with user context [OK] - TestPrompt (1 test): * Prompt includes all context [OK] - TestCategories (1
+  test): * Category-filtered insights [OK] - TestFallback (1 test): * Rule-based fallback without LLM [OK]
+  - TestConsistency (1 test): * Multiple calls produce consistent structure [OK] -
+  TestMultipleAnomalies (1 test): * Handles multiple anomalies [OK] - TestSchema (1 test): * Output
+  schema validation [OK] - TestPositiveHabits (1 test): * Recognizes positive spending behaviors [OK] -
+  TestPeriods (1 test): * Different time periods (7d, 90d) [OK]
 
-Result: 12 passed in <0.1s ✅
+Result: 12 passed in <0.1s [OK]
 
 TOTAL ANALYTICS MODULE TESTS: - Unit tests: 113 tests (19+24+46+24) - Integration tests: 57 tests
-  (10+20+17+12) - Total: 170 tests passing ✅ - Execution time: 0.38s
+  (10+20+17+12) - Total: 170 tests passing [OK] - Execution time: 0.38s
 
 DESIGN DECISIONS: - ai-infra CoreLLM: Reuse existing LLM infrastructure (never duplicate) -
   Structured output: Pydantic schema for type safety and validation - Prompt method: Cost-effective,
@@ -1868,7 +1868,7 @@ NEXT STEPS: - Integrate svc-infra cache for 24h TTL on insights - Add cost track
 - **analytics**: Complete Task 5 - Implement spending insights
   ([`b3f3416`](https://github.com/nfraxlab/fin-infra/commit/b3f3416289c39bdd54bfafeb312c2565648533f3))
 
-TASK 5: Implement spending insights ✅
+TASK 5: Implement spending insights [OK]
 
 IMPLEMENTATION: - Created src/fin_infra/analytics/spending.py (407 lines) -
   analyze_spending(user_id, period='30d', categories=None) -> SpendingInsight * Validates period
@@ -1898,37 +1898,37 @@ FEATURES: 1. Top Merchants Analysis: - Aggregates spending by merchant - Sorts b
   (severe first)
 
 UNIT TESTS (46 tests, all passing): - Created tests/unit/analytics/test_spending.py (455 lines) -
-  TestAnalyzeSpending (10 tests): * Basic analysis for different periods ✅ * Category filtering ✅ *
-  Invalid period handling ✅ * Top merchants sorting ✅ * Category breakdown structure ✅ -
-  TestParsePeriod (9 tests): * Valid period formats ✅ * Invalid formats and error handling ✅ * Edge
-  cases (zero, negative) ✅ - TestExtractMerchantName (8 tests): * Prefix removal ✅ * Separator
-  handling ✅ * Truncation ✅ * Empty description handling ✅ - TestGetTransactionCategory (8 tests): *
-  All category classifications ✅ * Keyword-based categorization ✅ - TestDetectSpendingAnomalies (3
-  tests): * Severity detection ✅ * Sorting by severity ✅ - TestGenerateMockTransactions (4 tests): *
-  Period filtering ✅ * Required fields ✅ - TestSpendingTrends (2 tests): * Trend structure and
-  coverage ✅ - TestEdgeCases (2 tests): * Empty periods ✅ * Category sum consistency ✅
+  TestAnalyzeSpending (10 tests): * Basic analysis for different periods [OK] * Category filtering [OK] *
+  Invalid period handling [OK] * Top merchants sorting [OK] * Category breakdown structure [OK] -
+  TestParsePeriod (9 tests): * Valid period formats [OK] * Invalid formats and error handling [OK] * Edge
+  cases (zero, negative) [OK] - TestExtractMerchantName (8 tests): * Prefix removal [OK] * Separator
+  handling [OK] * Truncation [OK] * Empty description handling [OK] - TestGetTransactionCategory (8 tests): *
+  All category classifications [OK] * Keyword-based categorization [OK] - TestDetectSpendingAnomalies (3
+  tests): * Severity detection [OK] * Sorting by severity [OK] - TestGenerateMockTransactions (4 tests): *
+  Period filtering [OK] * Required fields [OK] - TestSpendingTrends (2 tests): * Trend structure and
+  coverage [OK] - TestEdgeCases (2 tests): * Empty periods [OK] * Category sum consistency [OK]
 
 INTEGRATION TESTS (17 tests, all passing): - Created
   tests/integration/analytics/test_spending_integration.py (364 lines) -
-  TestSpendingWithBankingIntegration (2 tests): * Real transaction data flow ✅ * Income filtering ✅
-  - TestSpendingWithCategorizationIntegration (2 tests): * Expense categorization ✅ * Category
-  filter application ✅ - TestTopMerchantsIntegration (3 tests): * Merchant aggregation ✅ *
-  Descending sort ✅ * Name extraction ✅ - TestSpendingTrendsIntegration (2 tests): * Trend
-  calculation for all categories ✅ * Consistency across periods ✅ - TestAnomalyDetectionIntegration
-  (2 tests): * Anomaly detection ✅ * Severity sorting ✅ - TestCategoryBreakdownIntegration (2
-  tests): * Total equals category sum ✅ * Positive amounts ✅ - TestPeriodHandlingIntegration (2
-  tests): * Different periods yield different results ✅ * Period boundaries respected ✅ -
-  TestEndToEndSpendingIntegration (2 tests): * Full pipeline validation ✅ * Consistency across
-  analyses ✅
+  TestSpendingWithBankingIntegration (2 tests): * Real transaction data flow [OK] * Income filtering [OK]
+  - TestSpendingWithCategorizationIntegration (2 tests): * Expense categorization [OK] * Category
+  filter application [OK] - TestTopMerchantsIntegration (3 tests): * Merchant aggregation [OK] *
+  Descending sort [OK] * Name extraction [OK] - TestSpendingTrendsIntegration (2 tests): * Trend
+  calculation for all categories [OK] * Consistency across periods [OK] - TestAnomalyDetectionIntegration
+  (2 tests): * Anomaly detection [OK] * Severity sorting [OK] - TestCategoryBreakdownIntegration (2
+  tests): * Total equals category sum [OK] * Positive amounts [OK] - TestPeriodHandlingIntegration (2
+  tests): * Different periods yield different results [OK] * Period boundaries respected [OK] -
+  TestEndToEndSpendingIntegration (2 tests): * Full pipeline validation [OK] * Consistency across
+  analyses [OK]
 
 COVERAGE: All functions tested
 
-Result: pytest tests/unit/analytics/test_spending.py -v 46 passed in 0.05s ✅
+Result: pytest tests/unit/analytics/test_spending.py -v 46 passed in 0.05s [OK]
 
-Result: pytest tests/integration/analytics/test_spending_integration.py -v 17 passed in 0.04s ✅
+Result: pytest tests/integration/analytics/test_spending_integration.py -v 17 passed in 0.04s [OK]
 
 TOTAL ANALYTICS MODULE TESTS: - Unit tests: 89 tests (19+24+46) - Integration tests: 47 tests
-  (10+20+17) - Total: 136 tests passing ✅ - Execution time: 0.11s
+  (10+20+17) - Total: 136 tests passing [OK] - Execution time: 0.11s
 
 DESIGN DECISIONS: - Keyword-only args for dependency injection (provider params) - Period string
   format for flexibility ('7d', '30d', '90d') - Mock implementation with TODOs for real provider
@@ -1948,7 +1948,7 @@ NEXT STEPS: - Task 6: Implement portfolio analytics - Replace heuristic categori
 - **analytics**: Complete Task 6 - Implement portfolio analytics
   ([`b394211`](https://github.com/nfraxlab/fin-infra/commit/b394211d5c5aa7b2e528e319364dccdb5d0b7055))
 
-TASK 6: Portfolio analytics and benchmarking ✅
+TASK 6: Portfolio analytics and benchmarking [OK]
 
 IMPLEMENTATION: - src/fin_infra/analytics/portfolio.py (565 lines) * calculate_portfolio_metrics():
   Aggregate holdings, calculate returns (total/YTD/MTD/day), asset allocation *
@@ -1977,7 +1977,7 @@ NEXT: Task 7 - Growth projections (project_net_worth, calculate_compound_interes
 - **analytics**: Complete Task 7 - Implement growth projections
   ([`2a79c65`](https://github.com/nfraxlab/fin-infra/commit/2a79c6509a5ef6c06d43067ba0bbab7e726a94c6))
 
-TASK 7: Net worth growth projections with scenarios ✅
+TASK 7: Net worth growth projections with scenarios [OK]
 
 IMPLEMENTATION: - src/fin_infra/analytics/projections.py (270 lines) * project_net_worth(): Generate
   30-year net worth projections with 3 scenarios - Conservative (5% return), Moderate (8%),
@@ -2009,15 +2009,15 @@ NEXT: Task 8 - Create easy_analytics() builder
 - **analytics**: Complete Task 8 - Create easy_analytics() builder
   ([`70fd9eb`](https://github.com/nfraxlab/fin-infra/commit/70fd9eb7c47193e2ff8111e101a96b0ec80f31bc))
 
-TASK 8: easy_analytics() builder with unified AnalyticsEngine ✅
+TASK 8: easy_analytics() builder with unified AnalyticsEngine [OK]
 
 IMPLEMENTATION: - Created AnalyticsEngine class with 8 methods: * cash_flow(user_id, start_date,
-  end_date, period_days) → CashFlowAnalysis * savings_rate(user_id, definition, period) →
-  SavingsRateData * spending_insights(user_id, period_days) → SpendingInsight *
-  spending_advice(user_id, period_days, user_context) → PersonalizedSpendingAdvice *
-  portfolio_metrics(user_id, accounts) → PortfolioMetrics * benchmark_comparison(user_id, benchmark,
-  period, accounts) → BenchmarkComparison * net_worth_projection(user_id, years, assumptions) →
-  GrowthProjection * compound_interest(principal, rate, periods, contribution) → float (static)
+  end_date, period_days) -> CashFlowAnalysis * savings_rate(user_id, definition, period) ->
+  SavingsRateData * spending_insights(user_id, period_days) -> SpendingInsight *
+  spending_advice(user_id, period_days, user_context) -> PersonalizedSpendingAdvice *
+  portfolio_metrics(user_id, accounts) -> PortfolioMetrics * benchmark_comparison(user_id, benchmark,
+  period, accounts) -> BenchmarkComparison * net_worth_projection(user_id, years, assumptions) ->
+  GrowthProjection * compound_interest(principal, rate, periods, contribution) -> float (static)
 
 - Created easy_analytics() builder function: * Sensible defaults: 30-day periods, NET savings
   definition, SPY benchmark, 3600s cache TTL * Optional provider injection: banking, brokerage,
@@ -2029,7 +2029,7 @@ UNIT TESTS: - tests/unit/analytics/test_ease.py (27 tests passing in 0.26s) - Te
   parameters - Tests default parameter application and provider passthrough
 
 INTEGRATION TESTS: - tests/integration/analytics/test_ease_integration.py (12 tests passing in
-  0.04s) - Complete analytics workflows (cash flow → savings → spending → portfolio → projection) -
+  0.04s) - Complete analytics workflows (cash flow -> savings -> spending -> portfolio -> projection) -
   Multiple users and concurrent operations - Custom configurations and provider integration -
   End-to-end tests with all features
 
@@ -2040,7 +2040,7 @@ NEXT: Task 9 - add_analytics() FastAPI helper with svc-infra user_router
 - **analytics**: Complete Task 9 - Create add_analytics() FastAPI helper
   ([`5b616d2`](https://github.com/nfraxlab/fin-infra/commit/5b616d271c9e929dfcc2144689fe82450382f50b))
 
-TASK 9: FastAPI integration with 7 analytics endpoints ✅
+TASK 9: FastAPI integration with 7 analytics endpoints [OK]
 
 IMPLEMENTATION: - Created add_analytics() function (~296 lines in src/fin_infra/analytics/add.py): *
   Mounts 7 RESTful endpoints for analytics * Uses public_router (endpoints take user_id as query
@@ -2058,7 +2058,7 @@ REQUEST MODELS: - NetWorthForecastRequest: Pydantic validation for forecast endp
   (1-50) for projection period * Custom return assumptions (conservative, moderate, aggressive) *
   Optional initial_net_worth and annual_contribution overrides
 
-EXCEPTION HANDLING: - ValueError → HTTPException(400) for invalid period/definition - Detailed error
+EXCEPTION HANDLING: - ValueError -> HTTPException(400) for invalid period/definition - Detailed error
   messages guide API consumers
 
 ROUTER CHOICE (CRITICAL): - Changed from user_router to public_router after testing - Reasoning:
@@ -2206,7 +2206,7 @@ Key principles: - Keep fin-infra GENERIC and reusable across fintech app types -
 - **analytics**: Complete Task 3 - Implement cash flow analysis
   ([`e6102a6`](https://github.com/nfraxlab/fin-infra/commit/e6102a692988be56634387b793bc67e635029a4b))
 
-TASK 3: Implement cash flow analysis ✅
+TASK 3: Implement cash flow analysis [OK]
 
 IMPLEMENTATION: - Created src/fin_infra/analytics/cash_flow.py with core functions -
   calculate_cash_flow(): Analyzes income vs expenses for a period * Accepts user_id, start_date,
@@ -2222,21 +2222,21 @@ IMPLEMENTATION: - Created src/fin_infra/analytics/cash_flow.py with core functio
   _get_expense_category(): Category lookup (stub for categorization)
 
 UNIT TESTS (19 tests, all passing): - Created tests/unit/analytics/test_cash_flow.py -
-  TestCalculateCashFlow (6 tests): * test_calculate_cash_flow_basic ✅ *
-  test_calculate_cash_flow_with_datetime_objects ✅ * test_calculate_cash_flow_invalid_date_range ✅ *
-  test_calculate_cash_flow_same_dates ✅ * test_calculate_cash_flow_with_accounts_filter ✅ *
-  test_cash_flow_breakdowns_sum_to_totals ✅ - TestForecastCashFlow (6 tests): *
-  test_forecast_cash_flow_basic ✅ * test_forecast_cash_flow_with_growth_rates ✅ *
-  test_forecast_cash_flow_with_one_time_income ✅ * test_forecast_cash_flow_with_one_time_expenses ✅
-  * test_forecast_cash_flow_invalid_months ✅ * test_forecast_periods_are_sequential ✅ -
-  TestHelperFunctions (4 tests): * test_determine_income_source_paycheck ✅ *
-  test_determine_income_source_investment ✅ * test_determine_income_source_side_hustle ✅ *
-  test_determine_income_source_other ✅ - TestEdgeCases (3 tests): * test_zero_income_scenario ✅ *
-  test_zero_expenses_scenario ✅ * test_negative_net_cash_flow ✅
+  TestCalculateCashFlow (6 tests): * test_calculate_cash_flow_basic [OK] *
+  test_calculate_cash_flow_with_datetime_objects [OK] * test_calculate_cash_flow_invalid_date_range [OK] *
+  test_calculate_cash_flow_same_dates [OK] * test_calculate_cash_flow_with_accounts_filter [OK] *
+  test_cash_flow_breakdowns_sum_to_totals [OK] - TestForecastCashFlow (6 tests): *
+  test_forecast_cash_flow_basic [OK] * test_forecast_cash_flow_with_growth_rates [OK] *
+  test_forecast_cash_flow_with_one_time_income [OK] * test_forecast_cash_flow_with_one_time_expenses [OK]
+  * test_forecast_cash_flow_invalid_months [OK] * test_forecast_periods_are_sequential [OK] -
+  TestHelperFunctions (4 tests): * test_determine_income_source_paycheck [OK] *
+  test_determine_income_source_investment [OK] * test_determine_income_source_side_hustle [OK] *
+  test_determine_income_source_other [OK] - TestEdgeCases (3 tests): * test_zero_income_scenario [OK] *
+  test_zero_expenses_scenario [OK] * test_negative_net_cash_flow [OK]
 
 COVERAGE: All code paths tested
 
-Result: pytest tests/unit/analytics/test_cash_flow.py -v 19 passed in 0.04s ✅
+Result: pytest tests/unit/analytics/test_cash_flow.py -v 19 passed in 0.04s [OK]
 
 DESIGN DECISIONS: - Used Transaction model from fin_infra.models (existing) - Income detection via
   description field (simple heuristics) - Async functions for future integration with async
@@ -2253,7 +2253,7 @@ NEXT STEPS: - Task 4: Implement savings rate calculation - Integration tests wit
 - **analytics**: Complete Task 4 - Implement savings rate calculation
   ([`f1f3d42`](https://github.com/nfraxlab/fin-infra/commit/f1f3d429ea1b1f625ffe4cd572884a105a631653))
 
-TASK 4: Implement savings rate calculation ✅
+TASK 4: Implement savings rate calculation [OK]
 
 IMPLEMENTATION: - Created src/fin_infra/analytics/savings.py (235 lines) -
   calculate_savings_rate(user_id, period='monthly', definition='net') -> SavingsRateData * Validates
@@ -2267,24 +2267,24 @@ IMPLEMENTATION: - Created src/fin_infra/analytics/savings.py (235 lines) -
   comparison - 2% threshold for stable classification - Handles insufficient data gracefully
 
 UNIT TESTS (24 tests, all passing): - Created tests/unit/analytics/test_savings.py (186 lines) -
-  TestCalculateSavingsRate (7 tests): * test_calculate_savings_rate_monthly_net ✅ *
-  test_calculate_savings_rate_weekly_gross ✅ * test_calculate_savings_rate_quarterly_discretionary ✅
-  * test_calculate_savings_rate_yearly ✅ * test_calculate_savings_rate_invalid_period ✅ *
-  test_calculate_savings_rate_invalid_definition ✅ * test_savings_rate_clamped_to_valid_range ✅ -
-  TestSavingsDefinitions (4 tests): * test_gross_savings_includes_all_income ✅ *
-  test_net_savings_excludes_tax ✅ * test_discretionary_savings_excludes_necessities ✅ *
-  test_definitions_produce_different_rates ✅ - TestPeriodTypes (2 tests): *
-  test_all_period_types_supported ✅ * test_period_affects_calculation ✅ - TestTrendCalculation (6
-  tests): * test_get_historical_savings_rates ✅ * test_calculate_trend_increasing ✅ *
-  test_calculate_trend_decreasing ✅ * test_calculate_trend_stable ✅ *
-  test_calculate_trend_insufficient_data ✅ * test_calculate_trend_empty_data ✅ - TestEdgeCases (5
-  tests): * test_zero_income_produces_zero_savings_rate ✅ * test_negative_savings_clamped_to_zero ✅
-  * test_perfect_savings_clamped_to_one ✅ * test_savings_amount_consistency ✅ *
-  test_savings_rate_calculation_accuracy ✅
+  TestCalculateSavingsRate (7 tests): * test_calculate_savings_rate_monthly_net [OK] *
+  test_calculate_savings_rate_weekly_gross [OK] * test_calculate_savings_rate_quarterly_discretionary [OK]
+  * test_calculate_savings_rate_yearly [OK] * test_calculate_savings_rate_invalid_period [OK] *
+  test_calculate_savings_rate_invalid_definition [OK] * test_savings_rate_clamped_to_valid_range [OK] -
+  TestSavingsDefinitions (4 tests): * test_gross_savings_includes_all_income [OK] *
+  test_net_savings_excludes_tax [OK] * test_discretionary_savings_excludes_necessities [OK] *
+  test_definitions_produce_different_rates [OK] - TestPeriodTypes (2 tests): *
+  test_all_period_types_supported [OK] * test_period_affects_calculation [OK] - TestTrendCalculation (6
+  tests): * test_get_historical_savings_rates [OK] * test_calculate_trend_increasing [OK] *
+  test_calculate_trend_decreasing [OK] * test_calculate_trend_stable [OK] *
+  test_calculate_trend_insufficient_data [OK] * test_calculate_trend_empty_data [OK] - TestEdgeCases (5
+  tests): * test_zero_income_produces_zero_savings_rate [OK] * test_negative_savings_clamped_to_zero [OK]
+  * test_perfect_savings_clamped_to_one [OK] * test_savings_amount_consistency [OK] *
+  test_savings_rate_calculation_accuracy [OK]
 
 COVERAGE: All functions tested
 
-Result: pytest tests/unit/analytics/test_savings.py -v 24 passed in 0.03s ✅
+Result: pytest tests/unit/analytics/test_savings.py -v 24 passed in 0.03s [OK]
 
 DESIGN DECISIONS: - Enum validation for period and definition (fail fast on invalid input) -
   Keyword-only args for dependency injection (provider params) - Mock implementation with TODOs for
@@ -2302,13 +2302,13 @@ NEXT STEPS: - Task 5: Implement spending insights - Integration tests with cash 
 - **analytics**: Complete Tasks 1-2 - Create analytics module structure and models
   ([`624d36d`](https://github.com/nfraxlab/fin-infra/commit/624d36ddccb82d1a86fae750ace847b60e6e0c92))
 
-TASK 1: Create analytics module structure ✅ - Created src/fin_infra/analytics/__init__.py with
+TASK 1: Create analytics module structure [OK] - Created src/fin_infra/analytics/__init__.py with
   module exports - Created src/fin_infra/analytics/models.py with Pydantic models - Created
   src/fin_infra/analytics/ease.py for easy_analytics() builder - Created
   src/fin_infra/analytics/add.py for FastAPI integration - Added comprehensive module docstring
   explaining use cases - Verified structure follows existing fin-infra patterns
 
-TASK 2: Define Pydantic models ✅ - CashFlowAnalysis: income_total, expense_total, net_cash_flow,
+TASK 2: Define Pydantic models [OK] - CashFlowAnalysis: income_total, expense_total, net_cash_flow,
   breakdowns - SavingsRateData: savings_rate, savings_amount, income, expenses, period, trend -
   SpendingInsight: top_merchants, category_breakdown, trends, anomalies - SpendingAnomaly: category,
   current_amount, average_amount, deviation, severity - PortfolioMetrics: total_value, returns
@@ -2321,9 +2321,9 @@ MODEL DESIGN: - All models use keyword-only args (Pydantic Field) for cache key 
   OpenAPI documentation - Enums for type safety (SavingsDefinition, Period, TrendDirection) -
   Generic applicability (personal finance, wealth management, banking, etc.)
 
-STRUCTURE FOLLOWS EXISTING PATTERNS: - categorization/models.py (domain-specific models) ✅ -
-  net_worth/models.py (domain-specific models) ✅ - recurring/models.py (domain-specific models) ✅ -
-  analytics/models.py (NEW - same pattern) ✅
+STRUCTURE FOLLOWS EXISTING PATTERNS: - categorization/models.py (domain-specific models) [OK] -
+  net_worth/models.py (domain-specific models) [OK] - recurring/models.py (domain-specific models) [OK] -
+  analytics/models.py (NEW - same pattern) [OK]
 
 NEXT STEPS: - Task 3: Implement cash flow analysis logic - Task 4: Implement savings rate
   calculation - Task 5: Implement spending insights - Task 6: Implement portfolio analytics - Task
@@ -2348,7 +2348,7 @@ IMPROVEMENTS FOR ENGINEERS: - Each task now has clear 'Verify in coverage analys
   create - Explicit integration points with existing modules - Generic design reminders on each
   module - Progress tracking: 0/55 tasks (0%)
 
-STRUCTURE: 1. Critical Web API Coverage (Tasks 1-55) ← START HERE - Phase 1: Analytics + Budgets +
+STRUCTURE: 1. Critical Web API Coverage (Tasks 1-55) <- START HERE - Phase 1: Analytics + Budgets +
   Goals (Tasks 1-30, Weeks 1-3) - Phase 2: Enhanced Features (Tasks 31-45, Weeks 4-5) - Phase 3:
   Advanced Features (Tasks 46-55, Week 6) 2. Repository Boundaries & Standards (reference section)
   3. Nice-to-Have Features (Section 26, lower priority)
@@ -2364,44 +2364,44 @@ BACKUP: Old plans.md saved as plans-old-backup.md
 - **analytics**: Add integration tests for Tasks 3 & 4
   ([`1f8bed5`](https://github.com/nfraxlab/fin-infra/commit/1f8bed5235729d3be62b4802f081255fc43c9d46))
 
-INTEGRATION TESTS: Cash flow and savings rate ✅
+INTEGRATION TESTS: Cash flow and savings rate [OK]
 
 NEW FILE: tests/integration/analytics/test_cash_flow_integration.py (10 tests) -
-  TestCashFlowWithBankingIntegration (3 tests): * test_calculate_cash_flow_with_real_transactions ✅
-  * test_calculate_cash_flow_with_account_filtering ✅ * test_calculate_cash_flow_empty_period ✅ -
+  TestCashFlowWithBankingIntegration (3 tests): * test_calculate_cash_flow_with_real_transactions [OK]
+  * test_calculate_cash_flow_with_account_filtering [OK] * test_calculate_cash_flow_empty_period [OK] -
   TestCashFlowWithCategorizationIntegration (2 tests): * test_cash_flow_with_expense_categorization
-  ✅ * test_income_source_classification ✅ - TestCashFlowForecastIntegration (3 tests): *
-  test_forecast_with_recurring_patterns ✅ * test_forecast_with_one_time_events ✅ *
-  test_forecast_growth_compounds_correctly ✅ - TestCashFlowEndToEndIntegration (2 tests): *
-  test_full_cash_flow_analysis_pipeline ✅ * test_cash_flow_consistency_across_periods ✅
+  [OK] * test_income_source_classification [OK] - TestCashFlowForecastIntegration (3 tests): *
+  test_forecast_with_recurring_patterns [OK] * test_forecast_with_one_time_events [OK] *
+  test_forecast_growth_compounds_correctly [OK] - TestCashFlowEndToEndIntegration (2 tests): *
+  test_full_cash_flow_analysis_pipeline [OK] * test_cash_flow_consistency_across_periods [OK]
 
 NEW FILE: tests/integration/analytics/test_savings_integration.py (20 tests) -
-  TestSavingsRateWithCashFlowIntegration (3 tests): * test_savings_rate_derived_from_cash_flow ✅ *
-  test_savings_rate_consistency_across_periods ✅ * test_savings_rate_consistency_across_definitions
-  ✅ - TestSavingsRatePeriodAlignment (4 tests): * test_weekly_period_alignment ✅ *
-  test_monthly_period_alignment ✅ * test_quarterly_period_alignment ✅ * test_yearly_period_alignment
-  ✅ - TestSavingsRateTrendIntegration (3 tests): * test_trend_direction_is_set ✅ *
-  test_trend_with_different_historical_periods ✅ * test_trend_consistency_with_period ✅ -
-  TestSavingsRateDefinitionIntegration (3 tests): * test_gross_vs_net_relationship ✅ *
-  test_net_vs_discretionary_relationship ✅ * test_all_definitions_with_same_period ✅ -
-  TestSavingsRateEdgeCasesIntegration (3 tests): * test_zero_income_scenario ✅ *
-  test_negative_savings_scenario ✅ * test_high_savings_rate_scenario ✅ -
-  TestSavingsRateEndToEndIntegration (4 tests): * test_full_savings_rate_analysis_pipeline ✅ *
-  test_savings_rate_over_multiple_periods ✅ * test_savings_rate_with_all_definitions ✅ *
-  test_savings_rate_consistency_over_time ✅
+  TestSavingsRateWithCashFlowIntegration (3 tests): * test_savings_rate_derived_from_cash_flow [OK] *
+  test_savings_rate_consistency_across_periods [OK] * test_savings_rate_consistency_across_definitions
+  [OK] - TestSavingsRatePeriodAlignment (4 tests): * test_weekly_period_alignment [OK] *
+  test_monthly_period_alignment [OK] * test_quarterly_period_alignment [OK] * test_yearly_period_alignment
+  [OK] - TestSavingsRateTrendIntegration (3 tests): * test_trend_direction_is_set [OK] *
+  test_trend_with_different_historical_periods [OK] * test_trend_consistency_with_period [OK] -
+  TestSavingsRateDefinitionIntegration (3 tests): * test_gross_vs_net_relationship [OK] *
+  test_net_vs_discretionary_relationship [OK] * test_all_definitions_with_same_period [OK] -
+  TestSavingsRateEdgeCasesIntegration (3 tests): * test_zero_income_scenario [OK] *
+  test_negative_savings_scenario [OK] * test_high_savings_rate_scenario [OK] -
+  TestSavingsRateEndToEndIntegration (4 tests): * test_full_savings_rate_analysis_pipeline [OK] *
+  test_savings_rate_over_multiple_periods [OK] * test_savings_rate_with_all_definitions [OK] *
+  test_savings_rate_consistency_over_time [OK]
 
 MOCK PROVIDERS CREATED: - MockBankingProvider: Simulates banking data with transaction filtering -
   MockCategorizationProvider: Rule-based transaction categorization
 
-TEST COVERAGE: - Cash flow integration: 10 tests, 0.05s ✅ - Savings rate integration: 20 tests,
-  0.05s ✅ - Total: 30 integration tests passing
+TEST COVERAGE: - Cash flow integration: 10 tests, 0.05s [OK] - Savings rate integration: 20 tests,
+  0.05s [OK] - Total: 30 integration tests passing
 
 INTEGRATION SCENARIOS TESTED: 1. Banking provider integration (transaction fetching, filtering) 2.
   Categorization provider integration (expense classification) 3. Cash flow forecasting with
   recurring patterns 4. Savings rate calculation using cash flow data 5. Period alignment across
   modules (weekly/monthly/quarterly/yearly) 6. Definition consistency (gross/net/discretionary) 7.
   Trend analysis with historical data 8. Edge cases (zero income, negative savings, high savings) 9.
-  End-to-end pipelines (data → calculation → insights) 10. Consistency and determinism across
+  End-to-end pipelines (data -> calculation -> insights) 10. Consistency and determinism across
   calculations
 
 DESIGN DECISIONS: - Mock providers simulate real integration without external dependencies - Tests
@@ -2558,20 +2558,20 @@ NEXT STEPS: - Task 5: Implement spending insights - Replace mock providers with 
 - **categorization**: Complete Section 15 V1 - Transaction Categorization
   ([`8fb4f52`](https://github.com/nfraxlab/fin-infra/commit/8fb4f5205a7f715b111df4169cacd5687f28824f))
 
-✅ Implementation (1,555 lines): - 3-layer hybrid engine (exact → regex → ML fallback) - 56 MX-style
+[OK] Implementation (1,555 lines): - 3-layer hybrid engine (exact -> regex -> ML fallback) - 56 MX-style
   categories (Income, Fixed, Variable, Savings) - 100+ exact rules, 30+ regex patterns - Smart
   normalization (handles store numbers, apostrophes, legal entities) - FastAPI integration with 3
   endpoints (predict, categories, stats)
 
-✅ Testing (335 lines): - 53/53 tests passing (100% success rate) - 100% accuracy on 26 common
+[OK] Testing (335 lines): - 53/53 tests passing (100% success rate) - 100% accuracy on 26 common
   merchants - Zero Pydantic V2 warnings (migrated to ConfigDict) - 98% test coverage
 
-✅ Documentation (6,800 lines): - Complete taxonomy reference with examples - Quick start guide
+[OK] Documentation (6,800 lines): - Complete taxonomy reference with examples - Quick start guide
   (programmatic + FastAPI) - API reference with request/response schemas - Advanced usage (custom
   rules, batch, alternatives, stats) - svc-infra integration guide (cache, DB, jobs) - Performance
   benchmarks (96-98% accuracy, 2.5ms avg latency) - Troubleshooting and testing guides
 
-✅ Quality Gates: - Build: PASS - Tests: 53/53 PASS (0.11s) - Warnings: 0 (fixed 6 Pydantic V2
+[OK] Quality Gates: - Build: PASS - Tests: 53/53 PASS (0.11s) - Warnings: 0 (fixed 6 Pydantic V2
   warnings) - Docs: COMPLETE
 
 ➕ Section 16 V2 Plans Added: - 50+ checklist items for LLM-enhanced recurring detection - Merchant

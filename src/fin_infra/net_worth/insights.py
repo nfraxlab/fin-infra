@@ -167,7 +167,7 @@ Be specific with numbers. Cite percentage changes and dollar amounts.
 Focus on actionable insights, not generic advice.
 
 Example 1:
-User: Net worth: $500k → $575k over 6 months. Assets: +$65k (investments +$60k, savings +$5k). Liabilities: -$10k (new mortgage).
+User: Net worth: $500k -> $575k over 6 months. Assets: +$65k (investments +$60k, savings +$5k). Liabilities: -$10k (new mortgage).
 Response: {
   "summary": "Net worth increased 15% ($75k) over 6 months, driven primarily by strong investment performance.",
   "period": "6 months",
@@ -191,7 +191,7 @@ Response: {
 }
 
 Example 2:
-User: Net worth: $100k → $95k over 3 months. Assets: -$2k (market down). Liabilities: +$3k (credit card debt).
+User: Net worth: $100k -> $95k over 3 months. Assets: -$2k (market down). Liabilities: +$3k (credit card debt).
 Response: {
   "summary": "Net worth decreased 5% ($5k) over 3 months due to market decline and rising credit card debt.",
   "period": "3 months",
@@ -333,7 +333,7 @@ Given current allocation, age, and risk tolerance:
 3. Provide specific rebalancing steps
 
 Rule of thumb:
-- Stock allocation = 100 - age (e.g., age 35 → 65% stocks)
+- Stock allocation = 100 - age (e.g., age 35 -> 65% stocks)
 - Bonds for stability (increases with age)
 - Cash for emergency fund (3-6 months expenses)
 

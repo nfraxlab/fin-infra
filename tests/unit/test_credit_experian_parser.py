@@ -1,11 +1,11 @@
 """Unit tests for Experian response parser.
 
 Tests:
-- parse_credit_score() - Experian JSON → CreditScore model
-- parse_credit_report() - Experian JSON → CreditReport model
-- parse_account() - tradeline → CreditAccount
-- parse_inquiry() - inquiry → CreditInquiry
-- parse_public_record() - public record → PublicRecord
+- parse_credit_score() - Experian JSON -> CreditScore model
+- parse_credit_report() - Experian JSON -> CreditReport model
+- parse_account() - tradeline -> CreditAccount
+- parse_inquiry() - inquiry -> CreditInquiry
+- parse_public_record() - public record -> PublicRecord
 - Edge cases (missing fields, null values, invalid dates)
 
 All tests use mock Experian API responses.

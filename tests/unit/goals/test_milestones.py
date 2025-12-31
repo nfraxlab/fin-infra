@@ -521,7 +521,7 @@ async def test_trigger_milestone_notification_handles_error(sample_goal):
 
 
 def test_milestone_lifecycle(sample_goal):
-    """Test complete milestone lifecycle: add → check → celebrate → track."""
+    """Test complete milestone lifecycle: add -> check -> celebrate -> track."""
     # Add three milestones
     add_milestone(sample_goal["id"], 12500.0, "25% to target", target_date=None)
     add_milestone(sample_goal["id"], 25000.0, "50% to target", target_date=None)

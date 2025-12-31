@@ -29,8 +29,8 @@ def easy_crypto(
     """Create a crypto data provider with zero or minimal configuration.
 
     Auto-detects provider based on environment variables:
-    1. If COINGECKO_API_KEY is set → CoinGecko Pro
-    2. Otherwise → CoinGecko Free (no key needed)
+    1. If COINGECKO_API_KEY is set -> CoinGecko Pro
+    2. Otherwise -> CoinGecko Free (no key needed)
 
     Args:
         provider: Provider name ("coingecko"). If None, defaults to coingecko.

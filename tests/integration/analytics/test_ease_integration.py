@@ -20,7 +20,7 @@ from fin_infra.analytics.models import (
 # Test: Complete analytics workflow
 @pytest.mark.asyncio
 async def test_complete_analytics_workflow():
-    """Test complete analytics workflow: cash flow → savings → spending → portfolio → projection."""
+    """Test complete analytics workflow: cash flow -> savings -> spending -> portfolio -> projection."""
     analytics = easy_analytics()
     user_id = "workflow_user"
 

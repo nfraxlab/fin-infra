@@ -43,7 +43,7 @@ def easy_recurring_detection(
     V2 Parameters (LLM Enhancement):
         enable_llm: Enable LLM for merchant normalization and variable detection (default: False)
                    When False, uses V1 pattern-based only (fast, $0 cost)
-                   When True, uses 4-layer hybrid (RapidFuzz → LLM normalization → Statistical → LLM variable detection)
+                   When True, uses 4-layer hybrid (RapidFuzz -> LLM normalization -> Statistical -> LLM variable detection)
         llm_provider: LLM provider to use (default: "google")
                      Options: "google" (Gemini 2.0 Flash, cheapest), "openai" (GPT-4o-mini), "anthropic" (Claude 3.5 Haiku)
         llm_model: Override default model for provider (default: None)
@@ -54,9 +54,9 @@ def easy_recurring_detection(
                                  Higher values (0.9) call LLM more often (more accurate, higher cost)
                                  Lower values (0.7) call LLM less often (less accurate, lower cost)
         llm_cache_merchant_ttl: Merchant normalization cache TTL in seconds (default: 604800 = 7 days)
-                               95% cache hit rate expected → most requests <1ms
+                               95% cache hit rate expected -> most requests <1ms
         llm_cache_insights_ttl: Insights generation cache TTL in seconds (default: 86400 = 24 hours)
-                               80% cache hit rate expected → most requests <1ms
+                               80% cache hit rate expected -> most requests <1ms
         llm_max_cost_per_day: Daily budget cap in USD (default: $0.10)
                              Supports ~33k normalizations or ~1k variable detections per day
                              Sufficient for 100k+ users
@@ -80,7 +80,7 @@ def easy_recurring_detection(
         >>> # V2: LLM-enhanced detection (better accuracy, minimal cost)
         >>> detector = easy_recurring_detection(enable_llm=True)
         >>> patterns = detector.detect_patterns(transactions)
-        >>> # Merchant normalization: "NFLX*SUB" → "Netflix" (90-95% accuracy)
+        >>> # Merchant normalization: "NFLX*SUB" -> "Netflix" (90-95% accuracy)
         >>> # Variable detection: Utility bills with seasonal variance (85-88% accuracy)
         >>> # Cost: ~$0.003/user/year with caching
 

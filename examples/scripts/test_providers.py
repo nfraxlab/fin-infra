@@ -312,7 +312,7 @@ async def test_categorization(verbose: bool = False) -> bool:
         # Test categorization
         result = categorizer.categorize(description="STARBUCKS COFFEE", amount=5.75, user_id="test")
         if result and hasattr(result, "category"):
-            print_success(f"Categorization working: 'STARBUCKS' → {result.category}")
+            print_success(f"Categorization working: 'STARBUCKS' -> {result.category}")
             if verbose:
                 print_info(f"Full result: {result}")
             return True
@@ -426,7 +426,7 @@ async def test_normalization(verbose: bool = False) -> bool:
         # Test symbol resolution
         result = normalizer.resolve_symbol("AAPL")
         if result:
-            print_success(f"Symbol resolution working: AAPL → {result.get('name', 'Unknown')}")
+            print_success(f"Symbol resolution working: AAPL -> {result.get('name', 'Unknown')}")
             if verbose:
                 print_info(f"Full result: {result}")
 

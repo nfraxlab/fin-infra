@@ -71,7 +71,7 @@ class CurrencyConverter:
         except ExchangeRateAPIError as e:
             logger.error(f"Failed to convert {from_currency} to {to_currency}: {e}")
             raise CurrencyNotSupportedError(
-                f"Conversion failed: {from_currency} → {to_currency}"
+                f"Conversion failed: {from_currency} -> {to_currency}"
             ) from e
 
     async def get_rate(
@@ -108,9 +108,9 @@ class CurrencyConverter:
             return rate_data.rate
 
         except ExchangeRateAPIError as e:
-            logger.error(f"Failed to get rate {from_currency} → {to_currency}: {e}")
+            logger.error(f"Failed to get rate {from_currency} -> {to_currency}: {e}")
             raise CurrencyNotSupportedError(
-                f"Rate not available: {from_currency} → {to_currency}"
+                f"Rate not available: {from_currency} -> {to_currency}"
             ) from e
 
     async def get_rates(self, base_currency: str = "USD") -> dict[str, float]:

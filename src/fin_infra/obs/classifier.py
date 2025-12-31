@@ -63,8 +63,8 @@ def financial_route_classifier(route_path: str, method: str) -> str:
     svc-infra's add_observability route_classifier parameter.
 
     Classification Logic:
-    - Financial routes (e.g., /banking/*, /market/*) → "financial"
-    - All other routes → "public"
+    - Financial routes (e.g., /banking/*, /market/*) -> "financial"
+    - All other routes -> "public"
 
     This allows Grafana dashboards to split metrics by route class:
     - Filter by route_class="financial" for financial provider SLOs

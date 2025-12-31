@@ -236,10 +236,10 @@ class InvestmentProvider(ABC):
             Standardized SecurityType enum value
 
         Example mappings:
-            Plaid: "equity" → SecurityType.equity
-            Plaid: "mutual fund" → SecurityType.mutual_fund
-            SnapTrade: "cs" → SecurityType.equity (common stock)
-            SnapTrade: "etf" → SecurityType.etf
+            Plaid: "equity" -> SecurityType.equity
+            Plaid: "mutual fund" -> SecurityType.mutual_fund
+            SnapTrade: "cs" -> SecurityType.equity (common stock)
+            SnapTrade: "etf" -> SecurityType.etf
 
         Note:
             Override in provider-specific implementations for custom mappings.

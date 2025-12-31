@@ -228,13 +228,13 @@ fin-infra documents module is built as **Layer 2** on top of svc-infra's generic
                     │
                     ▼
         ┌────────────────────────────────┐
-        │ FinancialDocumentManager        │  ← Layer 2 (fin-infra)
+        │ FinancialDocumentManager        │  <- Layer 2 (fin-infra)
         │   extends BaseDocumentManager   │     Financial features
         └────────────┬───────────────────┘
                      │
                      ▼
         ┌────────────────────────────────┐
-        │   BaseDocumentManager           │  ← Layer 1 (svc-infra)
+        │   BaseDocumentManager           │  <- Layer 1 (svc-infra)
         │   (generic CRUD)                │     Generic storage
         └────────────┬───────────────────┘
                      │
@@ -250,7 +250,7 @@ fin-infra documents module is built as **Layer 2** on top of svc-infra's generic
 ┌─────────┐   ┌─────────┐   ┌──────────┐
 │svc-infra│   │  Cache  │   │ai-infra  │
 │ Storage │   │  Dict   │   │ LLM  │
-│ Backend │   │(→Redis) │   │(→GenAI)  │
+│ Backend │   │(->Redis) │   │(->GenAI)  │
 └─────────┘   └─────────┘   └──────────┘
 ```
 
@@ -700,7 +700,7 @@ from fin_infra.documents import add_documents, easy_documents
 from svc_infra.storage import easy_storage
 
 # Create storage backend (auto-detects from environment)
-storage = easy_storage()  # → S3Backend or LocalBackend
+storage = easy_storage()  # -> S3Backend or LocalBackend
 
 # Option 1: FastAPI integration
 add_documents(app, storage=storage)
@@ -1005,7 +1005,7 @@ add_prefixed_docs(
 ```
 
 **Access:**
-- Landing page card: `/` → "Documents" card
+- Landing page card: `/` -> "Documents" card
 - Scoped OpenAPI: `/documents/openapi.json`
 - Scoped Swagger UI: `/documents/docs`
 - Scoped ReDoc: `/documents/redoc`

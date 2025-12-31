@@ -197,7 +197,7 @@ class LLMCategorizer:
             self._track_cost()
 
             logger.info(
-                f"LLM categorized '{merchant_name}' → {prediction.category} "
+                f"LLM categorized '{merchant_name}' -> {prediction.category} "
                 f"(confidence={prediction.confidence:.2f})"
             )
 
@@ -252,7 +252,7 @@ class LLMCategorizer:
         # Format few-shot examples
         examples_text = "\n\n".join(
             [
-                f'Merchant: "{merchant}"\n→ Category: "{category}"\n→ Reasoning: "{reasoning}"'
+                f'Merchant: "{merchant}"\n-> Category: "{category}"\n-> Reasoning: "{reasoning}"'
                 for merchant, category, reasoning in FEW_SHOT_EXAMPLES
             ]
         )
@@ -338,10 +338,10 @@ Return JSON with category, confidence, and reasoning."""
 
     def reset_daily_cost(self):
         """Reset daily cost counter (called at midnight UTC)."""
-        logger.info(f"Resetting daily cost: ${self.daily_cost:.5f} → $0.00")
+        logger.info(f"Resetting daily cost: ${self.daily_cost:.5f} -> $0.00")
         self.daily_cost = 0.0
 
     def reset_monthly_cost(self):
         """Reset monthly cost counter (called on 1st of month)."""
-        logger.info(f"Resetting monthly cost: ${self.monthly_cost:.5f} → $0.00")
+        logger.info(f"Resetting monthly cost: ${self.monthly_cost:.5f} -> $0.00")
         self.monthly_cost = 0.0

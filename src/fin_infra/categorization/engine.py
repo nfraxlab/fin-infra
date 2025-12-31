@@ -1,5 +1,5 @@
 """
-Hybrid categorization engine (exact → regex → ML → LLM).
+Hybrid categorization engine (exact -> regex -> ML -> LLM).
 
 4-layer approach:
 1. Layer 1 (Exact Match): O(1) dictionary lookup, 85-90% coverage

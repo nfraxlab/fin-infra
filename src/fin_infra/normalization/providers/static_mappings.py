@@ -109,7 +109,7 @@ TICKER_TO_ISIN = {
 }
 
 # Provider-specific symbol normalization
-# Maps provider-specific format → standard ticker
+# Maps provider-specific format -> standard ticker
 PROVIDER_SYMBOL_MAP = {
     "yahoo": {
         # Yahoo Finance uses dashes for crypto

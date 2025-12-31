@@ -53,7 +53,7 @@ src/fin_infra/insights/
                        ▼
             ┌──────────────────┐
             │ Priority Sorting │
-            │ (CRITICAL → LOW) │
+            │ (CRITICAL -> LOW) │
             └────────┬─────────┘
                      │
                      ▼
@@ -130,7 +130,7 @@ class InsightPriority(str, Enum):
     LOW = "low"            # Informational (e.g., spending trends)
 ```
 
-**Sorting**: Insights are always sorted CRITICAL → HIGH → MEDIUM → LOW (newest first within priority).
+**Sorting**: Insights are always sorted CRITICAL -> HIGH -> MEDIUM -> LOW (newest first within priority).
 
 ### `InsightFeed` (Pydantic BaseModel)
 
@@ -255,7 +255,7 @@ print(f"Showing: {len(feed.insights)} (page {feed.page}/{(feed.total + feed.page
 1. **Significant Changes** (>5% month-over-month):
    - **Priority**: HIGH (if positive change), MEDIUM (if negative)
    - **Title**: "Net Worth Up 12% This Month" or "Net Worth Down 8% This Month"
-   - **Description**: "$150,000 → $168,000 (+$18,000)"
+   - **Description**: "$150,000 -> $168,000 (+$18,000)"
    - **Action**: "Review spending patterns" (if negative) or "Keep up the momentum" (if positive)
    - **Value**: Change amount (e.g., `Decimal("18000.00")`)
 
@@ -297,14 +297,14 @@ elif spent / budget_limit > 0.8:
 **Category**: `InsightCategory.GOAL`
 
 **Logic**:
-1. **Goal Achieved** (progress ≥100%):
+1. **Goal Achieved** (progress >=100%):
    - **Priority**: HIGH
    - **Title**: "Goal '{goal.name}' Achieved!"
    - **Description**: "You've reached your ${target:,.2f} goal"
    - **Action**: "Consider setting a new goal or increasing this one"
    - **Value**: Current amount (Decimal)
 
-2. **Goal Milestone** (progress ≥75%):
+2. **Goal Milestone** (progress >=75%):
    - **Priority**: MEDIUM
    - **Title**: "Goal '{goal.name}' Almost There"
    - **Description**: "${current:,.2f} of ${target:,.2f} saved ({pct:.0f}%)"
@@ -470,7 +470,7 @@ feed = aggregate_insights(
 
 ## Priority Filtering
 
-### Priority Levels (Sorted High → Low)
+### Priority Levels (Sorted High -> Low)
 
 1. **CRITICAL** (Urgent action required):
    - Overdraft risk
@@ -596,7 +596,7 @@ for insight in feed.insights:
    -> Consider setting a new goal or increasing this one
 
  [HIGH] Net Worth Up 12% This Month
-   $150,000 → $168,000 (+$18,000)
+   $150,000 -> $168,000 (+$18,000)
    -> Keep up the momentum
 ```
 

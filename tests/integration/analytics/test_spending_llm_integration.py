@@ -71,7 +71,7 @@ class MockLLMProvider:
 
 @pytest.mark.asyncio
 async def test_analyze_and_generate_insights_e2e():
-    """Test complete flow: analyze spending → generate LLM insights."""
+    """Test complete flow: analyze spending -> generate LLM insights."""
     # Step 1: Analyze spending
     spending = await analyze_spending("user123", period="30d")
 

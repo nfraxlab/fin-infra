@@ -11,7 +11,7 @@ fin-infra extends svc-infra's observability stack with financial-specific route 
 **Key Features**:
 - 🏷 Automatic route classification for financial endpoints
 -  Seamless integration with svc-infra's Prometheus/Grafana stack
-- 🔌 No hardcoded endpoints - extensible prefix patterns
+-  No hardcoded endpoints - extensible prefix patterns
 -  Filter metrics by route class: `financial`, `public`, `admin`, etc.
 
 ## Quick Start
@@ -76,24 +76,24 @@ The difference is **only in the labeling**:
 
 ```python
 # These routes ALL get instrumented + labeled automatically:
-GET /banking/accounts          → route="/banking/accounts|financial"
-GET /market/quote/AAPL        → route="/market/quote/{symbol}|financial"
-GET /crypto/price/BTC         → route="/crypto/price/{symbol}|financial"
-GET /brokerage/positions      → route="/brokerage/positions|financial"
+GET /banking/accounts          -> route="/banking/accounts|financial"
+GET /market/quote/AAPL        -> route="/market/quote/{symbol}|financial"
+GET /crypto/price/BTC         -> route="/crypto/price/{symbol}|financial"
+GET /brokerage/positions      -> route="/brokerage/positions|financial"
 
 # Non-financial routes also get instrumented + labeled:
-GET /health                    → route="/health|public"
-GET /docs                      → route="/docs|public"
-GET /admin/users               → route="/admin/users|public"
+GET /health                    -> route="/health|public"
+GET /docs                      -> route="/docs|public"
+GET /admin/users               -> route="/admin/users|public"
 ```
 
 **Example without classifier:**
 
 ```python
 # Same routes ALL get instrumented, just simpler labels:
-GET /banking/accounts          → route="/banking/accounts"
-GET /market/quote/AAPL        → route="/market/quote/{symbol}"
-GET /health                    → route="/health"
+GET /banking/accounts          -> route="/banking/accounts"
+GET /market/quote/AAPL        -> route="/market/quote/{symbol}"
+GET /health                    -> route="/health"
 ```
 
 ## How It Works
@@ -239,7 +239,7 @@ def internal_classifier(route_path: str, method: str) -> str:
         return "internal"
     return "public"
 
-# Compose: try financial → admin → internal → default to public
+# Compose: try financial -> admin -> internal -> default to public
 classifier = compose_classifiers(
     financial_route_classifier,
     admin_classifier,
@@ -253,10 +253,10 @@ add_observability(app, route_classifier=classifier)
 Now your routes are classified with multiple categories:
 
 ```python
-GET /banking/accounts    → financial
-GET /admin/users         → admin
-GET /internal/debug      → internal
-GET /health              → public
+GET /banking/accounts    -> financial
+GET /admin/users         -> admin
+GET /internal/debug      -> internal
+GET /health              -> public
 ```
 
 ### Custom Classifier Implementation
@@ -300,8 +300,8 @@ FINANCIAL_ROUTE_PREFIXES += (
 )
 
 # Now these routes will also be classified as financial
-GET /insurance/quotes     → financial
-GET /mortgage/rates       → financial
+GET /insurance/quotes     -> financial
+GET /mortgage/rates       -> financial
 ```
 
 ## Metrics Available

@@ -7,7 +7,7 @@ Provides on-demand insights for users:
 - Cost-saving recommendations (bundle deals, unused subscriptions)
 
 Uses ai-infra LLM with few-shot prompting.
-Caches results for 24 hours (80% hit rate expected) → <1ms latency.
+Caches results for 24 hours (80% hit rate expected) -> <1ms latency.
 Triggered via GET /recurring/insights API endpoint (not automatic).
 """
 
@@ -105,23 +105,23 @@ Guidelines:
 
 Examples:
 1. Subscriptions: Netflix $15.99, Hulu $12.99, Disney+ $10.99, Spotify $9.99, Amazon Prime $14.99
-   → "You have 5 subscriptions totaling $64.95/month. Consider the Disney+ bundle
+   -> "You have 5 subscriptions totaling $64.95/month. Consider the Disney+ bundle
       (Disney+, Hulu, ESPN+ for $19.99) to save $29.98/month. Also, Amazon Prime
       includes Prime Video - you may be able to cancel Netflix or Hulu."
-   → total_monthly_cost: 64.95
-   → potential_savings: 30.00
+   -> total_monthly_cost: 64.95
+   -> potential_savings: 30.00
 
 2. Subscriptions: Spotify $9.99, Apple Music $10.99
-   → "You're paying for both Spotify and Apple Music ($20.98/month). Cancel one
+   -> "You're paying for both Spotify and Apple Music ($20.98/month). Cancel one
       to save $10.99/month."
-   → total_monthly_cost: 20.98
-   → potential_savings: 10.99
+   -> total_monthly_cost: 20.98
+   -> potential_savings: 10.99
 
 3. Subscriptions: LA Fitness $40, Planet Fitness $10
-   → "You have 2 gym memberships totaling $50/month. Consider consolidating to
+   -> "You have 2 gym memberships totaling $50/month. Consider consolidating to
       just Planet Fitness to save $40/month."
-   → total_monthly_cost: 50.00
-   → potential_savings: 40.00
+   -> total_monthly_cost: 50.00
+   -> potential_savings: 40.00
 
 Output format (JSON):
 {
@@ -152,8 +152,8 @@ class SubscriptionInsightsGenerator:
     LLM-based subscription insights generator with caching.
 
     Layer 5 of 4-layer hybrid architecture (on-demand, optional):
-    1. Check cache first (80% hit rate, 24h TTL) → <1ms
-    2. Call LLM if cache miss → 300-500ms
+    1. Check cache first (80% hit rate, 24h TTL) -> <1ms
+    2. Call LLM if cache miss -> 300-500ms
     3. Cache result for 24 hours
     4. Return SubscriptionInsights
 
@@ -236,9 +236,9 @@ class SubscriptionInsightsGenerator:
         Generate subscription insights with natural language recommendations.
 
         Flow:
-        1. Check cache (80% hit rate, key: insights:{user_id}) → <1ms
+        1. Check cache (80% hit rate, key: insights:{user_id}) -> <1ms
         2. Check budget (daily/monthly caps)
-        3. Call LLM if cache miss → 300-500ms
+        3. Call LLM if cache miss -> 300-500ms
         4. Cache result (24h TTL)
         5. Return SubscriptionInsights
 

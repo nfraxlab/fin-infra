@@ -93,8 +93,8 @@ class FundingSource(BaseModel):
 
     Supports split allocation:
     - Multiple accounts can fund one goal (e.g., savings + checking)
-    - One account can fund multiple goals (e.g., savings → emergency + vacation)
-    - Allocation percentages must sum to ≤100% per account
+    - One account can fund multiple goals (e.g., savings -> emergency + vacation)
+    - Allocation percentages must sum to <=100% per account
     """
 
     goal_id: str = Field(..., description="Goal identifier")

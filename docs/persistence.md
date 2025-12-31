@@ -115,7 +115,7 @@ from app.models.budgets import Budget
 
 app = FastAPI()
 
-# ONE FUNCTION CALL → Full CRUD API
+# ONE FUNCTION CALL -> Full CRUD API
 add_sql_resources(app, [
     SqlResource(
         model=Budget,

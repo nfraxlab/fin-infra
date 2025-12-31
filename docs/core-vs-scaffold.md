@@ -148,9 +148,9 @@ growth = calculate_growth([
 ### 6. Transaction Categorization
 
 **What we provide**:
-- Rule-based categorization (merchant name → category)
+- Rule-based categorization (merchant name -> category)
 - ML model inference (LLM-based with financial context)
-- Category normalization (vendor-specific → standard categories)
+- Category normalization (vendor-specific -> standard categories)
 
 **Example**:
 ```python
@@ -404,7 +404,7 @@ fin-infra scaffold budgets --dest-dir app/models/budgets
 
 [OK] **Building typical CRUD app**: FastAPI + SQLAlchemy + PostgreSQL
 ```python
-# Scaffold → migrate → ONE-LINER CRUD
+# Scaffold -> migrate -> ONE-LINER CRUD
 add_sql_resources(app, [SqlResource(model=Budget, prefix="/budgets")])
 ```
 
@@ -417,10 +417,10 @@ fin-infra scaffold budgets --include-tenant --include-soft-delete
 
 ```
 Do you need to store budgets/goals/net-worth in SQL?
-├─ YES → Use scaffold to generate models/schemas/repositories
+├─ YES -> Use scaffold to generate models/schemas/repositories
 │         Then use core functions for calculations
 │
-└─ NO → Use core functions directly
+└─ NO -> Use core functions directly
         Store data however you want (Mongo, Redis, in-memory, etc.)
 ```
 

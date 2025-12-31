@@ -755,7 +755,7 @@ def test_remove_account_not_found(client):
 
 
 def test_full_goal_lifecycle(client, sample_deadline):
-    """Test complete goal lifecycle: create → milestone → fund → progress → delete."""
+    """Test complete goal lifecycle: create -> milestone -> fund -> progress -> delete."""
     # 1. Create goal
     create_response = client.post(
         "/goals",

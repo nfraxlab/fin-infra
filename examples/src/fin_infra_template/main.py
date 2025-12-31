@@ -732,7 +732,7 @@ print("[OK] Categorization enabled (56 categories, 100+ rules, LLM fallback)")
 # Endpoints: /recurring/detect, /recurring/insights
 # Features: Fixed subscriptions (Netflix, Spotify), variable bills (utilities),
 #           irregular/annual (insurance), pattern detection, cost insights
-# Algorithm: Amount variance ≤10% for fixed, date consistency for all types
+# Algorithm: Amount variance <=10% for fixed, date consistency for all types
 from .helpers import add_recurring_detection
 
 recurring = add_recurring_detection(app, prefix="/recurring")
@@ -794,7 +794,7 @@ print("[OK] Goals enabled (13 endpoints: CRUD, milestones, funding, AI recommend
 #   GET /net-worth/breakdown - Asset/liability breakdown by category
 #   POST /net-worth/snapshot - Manually trigger snapshot
 # Features: 6 asset types, 6 liability types, automatic daily snapshots via svc-infra jobs,
-#           change alerts (≥5% OR ≥$10k), trend analysis
+#           change alerts (>=5% OR >=$10k), trend analysis
 # Jobs: Daily automatic snapshots at midnight via svc-infra scheduler
 # NOTE: Net worth tracking requires at least one provider (banking/brokerage/crypto)
 # Only enable if providers are configured

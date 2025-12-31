@@ -1,11 +1,11 @@
 """Response parsers for Experian API data to fin_infra models.
 
 Converts Experian API JSON responses to typed Pydantic models:
-- parse_credit_score(): dict → CreditScore
-- parse_credit_report(): dict → CreditReport
-- parse_account(): dict → CreditAccount
-- parse_inquiry(): dict → CreditInquiry
-- parse_public_record(): dict → PublicRecord
+- parse_credit_score(): dict -> CreditScore
+- parse_credit_report(): dict -> CreditReport
+- parse_account(): dict -> CreditAccount
+- parse_inquiry(): dict -> CreditInquiry
+- parse_public_record(): dict -> PublicRecord
 
 Example:
     >>> data = await client.get_credit_score("user123")

@@ -54,8 +54,8 @@ def easy_brokerage(
     [!] **SAFETY**: Defaults to paper trading mode. Live trading requires explicit mode="live".
 
     Auto-detects provider based on environment variables:
-    1. If ALPACA_API_KEY and ALPACA_API_SECRET are set → Alpaca
-    2. Otherwise → Raises error (credentials required)
+    1. If ALPACA_API_KEY and ALPACA_API_SECRET are set -> Alpaca
+    2. Otherwise -> Raises error (credentials required)
 
     Args:
         provider: Provider name ("alpaca"). If None, defaults to alpaca.
