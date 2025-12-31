@@ -1,23 +1,24 @@
-<div align="center">
-
 # fin-infra
 
-[![CI](https://github.com/nfraxlab/fin-infra/actions/workflows/ci.yml/badge.svg)](https://github.com/nfraxlab/fin-infra/actions/workflows/ci.yml)
+**Financial data infrastructure for fintech apps.**
+
 [![PyPI](https://img.shields.io/pypi/v/fin-infra.svg)](https://pypi.org/project/fin-infra/)
+[![CI](https://github.com/nfraxlab/fin-infra/actions/workflows/ci.yml/badge.svg)](https://github.com/nfraxlab/fin-infra/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/pypi/pyversions/fin-infra.svg)](https://pypi.org/project/fin-infra/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Downloads](https://img.shields.io/pypi/dm/fin-infra.svg)](https://pypi.org/project/fin-infra/)
-[![codecov](https://codecov.io/gh/nfraxlab/fin-infra/branch/main/graph/badge.svg)](https://codecov.io/gh/nfraxlab/fin-infra)
 
-### Financial data infrastructure for fintech apps
+## Overview
 
-**Banking, investments, market data, credit scores, and financial calculations in one toolkit.**
+Banking, investments, market data, credit scores, and financial calculations in one toolkit.
 
-[Documentation](docs/) · [Examples](examples/) · [PyPI](https://pypi.org/project/fin-infra/)
+### Key Features
 
-</div>
-
----
+- **Banking** - Plaid/Teller integration, accounts, transactions
+- **Investments** - Holdings, portfolio data, real P/L with cost basis
+- **Market Data** - Stocks, crypto, forex quotes and history
+- **Credit** - Credit scores and monitoring
+- **Analytics** - Cash flow, savings rate, spending insights
+- **Cashflows** - NPV, IRR, loan amortization calculations
 
 ## Why fin-infra?
 
