@@ -1,0 +1,27 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+    patch:
+      default:
+        target: auto
+        threshold: 1%
+        # Only require coverage on actual source code
+        only_pulls: true
+
+ignore:
+  - "*.toml"
+  - "*.lock"
+  - "*.yml"
+  - "*.yaml"
+  - "*.md"
+  - "*.json"
+  - "*.ini"
+  - "docs/**"
+  - "examples/**"
+  - "scripts/**"
+  - "tests/**"
+  - "htmlcov/**"
+  - ".github/**"
