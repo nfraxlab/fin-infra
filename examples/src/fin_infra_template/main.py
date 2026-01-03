@@ -161,16 +161,16 @@ async def startup_event():
     print("\n" + "=" * 80)
     print(" Application startup complete!")
     print("=" * 80)
-    print(f"\n📖 Documentation: http://localhost:{settings.api_port}/docs")
+    print(f"\nDocumentation: http://localhost:{settings.api_port}/docs")
     print(f" Metrics: http://localhost:{settings.api_port}/metrics")
-    print(f"💚 Health: http://localhost:{settings.api_port}/ping\n")
+    print(f"Health: http://localhost:{settings.api_port}/ping\n")
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """Application shutdown handler - Cleanup resources."""
     print("\n" + "=" * 80)
-    print("🛑 Shutting down fin-infra-template...")
+    print("Shutting down fin-infra-template...")
     print("=" * 80)
 
     # Close database connections

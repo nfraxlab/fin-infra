@@ -34,7 +34,7 @@ Server starts at **http://localhost:8001**
 - Metrics: http://localhost:8001/metrics
 - Health check: http://localhost:8001/_health
 
-##  Key Configuration
+## Key Configuration
 
 Edit `.env` for provider configuration:
 
@@ -94,7 +94,7 @@ poetry run alembic upgrade head
 
 **See [docs/DATABASE.md](docs/DATABASE.md)** for complete database documentation.
 
-##  Testing Features
+## Testing Features
 
 ### Without Any Configuration (Works Out of the Box)
 
@@ -176,7 +176,7 @@ curl -X POST http://localhost:8001/chat/ask \
 # Response: AI-powered financial advice with follow-up questions
 ```
 
-##  Quick Feature Test
+## Quick Feature Test
 
 Run this script to test all enabled features:
 
@@ -192,7 +192,7 @@ python scripts/test_providers.py
 # [!]  Brokerage (Alpaca) - Not configured
 ```
 
-## 📚 Key Files Reference
+## Key Files Reference
 
 ### Application Code
 
@@ -226,7 +226,7 @@ python scripts/test_providers.py
 - **`docs/DATABASE.md`** - Database setup guide
 - **`docs/PROVIDERS.md`** - Provider configuration guide
 
-##  Next Steps
+## Next Steps
 
 1. **Enable more providers** - Add API keys for Experian, Alpaca, etc.
 2. **Read USAGE.md** - Detailed examples for all 20+ features
@@ -234,7 +234,7 @@ python scripts/test_providers.py
 4. **Add custom logic** - Extend `api/v1/routes.py` with your business logic
 5. **Customize models** - Modify `db/models.py` for your domain
 
-##  Common Issues
+## Common Issues
 
 ### Poetry not found
 
@@ -282,7 +282,7 @@ python scripts/test_providers.py --provider plaid
 curl http://localhost:8001/_health
 ```
 
-## 📖 Learning Resources
+## Learning Resources
 
 - **Inline Documentation**: Read `main.py` - every feature is explained with comments
 - **API Documentation**: Visit http://localhost:8001/docs for interactive API reference
@@ -290,7 +290,7 @@ curl http://localhost:8001/_health
 - **Usage Guide**: See [USAGE.md](USAGE.md) for copy-paste code examples
 - **Provider Setup**: See [docs/PROVIDERS.md](docs/PROVIDERS.md) for credential setup
 
-##  Production Deployment
+## Production Deployment
 
 Ready to deploy? Here's what you need:
 
