@@ -2,7 +2,7 @@
 
 A comprehensive example demonstrating **ALL** fin-infra capabilities for building production-ready fintech applications.
 
-##  Quick Setup
+## Quick Setup
 
 **Get started in 2 commands:**
 
@@ -13,14 +13,14 @@ make run      # Starts the server at http://localhost:8001
 ```
 
 ** Features:**
-- 🛡 Safe: Won't overwrite existing models (use `--overwrite` if needed)
-- 📚 Educational: Demonstrates ALL 20+ fin-infra capabilities with inline documentation
+- Safe: Won't overwrite existing models (use `--overwrite` if needed)
+- Educational: Demonstrates ALL 20+ fin-infra capabilities with inline documentation
 -  Complete: Full integration with svc-infra backend and ai-infra LLM features
 -  Production-Ready: Shows best practices for fintech application development
 
-📖 **See [QUICKSTART.md](QUICKSTART.md)** - 5-minute setup guide  
-📚 **See [USAGE.md](USAGE.md)** - Detailed feature usage examples  
-🛠 **See [Make Commands](#-available-make-commands)** - All available commands
+**See [QUICKSTART.md](QUICKSTART.md)** - 5-minute setup guide  
+**See [USAGE.md](USAGE.md)** - Detailed feature usage examples  
+**See [Make Commands](#-available-make-commands)** - All available commands
 
 ##  What This Template Showcases
 
@@ -35,30 +35,30 @@ This is a **complete, working example** that demonstrates **ALL 20+ fin-infra ca
 [OK] **Investments** - Plaid/SnapTrade holdings, real P/L, cost basis (5 endpoints) **NEW**  
 [OK] **Tax Data** - IRS/TaxBit forms & calculations (5 endpoints)
 
-### 🧠 Financial Intelligence (Analytics & AI)
+### Financial Intelligence (Analytics & AI)
 [OK] **Analytics** - Cash flow, savings rate, spending insights, AI advice (7 endpoints)  
 [OK] **Categorization** - 56 MX categories, 100+ rules, LLM fallback (2 endpoints)  
 [OK] **Recurring Detection** - Fixed subscriptions, variable bills (2 endpoints)  
 [OK] **Insights Feed** - Unified dashboard from 7 sources (2 endpoints)
 
-###  Financial Planning (Goals & Budgets)
+### Financial Planning (Goals & Budgets)
 [OK] **Budgets** - Multi-type, templates (50/30/20, Zero-Based), rollover (8 endpoints)  
 [OK] **Goals** - Milestones, multi-account funding, progress tracking (13 endpoints)  
 [OK] **Net Worth Tracking** - Multi-provider aggregation, snapshots (4 endpoints)
 
-### 📄 Document & Compliance
+### Document & Compliance
 [OK] **Documents** - OCR (Tesseract/Textract), AI analysis (3 endpoints)  
 [OK] **Security** - PII detection, encryption, audit logging (middleware)  
 [OK] **Compliance** - PII classification, data retention, erasure workflows
 
-### 🛠 Utilities & Cross-Cutting
+### Utilities & Cross-Cutting
 [OK] **Normalization** - Symbol resolution, currency conversion (2 endpoints)  
 [OK] **Observability** - Financial route metrics, provider tracking  
 [OK] **Cashflows** - NPV, IRR, PMT, FV, PV calculations (5 endpoints)  
 [OK] **Conversation** - AI financial chat via ai-infra (3 endpoints)  
 [OK] **Scaffolding** - Code generation CLI for models/schemas/repos
 
-##  Quick Start
+## Quick Start
 
 ### Option 1: Automated Setup with Make (Recommended)
 
@@ -107,7 +107,7 @@ Server starts at **http://localhost:8001**
 - Metrics: http://localhost:8001/metrics
 - Health: http://localhost:8001/_health
 
-## 📚 Documentation Structure
+## Documentation Structure
 
 - **[README.md](README.md)** (this file) - Complete overview and quick start
 - **[QUICKSTART.md](QUICKSTART.md)** - 5-minute getting started guide
@@ -117,7 +117,7 @@ Server starts at **http://localhost:8001**
 - **[docs/PROVIDERS.md](docs/PROVIDERS.md)** - Provider configuration guide
 - **[docs/CLI.md](docs/CLI.md)** - fin-infra CLI reference
 
-##  Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -162,7 +162,7 @@ METRICS_ENABLED=true
 
 **See [docs/PROVIDERS.md](docs/PROVIDERS.md)** for complete provider setup instructions.
 
-##  Testing Features
+## Testing Features
 
 ### Banking Integration
 
@@ -219,7 +219,7 @@ curl -X POST http://localhost:8001/cashflows/irr \
 
 **See [USAGE.md](USAGE.md)** for complete examples for ALL 20+ capabilities.
 
-##  Project Structure
+## Project Structure
 
 ```
 examples/
@@ -254,7 +254,7 @@ examples/
     └── test_main.py
 ```
 
-## 🛠 Available Make Commands
+## Available Make Commands
 
 ```bash
 make help              # Show all commands with descriptions
@@ -270,7 +270,7 @@ make scaffold-models   # Generate database models
 make db-migrate        # Run database migrations
 ```
 
-## 🏗 Architecture Highlights
+## Architecture Highlights
 
 ### Backend Integration (svc-infra)
 
@@ -305,7 +305,7 @@ Demonstrates **fin-infra** financial primitives:
 - [OK] **Recurring Detection** - Subscription and bill identification
 - [OK] **Net Worth Tracking** - Multi-account aggregation with snapshots
 
-## 🎓 Learning Path
+## Learning Path
 
 1. **Read `main.py`** - 1500+ lines with 150+ educational comments explaining every feature
 2. **Run the example** - See it work with `make run`
@@ -314,7 +314,7 @@ Demonstrates **fin-infra** financial primitives:
 5. **Add custom logic** - Extend `api/v1/routes.py` with your business logic
 6. **Customize models** - Modify `db/models.py` for your domain
 
-##  Cost Estimates (with real providers)
+## Cost Estimates (with real providers)
 
 ### Development (Free/Sandbox)
 - **Banking**: Plaid sandbox (free)
@@ -333,7 +333,7 @@ Demonstrates **fin-infra** financial primitives:
 
 **See [docs/PROVIDERS.md](docs/PROVIDERS.md)** for detailed pricing breakdown.
 
-##  Troubleshooting
+## Troubleshooting
 
 ### Server won't start
 
@@ -372,7 +372,7 @@ poetry run alembic upgrade head
 
 **See [docs/CAPABILITIES.md](docs/CAPABILITIES.md)** for capability-specific troubleshooting.
 
-##  Contributing
+## Contributing
 
 This template is part of the fin-infra project. Contributions welcome!
 
@@ -382,7 +382,7 @@ This template is part of the fin-infra project. Contributions welcome!
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This template is part of fin-infra and follows the same license.
 
@@ -392,7 +392,7 @@ This template is part of fin-infra and follows the same license.
 - **[ai-infra](https://github.com/yourusername/ai-infra)** - AI/LLM infrastructure
 - **[fin-infra](https://github.com/yourusername/fin-infra)** - Financial primitives (this project)
 
-## 📞 Support
+## Support
 
 - **Documentation**: [docs/](docs/)
 - **Issues**: [GitHub Issues](https://github.com/yourusername/fin-infra/issues)

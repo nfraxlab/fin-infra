@@ -18,9 +18,9 @@ fi
 PORT=${API_PORT:-8001}
 
 echo " Starting fin-infra-template server on port $PORT..."
-echo "📖 OpenAPI docs: http://localhost:$PORT/docs"
+echo "OpenAPI docs: http://localhost:$PORT/docs"
 echo " Metrics: http://localhost:$PORT/metrics"
-echo "🏥 Health: http://localhost:$PORT/_health"
+echo "Health: http://localhost:$PORT/_health"
 echo ""
 
 # Run with uvicorn (--app-dir tells uvicorn where to find the package)
