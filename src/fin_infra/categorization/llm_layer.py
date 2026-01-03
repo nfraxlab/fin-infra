@@ -300,6 +300,8 @@ Return JSON with category, confidence, and reasoning."""
     def _get_cache_key(self, merchant_name: str) -> str:
         """Generate stable cache key from merchant name."""
         normalized = merchant_name.lower().strip()
+        # Security: B324 skip justified - MD5 used for cache key generation only,
+        # not for security. We need deterministic hashing for cache lookups.
         hash_value = hashlib.md5(normalized.encode()).hexdigest()
         return f"llm_category:{hash_value}"
 

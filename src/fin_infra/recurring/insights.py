@@ -352,6 +352,7 @@ class SubscriptionInsightsGenerator:
         import json
 
         subscriptions_json = json.dumps(subscriptions, sort_keys=True)
+        # Security: B324 skip justified - MD5 used for cache key generation only.
         hash_hex = hashlib.md5(subscriptions_json.encode()).hexdigest()
         return f"insights:{hash_hex}"
 

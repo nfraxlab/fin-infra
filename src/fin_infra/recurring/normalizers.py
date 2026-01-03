@@ -330,6 +330,7 @@ class MerchantNormalizer:
         Format: merchant_norm:{md5_hex}
         """
         normalized = merchant_name.lower().strip()
+        # Security: B324 skip justified - MD5 used for cache key generation only.
         hash_hex = hashlib.md5(normalized.encode()).hexdigest()
         return f"merchant_norm:{hash_hex}"
 
