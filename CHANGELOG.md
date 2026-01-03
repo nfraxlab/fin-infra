@@ -1,6 +1,21 @@
 # CHANGELOG
 
 
+## v0.2.3 (2026-01-03)
+
+### Bug Fixes
+
+- Fix required status check names to match GitHub Actions
+  ([#33](https://github.com/nfraxlab/fin-infra/pull/33),
+  [`cde4cf0`](https://github.com/nfraxlab/fin-infra/commit/cde4cf0e327266f2a1e2e9cfc19a88684690090e))
+
+### Continuous Integration
+
+- Add branch protection settings to dismiss stale reviews
+  ([#32](https://github.com/nfraxlab/fin-infra/pull/32),
+  [`5f9a068`](https://github.com/nfraxlab/fin-infra/commit/5f9a0686add02edc26635ceefa5c6c76d0c61db7))
+
+
 ## v0.2.2 (2025-12-31)
 
 ### Bug Fixes
