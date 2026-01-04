@@ -126,6 +126,22 @@ integrationv: _poetry-check
 	@poetry install --no-interaction --only main,dev >/dev/null 2>&1 || true
 	@poetry run pytest -vv tests/integration
 
+# --- Benchmarks ---
+benchmark: _poetry-check
+	@echo "[benchmark] Running performance benchmarks"
+	@poetry install --no-interaction --only main,dev >/dev/null 2>&1 || true
+	@poetry run pytest benchmarks/ --benchmark-only --benchmark-sort=mean
+
+benchmark-save: _poetry-check
+	@echo "[benchmark] Running benchmarks and saving results"
+	@poetry install --no-interaction --only main,dev >/dev/null 2>&1 || true
+	@poetry run pytest benchmarks/ --benchmark-only --benchmark-autosave --benchmark-save-data
+
+benchmark-compare: _poetry-check
+	@echo "[benchmark] Comparing with previous benchmark results"
+	@poetry install --no-interaction --only main,dev >/dev/null 2>&1 || true
+	@poetry run pytest benchmarks/ --benchmark-only --benchmark-compare
+
 # --- Code Quality ---
 format: _poetry-check
 	@echo "[format] Formatting with black and isort"
