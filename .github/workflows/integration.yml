@@ -1,0 +1,144 @@
+name: Integration Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      providers:
+        description: "Providers to test (plaid, alphavantage, yahoo, all)"
+        required: false
+        default: "all"
+  schedule:
+    # Run daily at 4 AM UTC (after ai-infra and svc-infra integration tests)
+    - cron: "0 4 * * *"
+
+jobs:
+  # =========================================================================
+  # Yahoo Finance Tests (Free, no API key required)
+  # =========================================================================
+  yahoo-finance:
+    name: Yahoo Finance Integration Tests
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.providers == 'yahoo' || github.event.inputs.providers == 'all' || github.event_name == 'schedule' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install yahooquery
+
+      - name: Run Yahoo Finance integration tests
+        run: |
+          pytest tests/integration/test_market_data.py -v -m integration -k "Yahoo" --tb=short
+
+  # =========================================================================
+  # Alpha Vantage Tests (Requires API key)
+  # =========================================================================
+  alphavantage:
+    name: Alpha Vantage Integration Tests
+    runs-on: ubuntu-latest
+    if: ${{ (github.event.inputs.providers == 'alphavantage' || github.event.inputs.providers == 'all' || github.event_name == 'schedule') && github.event_name != 'pull_request' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run Alpha Vantage integration tests
+        env:
+          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+        run: |
+          if [ -n "$ALPHA_VANTAGE_API_KEY" ]; then
+            pytest tests/integration/test_market_data.py -v -m integration -k "AlphaVantage" --tb=short
+          else
+            echo "ALPHA_VANTAGE_API_KEY not set, skipping Alpha Vantage tests"
+          fi
+
+  # =========================================================================
+  # Plaid Sandbox Tests (Requires API credentials)
+  # =========================================================================
+  plaid:
+    name: Plaid Sandbox Integration Tests
+    runs-on: ubuntu-latest
+    if: ${{ (github.event.inputs.providers == 'plaid' || github.event.inputs.providers == 'all' || github.event_name == 'schedule') && github.event_name != 'pull_request' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install plaid-python
+
+      - name: Run Plaid sandbox integration tests
+        env:
+          PLAID_CLIENT_ID: ${{ secrets.PLAID_CLIENT_ID }}
+          PLAID_SECRET: ${{ secrets.PLAID_SECRET }}
+          PLAID_ENV: sandbox
+        run: |
+          if [ -n "$PLAID_CLIENT_ID" ] && [ -n "$PLAID_SECRET" ]; then
+            pytest tests/integration/test_plaid_sandbox.py -v -m integration --tb=short
+          else
+            echo "PLAID_CLIENT_ID or PLAID_SECRET not set, skipping Plaid tests"
+          fi
+
+  # =========================================================================
+  # Full Integration Suite (All providers with mock fallbacks)
+  # =========================================================================
+  full-suite:
+    name: Full Integration Suite
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.providers == 'all' || github.event_name == 'schedule' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install yahooquery
+
+      - name: Run all integration tests
+        env:
+          PLAID_CLIENT_ID: ${{ secrets.PLAID_CLIENT_ID }}
+          PLAID_SECRET: ${{ secrets.PLAID_SECRET }}
+          PLAID_ENV: sandbox
+          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+        run: |
+          # Run tests - those without credentials will be skipped automatically
+          pytest tests/integration -v -m integration --tb=short

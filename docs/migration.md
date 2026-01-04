@@ -6,8 +6,45 @@ This guide documents breaking changes and migration paths between versions of fi
 
 | fin-infra | Python | svc-infra | ai-infra | Notes |
 |-----------|--------|-----------|----------|-------|
-| 0.1.x | 3.11+ | >=0.1.0 | >=0.1.0 | Current stable |
-| 0.2.x (planned) | 3.11+ | >=0.2.0 | >=0.2.0 | API refinements |
+| 1.0.x | 3.11+ | >=1.0.0 | >=1.0.0 | Stable API, production ready |
+| 0.1.x | 3.11+ | >=0.1.0 | >=0.1.0 | Legacy (deprecated) |
+
+## Migrating to 1.0.0
+
+### No Breaking Changes
+
+v1.0.0 is API-compatible with 0.1.x. This release marks API stability:
+
+- All documented APIs are now considered stable
+- Breaking changes will follow semantic versioning (major version bumps)
+- Deprecated features will have 2+ minor version warning period
+
+### What's New in 1.0.0
+
+- **Enhanced documentation**: Comprehensive API reference with mkdocstrings
+- **Experimental APIs marked**: See `docs/reference/experimental.md`
+- **Improved test coverage**: 70%+ coverage on all modules
+
+### Deprecated Aliases
+
+The following will be removed in v2.0.0:
+
+```python
+# Deprecated
+from fin_infra.markets import StockMarketData
+
+# Use instead
+from fin_infra.markets import MarketData
+```
+
+### Recommended Upgrades
+
+```python
+# Use the normalized providers for consistent API
+from fin_infra.banking import easy_banking
+from fin_infra.brokerage import easy_brokerage
+from fin_infra.markets import easy_market
+```
 
 ## Migrating to 0.1.x
 
