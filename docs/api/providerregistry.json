@@ -1,0 +1,101 @@
+{
+  "name": "ProviderRegistry",
+  "module": "fin_infra.providers.registry",
+  "docstring": "Registry for financial data providers.\n\nProvides dynamic loading and configuration of providers.",
+  "parameters": [],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "()",
+      "docstring": null,
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "clear_cache",
+      "signature": "()",
+      "docstring": "Clear provider instance cache.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "list_providers",
+      "signature": "(domain: str | None = None) -> list[str]",
+      "docstring": "List available providers.\n\nArgs:\n    domain: Optional domain filter (e.g., 'banking', 'market')\n\nReturns:\n    List of provider keys (e.g., ['banking:plaid', 'banking:teller'])",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "domain",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "list[str]",
+      "is_async": false
+    },
+    {
+      "name": "resolve",
+      "signature": "(domain: str, name: str | None = None, config = {}) -> Any",
+      "docstring": "Resolve and instantiate a provider.\n\nArgs:\n    domain: Provider domain (e.g., 'banking', 'market', 'crypto')\n    name: Provider name (e.g., 'plaid', 'alphavantage'). If None, uses default.\n    **config: Configuration passed to provider constructor\n\nReturns:\n    Configured provider instance\n\nRaises:\n    ProviderNotFoundError: If provider cannot be loaded\n\nExamples:\n    >>> registry = ProviderRegistry()\n    >>> banking = registry.resolve(\"banking\", \"plaid\", client_id=\"...\", secret=\"...\")\n    >>> market = registry.resolve(\"market\", \"yahoo\")  # uses free tier\n    >>> crypto = registry.resolve(\"crypto\")  # uses default (coingecko)",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "domain",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "config",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "Any",
+      "is_async": false
+    }
+  ],
+  "bases": []
+}

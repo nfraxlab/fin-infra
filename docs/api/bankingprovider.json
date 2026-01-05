@@ -1,0 +1,170 @@
+{
+  "name": "BankingProvider",
+  "module": "fin_infra.providers.base",
+  "docstring": "Abstract provider for bank account aggregation (Teller, Plaid, MX).",
+  "parameters": [],
+  "methods": [
+    {
+      "name": "accounts",
+      "signature": "(access_token: str) -> list[dict]",
+      "docstring": "Fetch accounts for an access token.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "access_token",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "list[dict]",
+      "is_async": false
+    },
+    {
+      "name": "balances",
+      "signature": "(access_token: str, account_id: str | None = None) -> dict",
+      "docstring": "Fetch current balances for all accounts or specific account.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "access_token",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "account_id",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "dict",
+      "is_async": false
+    },
+    {
+      "name": "create_link_token",
+      "signature": "(user_id: str) -> str",
+      "docstring": "Create a link/connect token for user to authenticate with their bank.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "str",
+      "is_async": false
+    },
+    {
+      "name": "exchange_public_token",
+      "signature": "(public_token: str) -> dict",
+      "docstring": "Exchange public token for access token (Plaid flow).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "public_token",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "dict",
+      "is_async": false
+    },
+    {
+      "name": "identity",
+      "signature": "(access_token: str) -> dict",
+      "docstring": "Fetch identity/account holder information.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "access_token",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "dict",
+      "is_async": false
+    },
+    {
+      "name": "transactions",
+      "signature": "(access_token: str, start_date: str | None = None, end_date: str | None = None) -> list[dict]",
+      "docstring": "Fetch transactions for an access token within optional date range.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "access_token",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "start_date",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "end_date",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "list[dict]",
+      "is_async": false
+    }
+  ],
+  "bases": [
+    "ABC"
+  ]
+}

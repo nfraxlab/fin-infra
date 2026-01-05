@@ -1,0 +1,71 @@
+{
+  "name": "MarketDataProvider",
+  "module": "fin_infra.providers.base",
+  "docstring": null,
+  "parameters": [],
+  "methods": [
+    {
+      "name": "history",
+      "signature": "(symbol: str, period: str = '1mo', interval: str = '1d') -> Sequence[Candle]",
+      "docstring": null,
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "symbol",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "period",
+          "type": "str",
+          "default": "'1mo'",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "interval",
+          "type": "str",
+          "default": "'1d'",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "Sequence[Candle]",
+      "is_async": false
+    },
+    {
+      "name": "quote",
+      "signature": "(symbol: str) -> Quote",
+      "docstring": null,
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "symbol",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "Quote",
+      "is_async": false
+    }
+  ],
+  "bases": [
+    "ABC"
+  ]
+}

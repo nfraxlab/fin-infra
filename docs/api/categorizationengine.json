@@ -1,0 +1,186 @@
+{
+  "name": "CategorizationEngine",
+  "module": "fin_infra.categorization.engine",
+  "docstring": "Hybrid categorization engine.\n\nUses 4-layer approach for high accuracy and performance:\n1. Exact match (dictionary)\n2. Regex patterns\n3. Machine learning (sklearn Naive Bayes)\n4. LLM fallback (ai-infra) - V2 feature\n\nArgs:\n    enable_ml: Enable ML fallback (Layer 3)\n    enable_llm: Enable LLM fallback (Layer 4)\n    confidence_threshold: Minimum confidence for ML/LLM trigger (default 0.6)\n    model_path: Path to pre-trained ML model\n    llm_categorizer: LLMCategorizer instance (Layer 4)",
+  "parameters": [
+    {
+      "name": "enable_ml",
+      "type": "bool",
+      "default": "False",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "enable_llm",
+      "type": "bool",
+      "default": "False",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "confidence_threshold",
+      "type": "float",
+      "default": "0.6",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "model_path",
+      "type": "Path | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "llm_categorizer",
+      "type": "Optional[LLMCategorizer]",
+      "default": "None",
+      "description": null,
+      "required": false
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(enable_ml: bool = False, enable_llm: bool = False, confidence_threshold: float = 0.6, model_path: Path | None = None, llm_categorizer: Optional[LLMCategorizer] = None)",
+      "docstring": null,
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "enable_ml",
+          "type": "bool",
+          "default": "False",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "enable_llm",
+          "type": "bool",
+          "default": "False",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "confidence_threshold",
+          "type": "float",
+          "default": "0.6",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "model_path",
+          "type": "Path | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "llm_categorizer",
+          "type": "Optional[LLMCategorizer]",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "add_rule",
+      "signature": "(pattern: str, category: Category, is_regex: bool = False) -> None",
+      "docstring": "Add a custom categorization rule.\n\nArgs:\n    pattern: Merchant pattern (exact or regex)\n    category: Category to assign\n    is_regex: Whether pattern is regex",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "pattern",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "category",
+          "type": "Category",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "is_regex",
+          "type": "bool",
+          "default": "False",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "None",
+      "is_async": false
+    },
+    {
+      "name": "categorize",
+      "signature": "(merchant_name: str, user_id: str | None = None, include_alternatives: bool = False) -> CategoryPrediction",
+      "docstring": "Categorize a merchant.\n\nArgs:\n    merchant_name: Merchant name to categorize\n    user_id: User ID for personalized overrides\n    include_alternatives: Include top-3 alternative predictions\n\nReturns:\n    CategoryPrediction with category, confidence, and method",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "merchant_name",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "user_id",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "include_alternatives",
+          "type": "bool",
+          "default": "False",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "CategoryPrediction",
+      "is_async": false
+    },
+    {
+      "name": "get_stats",
+      "signature": "() -> dict",
+      "docstring": "Get categorization statistics.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "dict",
+      "is_async": false
+    }
+  ],
+  "bases": []
+}

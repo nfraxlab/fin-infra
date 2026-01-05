@@ -1,0 +1,10 @@
+{
+  "name": "ValidationError",
+  "module": "fin_infra.exceptions",
+  "docstring": "Base error for validation failures.",
+  "parameters": [],
+  "methods": [],
+  "bases": [
+    "FinInfraError"
+  ]
+}

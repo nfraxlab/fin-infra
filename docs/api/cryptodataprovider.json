@@ -1,0 +1,71 @@
+{
+  "name": "CryptoDataProvider",
+  "module": "fin_infra.providers.base",
+  "docstring": null,
+  "parameters": [],
+  "methods": [
+    {
+      "name": "ohlcv",
+      "signature": "(symbol_pair: str, timeframe: str = '1d', limit: int = 100) -> Any",
+      "docstring": null,
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "symbol_pair",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "timeframe",
+          "type": "str",
+          "default": "'1d'",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "int",
+          "default": "100",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "Any",
+      "is_async": false
+    },
+    {
+      "name": "ticker",
+      "signature": "(symbol_pair: str) -> Any",
+      "docstring": null,
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "symbol_pair",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "Any",
+      "is_async": false
+    }
+  ],
+  "bases": [
+    "ABC"
+  ]
+}

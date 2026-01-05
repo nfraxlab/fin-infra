@@ -1,0 +1,241 @@
+{
+  "name": "BudgetTracker",
+  "module": "fin_infra.budgets.tracker",
+  "docstring": "Budget CRUD and progress tracking.\n\nProvides methods for creating, reading, updating, and deleting budgets,\nas well as calculating spending progress against budgeted amounts.\n\nGeneric Design:\n- Works with any budget type (personal, household, business, project)\n- Integrates with svc-infra SQL for persistence\n- Integrates with fin-infra categorization for transaction mapping\n- Supports rollover budgets (unused amounts carry over)\n\nIntegration:\n- Uses svc-infra SQL for budget storage (SqlRepository pattern)\n- Uses fin-infra categorization for transaction category mapping\n- TODO: Uses svc-infra cache for progress calculations (24h TTL)\n- TODO: Uses svc-infra webhooks for budget alerts\n\nAttributes:\n    db_engine: SQLAlchemy async engine\n    session_maker: Async session factory\n\nExample:\n    >>> from sqlalchemy.ext.asyncio import create_async_engine\n    >>> engine = create_async_engine(\"postgresql+asyncpg://localhost/db\")\n    >>> tracker = BudgetTracker(db_engine=engine)\n    >>>\n    >>> # Create monthly budget\n    >>> budget = await tracker.create_budget(\n    ...     user_id=\"user123\",\n    ...     name=\"November 2025\",\n    ...     type=\"personal\",\n    ...     period=\"monthly\",\n    ...     categories={\"Groceries\": 600.00, \"Dining\": 200.00},\n    ...     rollover_enabled=True\n    ... )\n    >>> print(budget.id)  # UUID string",
+  "parameters": [
+    {
+      "name": "db_engine",
+      "type": "AsyncEngine",
+      "default": null,
+      "description": null,
+      "required": true
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(db_engine: AsyncEngine)",
+      "docstring": "Initialize budget tracker with database engine.\n\nArgs:\n    db_engine: SQLAlchemy async engine for database operations\n\nExample:\n    >>> from sqlalchemy.ext.asyncio import create_async_engine\n    >>> engine = create_async_engine(\"postgresql+asyncpg://...\")\n    >>> tracker = BudgetTracker(db_engine=engine)",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "db_engine",
+          "type": "AsyncEngine",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "create_budget",
+      "signature": "(user_id: str, name: str, type: str, period: str, categories: dict[str, float], start_date: datetime | None = None, rollover_enabled: bool = False) -> Budget",
+      "docstring": "Create a new budget.\n\nArgs:\n    user_id: User ID who owns the budget\n    name: Budget name (e.g., \"November 2025\")\n    type: Budget type (personal, household, business, project, custom)\n    period: Budget period (weekly, biweekly, monthly, quarterly, yearly)\n    categories: Category allocations (e.g., {\"Groceries\": 600.00})\n    start_date: Budget start date (defaults to now)\n    rollover_enabled: Whether unused budget carries over to next period\n\nReturns:\n    Created Budget model\n\nRaises:\n    ValueError: Invalid budget type or period\n    ValueError: Empty categories or negative amounts\n    HTTPException: Database constraint violation\n\nExample:\n    >>> budget = await tracker.create_budget(\n    ...     user_id=\"user123\",\n    ...     name=\"November Budget\",\n    ...     type=\"personal\",\n    ...     period=\"monthly\",\n    ...     categories={\"Groceries\": 600.00, \"Restaurants\": 200.00},\n    ...     rollover_enabled=True\n    ... )\n    >>> print(budget.id)  # UUID",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "type",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "period",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "categories",
+          "type": "dict[str, float]",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "start_date",
+          "type": "datetime | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "rollover_enabled",
+          "type": "bool",
+          "default": "False",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "Budget",
+      "is_async": false
+    },
+    {
+      "name": "delete_budget",
+      "signature": "(budget_id: str) -> None",
+      "docstring": "Delete a budget.\n\nArgs:\n    budget_id: Budget UUID\n\nReturns:\n    None\n\nRaises:\n    ValueError: Budget not found\n\nExample:\n    >>> await tracker.delete_budget(\"abc-123\")\n    >>> # Budget and related data deleted",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "budget_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "None",
+      "is_async": false
+    },
+    {
+      "name": "get_budget",
+      "signature": "(budget_id: str) -> Budget",
+      "docstring": "Get a single budget by ID.\n\nArgs:\n    budget_id: Budget UUID\n\nReturns:\n    Budget model\n\nRaises:\n    ValueError: Budget not found (404)\n\nExample:\n    >>> budget = await tracker.get_budget(\"abc-123-def-456\")\n    >>> print(budget.name)  # \"November 2025\"\n    >>> print(budget.categories)  # {\"Groceries\": 600.00, ...}",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "budget_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "Budget",
+      "is_async": false
+    },
+    {
+      "name": "get_budget_progress",
+      "signature": "(budget_id: str, period: str = 'current') -> BudgetProgress",
+      "docstring": "Calculate budget progress for current or specified period.\n\nQueries transactions via categorization module to calculate\nspending against budgeted amounts for each category.\n\nArgs:\n    budget_id: Budget UUID\n    period: Period to calculate (\"current\", \"last\", or specific date range)\n\nReturns:\n    BudgetProgress model with spending details\n\nRaises:\n    ValueError: Budget not found\n    ValueError: Invalid period\n\nExample:\n    >>> progress = await tracker.get_budget_progress(\"abc-123\")\n    >>> print(f\"Total budgeted: ${progress.total_budgeted:.2f}\")  # $800.00\n    >>> print(f\"Total spent: ${progress.total_spent:.2f}\")  # $510.00\n    >>> print(f\"Remaining: ${progress.total_remaining:.2f}\")  # $290.00\n    >>> print(f\"Percent used: {progress.percent_used:.1f}%\")  # 63.8%\n    >>>\n    >>> # Check category progress\n    >>> for category in progress.categories:\n    ...     print(f\"{category.category_name}: {category.percent_used:.1f}%\")\n    Groceries: 70.9%\n    Restaurants: 50.0%",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "budget_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "period",
+          "type": "str",
+          "default": "'current'",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "BudgetProgress",
+      "is_async": false
+    },
+    {
+      "name": "get_budgets",
+      "signature": "(user_id: str, type: str | None = None) -> list[Budget]",
+      "docstring": "Get all budgets for a user.\n\nArgs:\n    user_id: User ID\n    type: Optional budget type filter (personal, household, business, etc.)\n\nReturns:\n    List of Budget models (may be empty)\n\nExample:\n    >>> # Get all budgets\n    >>> budgets = await tracker.get_budgets(\"user123\")\n    >>> print(len(budgets))  # 3\n    >>>\n    >>> # Get only personal budgets\n    >>> personal = await tracker.get_budgets(\"user123\", type=\"personal\")\n    >>> print(personal[0].name)  # \"November 2025\"",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "type",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "list[Budget]",
+      "is_async": false
+    },
+    {
+      "name": "update_budget",
+      "signature": "(budget_id: str, updates: dict) -> Budget",
+      "docstring": "Update budget fields.\n\nArgs:\n    budget_id: Budget UUID\n    updates: Fields to update (name, categories, rollover_enabled, etc.)\n\nReturns:\n    Updated Budget model\n\nRaises:\n    ValueError: Budget not found\n    ValueError: Invalid updates (e.g., negative amounts)\n\nExample:\n    >>> # Update category allocations\n    >>> budget = await tracker.update_budget(\n    ...     \"abc-123\",\n    ...     updates={\"categories\": {\"Groceries\": 700.00, \"Dining\": 150.00}}\n    ... )\n    >>> print(budget.categories[\"Groceries\"])  # 700.00",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "budget_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "updates",
+          "type": "dict",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "Budget",
+      "is_async": false
+    }
+  ],
+  "bases": []
+}

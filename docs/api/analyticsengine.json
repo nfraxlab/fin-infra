@@ -1,0 +1,469 @@
+{
+  "name": "AnalyticsEngine",
+  "module": "fin_infra.analytics.ease",
+  "docstring": "Unified analytics engine providing all analytics capabilities.\n\nThis class provides a clean interface to all analytics functions with\nconfigured defaults and optional provider integrations.\n\nAttributes:\n    default_period_days: Default analysis period (30 days)\n    default_savings_definition: Default savings calculation method\n    default_benchmark: Default portfolio benchmark (SPY)\n    cache_ttl: Cache TTL for expensive operations (3600s = 1h)",
+  "parameters": [
+    {
+      "name": "default_period_days",
+      "type": "int",
+      "default": "30",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "default_savings_definition",
+      "type": "SavingsDefinition",
+      "default": "SavingsDefinition.NET",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "default_benchmark",
+      "type": "str",
+      "default": "'SPY'",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "cache_ttl",
+      "type": "int",
+      "default": "3600",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "banking_provider",
+      "type": null,
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "brokerage_provider",
+      "type": null,
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "categorization_provider",
+      "type": null,
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "recurring_provider",
+      "type": null,
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "net_worth_provider",
+      "type": null,
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "market_provider",
+      "type": null,
+      "default": "None",
+      "description": null,
+      "required": false
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(default_period_days: int = 30, default_savings_definition: SavingsDefinition = SavingsDefinition.NET, default_benchmark: str = 'SPY', cache_ttl: int = 3600, banking_provider = None, brokerage_provider = None, categorization_provider = None, recurring_provider = None, net_worth_provider = None, market_provider = None)",
+      "docstring": "Initialize analytics engine with configuration.\n\nArgs:\n    default_period_days: Default period for analyses (default: 30 days)\n    default_savings_definition: Default savings calculation method\n    default_benchmark: Default portfolio benchmark symbol (default: SPY)\n    cache_ttl: Cache TTL in seconds (default: 3600 = 1 hour)\n    banking_provider: Optional banking data provider\n    brokerage_provider: Optional brokerage data provider\n    categorization_provider: Optional transaction categorization provider\n    recurring_provider: Optional recurring transaction detector\n    net_worth_provider: Optional net worth calculator\n    market_provider: Optional market data provider",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "default_period_days",
+          "type": "int",
+          "default": "30",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "default_savings_definition",
+          "type": "SavingsDefinition",
+          "default": "SavingsDefinition.NET",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "default_benchmark",
+          "type": "str",
+          "default": "'SPY'",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "cache_ttl",
+          "type": "int",
+          "default": "3600",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "banking_provider",
+          "type": null,
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "brokerage_provider",
+          "type": null,
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "categorization_provider",
+          "type": null,
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "recurring_provider",
+          "type": null,
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "net_worth_provider",
+          "type": null,
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "market_provider",
+          "type": null,
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "benchmark_comparison",
+      "signature": "(user_id: str, benchmark: str | None = None, period: str = '1y', accounts: list[str] | None = None) -> BenchmarkComparison",
+      "docstring": "Compare portfolio to benchmark index.\n\nArgs:\n    user_id: User identifier\n    benchmark: Benchmark symbol (default: self.default_benchmark)\n    period: Comparison period (\"1y\", \"3y\", \"5y\", \"ytd\", \"max\")\n    accounts: Optional list of account IDs to include\n\nReturns:\n    BenchmarkComparison with alpha, beta, returns",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "benchmark",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "period",
+          "type": "str",
+          "default": "'1y'",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "accounts",
+          "type": "list[str] | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "BenchmarkComparison",
+      "is_async": false
+    },
+    {
+      "name": "cash_flow",
+      "signature": "(user_id: str, start_date: datetime | None = None, end_date: datetime | None = None, period_days: int | None = None) -> CashFlowAnalysis",
+      "docstring": "Analyze cash flow (income vs expenses).\n\nArgs:\n    user_id: User identifier\n    start_date: Period start (default: period_days ago)\n    end_date: Period end (default: today)\n    period_days: Analysis period (default: self.default_period_days)\n\nReturns:\n    CashFlowAnalysis with income, expenses, and net flow",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "start_date",
+          "type": "datetime | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "end_date",
+          "type": "datetime | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "period_days",
+          "type": "int | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "CashFlowAnalysis",
+      "is_async": false
+    },
+    {
+      "name": "compound_interest",
+      "signature": "(principal: float, rate: float, periods: int, contribution: float = 0) -> float",
+      "docstring": "Calculate compound interest (utility method).\n\nArgs:\n    principal: Initial investment\n    rate: Interest rate per period\n    periods: Number of periods\n    contribution: Periodic contribution\n\nReturns:\n    Future value",
+      "parameters": [
+        {
+          "name": "principal",
+          "type": "float",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "rate",
+          "type": "float",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "periods",
+          "type": "int",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "contribution",
+          "type": "float",
+          "default": "0",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "float",
+      "is_async": false
+    },
+    {
+      "name": "net_worth_projection",
+      "signature": "(user_id: str, years: int = 30, assumptions: dict | None = None) -> GrowthProjection",
+      "docstring": "Project net worth growth with scenarios.\n\nArgs:\n    user_id: User identifier\n    years: Projection period in years (default: 30)\n    assumptions: Optional custom assumptions (returns, inflation, etc.)\n\nReturns:\n    GrowthProjection with scenarios and confidence intervals",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "years",
+          "type": "int",
+          "default": "30",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "assumptions",
+          "type": "dict | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "GrowthProjection",
+      "is_async": false
+    },
+    {
+      "name": "portfolio_metrics",
+      "signature": "(user_id: str, accounts: list[str] | None = None) -> PortfolioMetrics",
+      "docstring": "Calculate portfolio performance metrics.\n\nArgs:\n    user_id: User identifier\n    accounts: Optional list of account IDs to include\n\nReturns:\n    PortfolioMetrics with value, returns, allocation",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "accounts",
+          "type": "list[str] | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "PortfolioMetrics",
+      "is_async": false
+    },
+    {
+      "name": "savings_rate",
+      "signature": "(user_id: str, definition: str | SavingsDefinition | None = None, period: str = 'monthly') -> SavingsRateData",
+      "docstring": "Calculate savings rate.\n\nArgs:\n    user_id: User identifier\n    definition: Savings calculation method (default: self.default_savings_definition).\n               Can be string (\"gross\", \"net\", \"discretionary\") or SavingsDefinition enum.\n    period: Analysis period (\"monthly\", \"quarterly\", \"annual\")\n\nReturns:\n    SavingsRateData with rate, amounts, and trend",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "definition",
+          "type": "str | SavingsDefinition | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "period",
+          "type": "str",
+          "default": "'monthly'",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "SavingsRateData",
+      "is_async": false
+    },
+    {
+      "name": "spending_advice",
+      "signature": "(user_id: str, period_days: int | None = None, user_context: dict | None = None) -> PersonalizedSpendingAdvice",
+      "docstring": "Generate AI-powered personalized spending advice.\n\nArgs:\n    user_id: User identifier\n    period_days: Analysis period (default: self.default_period_days)\n    user_context: Optional user context (income, goals, etc.)\n\nReturns:\n    PersonalizedSpendingAdvice with recommendations",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "period_days",
+          "type": "int | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_context",
+          "type": "dict | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "PersonalizedSpendingAdvice",
+      "is_async": false
+    },
+    {
+      "name": "spending_insights",
+      "signature": "(user_id: str, period_days: int | None = None, include_trends: bool = True) -> SpendingInsight",
+      "docstring": "Analyze spending patterns and generate insights.\n\nArgs:\n    user_id: User identifier\n    period_days: Analysis period (default: self.default_period_days)\n    include_trends: Include trend analysis (default: True)\n\nReturns:\n    SpendingInsight with patterns, anomalies, trends",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "period_days",
+          "type": "int | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "include_trends",
+          "type": "bool",
+          "default": "True",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "SpendingInsight",
+      "is_async": false
+    }
+  ],
+  "bases": []
+}
