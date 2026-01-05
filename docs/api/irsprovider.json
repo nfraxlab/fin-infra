@@ -1,0 +1,348 @@
+{
+  "name": "IRSProvider",
+  "module": "fin_infra.providers.tax",
+  "docstring": "IRS e-Services provider (v2 - not yet implemented).\n\n**Registration Required**:\n- EFIN (Electronic Filing Identification Number)\n- TCC (Transmitter Control Code)\n- PKI certificates (cert + key files)\n- IP whitelist approval from IRS\n- 6-8 weeks processing time\n\n**Environment Variables**:\n- IRS_EFIN: Electronic Filing ID\n- IRS_TCC: Transmitter Control Code\n- IRS_CERT_PATH: Path to public certificate (.pem)\n- IRS_KEY_PATH: Path to private key (.pem)\n- IRS_BASE_URL: API endpoint (default: https://la.www4.irs.gov)\n\n**Supported Forms**:\n- W-2: Wage and Tax Statement\n- 1099-INT: Interest Income\n- 1099-DIV: Dividends\n- 1099-MISC: Miscellaneous Income\n- 1099-B: Broker Transactions (limited)\n\n**Not Supported**:\n- Crypto tax calculations (use TaxBit provider)\n- Real-time document retrieval (IRS has delays)\n\nExample:\n    >>> provider = IRSProvider(\n    ...     efin=os.getenv(\"IRS_EFIN\"),\n    ...     tcc=os.getenv(\"IRS_TCC\"),\n    ...     cert_path=os.getenv(\"IRS_CERT_PATH\"),\n    ...     key_path=os.getenv(\"IRS_KEY_PATH\")\n    ... )\n    >>> # Raises NotImplementedError until v2 implementation",
+  "parameters": [
+    {
+      "name": "efin",
+      "type": "str | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "tcc",
+      "type": "str | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "cert_path",
+      "type": "str | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "key_path",
+      "type": "str | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "base_url",
+      "type": "str",
+      "default": "'https://la.www4.irs.gov'",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "kwargs",
+      "type": null,
+      "default": "{}",
+      "description": null,
+      "required": false
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(efin: str | None = None, tcc: str | None = None, cert_path: str | None = None, key_path: str | None = None, base_url: str = 'https://la.www4.irs.gov', kwargs = {})",
+      "docstring": "Initialize IRS provider.\n\nArgs:\n    efin: Electronic Filing ID (required)\n    tcc: Transmitter Control Code (required)\n    cert_path: Path to public certificate .pem file (required)\n    key_path: Path to private key .pem file (required)\n    base_url: IRS API endpoint (default: production)\n    **kwargs: Additional configuration\n\nRaises:\n    NotImplementedError: IRS provider not yet implemented (v2)",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "efin",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "tcc",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "cert_path",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "key_path",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "base_url",
+          "type": "str",
+          "default": "'https://la.www4.irs.gov'",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "calculate_crypto_gains",
+      "signature": "(user_id: str, transactions: list[dict], tax_year: int, kwargs = {}) -> CryptoTaxReport",
+      "docstring": "Not supported by IRS (use TaxBit provider).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "transactions",
+          "type": "list[dict]",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "tax_year",
+          "type": "int",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "CryptoTaxReport",
+      "is_async": false
+    },
+    {
+      "name": "calculate_tax_liability",
+      "signature": "(user_id: str, income: Decimal, deductions: Decimal, filing_status: str, tax_year: int, kwargs = {}) -> TaxLiability",
+      "docstring": "Not implemented (v2).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "income",
+          "type": "Decimal",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "deductions",
+          "type": "Decimal",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "filing_status",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "tax_year",
+          "type": "int",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "TaxLiability",
+      "is_async": false
+    },
+    {
+      "name": "download_document",
+      "signature": "(document_id: str, kwargs = {}) -> bytes",
+      "docstring": "Not implemented (v2).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "document_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "bytes",
+      "is_async": false
+    },
+    {
+      "name": "get_tax_document",
+      "signature": "(document_id: str, kwargs = {}) -> TaxDocument",
+      "docstring": "Not implemented (v2).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "document_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "TaxDocument",
+      "is_async": false
+    },
+    {
+      "name": "get_tax_documents",
+      "signature": "(user_id: str, tax_year: int, kwargs = {}) -> list[TaxDocument]",
+      "docstring": "Not implemented (v2).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "tax_year",
+          "type": "int",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "list[TaxDocument]",
+      "is_async": false
+    },
+    {
+      "name": "get_tax_forms",
+      "signature": "(user_id: str, tax_year: int, kwargs = {}) -> list[dict]",
+      "docstring": "Not implemented (v2).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "tax_year",
+          "type": "int",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "list[dict]",
+      "is_async": false
+    }
+  ],
+  "bases": [
+    "TaxProvider"
+  ]
+}

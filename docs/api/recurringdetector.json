@@ -1,0 +1,149 @@
+{
+  "name": "RecurringDetector",
+  "module": "fin_infra.recurring.detector",
+  "docstring": "High-level recurring transaction detector.\n\nProvides easy-to-use interface for detecting recurring patterns.\n\nV2: Optional LLM enhancement for merchant normalization (Layer 2),\nvariable amount detection (Layer 4), and insights generation (Layer 5).",
+  "parameters": [
+    {
+      "name": "min_occurrences",
+      "type": "int",
+      "default": "3",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "amount_tolerance",
+      "type": "float",
+      "default": "0.02",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "date_tolerance_days",
+      "type": "int",
+      "default": "7",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "merchant_normalizer",
+      "type": "MerchantNormalizer | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "variable_detector_llm",
+      "type": "VariableDetectorLLM | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "insights_generator",
+      "type": "SubscriptionInsightsGenerator | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(min_occurrences: int = 3, amount_tolerance: float = 0.02, date_tolerance_days: int = 7, merchant_normalizer: MerchantNormalizer | None = None, variable_detector_llm: VariableDetectorLLM | None = None, insights_generator: SubscriptionInsightsGenerator | None = None)",
+      "docstring": "Initialize recurring detector.\n\nArgs:\n    min_occurrences: Minimum transactions to detect pattern (default: 3)\n    amount_tolerance: Amount variance tolerance (default: 0.02 = 2%)\n    date_tolerance_days: Date clustering tolerance (default: 7 days)\n    merchant_normalizer: Optional LLM merchant normalizer (Layer 2, V2)\n    variable_detector_llm: Optional LLM variable detector (Layer 4, V2)\n    insights_generator: Optional LLM insights generator (Layer 5, V2)",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "min_occurrences",
+          "type": "int",
+          "default": "3",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "amount_tolerance",
+          "type": "float",
+          "default": "0.02",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "date_tolerance_days",
+          "type": "int",
+          "default": "7",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "merchant_normalizer",
+          "type": "MerchantNormalizer | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "variable_detector_llm",
+          "type": "VariableDetectorLLM | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "insights_generator",
+          "type": "SubscriptionInsightsGenerator | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "detect_patterns",
+      "signature": "(transactions: list[dict]) -> list[RecurringPattern]",
+      "docstring": "Detect recurring patterns from transaction data.\n\nArgs:\n    transactions: List of transaction dicts with keys:\n                 {id, merchant, amount, date}\n\nReturns:\n    List of RecurringPattern objects",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "transactions",
+          "type": "list[dict]",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "list[RecurringPattern]",
+      "is_async": false
+    },
+    {
+      "name": "get_stats",
+      "signature": "() -> dict[str, Any]",
+      "docstring": "Get detection statistics.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "dict[str, Any]",
+      "is_async": false
+    }
+  ],
+  "bases": []
+}

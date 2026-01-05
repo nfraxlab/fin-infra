@@ -1,0 +1,34 @@
+{
+  "name": "TLHOpportunity",
+  "module": "fin_infra.tax.tlh",
+  "docstring": "Tax-loss harvesting opportunity for a single position.\n\nRepresents a position with unrealized losses that can be harvested for tax benefits.\nIncludes replacement security suggestions and wash sale risk assessment.",
+  "parameters": [],
+  "methods": [
+    {
+      "name": "validate_wash_sale_risk",
+      "signature": "(v: str) -> str",
+      "docstring": "Validate wash sale risk level.",
+      "parameters": [
+        {
+          "name": "cls",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "v",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "str",
+      "is_async": false
+    }
+  ],
+  "bases": [
+    "BaseModel"
+  ]
+}

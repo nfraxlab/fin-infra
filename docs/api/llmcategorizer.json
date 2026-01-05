@@ -1,0 +1,172 @@
+{
+  "name": "LLMCategorizer",
+  "module": "fin_infra.categorization.llm_layer",
+  "docstring": "LLM-based transaction categorization (Layer 4).\n\nUses ai-infra.llm.LLM with few-shot prompting and structured output.\nCaches predictions via svc-infra.cache to minimize API costs.\n\nArgs:\n    provider: LLM provider (\"google_genai\", \"openai\", \"anthropic\")\n    model_name: Model name (e.g., \"gemini-2.5-flash\", \"gpt-4.1-mini\")\n    max_cost_per_day: Daily budget cap in USD (default $0.10)\n    max_cost_per_month: Monthly budget cap in USD (default $2.00)\n    cache_ttl: Cache TTL in seconds (default 24 hours)\n    enable_personalization: Enable user context injection (default False)\n\nExample:\n    >>> categorizer = LLMCategorizer(\n    ...     provider=\"google_genai\",\n    ...     model_name=\"gemini-2.5-flash\",\n    ... )\n    >>> prediction = await categorizer.categorize(\"UNKNOWN COFFEE CO\")\n    >>> print(prediction.category, prediction.confidence)\n    Coffee Shops 0.85",
+  "parameters": [
+    {
+      "name": "provider",
+      "type": "str",
+      "default": "'google_genai'",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "model_name",
+      "type": "str",
+      "default": "'gemini-2.5-flash'",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "max_cost_per_day",
+      "type": "float",
+      "default": "0.1",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "max_cost_per_month",
+      "type": "float",
+      "default": "2.0",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "cache_ttl",
+      "type": "int",
+      "default": "86400",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "enable_personalization",
+      "type": "bool",
+      "default": "False",
+      "description": null,
+      "required": false
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(provider: str = 'google_genai', model_name: str = 'gemini-2.5-flash', max_cost_per_day: float = 0.1, max_cost_per_month: float = 2.0, cache_ttl: int = 86400, enable_personalization: bool = False)",
+      "docstring": null,
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "provider",
+          "type": "str",
+          "default": "'google_genai'",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "model_name",
+          "type": "str",
+          "default": "'gemini-2.5-flash'",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "max_cost_per_day",
+          "type": "float",
+          "default": "0.1",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "max_cost_per_month",
+          "type": "float",
+          "default": "2.0",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "cache_ttl",
+          "type": "int",
+          "default": "86400",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "enable_personalization",
+          "type": "bool",
+          "default": "False",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "categorize",
+      "signature": "(merchant_name: str, user_id: str | None = None) -> CategoryPrediction",
+      "docstring": "Categorize merchant using LLM.\n\nArgs:\n    merchant_name: Merchant to categorize\n    user_id: User ID for personalized context (optional)\n\nReturns:\n    CategoryPrediction with LLM-predicted category\n\nRaises:\n    RuntimeError: If budget exceeded\n    ValueError: If LLM returns invalid category",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "merchant_name",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "user_id",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "CategoryPrediction",
+      "is_async": false
+    },
+    {
+      "name": "reset_daily_cost",
+      "signature": "()",
+      "docstring": "Reset daily cost counter (called at midnight UTC).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "reset_monthly_cost",
+      "signature": "()",
+      "docstring": "Reset monthly cost counter (called on 1st of month).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    }
+  ],
+  "bases": []
+}

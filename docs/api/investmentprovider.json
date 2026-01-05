@@ -1,13 +1,59 @@
 {
   "name": "InvestmentProvider",
-  "module": "fin_infra.providers.base",
-  "docstring": "Provider for investment holdings and portfolio data (Plaid, SnapTrade).\n\nThis is a minimal ABC for type checking. The full implementation with\nall abstract methods is in fin_infra.investments.providers.base.InvestmentProvider.\n\nAbstract Methods (defined in full implementation):\n    - get_holdings(access_token, account_ids) -> List[Holding]\n    - get_transactions(access_token, start_date, end_date, account_ids) -> List[InvestmentTransaction]\n    - get_securities(access_token, security_ids) -> List[Security]\n    - get_investment_accounts(access_token) -> List[InvestmentAccount]\n\nExample:\n    >>> from fin_infra.investments import easy_investments\n    >>> provider = easy_investments(provider=\"plaid\")\n    >>> holdings = await provider.get_holdings(access_token)",
+  "module": "fin_infra.investments.providers.base",
+  "docstring": "Abstract base class for investment aggregation providers.\n\nProvides READ-ONLY access to investment holdings, securities, and portfolio data.\nImplementations: PlaidInvestmentProvider, SnapTradeInvestmentProvider.",
   "parameters": [],
   "methods": [
     {
+      "name": "calculate_allocation",
+      "signature": "(holdings: list[Holding]) -> AssetAllocation",
+      "docstring": "Calculate asset allocation by security type and sector.\n\nGroups holdings by security type (equity, bond, ETF, etc.) and calculates\npercentage breakdown of total portfolio value.\n\nArgs:\n    holdings: List of holdings to analyze\n\nReturns:\n    AssetAllocation with percentage breakdowns\n\nExample:\n    >>> allocation = provider.calculate_allocation(holdings)\n    >>> print(f\"Equities: {allocation.by_security_type['equity']}%\")\n    >>> print(f\"Bonds: {allocation.by_security_type['bond']}%\")\n    >>> print(f\"Cash: {allocation.cash_percent}%\")",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "holdings",
+          "type": "list[Holding]",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "AssetAllocation",
+      "is_async": false
+    },
+    {
+      "name": "calculate_portfolio_metrics",
+      "signature": "(holdings: list[Holding]) -> dict",
+      "docstring": "Calculate total value, cost basis, unrealized gain/loss.\n\nAggregates holdings to calculate portfolio-level metrics.\n\nArgs:\n    holdings: List of holdings to analyze\n\nReturns:\n    Dictionary with metrics:\n        - total_value: Current market value of all holdings\n        - total_cost_basis: Total cost basis (sum of purchase costs)\n        - total_unrealized_gain_loss: Total P&L (value - cost_basis)\n        - total_unrealized_gain_loss_percent: P&L percentage\n\nExample:\n    >>> metrics = provider.calculate_portfolio_metrics(holdings)\n    >>> print(f\"Portfolio Value: ${metrics['total_value']:.2f}\")\n    >>> print(f\"Total Gain/Loss: ${metrics['total_unrealized_gain_loss']:.2f}\")\n    >>> print(f\"Return: {metrics['total_unrealized_gain_loss_percent']:.2f}%\")",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "holdings",
+          "type": "list[Holding]",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "dict",
+      "is_async": false
+    },
+    {
       "name": "get_holdings",
-      "signature": "(access_token: str, account_ids: list[str] | None = None) -> list",
-      "docstring": "Fetch holdings for investment accounts.",
+      "signature": "(access_token: str, account_ids: list[str] | None = None) -> list[Holding]",
+      "docstring": "Fetch holdings for investment accounts.\n\nArgs:\n    access_token: Provider access token (Plaid access_token, SnapTrade connection_id)\n    account_ids: Optional filter for specific accounts\n\nReturns:\n    List of holdings with security details, quantity, cost basis, current value\n\nExample:\n    >>> holdings = await provider.get_holdings(access_token)\n    >>> for holding in holdings:\n    ...     print(f\"{holding.security.ticker_symbol}: {holding.quantity} @ ${holding.institution_price}\")",
       "parameters": [
         {
           "name": "self",
@@ -31,13 +77,13 @@
           "required": false
         }
       ],
-      "returns": "list",
+      "returns": "list[Holding]",
       "is_async": false
     },
     {
       "name": "get_investment_accounts",
-      "signature": "(access_token: str) -> list",
-      "docstring": "Fetch investment accounts with aggregated holdings.",
+      "signature": "(access_token: str) -> list[InvestmentAccount]",
+      "docstring": "Fetch investment accounts with aggregated holdings.\n\nArgs:\n    access_token: Provider access token\n\nReturns:\n    List of investment accounts with total value, cost basis, unrealized P&L\n\nExample:\n    >>> accounts = await provider.get_investment_accounts(access_token)\n    >>> for account in accounts:\n    ...     print(f\"{account.name}: ${account.total_value} (P&L: {account.total_unrealized_gain_loss_percent}%)\")",
       "parameters": [
         {
           "name": "self",
@@ -54,7 +100,81 @@
           "required": true
         }
       ],
-      "returns": "list",
+      "returns": "list[InvestmentAccount]",
+      "is_async": false
+    },
+    {
+      "name": "get_securities",
+      "signature": "(access_token: str, security_ids: list[str]) -> list[Security]",
+      "docstring": "Fetch security details (ticker, name, type, current price).\n\nArgs:\n    access_token: Provider access token\n    security_ids: List of security IDs to fetch (provider-specific IDs)\n\nReturns:\n    List of security details with current market data\n\nExample:\n    >>> securities = await provider.get_securities(access_token, [\"security_id_1\", \"security_id_2\"])\n    >>> for security in securities:\n    ...     print(f\"{security.ticker_symbol}: ${security.close_price}\")",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "access_token",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "security_ids",
+          "type": "list[str]",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "list[Security]",
+      "is_async": false
+    },
+    {
+      "name": "get_transactions",
+      "signature": "(access_token: str, start_date: date, end_date: date, account_ids: list[str] | None = None) -> list[InvestmentTransaction]",
+      "docstring": "Fetch investment transactions within date range.\n\nArgs:\n    access_token: Provider access token\n    start_date: Start date for transaction history\n    end_date: End date for transaction history\n    account_ids: Optional filter for specific accounts\n\nReturns:\n    List of buy/sell/dividend transactions\n\nExample:\n    >>> from datetime import date, timedelta\n    >>> end = date.today()\n    >>> start = end - timedelta(days=30)\n    >>> transactions = await provider.get_transactions(access_token, start, end)\n    >>> buys = [tx for tx in transactions if tx.transaction_type == \"buy\"]",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "access_token",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "start_date",
+          "type": "date",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "end_date",
+          "type": "date",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "account_ids",
+          "type": "list[str] | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "list[InvestmentTransaction]",
       "is_async": false
     }
   ],
