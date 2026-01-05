@@ -7,42 +7,42 @@
       "name": "min_occurrences",
       "type": "int",
       "default": "3",
-      "description": null,
+      "description": "Minimum transactions to detect pattern (default: 3)",
       "required": false
     },
     {
       "name": "amount_tolerance",
       "type": "float",
       "default": "0.02",
-      "description": null,
+      "description": "Amount variance tolerance (default: 0.02 = 2%)",
       "required": false
     },
     {
       "name": "date_tolerance_days",
       "type": "int",
       "default": "7",
-      "description": null,
+      "description": "Date clustering tolerance (default: 7 days)",
       "required": false
     },
     {
       "name": "merchant_normalizer",
       "type": "MerchantNormalizer | None",
       "default": "None",
-      "description": null,
+      "description": "Optional LLM merchant normalizer (Layer 2, V2)",
       "required": false
     },
     {
       "name": "variable_detector_llm",
       "type": "VariableDetectorLLM | None",
       "default": "None",
-      "description": null,
+      "description": "Optional LLM variable detector (Layer 4, V2)",
       "required": false
     },
     {
       "name": "insights_generator",
       "type": "SubscriptionInsightsGenerator | None",
       "default": "None",
-      "description": null,
+      "description": "Optional LLM insights generator (Layer 5, V2)",
       "required": false
     }
   ],
@@ -63,47 +63,51 @@
           "name": "min_occurrences",
           "type": "int",
           "default": "3",
-          "description": null,
+          "description": "Minimum transactions to detect pattern (default: 3)",
           "required": false
         },
         {
           "name": "amount_tolerance",
           "type": "float",
           "default": "0.02",
-          "description": null,
+          "description": "Amount variance tolerance (default: 0.02 = 2%)",
           "required": false
         },
         {
           "name": "date_tolerance_days",
           "type": "int",
           "default": "7",
-          "description": null,
+          "description": "Date clustering tolerance (default: 7 days)",
           "required": false
         },
         {
           "name": "merchant_normalizer",
           "type": "MerchantNormalizer | None",
           "default": "None",
-          "description": null,
+          "description": "Optional LLM merchant normalizer (Layer 2, V2)",
           "required": false
         },
         {
           "name": "variable_detector_llm",
           "type": "VariableDetectorLLM | None",
           "default": "None",
-          "description": null,
+          "description": "Optional LLM variable detector (Layer 4, V2)",
           "required": false
         },
         {
           "name": "insights_generator",
           "type": "SubscriptionInsightsGenerator | None",
           "default": "None",
-          "description": null,
+          "description": "Optional LLM insights generator (Layer 5, V2)",
           "required": false
         }
       ],
       "returns": null,
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "detect_patterns",
@@ -121,12 +125,16 @@
           "name": "transactions",
           "type": "list[dict]",
           "default": null,
-          "description": null,
+          "description": "List of transaction dicts with keys: {id, merchant, amount, date}",
           "required": true
         }
       ],
       "returns": "list[RecurringPattern]",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "get_stats",
@@ -142,8 +150,14 @@
         }
       ],
       "returns": "dict[str, Any]",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     }
   ],
-  "bases": []
+  "bases": [],
+  "source_file": "src/fin_infra/recurring/detector.py",
+  "source_line": 500
 }

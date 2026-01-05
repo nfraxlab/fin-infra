@@ -25,10 +25,16 @@
         }
       ],
       "returns": "str",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": true,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     }
   ],
   "bases": [
     "BaseModel"
-  ]
+  ],
+  "source_file": "src/fin_infra/tax/tlh.py",
+  "source_line": 68
 }

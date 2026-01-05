@@ -103,7 +103,11 @@
         }
       ],
       "returns": null,
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "categorize",
@@ -121,19 +125,32 @@
           "name": "merchant_name",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "Merchant to categorize",
           "required": true
         },
         {
           "name": "user_id",
           "type": "str | None",
           "default": "None",
-          "description": null,
+          "description": "User ID for personalized context (optional)",
           "required": false
         }
       ],
       "returns": "CategoryPrediction",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": [
+        {
+          "type": "RuntimeError",
+          "description": "If budget exceeded"
+        },
+        {
+          "type": "ValueError",
+          "description": "If LLM returns invalid category"
+        }
+      ]
     },
     {
       "name": "reset_daily_cost",
@@ -149,7 +166,11 @@
         }
       ],
       "returns": null,
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "reset_monthly_cost",
@@ -165,8 +186,14 @@
         }
       ],
       "returns": null,
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     }
   ],
-  "bases": []
+  "bases": [],
+  "source_file": "src/fin_infra/categorization/llm_layer.py",
+  "source_line": 102
 }

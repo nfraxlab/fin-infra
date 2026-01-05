@@ -7,35 +7,35 @@
       "name": "banking_provider",
       "type": "Any",
       "default": "None",
-      "description": null,
+      "description": "Banking provider (Plaid/Teller)",
       "required": false
     },
     {
       "name": "brokerage_provider",
       "type": "Any",
       "default": "None",
-      "description": null,
+      "description": "Brokerage provider (Alpaca)",
       "required": false
     },
     {
       "name": "crypto_provider",
       "type": "Any",
       "default": "None",
-      "description": null,
+      "description": "Crypto provider (CCXT)",
       "required": false
     },
     {
       "name": "market_provider",
       "type": "Any",
       "default": "None",
-      "description": null,
+      "description": "Market data provider (Alpha Vantage)",
       "required": false
     },
     {
       "name": "base_currency",
       "type": "str",
       "default": "'USD'",
-      "description": null,
+      "description": "Base currency for normalization (default: USD)",
       "required": false
     }
   ],
@@ -56,40 +56,49 @@
           "name": "banking_provider",
           "type": "Any",
           "default": "None",
-          "description": null,
+          "description": "Banking provider (Plaid/Teller)",
           "required": false
         },
         {
           "name": "brokerage_provider",
           "type": "Any",
           "default": "None",
-          "description": null,
+          "description": "Brokerage provider (Alpaca)",
           "required": false
         },
         {
           "name": "crypto_provider",
           "type": "Any",
           "default": "None",
-          "description": null,
+          "description": "Crypto provider (CCXT)",
           "required": false
         },
         {
           "name": "market_provider",
           "type": "Any",
           "default": "None",
-          "description": null,
+          "description": "Market data provider (Alpha Vantage)",
           "required": false
         },
         {
           "name": "base_currency",
           "type": "str",
           "default": "'USD'",
-          "description": null,
+          "description": "Base currency for normalization (default: USD)",
           "required": false
         }
       ],
       "returns": null,
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": [
+        {
+          "type": "ValueError",
+          "description": "If no providers specified"
+        }
+      ]
     },
     {
       "name": "aggregate_net_worth",
@@ -107,20 +116,26 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier",
           "required": true
         },
         {
           "name": "access_token",
           "type": "str | None",
           "default": "None",
-          "description": null,
+          "description": "Provider access token (for banking/brokerage)",
           "required": false
         }
       ],
       "returns": "NetWorthSnapshot",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     }
   ],
-  "bases": []
+  "bases": [],
+  "source_file": "src/fin_infra/net_worth/aggregator.py",
+  "source_line": 54
 }

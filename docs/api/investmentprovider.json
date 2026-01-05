@@ -20,12 +20,16 @@
           "name": "holdings",
           "type": "list[Holding]",
           "default": null,
-          "description": null,
+          "description": "List of holdings to analyze",
           "required": true
         }
       ],
       "returns": "AssetAllocation",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "calculate_portfolio_metrics",
@@ -43,12 +47,16 @@
           "name": "holdings",
           "type": "list[Holding]",
           "default": null,
-          "description": null,
+          "description": "List of holdings to analyze",
           "required": true
         }
       ],
       "returns": "dict",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "get_holdings",
@@ -66,19 +74,23 @@
           "name": "access_token",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "Provider access token (Plaid access_token, SnapTrade connection_id)",
           "required": true
         },
         {
           "name": "account_ids",
           "type": "list[str] | None",
           "default": "None",
-          "description": null,
+          "description": "Optional filter for specific accounts",
           "required": false
         }
       ],
       "returns": "list[Holding]",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "get_investment_accounts",
@@ -96,12 +108,16 @@
           "name": "access_token",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "Provider access token",
           "required": true
         }
       ],
       "returns": "list[InvestmentAccount]",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "get_securities",
@@ -119,19 +135,23 @@
           "name": "access_token",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "Provider access token",
           "required": true
         },
         {
           "name": "security_ids",
           "type": "list[str]",
           "default": null,
-          "description": null,
+          "description": "List of security IDs to fetch (provider-specific IDs)",
           "required": true
         }
       ],
       "returns": "list[Security]",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "get_transactions",
@@ -149,36 +169,42 @@
           "name": "access_token",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "Provider access token",
           "required": true
         },
         {
           "name": "start_date",
           "type": "date",
           "default": null,
-          "description": null,
+          "description": "Start date for transaction history",
           "required": true
         },
         {
           "name": "end_date",
           "type": "date",
           "default": null,
-          "description": null,
+          "description": "End date for transaction history",
           "required": true
         },
         {
           "name": "account_ids",
           "type": "list[str] | None",
           "default": "None",
-          "description": null,
+          "description": "Optional filter for specific accounts",
           "required": false
         }
       ],
       "returns": "list[InvestmentTransaction]",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     }
   ],
   "bases": [
     "ABC"
-  ]
+  ],
+  "source_file": "src/fin_infra/investments/providers/base.py",
+  "source_line": 23
 }

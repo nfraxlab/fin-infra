@@ -7,70 +7,70 @@
       "name": "default_period_days",
       "type": "int",
       "default": "30",
-      "description": null,
+      "description": "Default period for analyses (default: 30 days)",
       "required": false
     },
     {
       "name": "default_savings_definition",
       "type": "SavingsDefinition",
       "default": "SavingsDefinition.NET",
-      "description": null,
+      "description": "Default savings calculation method",
       "required": false
     },
     {
       "name": "default_benchmark",
       "type": "str",
       "default": "'SPY'",
-      "description": null,
+      "description": "Default portfolio benchmark symbol (default: SPY)",
       "required": false
     },
     {
       "name": "cache_ttl",
       "type": "int",
       "default": "3600",
-      "description": null,
+      "description": "Cache TTL in seconds (default: 3600 = 1 hour)",
       "required": false
     },
     {
       "name": "banking_provider",
       "type": null,
       "default": "None",
-      "description": null,
+      "description": "Optional banking data provider",
       "required": false
     },
     {
       "name": "brokerage_provider",
       "type": null,
       "default": "None",
-      "description": null,
+      "description": "Optional brokerage data provider",
       "required": false
     },
     {
       "name": "categorization_provider",
       "type": null,
       "default": "None",
-      "description": null,
+      "description": "Optional transaction categorization provider",
       "required": false
     },
     {
       "name": "recurring_provider",
       "type": null,
       "default": "None",
-      "description": null,
+      "description": "Optional recurring transaction detector",
       "required": false
     },
     {
       "name": "net_worth_provider",
       "type": null,
       "default": "None",
-      "description": null,
+      "description": "Optional net worth calculator",
       "required": false
     },
     {
       "name": "market_provider",
       "type": null,
       "default": "None",
-      "description": null,
+      "description": "Optional market data provider",
       "required": false
     }
   ],
@@ -91,75 +91,79 @@
           "name": "default_period_days",
           "type": "int",
           "default": "30",
-          "description": null,
+          "description": "Default period for analyses (default: 30 days)",
           "required": false
         },
         {
           "name": "default_savings_definition",
           "type": "SavingsDefinition",
           "default": "SavingsDefinition.NET",
-          "description": null,
+          "description": "Default savings calculation method",
           "required": false
         },
         {
           "name": "default_benchmark",
           "type": "str",
           "default": "'SPY'",
-          "description": null,
+          "description": "Default portfolio benchmark symbol (default: SPY)",
           "required": false
         },
         {
           "name": "cache_ttl",
           "type": "int",
           "default": "3600",
-          "description": null,
+          "description": "Cache TTL in seconds (default: 3600 = 1 hour)",
           "required": false
         },
         {
           "name": "banking_provider",
           "type": null,
           "default": "None",
-          "description": null,
+          "description": "Optional banking data provider",
           "required": false
         },
         {
           "name": "brokerage_provider",
           "type": null,
           "default": "None",
-          "description": null,
+          "description": "Optional brokerage data provider",
           "required": false
         },
         {
           "name": "categorization_provider",
           "type": null,
           "default": "None",
-          "description": null,
+          "description": "Optional transaction categorization provider",
           "required": false
         },
         {
           "name": "recurring_provider",
           "type": null,
           "default": "None",
-          "description": null,
+          "description": "Optional recurring transaction detector",
           "required": false
         },
         {
           "name": "net_worth_provider",
           "type": null,
           "default": "None",
-          "description": null,
+          "description": "Optional net worth calculator",
           "required": false
         },
         {
           "name": "market_provider",
           "type": null,
           "default": "None",
-          "description": null,
+          "description": "Optional market data provider",
           "required": false
         }
       ],
       "returns": null,
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "benchmark_comparison",
@@ -177,33 +181,37 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier",
           "required": true
         },
         {
           "name": "benchmark",
           "type": "str | None",
           "default": "None",
-          "description": null,
+          "description": "Benchmark symbol (default: self.default_benchmark)",
           "required": false
         },
         {
           "name": "period",
           "type": "str",
           "default": "'1y'",
-          "description": null,
+          "description": "Comparison period (\"1y\", \"3y\", \"5y\", \"ytd\", \"max\")",
           "required": false
         },
         {
           "name": "accounts",
           "type": "list[str] | None",
           "default": "None",
-          "description": null,
+          "description": "Optional list of account IDs to include",
           "required": false
         }
       ],
       "returns": "BenchmarkComparison",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "cash_flow",
@@ -221,33 +229,37 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier",
           "required": true
         },
         {
           "name": "start_date",
           "type": "datetime | None",
           "default": "None",
-          "description": null,
+          "description": "Period start (default: period_days ago)",
           "required": false
         },
         {
           "name": "end_date",
           "type": "datetime | None",
           "default": "None",
-          "description": null,
+          "description": "Period end (default: today)",
           "required": false
         },
         {
           "name": "period_days",
           "type": "int | None",
           "default": "None",
-          "description": null,
+          "description": "Analysis period (default: self.default_period_days)",
           "required": false
         }
       ],
       "returns": "CashFlowAnalysis",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "compound_interest",
@@ -258,33 +270,37 @@
           "name": "principal",
           "type": "float",
           "default": null,
-          "description": null,
+          "description": "Initial investment",
           "required": true
         },
         {
           "name": "rate",
           "type": "float",
           "default": null,
-          "description": null,
+          "description": "Interest rate per period",
           "required": true
         },
         {
           "name": "periods",
           "type": "int",
           "default": null,
-          "description": null,
+          "description": "Number of periods",
           "required": true
         },
         {
           "name": "contribution",
           "type": "float",
           "default": "0",
-          "description": null,
+          "description": "Periodic contribution",
           "required": false
         }
       ],
       "returns": "float",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": true,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "net_worth_projection",
@@ -302,26 +318,30 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier",
           "required": true
         },
         {
           "name": "years",
           "type": "int",
           "default": "30",
-          "description": null,
+          "description": "Projection period in years (default: 30)",
           "required": false
         },
         {
           "name": "assumptions",
           "type": "dict | None",
           "default": "None",
-          "description": null,
+          "description": "Optional custom assumptions (returns, inflation, etc.)",
           "required": false
         }
       ],
       "returns": "GrowthProjection",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "portfolio_metrics",
@@ -339,19 +359,23 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier",
           "required": true
         },
         {
           "name": "accounts",
           "type": "list[str] | None",
           "default": "None",
-          "description": null,
+          "description": "Optional list of account IDs to include",
           "required": false
         }
       ],
       "returns": "PortfolioMetrics",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "savings_rate",
@@ -369,26 +393,30 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier",
           "required": true
         },
         {
           "name": "definition",
           "type": "str | SavingsDefinition | None",
           "default": "None",
-          "description": null,
+          "description": "Savings calculation method (default: self.default_savings_definition). Can be string (\"gross\", \"net\", \"discretionary\") or SavingsDefinition enum.",
           "required": false
         },
         {
           "name": "period",
           "type": "str",
           "default": "'monthly'",
-          "description": null,
+          "description": "Analysis period (\"monthly\", \"quarterly\", \"annual\")",
           "required": false
         }
       ],
       "returns": "SavingsRateData",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "spending_advice",
@@ -406,26 +434,30 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier",
           "required": true
         },
         {
           "name": "period_days",
           "type": "int | None",
           "default": "None",
-          "description": null,
+          "description": "Analysis period (default: self.default_period_days)",
           "required": false
         },
         {
           "name": "user_context",
           "type": "dict | None",
           "default": "None",
-          "description": null,
+          "description": "Optional user context (income, goals, etc.)",
           "required": false
         }
       ],
       "returns": "PersonalizedSpendingAdvice",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "spending_insights",
@@ -443,27 +475,33 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier",
           "required": true
         },
         {
           "name": "period_days",
           "type": "int | None",
           "default": "None",
-          "description": null,
+          "description": "Analysis period (default: self.default_period_days)",
           "required": false
         },
         {
           "name": "include_trends",
           "type": "bool",
           "default": "True",
-          "description": null,
+          "description": "Include trend analysis (default: True)",
           "required": false
         }
       ],
       "returns": "SpendingInsight",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     }
   ],
-  "bases": []
+  "bases": [],
+  "source_file": "src/fin_infra/analytics/ease.py",
+  "source_line": 37
 }

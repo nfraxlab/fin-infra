@@ -7,7 +7,7 @@
       "name": "similarity_threshold",
       "type": "float",
       "default": "80.0",
-      "description": null,
+      "description": "Minimum similarity score (0-100) to consider a match Default 80.0 (80% similarity)",
       "required": false
     }
   ],
@@ -28,12 +28,21 @@
           "name": "similarity_threshold",
           "type": "float",
           "default": "80.0",
-          "description": null,
+          "description": "Minimum similarity score (0-100) to consider a match Default 80.0 (80% similarity)",
           "required": false
         }
       ],
       "returns": null,
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": [
+        {
+          "type": "ImportError",
+          "description": "If rapidfuzz is not installed"
+        }
+      ]
     },
     {
       "name": "find_similar",
@@ -51,26 +60,30 @@
           "name": "target",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "Target merchant name to match",
           "required": true
         },
         {
           "name": "candidates",
           "type": "list[str]",
           "default": null,
-          "description": null,
+          "description": "List of candidate merchant names",
           "required": true
         },
         {
           "name": "limit",
           "type": "int",
           "default": "5",
-          "description": null,
+          "description": "Maximum number of matches to return",
           "required": false
         }
       ],
       "returns": "list[tuple[str, float]]",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "group_merchants",
@@ -88,12 +101,16 @@
           "name": "merchants",
           "type": "list[str]",
           "default": null,
-          "description": null,
+          "description": "List of merchant names to group",
           "required": true
         }
       ],
       "returns": "dict[str, list[str]]",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "is_same_merchant",
@@ -111,20 +128,26 @@
           "name": "name1",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "First merchant name",
           "required": true
         },
         {
           "name": "name2",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "Second merchant name",
           "required": true
         }
       ],
       "returns": "bool",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     }
   ],
-  "bases": []
+  "bases": [],
+  "source_file": "src/fin_infra/recurring/normalizer.py",
+  "source_line": 78
 }

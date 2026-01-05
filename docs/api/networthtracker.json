@@ -7,28 +7,28 @@
       "name": "aggregator",
       "type": "NetWorthAggregator",
       "default": null,
-      "description": null,
+      "description": "NetWorthAggregator instance (required)",
       "required": true
     },
     {
       "name": "insights_generator",
       "type": "Any",
       "default": "None",
-      "description": null,
+      "description": "NetWorthInsightsGenerator instance (optional, V2)",
       "required": false
     },
     {
       "name": "goal_tracker",
       "type": "Any",
       "default": "None",
-      "description": null,
+      "description": "FinancialGoalTracker instance (optional, V2)",
       "required": false
     },
     {
       "name": "conversation",
       "type": "Any",
       "default": "None",
-      "description": null,
+      "description": "FinancialPlanningConversation instance (optional, V2)",
       "required": false
     }
   ],
@@ -49,33 +49,37 @@
           "name": "aggregator",
           "type": "NetWorthAggregator",
           "default": null,
-          "description": null,
+          "description": "NetWorthAggregator instance (required)",
           "required": true
         },
         {
           "name": "insights_generator",
           "type": "Any",
           "default": "None",
-          "description": null,
+          "description": "NetWorthInsightsGenerator instance (optional, V2)",
           "required": false
         },
         {
           "name": "goal_tracker",
           "type": "Any",
           "default": "None",
-          "description": null,
+          "description": "FinancialGoalTracker instance (optional, V2)",
           "required": false
         },
         {
           "name": "conversation",
           "type": "Any",
           "default": "None",
-          "description": null,
+          "description": "FinancialPlanningConversation instance (optional, V2)",
           "required": false
         }
       ],
       "returns": null,
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "calculate_net_worth",
@@ -93,19 +97,23 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier",
           "required": true
         },
         {
           "name": "access_token",
           "type": "str | None",
           "default": "None",
-          "description": null,
+          "description": "Provider access token",
           "required": false
         }
       ],
       "returns": null,
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "create_snapshot",
@@ -123,19 +131,23 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier",
           "required": true
         },
         {
           "name": "access_token",
           "type": "str | None",
           "default": "None",
-          "description": null,
+          "description": "Provider access token",
           "required": false
         }
       ],
       "returns": null,
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "get_snapshots",
@@ -153,27 +165,33 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier",
           "required": true
         },
         {
           "name": "days",
           "type": "int",
           "default": "90",
-          "description": null,
+          "description": "Look back N days",
           "required": false
         },
         {
           "name": "granularity",
           "type": "str",
           "default": "'daily'",
-          "description": null,
+          "description": "Snapshot granularity (daily, weekly, monthly)",
           "required": false
         }
       ],
       "returns": null,
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     }
   ],
-  "bases": []
+  "bases": [],
+  "source_file": "src/fin_infra/net_worth/ease.py",
+  "source_line": 48
 }

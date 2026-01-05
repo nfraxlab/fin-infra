@@ -103,7 +103,11 @@
         }
       ],
       "returns": null,
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "close",
@@ -119,7 +123,11 @@
         }
       ],
       "returns": "None",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "get_credit_report",
@@ -137,7 +145,7 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier (SSN hash or internal ID)",
           "required": true
         },
         {
@@ -149,7 +157,24 @@
         }
       ],
       "returns": "CreditReport",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": [
+        {
+          "type": "ExperianAPIError",
+          "description": "If API call fails"
+        },
+        {
+          "type": "ExperianNotFoundError",
+          "description": "If user not found in bureau"
+        },
+        {
+          "type": "ExperianNotFoundError",
+          "description": "If user not found in bureau"
+        }
+      ]
     },
     {
       "name": "get_credit_score",
@@ -167,7 +192,7 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier (SSN hash or internal ID)",
           "required": true
         },
         {
@@ -179,7 +204,24 @@
         }
       ],
       "returns": "CreditScore",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": [
+        {
+          "type": "ExperianAPIError",
+          "description": "If API call fails"
+        },
+        {
+          "type": "ExperianNotFoundError",
+          "description": "If user not found in bureau"
+        },
+        {
+          "type": "ExperianNotFoundError",
+          "description": "If user not found in bureau"
+        }
+      ]
     },
     {
       "name": "subscribe_to_changes",
@@ -197,14 +239,14 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier",
           "required": true
         },
         {
           "name": "webhook_url",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "URL to receive webhook notifications",
           "required": true
         },
         {
@@ -216,10 +258,16 @@
         }
       ],
       "returns": "str",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     }
   ],
   "bases": [
     "CreditProvider"
-  ]
+  ],
+  "source_file": "src/fin_infra/credit/experian/provider.py",
+  "source_line": 48
 }
