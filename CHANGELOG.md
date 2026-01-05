@@ -1,6 +1,17 @@
 # CHANGELOG
 
 
+## v0.5.0 (2026-01-05)
+
+### Features
+
+- Auto-discover classes in API extraction script
+  ([#37](https://github.com/nfraxlab/fin-infra/pull/37),
+  [`a8d8e33`](https://github.com/nfraxlab/fin-infra/commit/a8d8e33de81e445a87c4f1da63fc04aea49b5d49))
+
+Co-authored-by: nfrax <alixkhatami@gmail.com>
+
+
 ## v0.4.0 (2026-01-05)
 
 ### Documentation
