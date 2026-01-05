@@ -1,6 +1,21 @@
 # CHANGELOG
 
 
+## v0.4.0 (2026-01-05)
+
+### Documentation
+
+- Add architecture, quickstart, troubleshooting, and performance docs
+  ([#35](https://github.com/nfraxlab/fin-infra/pull/35),
+  [`b61878f`](https://github.com/nfraxlab/fin-infra/commit/b61878f02dc363597a1ecc7b7b57fc1ea6690d97))
+
+### Features
+
+- Add griffe-based API reference extraction system
+  ([#36](https://github.com/nfraxlab/fin-infra/pull/36),
+  [`71415e7`](https://github.com/nfraxlab/fin-infra/commit/71415e774d88a9599f714123ea233cbb3f59fbd4))
+
+
 ## v0.3.0 (2026-01-04)
 
 ### Features
