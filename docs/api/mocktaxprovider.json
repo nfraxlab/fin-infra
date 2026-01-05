@@ -1,0 +1,278 @@
+{
+  "name": "MockTaxProvider",
+  "module": "fin_infra.providers.tax",
+  "docstring": "Mock tax provider with hardcoded sample data.\n\nReturns realistic tax documents for testing.\nNo API keys or external dependencies required.\n\nSupported forms:\n    - W-2: Wage and Tax Statement\n    - 1099-INT: Interest Income\n    - 1099-DIV: Dividends and Distributions\n    - 1099-B: Broker Transactions (crypto/stocks)\n    - 1099-MISC: Miscellaneous Income (staking)\n\nExample:\n    >>> provider = MockTaxProvider()\n    >>> documents = await provider.get_tax_documents(\"user_123\", 2024)\n    >>> w2 = [d for d in documents if d.form_type == \"W2\"][0]\n    >>> print(w2.wages)  # 75000.00",
+  "parameters": [
+    {
+      "name": "kwargs",
+      "type": null,
+      "default": "{}",
+      "description": null,
+      "required": false
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(kwargs = {})",
+      "docstring": "Initialize mock provider (no configuration needed).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "calculate_crypto_gains",
+      "signature": "(user_id: str, transactions: list[dict], tax_year: int, kwargs = {}) -> CryptoTaxReport",
+      "docstring": "Calculate capital gains for crypto transactions.\n\nArgs:\n    user_id: User identifier\n    transactions: List of crypto trades (dicts with symbol, date, quantity, price, etc.)\n    tax_year: Tax year\n    **kwargs: Additional parameters (cost_basis_method=\"FIFO\", etc.)\n\nReturns:\n    Crypto tax report with gains/losses breakdown\n\nExample:\n    >>> provider = MockTaxProvider()\n    >>> transactions = [\n    ...     {\"symbol\": \"BTC\", \"type\": \"sell\", \"date\": \"2024-06-20\",\n    ...      \"quantity\": 0.5, \"price\": 60000.00, \"cost_basis\": 40000.00}\n    ... ]\n    >>> report = await provider.calculate_crypto_gains(\"user_123\", transactions, 2024)\n    >>> print(report.total_gain_loss)  # 10000.00",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "transactions",
+          "type": "list[dict]",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "tax_year",
+          "type": "int",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "CryptoTaxReport",
+      "is_async": false
+    },
+    {
+      "name": "calculate_tax_liability",
+      "signature": "(user_id: str, income: Decimal, deductions: Decimal, filing_status: str, tax_year: int, kwargs = {}) -> TaxLiability",
+      "docstring": "Estimate tax liability (basic calculation).\n\nArgs:\n    user_id: User identifier\n    income: Gross income\n    deductions: Standard or itemized deductions\n    filing_status: \"single\", \"married_joint\", etc.\n    tax_year: Tax year\n    **kwargs: Additional parameters (state=\"CA\", etc.)\n\nReturns:\n    Tax liability estimate\n\nExample:\n    >>> provider = MockTaxProvider()\n    >>> liability = await provider.calculate_tax_liability(\n    ...     \"user_123\",\n    ...     Decimal(\"100000.00\"),\n    ...     Decimal(\"14600.00\"),\n    ...     \"single\",\n    ...     2024\n    ... )\n    >>> print(liability.federal_tax)  # ~14296.00",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "income",
+          "type": "Decimal",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "deductions",
+          "type": "Decimal",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "filing_status",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "tax_year",
+          "type": "int",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "TaxLiability",
+      "is_async": false
+    },
+    {
+      "name": "download_document",
+      "signature": "(document_id: str, kwargs = {}) -> bytes",
+      "docstring": "Download PDF bytes for a tax document.\n\nArgs:\n    document_id: Document identifier\n    **kwargs: Additional parameters (ignored)\n\nReturns:\n    PDF file bytes (mock: returns placeholder PDF)\n\nExample:\n    >>> provider = MockTaxProvider()\n    >>> pdf_bytes = await provider.download_document(\"w2_2024_user_123\")\n    >>> print(len(pdf_bytes) > 0)  # True",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "document_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "bytes",
+      "is_async": false
+    },
+    {
+      "name": "get_tax_document",
+      "signature": "(document_id: str, kwargs = {}) -> TaxDocument",
+      "docstring": "Retrieve a specific tax document by ID.\n\nArgs:\n    document_id: Document identifier (e.g., \"w2_2024_user_123\")\n    **kwargs: Additional parameters (ignored)\n\nReturns:\n    Tax document matching the ID\n\nRaises:\n    ValueError: If document_id not found\n\nExample:\n    >>> provider = MockTaxProvider()\n    >>> doc = await provider.get_tax_document(\"w2_2024_user_123\")\n    >>> print(doc.form_type)  # W2",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "document_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "TaxDocument",
+      "is_async": false
+    },
+    {
+      "name": "get_tax_documents",
+      "signature": "(user_id: str, tax_year: int, kwargs = {}) -> list[TaxDocument]",
+      "docstring": "Retrieve all tax documents for a user and tax year.\n\nReturns hardcoded W-2, 1099-INT, 1099-DIV, 1099-B, 1099-MISC.\n\nArgs:\n    user_id: User identifier\n    tax_year: Tax year (e.g., 2024)\n    **kwargs: Additional parameters (ignored)\n\nReturns:\n    List of tax documents (5 forms)\n\nExample:\n    >>> provider = MockTaxProvider()\n    >>> docs = await provider.get_tax_documents(\"user_123\", 2024)\n    >>> print(len(docs))  # 5\n    >>> print([d.form_type for d in docs])\n    # ['W2', '1099-INT', '1099-DIV', '1099-B', '1099-MISC']",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "tax_year",
+          "type": "int",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "list[TaxDocument]",
+      "is_async": false
+    },
+    {
+      "name": "get_tax_forms",
+      "signature": "(user_id: str, tax_year: int, kwargs = {}) -> list[dict]",
+      "docstring": "Retrieve tax forms for a user and tax year (returns dict, not models).\n\nThis method satisfies the TaxProvider ABC interface.\nUse get_tax_documents() for typed models instead.\n\nArgs:\n    user_id: User identifier\n    tax_year: Tax year (e.g., 2024)\n    **kwargs: Additional parameters (ignored)\n\nReturns:\n    List of tax forms as dicts",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "tax_year",
+          "type": "int",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "list[dict]",
+      "is_async": false
+    }
+  ],
+  "bases": [
+    "TaxProvider"
+  ]
+}

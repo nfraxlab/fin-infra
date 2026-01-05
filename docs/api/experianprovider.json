@@ -1,0 +1,225 @@
+{
+  "name": "ExperianProvider",
+  "module": "fin_infra.credit.experian",
+  "docstring": "Experian credit bureau provider with real API integration.\n\nv2 Implementation:\n- Real Experian API calls (sandbox or production)\n- OAuth 2.0 authentication\n- Automatic retries and error handling\n- FCRA compliance headers\n\nArgs:\n    client_id: Experian API client ID (required)\n    client_secret: Experian API client secret (required)\n    api_key: Experian API key (optional, for additional auth)\n    environment: \"sandbox\" or \"production\" (default: sandbox)\n    base_url: Override base URL (optional, auto-detected from environment)\n    **config: Additional configuration\n\nEnvironment Variables:\n    EXPERIAN_CLIENT_ID: Client ID for Experian API\n    EXPERIAN_CLIENT_SECRET: Client secret for Experian API\n    EXPERIAN_API_KEY: API key (if required)\n    EXPERIAN_ENVIRONMENT: \"sandbox\" or \"production\" (default: sandbox)\n    EXPERIAN_BASE_URL: Override base URL\n\nExample:\n    >>> # From environment variables\n    >>> provider = ExperianProvider()\n    >>>\n    >>> # Explicit credentials\n    >>> provider = ExperianProvider(\n    ...     client_id=\"your_client_id\",\n    ...     client_secret=\"your_client_secret\",\n    ...     environment=\"sandbox\"\n    ... )\n    >>>\n    >>> # Get credit score\n    >>> score = await provider.get_credit_score(\"user123\")",
+  "parameters": [
+    {
+      "name": "client_id",
+      "type": "str | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "client_secret",
+      "type": "str | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "api_key",
+      "type": "str | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "environment",
+      "type": "Literal['sandbox', 'production']",
+      "default": "'sandbox'",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "base_url",
+      "type": "str | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "config",
+      "type": null,
+      "default": "{}",
+      "description": null,
+      "required": false
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(client_id: str | None = None, client_secret: str | None = None, api_key: str | None = None, environment: Literal['sandbox', 'production'] = 'sandbox', base_url: str | None = None, config = {})",
+      "docstring": null,
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "client_id",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "client_secret",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "api_key",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "environment",
+          "type": "Literal['sandbox', 'production']",
+          "default": "'sandbox'",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "base_url",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "config",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "close",
+      "signature": "() -> None",
+      "docstring": "Close HTTP client connection pool.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "None",
+      "is_async": false
+    },
+    {
+      "name": "get_credit_report",
+      "signature": "(user_id: str, kwargs = {}) -> CreditReport",
+      "docstring": "Retrieve full credit report for a user from Experian API.\n\nMakes real API call to Experian. Includes FCRA-required permissible purpose header.\nAll credit pulls are logged for FCRA compliance (15 USC \u00a7 1681b).\n\nArgs:\n    user_id: User identifier (SSN hash or internal ID)\n    **kwargs: Additional parameters\n        - permissible_purpose: FCRA purpose (default: \"account_review\")\n        - requester_ip: IP address of requester (for audit log)\n        - requester_user_id: ID of user/service making the request\n\nReturns:\n    CreditReport with real credit data from Experian\n\nRaises:\n    ExperianAPIError: If API call fails\n    ExperianNotFoundError: If user not found in bureau\n\nExample:\n    >>> provider = ExperianProvider()\n    >>> report = await provider.get_credit_report(\"user123\")\n    >>> print(len(report.accounts))  # Real credit accounts\n    >>> print(report.score.score)  # Real FICO score",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "CreditReport",
+      "is_async": false
+    },
+    {
+      "name": "get_credit_score",
+      "signature": "(user_id: str, kwargs = {}) -> CreditScore",
+      "docstring": "Retrieve current credit score for a user from Experian API.\n\nMakes real API call to Experian. Uses FCRA-compliant permissible purpose.\nAll credit pulls are logged for FCRA compliance (15 USC \u00a7 1681b).\n\nArgs:\n    user_id: User identifier (SSN hash or internal ID)\n    **kwargs: Additional parameters\n        - permissible_purpose: FCRA purpose (default: \"account_review\")\n        - requester_ip: IP address of requester (for audit log)\n        - requester_user_id: ID of user/service making the request\n\nReturns:\n    CreditScore with real FICO score from Experian\n\nRaises:\n    ExperianAPIError: If API call fails\n    ExperianNotFoundError: If user not found in bureau\n\nExample:\n    >>> provider = ExperianProvider()\n    >>> score = await provider.get_credit_score(\"user123\")\n    >>> print(score.score)  # Real FICO score (300-850)",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "CreditScore",
+      "is_async": false
+    },
+    {
+      "name": "subscribe_to_changes",
+      "signature": "(user_id: str, webhook_url: str, kwargs = {}) -> str",
+      "docstring": "Subscribe to credit score change notifications from Experian.\n\nCreates webhook subscription in Experian system. Experian will POST to webhook_url\nwhen credit changes occur.\n\nArgs:\n    user_id: User identifier\n    webhook_url: URL to receive webhook notifications\n    **kwargs: Additional parameters\n        - events: List of event types (default: score_change, new_inquiry, new_account)\n        - signature_key: Webhook signature key for verification\n\nReturns:\n    Subscription ID from Experian\n\nExample:\n    >>> provider = ExperianProvider()\n    >>> sub_id = await provider.subscribe_to_changes(\n    ...     \"user123\",\n    ...     \"https://api.example.com/webhooks/credit\",\n    ...     signature_key=\"secret_key_123\"\n    ... )\n    >>> print(sub_id)  # \"sub_abc123\"",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "webhook_url",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "str",
+      "is_async": false
+    }
+  ],
+  "bases": [
+    "CreditProvider"
+  ]
+}

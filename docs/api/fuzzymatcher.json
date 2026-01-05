@@ -1,0 +1,130 @@
+{
+  "name": "FuzzyMatcher",
+  "module": "fin_infra.recurring.normalizer",
+  "docstring": "Fuzzy matching for merchant name variants.\n\nUses RapidFuzz for efficient fuzzy string matching with token_sort_ratio scorer\n(handles word order differences and partial matches).",
+  "parameters": [
+    {
+      "name": "similarity_threshold",
+      "type": "float",
+      "default": "80.0",
+      "description": null,
+      "required": false
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(similarity_threshold: float = 80.0)",
+      "docstring": "Initialize fuzzy matcher.\n\nArgs:\n    similarity_threshold: Minimum similarity score (0-100) to consider a match\n                          Default 80.0 (80% similarity)\n\nRaises:\n    ImportError: If rapidfuzz is not installed",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "similarity_threshold",
+          "type": "float",
+          "default": "80.0",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "find_similar",
+      "signature": "(target: str, candidates: list[str], limit: int = 5) -> list[tuple[str, float]]",
+      "docstring": "Find similar merchant names using fuzzy matching.\n\nArgs:\n    target: Target merchant name to match\n    candidates: List of candidate merchant names\n    limit: Maximum number of matches to return\n\nReturns:\n    List of (merchant_name, similarity_score) tuples, sorted by similarity\n    Only returns matches above similarity_threshold\n\nExamples:\n    >>> matcher = FuzzyMatcher(threshold=80)\n    >>> matcher.find_similar(\"netflix\", [\"netflix.com\", \"netflix inc\", \"hulu\"])\n    [('netflix.com', 89.0), ('netflix inc', 87.0)]",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "target",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "candidates",
+          "type": "list[str]",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "limit",
+          "type": "int",
+          "default": "5",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "list[tuple[str, float]]",
+      "is_async": false
+    },
+    {
+      "name": "group_merchants",
+      "signature": "(merchants: list[str]) -> dict[str, list[str]]",
+      "docstring": "Group similar merchant names together.\n\nReturns a dictionary mapping canonical (first) merchant name to list of variants.\n\nArgs:\n    merchants: List of merchant names to group\n\nReturns:\n    Dict of {canonical_name: [variant1, variant2, ...]}\n\nExamples:\n    >>> matcher = FuzzyMatcher(threshold=85)\n    >>> matcher.group_merchants([\n    ...     \"NETFLIX.COM\",\n    ...     \"Netflix Inc\",\n    ...     \"Netflix\",\n    ...     \"Hulu\",\n    ... ])\n    {'NETFLIX.COM': ['NETFLIX.COM', 'Netflix Inc', 'Netflix'], 'Hulu': ['Hulu']}",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "merchants",
+          "type": "list[str]",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "dict[str, list[str]]",
+      "is_async": false
+    },
+    {
+      "name": "is_same_merchant",
+      "signature": "(name1: str, name2: str) -> bool",
+      "docstring": "Check if two merchant names represent the same merchant.\n\nUses fuzzy similarity with token_sort_ratio scorer.\n\nArgs:\n    name1: First merchant name\n    name2: Second merchant name\n\nReturns:\n    True if similarity >= threshold\n\nExamples:\n    >>> matcher = FuzzyMatcher(threshold=80)\n    >>> matcher.is_same_merchant(\"NETFLIX.COM\", \"Netflix Inc\")\n    True\n    >>> matcher.is_same_merchant(\"Netflix\", \"Hulu\")\n    False",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "name1",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "name2",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "bool",
+      "is_async": false
+    }
+  ],
+  "bases": []
+}

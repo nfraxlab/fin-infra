@@ -1,0 +1,320 @@
+{
+  "name": "TaxBitProvider",
+  "module": "fin_infra.providers.tax",
+  "docstring": "TaxBit provider for crypto tax calculations (v2 - not yet implemented).\n\n**Subscription Required**:\n- Base fee: $50-$200/month\n- Per-user fee: $1-$5/user\n- Total cost: $10k-$50k/month for 10,000 users\n\n**Authentication**:\n- OAuth 2.0 with client credentials\n- Access token refresh every 24 hours\n- Rate limit: 100 requests/minute\n\n**Environment Variables**:\n- TAXBIT_CLIENT_ID: OAuth client ID\n- TAXBIT_CLIENT_SECRET: OAuth client secret\n- TAXBIT_BASE_URL: API endpoint (default: https://api.taxbit.com)\n\n**Supported Features**:\n- Form 8949: Sales and Other Dispositions of Capital Assets\n- 1099-B: Proceeds from Broker Transactions (crypto)\n- 1099-MISC: Staking rewards, airdrops\n- Capital gains/losses calculation (FIFO, LIFO, HIFO)\n- Cost basis tracking\n\n**Not Supported**:\n- Traditional tax forms (W-2, 1099-INT/DIV) - use IRS provider\n\nExample:\n    >>> provider = TaxBitProvider(\n    ...     client_id=os.getenv(\"TAXBIT_CLIENT_ID\"),\n    ...     client_secret=os.getenv(\"TAXBIT_CLIENT_SECRET\")\n    ... )\n    >>> # Raises NotImplementedError until v2 implementation",
+  "parameters": [
+    {
+      "name": "client_id",
+      "type": "str | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "client_secret",
+      "type": "str | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "base_url",
+      "type": "str",
+      "default": "'https://api.taxbit.com'",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "kwargs",
+      "type": null,
+      "default": "{}",
+      "description": null,
+      "required": false
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(client_id: str | None = None, client_secret: str | None = None, base_url: str = 'https://api.taxbit.com', kwargs = {})",
+      "docstring": "Initialize TaxBit provider.\n\nArgs:\n    client_id: OAuth client ID (required)\n    client_secret: OAuth client secret (required)\n    base_url: TaxBit API endpoint (default: production)\n    **kwargs: Additional configuration\n\nRaises:\n    NotImplementedError: TaxBit provider not yet implemented (v2)",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "client_id",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "client_secret",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "base_url",
+          "type": "str",
+          "default": "'https://api.taxbit.com'",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "calculate_crypto_gains",
+      "signature": "(user_id: str, transactions: list[dict], tax_year: int, kwargs = {}) -> CryptoTaxReport",
+      "docstring": "Not implemented (v2).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "transactions",
+          "type": "list[dict]",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "tax_year",
+          "type": "int",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "CryptoTaxReport",
+      "is_async": false
+    },
+    {
+      "name": "calculate_tax_liability",
+      "signature": "(user_id: str, income: Decimal, deductions: Decimal, filing_status: str, tax_year: int, kwargs = {}) -> TaxLiability",
+      "docstring": "Not implemented (v2).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "income",
+          "type": "Decimal",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "deductions",
+          "type": "Decimal",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "filing_status",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "tax_year",
+          "type": "int",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "TaxLiability",
+      "is_async": false
+    },
+    {
+      "name": "download_document",
+      "signature": "(document_id: str, kwargs = {}) -> bytes",
+      "docstring": "Not implemented (v2).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "document_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "bytes",
+      "is_async": false
+    },
+    {
+      "name": "get_tax_document",
+      "signature": "(document_id: str, kwargs = {}) -> TaxDocument",
+      "docstring": "Not implemented (v2).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "document_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "TaxDocument",
+      "is_async": false
+    },
+    {
+      "name": "get_tax_documents",
+      "signature": "(user_id: str, tax_year: int, kwargs = {}) -> list[TaxDocument]",
+      "docstring": "Not implemented (v2).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "tax_year",
+          "type": "int",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "list[TaxDocument]",
+      "is_async": false
+    },
+    {
+      "name": "get_tax_forms",
+      "signature": "(user_id: str, tax_year: int, kwargs = {}) -> list[dict]",
+      "docstring": "Not implemented (v2).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "tax_year",
+          "type": "int",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "list[dict]",
+      "is_async": false
+    }
+  ],
+  "bases": [
+    "TaxProvider"
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "name": "MockExperianProvider",
+  "module": "fin_infra.credit.mock",
+  "docstring": "Mock Experian provider for development (v1).\n\nReturns hardcoded credit data without making real API calls.\nUseful for local development and unit testing.\n\nArgs:\n    api_key: Ignored (no API calls made)\n    environment: Ignored (no API calls made)\n    **config: Ignored\n\nExample:\n    >>> provider = MockExperianProvider()\n    >>> score = provider.get_credit_score(\"user123\")\n    >>> print(score.score)  # 735 (mock)",
+  "parameters": [
+    {
+      "name": "api_key",
+      "type": "str | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "environment",
+      "type": "Literal['sandbox', 'production']",
+      "default": "'sandbox'",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "config",
+      "type": null,
+      "default": "{}",
+      "description": null,
+      "required": false
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(api_key: str | None = None, environment: Literal['sandbox', 'production'] = 'sandbox', config = {})",
+      "docstring": null,
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "api_key",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "environment",
+          "type": "Literal['sandbox', 'production']",
+          "default": "'sandbox'",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "config",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "get_credit_report",
+      "signature": "(user_id: str, kwargs = {}) -> CreditReport",
+      "docstring": "Return mock credit report.\n\nArgs:\n    user_id: User identifier\n    **kwargs: Ignored\n\nReturns:\n    Mock CreditReport with 3 accounts, 2 inquiries",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "CreditReport",
+      "is_async": false
+    },
+    {
+      "name": "get_credit_score",
+      "signature": "(user_id: str, kwargs = {}) -> CreditScore",
+      "docstring": "Return mock credit score.\n\nArgs:\n    user_id: User identifier\n    **kwargs: Ignored\n\nReturns:\n    Mock CreditScore (FICO 8 score 735)",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "CreditScore",
+      "is_async": false
+    },
+    {
+      "name": "subscribe_to_changes",
+      "signature": "(user_id: str, webhook_url: str, kwargs = {}) -> str",
+      "docstring": "Return mock subscription ID.\n\nArgs:\n    user_id: User identifier\n    webhook_url: Ignored\n    **kwargs: Ignored\n\nReturns:\n    Mock subscription ID",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "webhook_url",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": null,
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "str",
+      "is_async": false
+    }
+  ],
+  "bases": [
+    "CreditProvider"
+  ]
+}
