@@ -1,0 +1,239 @@
+{
+  "name": "FinancialDocumentManager",
+  "module": "fin_infra.documents.ease",
+  "docstring": "Financial document manager extending svc-infra with OCR and AI analysis.\n\nInherits from svc-infra DocumentManager:\n    - upload(), download(), delete(), get(), list() for base document CRUD\n    - storage backend integration\n\nAdds financial-specific methods:\n    - upload_financial(): Upload with DocumentType, tax_year, form_type\n    - extract_text(): OCR for tax forms\n    - analyze(): AI-powered financial insights\n\nAttributes:\n    storage: Storage backend (inherited from BaseDocumentManager)\n    default_ocr_provider: OCR provider (tesseract/textract)\n\nExamples:\n    >>> from svc_infra.storage import easy_storage\n    >>> storage = easy_storage()\n    >>> manager = FinancialDocumentManager(storage)\n    >>>\n    >>> # Upload W-2 tax form\n    >>> doc = await manager.upload_financial(\n    ...     user_id=\"user_123\",\n    ...     file=file_bytes,\n    ...     document_type=DocumentType.TAX,\n    ...     filename=\"w2.pdf\",\n    ...     tax_year=2024,\n    ...     form_type=\"W-2\"\n    ... )",
+  "parameters": [
+    {
+      "name": "storage",
+      "type": "StorageBackend",
+      "default": null,
+      "description": null,
+      "required": true
+    },
+    {
+      "name": "default_ocr_provider",
+      "type": "str",
+      "default": "'tesseract'",
+      "description": null,
+      "required": false
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(storage: StorageBackend, default_ocr_provider: str = 'tesseract')",
+      "docstring": "Initialize financial document manager.\n\nArgs:\n    storage: Storage backend instance (S3/local/memory)\n    default_ocr_provider: Default OCR provider (tesseract/textract)",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "storage",
+          "type": "StorageBackend",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "default_ocr_provider",
+          "type": "str",
+          "default": "'tesseract'",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "analyze",
+      "signature": "(document_id: str, force_refresh: bool = False) -> DocumentAnalysis",
+      "docstring": "Analyze document using AI (financial extension).\n\nArgs:\n    document_id: Document identifier\n    force_refresh: Force re-analysis\n\nReturns:\n    Document analysis with financial insights\n\nExamples:\n    >>> analysis = await manager.analyze(\"doc_abc123\")\n    >>> print(analysis.summary)\n    >>> print(analysis.key_findings)\n    >>> print(analysis.recommendations)",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "document_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "force_refresh",
+          "type": "bool",
+          "default": "False",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "DocumentAnalysis",
+      "is_async": false
+    },
+    {
+      "name": "extract_text",
+      "signature": "(document_id: str, provider: str | None = None, force_refresh: bool = False) -> OCRResult",
+      "docstring": "Extract text from document using OCR (financial extension).\n\nArgs:\n    document_id: Document identifier\n    provider: OCR provider (defaults to instance default)\n    force_refresh: Force re-extraction\n\nReturns:\n    OCR result with extracted text\n\nExamples:\n    >>> result = await manager.extract_text(\"doc_abc123\")\n    >>> print(result.text)\n    >>> print(result.fields_extracted)  # Structured tax form fields",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "document_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "provider",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "force_refresh",
+          "type": "bool",
+          "default": "False",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "OCRResult",
+      "is_async": false
+    },
+    {
+      "name": "list_financial",
+      "signature": "(user_id: str, document_type: DocumentType | None = None, tax_year: int | None = None, limit: int = 100, offset: int = 0) -> list[FinancialDocument]",
+      "docstring": "List user's financial documents with filters.\n\nArgs:\n    user_id: User identifier\n    document_type: Optional document type filter\n    tax_year: Optional tax year filter\n    limit: Maximum number of documents (default: 100)\n    offset: Number of documents to skip (default: 0)\n\nReturns:\n    List of financial documents\n\nExamples:\n    >>> # All documents\n    >>> docs = manager.list_financial(user_id=\"user_123\")\n    >>>\n    >>> # Tax documents only\n    >>> tax_docs = manager.list_financial(\n    ...     user_id=\"user_123\",\n    ...     document_type=DocumentType.TAX\n    ... )\n    >>>\n    >>> # 2024 tax documents\n    >>> tax_2024 = manager.list_financial(\n    ...     user_id=\"user_123\",\n    ...     document_type=DocumentType.TAX,\n    ...     tax_year=2024\n    ... )",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "document_type",
+          "type": "DocumentType | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "tax_year",
+          "type": "int | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "int",
+          "default": "100",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "offset",
+          "type": "int",
+          "default": "0",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "list[FinancialDocument]",
+      "is_async": false
+    },
+    {
+      "name": "upload_financial",
+      "signature": "(user_id: str, file: bytes, document_type: DocumentType, filename: str, metadata: dict | None = None, tax_year: int | None = None, form_type: str | None = None) -> FinancialDocument",
+      "docstring": "Upload a financial document with financial-specific fields.\n\nArgs:\n    user_id: User uploading the document\n    file: File content as bytes\n    document_type: Type of financial document\n    filename: Original filename\n    metadata: Optional custom metadata (employer, account, etc.)\n    tax_year: Optional tax year (2024, 2023, etc.)\n    form_type: Optional form type (W-2, 1099-INT, etc.)\n\nReturns:\n    FinancialDocument with storage info and financial fields\n\nExamples:\n    >>> doc = await manager.upload_financial(\n    ...     user_id=\"user_123\",\n    ...     file=file_bytes,\n    ...     document_type=DocumentType.TAX,\n    ...     filename=\"w2_2024.pdf\",\n    ...     metadata={\"employer\": \"ACME Corp\"},\n    ...     tax_year=2024,\n    ...     form_type=\"W-2\"\n    ... )",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "file",
+          "type": "bytes",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "document_type",
+          "type": "DocumentType",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "filename",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "metadata",
+          "type": "dict | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "tax_year",
+          "type": "int | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "form_type",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "FinancialDocument",
+      "is_async": false
+    }
+  ],
+  "bases": [
+    "BaseDocumentManager"
+  ]
+}

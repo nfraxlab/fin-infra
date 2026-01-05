@@ -1,0 +1,175 @@
+{
+  "name": "TaxProvider",
+  "module": "fin_infra.providers.base",
+  "docstring": "Provider for tax data and document retrieval.",
+  "parameters": [],
+  "methods": [
+    {
+      "name": "calculate_crypto_gains",
+      "signature": "(args: Any = (), kwargs: Any = {}) -> Any",
+      "docstring": "Calculate capital gains from crypto transactions.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "args",
+          "type": "Any",
+          "default": "()",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "kwargs",
+          "type": "Any",
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "Any",
+      "is_async": false
+    },
+    {
+      "name": "calculate_tax_liability",
+      "signature": "(args: Any = (), kwargs: Any = {}) -> Any",
+      "docstring": "Calculate estimated tax liability.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "args",
+          "type": "Any",
+          "default": "()",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "kwargs",
+          "type": "Any",
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "Any",
+      "is_async": false
+    },
+    {
+      "name": "get_tax_document",
+      "signature": "(document_id: str, kwargs: Any = {}) -> Any",
+      "docstring": "Retrieve a specific tax document by ID.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "document_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": "Any",
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "Any",
+      "is_async": false
+    },
+    {
+      "name": "get_tax_documents",
+      "signature": "(user_id: str, tax_year: int, kwargs: Any = {}) -> Any",
+      "docstring": "Retrieve tax documents for a user and tax year.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "tax_year",
+          "type": "int",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": "Any",
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "Any",
+      "is_async": false
+    },
+    {
+      "name": "get_tax_forms",
+      "signature": "(user_id: str, tax_year: int, kwargs: Any = {}) -> Any",
+      "docstring": "Retrieve tax forms for a user and tax year.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "tax_year",
+          "type": "int",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "kwargs",
+          "type": "Any",
+          "default": "{}",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "Any",
+      "is_async": false
+    }
+  ],
+  "bases": [
+    "ABC"
+  ]
+}

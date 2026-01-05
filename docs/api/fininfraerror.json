@@ -1,0 +1,84 @@
+{
+  "name": "FinInfraError",
+  "module": "fin_infra.exceptions",
+  "docstring": "Base exception for all fin-infra errors.\n\nAll fin-infra exceptions inherit from this, allowing users to catch\nall library errors with a single except clause.\n\nAttributes:\n    message: Human-readable error description\n    details: Additional context as key-value pairs\n    hint: Suggested fix or action\n    docs_url: Link to relevant documentation",
+  "parameters": [
+    {
+      "name": "message",
+      "type": "str",
+      "default": null,
+      "description": null,
+      "required": true
+    },
+    {
+      "name": "details",
+      "type": "dict[str, Any] | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "hint",
+      "type": "str | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "docs_url",
+      "type": "str | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(message: str, details: dict[str, Any] | None = None, hint: str | None = None, docs_url: str | None = None)",
+      "docstring": null,
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "message",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "details",
+          "type": "dict[str, Any] | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "hint",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "docs_url",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    }
+  ],
+  "bases": [
+    "Exception"
+  ]
+}

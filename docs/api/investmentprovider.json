@@ -1,0 +1,64 @@
+{
+  "name": "InvestmentProvider",
+  "module": "fin_infra.providers.base",
+  "docstring": "Provider for investment holdings and portfolio data (Plaid, SnapTrade).\n\nThis is a minimal ABC for type checking. The full implementation with\nall abstract methods is in fin_infra.investments.providers.base.InvestmentProvider.\n\nAbstract Methods (defined in full implementation):\n    - get_holdings(access_token, account_ids) -> List[Holding]\n    - get_transactions(access_token, start_date, end_date, account_ids) -> List[InvestmentTransaction]\n    - get_securities(access_token, security_ids) -> List[Security]\n    - get_investment_accounts(access_token) -> List[InvestmentAccount]\n\nExample:\n    >>> from fin_infra.investments import easy_investments\n    >>> provider = easy_investments(provider=\"plaid\")\n    >>> holdings = await provider.get_holdings(access_token)",
+  "parameters": [],
+  "methods": [
+    {
+      "name": "get_holdings",
+      "signature": "(access_token: str, account_ids: list[str] | None = None) -> list",
+      "docstring": "Fetch holdings for investment accounts.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "access_token",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "account_ids",
+          "type": "list[str] | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "list",
+      "is_async": false
+    },
+    {
+      "name": "get_investment_accounts",
+      "signature": "(access_token: str) -> list",
+      "docstring": "Fetch investment accounts with aggregated holdings.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "access_token",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "list",
+      "is_async": false
+    }
+  ],
+  "bases": [
+    "ABC"
+  ]
+}

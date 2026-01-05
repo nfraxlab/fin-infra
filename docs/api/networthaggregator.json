@@ -1,0 +1,126 @@
+{
+  "name": "NetWorthAggregator",
+  "module": "fin_infra.net_worth.aggregator",
+  "docstring": "Aggregates net worth from multiple financial providers.\n\n**Features**:\n- Multi-provider support (banking, brokerage, crypto)\n- Parallel account fetching (faster performance)\n- Graceful error handling (continue if one provider fails)\n- Currency normalization (all -> base currency)\n- Market value calculation (stocks/crypto)\n\n**Example**:\n```python\naggregator = NetWorthAggregator(\n    banking_provider=banking,\n    brokerage_provider=brokerage,\n    crypto_provider=crypto,\n    base_currency=\"USD\"\n)\n\nsnapshot = await aggregator.aggregate_net_worth(\"user_123\")\nprint(f\"Assets: ${snapshot.total_assets:,.2f}\")\nprint(f\"Liabilities: ${snapshot.total_liabilities:,.2f}\")\nprint(f\"Net Worth: ${snapshot.total_net_worth:,.2f}\")\n```",
+  "parameters": [
+    {
+      "name": "banking_provider",
+      "type": "Any",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "brokerage_provider",
+      "type": "Any",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "crypto_provider",
+      "type": "Any",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "market_provider",
+      "type": "Any",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "base_currency",
+      "type": "str",
+      "default": "'USD'",
+      "description": null,
+      "required": false
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(banking_provider: Any = None, brokerage_provider: Any = None, crypto_provider: Any = None, market_provider: Any = None, base_currency: str = 'USD')",
+      "docstring": "Initialize aggregator with providers.\n\nArgs:\n    banking_provider: Banking provider (Plaid/Teller)\n    brokerage_provider: Brokerage provider (Alpaca)\n    crypto_provider: Crypto provider (CCXT)\n    market_provider: Market data provider (Alpha Vantage)\n    base_currency: Base currency for normalization (default: USD)\n\nRaises:\n    ValueError: If no providers specified",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "banking_provider",
+          "type": "Any",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "brokerage_provider",
+          "type": "Any",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "crypto_provider",
+          "type": "Any",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "market_provider",
+          "type": "Any",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "base_currency",
+          "type": "str",
+          "default": "'USD'",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "aggregate_net_worth",
+      "signature": "(user_id: str, access_token: str | None = None) -> NetWorthSnapshot",
+      "docstring": "Aggregate net worth from all providers.\n\nFetches balances from all configured providers in parallel,\ncalculates totals, and returns a complete snapshot.\n\n**Example**:\n```python\nsnapshot = await aggregator.aggregate_net_worth(\n    user_id=\"user_123\",\n    access_token=\"plaid_token_abc\"\n)\n```\n\nArgs:\n    user_id: User identifier\n    access_token: Provider access token (for banking/brokerage)\n\nReturns:\n    NetWorthSnapshot with complete financial picture",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "access_token",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "NetWorthSnapshot",
+      "is_async": false
+    }
+  ],
+  "bases": []
+}

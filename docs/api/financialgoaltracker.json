@@ -1,0 +1,135 @@
+{
+  "name": "FinancialGoalTracker",
+  "module": "fin_infra.goals.management",
+  "docstring": "LLM-validated financial goal tracking with progress monitoring.\n\nFeatures:\n- 4 goal types (retirement, home purchase, debt-free, wealth milestone)\n- Local math calculations (don't trust LLM for arithmetic)\n- LLM provides context and advice around calculations\n- Weekly progress tracking with course corrections\n\nCost: ~$0.0009/validation, ~$0.0009/week for progress ($0.0036/user/month)\n\nExample:\n    from ai_infra.llm import LLM\n\n    llm = LLM()\n    tracker = FinancialGoalTracker(llm=llm, provider=\"google\")\n\n    # Validate goal\n    goal = {\n        \"type\": \"retirement\",\n        \"target_amount\": 2000000.0,\n        \"target_age\": 65,\n        \"current_age\": 40,\n        \"current_savings\": 300000.0,\n        \"monthly_contribution\": 1500.0\n    }\n\n    validation = await tracker.validate_goal(goal)",
+  "parameters": [
+    {
+      "name": "llm",
+      "type": "Any",
+      "default": null,
+      "description": null,
+      "required": true
+    },
+    {
+      "name": "provider",
+      "type": "str",
+      "default": "'google'",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "model_name",
+      "type": "str",
+      "default": "'gemini-2.0-flash-exp'",
+      "description": null,
+      "required": false
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(llm: Any, provider: str = 'google', model_name: str = 'gemini-2.0-flash-exp')",
+      "docstring": "Initialize goal tracker.\n\nArgs:\n    llm: ai-infra LLM instance\n    provider: LLM provider (\"google\", \"openai\", \"anthropic\")\n    model_name: Model name (default: gemini-2.0-flash-exp)",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "llm",
+          "type": "Any",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "provider",
+          "type": "str",
+          "default": "'google'",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "model_name",
+          "type": "str",
+          "default": "'gemini-2.0-flash-exp'",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "track_progress",
+      "signature": "(goal: dict[str, Any], current_net_worth: float, goal_id: str | None = None) -> GoalProgressReport",
+      "docstring": "Track goal progress and suggest course corrections.\n\nArgs:\n    goal: Goal data (same as validate_goal)\n    current_net_worth: Current net worth for progress calculation\n    goal_id: Goal identifier (generated if not provided)\n\nReturns:\n    GoalProgressReport with status, variance, course corrections\n\nCost: ~$0.0009/call (weekly check-ins via svc-infra.jobs)",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "goal",
+          "type": "dict[str, Any]",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "current_net_worth",
+          "type": "float",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "goal_id",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "GoalProgressReport",
+      "is_async": false
+    },
+    {
+      "name": "validate_goal",
+      "signature": "(goal: dict[str, Any], goal_id: str | None = None) -> GoalValidation",
+      "docstring": "Validate financial goal with LLM context around local calculations.\n\nArgs:\n    goal: Goal data with type-specific fields:\n          Retirement: target_amount, target_age, current_age, current_savings, monthly_contribution\n          Home Purchase: home_price, down_payment_percent, target_date, current_savings, monthly_savings\n          Debt-Free: total_debt, target_date, monthly_payment, weighted_avg_apr\n          Wealth Milestone: target_net_worth, target_date, current_net_worth, historical_growth_rate\n    goal_id: Optional goal identifier (generated if not provided)\n\nReturns:\n    GoalValidation with feasibility, required savings, alternatives, recommendations\n\nCost: ~$0.0009/call",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "goal",
+          "type": "dict[str, Any]",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "goal_id",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "GoalValidation",
+      "is_async": false
+    }
+  ],
+  "bases": []
+}

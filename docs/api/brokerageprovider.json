@@ -1,0 +1,419 @@
+{
+  "name": "BrokerageProvider",
+  "module": "fin_infra.providers.base",
+  "docstring": null,
+  "parameters": [],
+  "methods": [
+    {
+      "name": "add_to_watchlist",
+      "signature": "(watchlist_id: str, symbol: str) -> dict",
+      "docstring": "Add a symbol to a watchlist.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "watchlist_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "symbol",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "dict",
+      "is_async": false
+    },
+    {
+      "name": "cancel_order",
+      "signature": "(order_id: str) -> None",
+      "docstring": "Cancel an order.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "order_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "None",
+      "is_async": false
+    },
+    {
+      "name": "close_position",
+      "signature": "(symbol: str) -> dict",
+      "docstring": "Close a position (market sell/cover).",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "symbol",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "dict",
+      "is_async": false
+    },
+    {
+      "name": "create_watchlist",
+      "signature": "(name: str, symbols: list[str] | None = None) -> dict",
+      "docstring": "Create a new watchlist.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "name",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "symbols",
+          "type": "list[str] | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "dict",
+      "is_async": false
+    },
+    {
+      "name": "delete_watchlist",
+      "signature": "(watchlist_id: str) -> None",
+      "docstring": "Delete a watchlist.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "watchlist_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "None",
+      "is_async": false
+    },
+    {
+      "name": "get_account",
+      "signature": "() -> dict",
+      "docstring": "Get trading account information.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "dict",
+      "is_async": false
+    },
+    {
+      "name": "get_order",
+      "signature": "(order_id: str) -> dict",
+      "docstring": "Get order by ID.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "order_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "dict",
+      "is_async": false
+    },
+    {
+      "name": "get_portfolio_history",
+      "signature": "(period: str = '1M', timeframe: str = '1D') -> dict",
+      "docstring": "Get portfolio value history.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "period",
+          "type": "str",
+          "default": "'1M'",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "timeframe",
+          "type": "str",
+          "default": "'1D'",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "dict",
+      "is_async": false
+    },
+    {
+      "name": "get_position",
+      "signature": "(symbol: str) -> dict",
+      "docstring": "Get position for a specific symbol.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "symbol",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "dict",
+      "is_async": false
+    },
+    {
+      "name": "get_watchlist",
+      "signature": "(watchlist_id: str) -> dict",
+      "docstring": "Get a watchlist by ID.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "watchlist_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "dict",
+      "is_async": false
+    },
+    {
+      "name": "list_orders",
+      "signature": "(status: str = 'open', limit: int = 50) -> list[dict]",
+      "docstring": "List orders.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "status",
+          "type": "str",
+          "default": "'open'",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": "int",
+          "default": "50",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "list[dict]",
+      "is_async": false
+    },
+    {
+      "name": "list_watchlists",
+      "signature": "() -> list[dict]",
+      "docstring": "List all watchlists.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "list[dict]",
+      "is_async": false
+    },
+    {
+      "name": "positions",
+      "signature": "() -> Iterable[dict]",
+      "docstring": null,
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "Iterable[dict]",
+      "is_async": false
+    },
+    {
+      "name": "remove_from_watchlist",
+      "signature": "(watchlist_id: str, symbol: str) -> dict",
+      "docstring": "Remove a symbol from a watchlist.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "watchlist_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "symbol",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "dict",
+      "is_async": false
+    },
+    {
+      "name": "submit_order",
+      "signature": "(symbol: str, qty: float, side: str, type_: str, time_in_force: str, limit_price: float | None = None, stop_price: float | None = None, client_order_id: str | None = None) -> dict",
+      "docstring": null,
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "symbol",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "qty",
+          "type": "float",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "side",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "type_",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "time_in_force",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "limit_price",
+          "type": "float | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "stop_price",
+          "type": "float | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "client_order_id",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "dict",
+      "is_async": false
+    }
+  ],
+  "bases": [
+    "ABC"
+  ]
+}

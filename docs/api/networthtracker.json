@@ -1,0 +1,179 @@
+{
+  "name": "NetWorthTracker",
+  "module": "fin_infra.net_worth.ease",
+  "docstring": "High-level net worth tracking interface.\n\nProvides simple methods for calculating net worth,\ncreating snapshots, and retrieving history.\n\n**V1 Features** (Always Available):\n- `calculate_net_worth()`: Real-time net worth calculation (<100ms, $0 cost)\n- `create_snapshot()`: Store snapshot in database\n- `get_snapshots()`: Retrieve historical snapshots\n\n**V2 Features** (When enable_llm=True):\n- `generate_insights()`: LLM-generated financial insights ($0.042/user/month)\n- `ask()`: Multi-turn financial planning conversation ($0.018/user/month)\n- `validate_goal()`: LLM-validated goal tracking ($0.0036/user/month)\n- `track_goal_progress()`: Weekly progress reports with course correction\n\n**Example - V1 Only**:\n```python\ntracker = NetWorthTracker(aggregator)\n\n# Calculate current net worth\nsnapshot = await tracker.calculate_net_worth(\"user_123\")\n\n# Create snapshot in database\nawait tracker.create_snapshot(\"user_123\")\n\n# Get historical snapshots\nhistory = await tracker.get_snapshots(\"user_123\", days=90)\n```\n\n**Example - V2 with LLM**:\n```python\ntracker = NetWorthTracker(\n    aggregator=aggregator,\n    insights_generator=insights_generator,\n    goal_tracker=goal_tracker,\n    conversation=conversation,\n)\n\n# V1 features still work\nsnapshot = await tracker.calculate_net_worth(\"user_123\")\n\n# V2 features now available\ninsights = await tracker.generate_insights(\"user_123\", type=\"wealth_trends\")\nresponse = await tracker.ask(\"How can I save more?\", \"user_123\")\ngoal = await tracker.validate_goal({\n    \"type\": \"retirement\",\n    \"target_amount\": 2000000.0,\n    \"target_age\": 65\n})\n```",
+  "parameters": [
+    {
+      "name": "aggregator",
+      "type": "NetWorthAggregator",
+      "default": null,
+      "description": null,
+      "required": true
+    },
+    {
+      "name": "insights_generator",
+      "type": "Any",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "goal_tracker",
+      "type": "Any",
+      "default": "None",
+      "description": null,
+      "required": false
+    },
+    {
+      "name": "conversation",
+      "type": "Any",
+      "default": "None",
+      "description": null,
+      "required": false
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(aggregator: NetWorthAggregator, insights_generator: Any = None, goal_tracker: Any = None, conversation: Any = None)",
+      "docstring": "Initialize tracker with aggregator and optional LLM components.\n\nArgs:\n    aggregator: NetWorthAggregator instance (required)\n    insights_generator: NetWorthInsightsGenerator instance (optional, V2)\n    goal_tracker: FinancialGoalTracker instance (optional, V2)\n    conversation: FinancialPlanningConversation instance (optional, V2)",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "aggregator",
+          "type": "NetWorthAggregator",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "insights_generator",
+          "type": "Any",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "goal_tracker",
+          "type": "Any",
+          "default": "None",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "conversation",
+          "type": "Any",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "calculate_net_worth",
+      "signature": "(user_id: str, access_token: str | None = None)",
+      "docstring": "Calculate current net worth (real-time).\n\nArgs:\n    user_id: User identifier\n    access_token: Provider access token\n\nReturns:\n    NetWorthSnapshot",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "access_token",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "create_snapshot",
+      "signature": "(user_id: str, access_token: str | None = None)",
+      "docstring": "Create and store snapshot in database.\n\nArgs:\n    user_id: User identifier\n    access_token: Provider access token\n\nReturns:\n    NetWorthSnapshot (with change tracking)",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "access_token",
+          "type": "str | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    },
+    {
+      "name": "get_snapshots",
+      "signature": "(user_id: str, days: int = 90, granularity: str = 'daily')",
+      "docstring": "Retrieve historical snapshots.\n\nArgs:\n    user_id: User identifier\n    days: Look back N days\n    granularity: Snapshot granularity (daily, weekly, monthly)\n\nReturns:\n    List of NetWorthSnapshot",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "days",
+          "type": "int",
+          "default": "90",
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "granularity",
+          "type": "str",
+          "default": "'daily'",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": null,
+      "is_async": false
+    }
+  ],
+  "bases": []
+}

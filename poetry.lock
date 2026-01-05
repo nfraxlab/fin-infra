@@ -7486,4 +7486,4 @@ yahoo = ["yahooquery"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "453b42bf9832ee55e9e02d66624b3977fed502a6185a2700b08810d92a6efd82"
+content-hash = "c7b547bb9944fdacc6228844df7e8da9a40329c1d2f46747b97c112f3f2d977c"
