@@ -33,7 +33,11 @@
         }
       ],
       "returns": null,
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "calculate_crypto_gains",
@@ -51,21 +55,21 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier",
           "required": true
         },
         {
           "name": "transactions",
           "type": "list[dict]",
           "default": null,
-          "description": null,
+          "description": "List of crypto trades (dicts with symbol, date, quantity, price, etc.)",
           "required": true
         },
         {
           "name": "tax_year",
           "type": "int",
           "default": null,
-          "description": null,
+          "description": "Tax year",
           "required": true
         },
         {
@@ -77,7 +81,11 @@
         }
       ],
       "returns": "CryptoTaxReport",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "calculate_tax_liability",
@@ -95,35 +103,35 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier",
           "required": true
         },
         {
           "name": "income",
           "type": "Decimal",
           "default": null,
-          "description": null,
+          "description": "Gross income",
           "required": true
         },
         {
           "name": "deductions",
           "type": "Decimal",
           "default": null,
-          "description": null,
+          "description": "Standard or itemized deductions",
           "required": true
         },
         {
           "name": "filing_status",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "\"single\", \"married_joint\", etc.",
           "required": true
         },
         {
           "name": "tax_year",
           "type": "int",
           "default": null,
-          "description": null,
+          "description": "Tax year",
           "required": true
         },
         {
@@ -135,7 +143,11 @@
         }
       ],
       "returns": "TaxLiability",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "download_document",
@@ -153,7 +165,7 @@
           "name": "document_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "Document identifier",
           "required": true
         },
         {
@@ -165,7 +177,11 @@
         }
       ],
       "returns": "bytes",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "get_tax_document",
@@ -183,7 +199,7 @@
           "name": "document_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "Document identifier (e.g., \"w2_2024_user_123\")",
           "required": true
         },
         {
@@ -195,7 +211,20 @@
         }
       ],
       "returns": "TaxDocument",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": [
+        {
+          "type": "ValueError",
+          "description": "If document_id not found"
+        },
+        {
+          "type": "ValueError",
+          "description": "If document_id not found"
+        }
+      ]
     },
     {
       "name": "get_tax_documents",
@@ -213,14 +242,14 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier",
           "required": true
         },
         {
           "name": "tax_year",
           "type": "int",
           "default": null,
-          "description": null,
+          "description": "Tax year (e.g., 2024)",
           "required": true
         },
         {
@@ -232,7 +261,11 @@
         }
       ],
       "returns": "list[TaxDocument]",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "get_tax_forms",
@@ -250,14 +283,14 @@
           "name": "user_id",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "User identifier",
           "required": true
         },
         {
           "name": "tax_year",
           "type": "int",
           "default": null,
-          "description": null,
+          "description": "Tax year (e.g., 2024)",
           "required": true
         },
         {
@@ -269,10 +302,16 @@
         }
       ],
       "returns": "list[dict]",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     }
   ],
   "bases": [
     "TaxProvider"
-  ]
+  ],
+  "source_file": "src/fin_infra/providers/tax/mock.py",
+  "source_line": 30
 }

@@ -7,21 +7,21 @@
       "name": "client_id",
       "type": "str | None",
       "default": "None",
-      "description": null,
+      "description": "OAuth client ID (required)",
       "required": false
     },
     {
       "name": "client_secret",
       "type": "str | None",
       "default": "None",
-      "description": null,
+      "description": "OAuth client secret (required)",
       "required": false
     },
     {
       "name": "base_url",
       "type": "str",
       "default": "'https://api.taxbit.com'",
-      "description": null,
+      "description": "TaxBit API endpoint (default: production)",
       "required": false
     },
     {
@@ -49,21 +49,21 @@
           "name": "client_id",
           "type": "str | None",
           "default": "None",
-          "description": null,
+          "description": "OAuth client ID (required)",
           "required": false
         },
         {
           "name": "client_secret",
           "type": "str | None",
           "default": "None",
-          "description": null,
+          "description": "OAuth client secret (required)",
           "required": false
         },
         {
           "name": "base_url",
           "type": "str",
           "default": "'https://api.taxbit.com'",
-          "description": null,
+          "description": "TaxBit API endpoint (default: production)",
           "required": false
         },
         {
@@ -75,7 +75,16 @@
         }
       ],
       "returns": null,
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": [
+        {
+          "type": "NotImplementedError",
+          "description": "TaxBit provider not yet implemented (v2)"
+        }
+      ]
     },
     {
       "name": "calculate_crypto_gains",
@@ -119,7 +128,11 @@
         }
       ],
       "returns": "CryptoTaxReport",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "calculate_tax_liability",
@@ -177,7 +190,11 @@
         }
       ],
       "returns": "TaxLiability",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "download_document",
@@ -207,7 +224,11 @@
         }
       ],
       "returns": "bytes",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "get_tax_document",
@@ -237,7 +258,11 @@
         }
       ],
       "returns": "TaxDocument",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "get_tax_documents",
@@ -274,7 +299,11 @@
         }
       ],
       "returns": "list[TaxDocument]",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "get_tax_forms",
@@ -311,10 +340,16 @@
         }
       ],
       "returns": "list[dict]",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     }
   ],
   "bases": [
     "TaxProvider"
-  ]
+  ],
+  "source_file": "src/fin_infra/providers/tax/taxbit.py",
+  "source_line": 31
 }

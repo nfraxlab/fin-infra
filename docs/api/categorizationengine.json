@@ -89,7 +89,11 @@
         }
       ],
       "returns": null,
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "add_rule",
@@ -107,26 +111,30 @@
           "name": "pattern",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "Merchant pattern (exact or regex)",
           "required": true
         },
         {
           "name": "category",
           "type": "Category",
           "default": null,
-          "description": null,
+          "description": "Category to assign",
           "required": true
         },
         {
           "name": "is_regex",
           "type": "bool",
           "default": "False",
-          "description": null,
+          "description": "Whether pattern is regex",
           "required": false
         }
       ],
       "returns": "None",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "categorize",
@@ -144,26 +152,30 @@
           "name": "merchant_name",
           "type": "str",
           "default": null,
-          "description": null,
+          "description": "Merchant name to categorize",
           "required": true
         },
         {
           "name": "user_id",
           "type": "str | None",
           "default": "None",
-          "description": null,
+          "description": "User ID for personalized overrides",
           "required": false
         },
         {
           "name": "include_alternatives",
           "type": "bool",
           "default": "False",
-          "description": null,
+          "description": "Include top-3 alternative predictions",
           "required": false
         }
       ],
       "returns": "CategoryPrediction",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "get_stats",
@@ -179,8 +191,14 @@
         }
       ],
       "returns": "dict",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     }
   ],
-  "bases": []
+  "bases": [],
+  "source_file": "src/fin_infra/categorization/engine.py",
+  "source_line": 31
 }

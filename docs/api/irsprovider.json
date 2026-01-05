@@ -7,35 +7,35 @@
       "name": "efin",
       "type": "str | None",
       "default": "None",
-      "description": null,
+      "description": "Electronic Filing ID (required)",
       "required": false
     },
     {
       "name": "tcc",
       "type": "str | None",
       "default": "None",
-      "description": null,
+      "description": "Transmitter Control Code (required)",
       "required": false
     },
     {
       "name": "cert_path",
       "type": "str | None",
       "default": "None",
-      "description": null,
+      "description": "Path to public certificate .pem file (required)",
       "required": false
     },
     {
       "name": "key_path",
       "type": "str | None",
       "default": "None",
-      "description": null,
+      "description": "Path to private key .pem file (required)",
       "required": false
     },
     {
       "name": "base_url",
       "type": "str",
       "default": "'https://la.www4.irs.gov'",
-      "description": null,
+      "description": "IRS API endpoint (default: production)",
       "required": false
     },
     {
@@ -63,35 +63,35 @@
           "name": "efin",
           "type": "str | None",
           "default": "None",
-          "description": null,
+          "description": "Electronic Filing ID (required)",
           "required": false
         },
         {
           "name": "tcc",
           "type": "str | None",
           "default": "None",
-          "description": null,
+          "description": "Transmitter Control Code (required)",
           "required": false
         },
         {
           "name": "cert_path",
           "type": "str | None",
           "default": "None",
-          "description": null,
+          "description": "Path to public certificate .pem file (required)",
           "required": false
         },
         {
           "name": "key_path",
           "type": "str | None",
           "default": "None",
-          "description": null,
+          "description": "Path to private key .pem file (required)",
           "required": false
         },
         {
           "name": "base_url",
           "type": "str",
           "default": "'https://la.www4.irs.gov'",
-          "description": null,
+          "description": "IRS API endpoint (default: production)",
           "required": false
         },
         {
@@ -103,7 +103,16 @@
         }
       ],
       "returns": null,
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": [
+        {
+          "type": "NotImplementedError",
+          "description": "IRS provider not yet implemented (v2)"
+        }
+      ]
     },
     {
       "name": "calculate_crypto_gains",
@@ -147,7 +156,11 @@
         }
       ],
       "returns": "CryptoTaxReport",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "calculate_tax_liability",
@@ -205,7 +218,11 @@
         }
       ],
       "returns": "TaxLiability",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "download_document",
@@ -235,7 +252,11 @@
         }
       ],
       "returns": "bytes",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "get_tax_document",
@@ -265,7 +286,11 @@
         }
       ],
       "returns": "TaxDocument",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "get_tax_documents",
@@ -302,7 +327,11 @@
         }
       ],
       "returns": "list[TaxDocument]",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     },
     {
       "name": "get_tax_forms",
@@ -339,10 +368,16 @@
         }
       ],
       "returns": "list[dict]",
-      "is_async": false
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
     }
   ],
   "bases": [
     "TaxProvider"
-  ]
+  ],
+  "source_file": "src/fin_infra/providers/tax/irs.py",
+  "source_line": 32
 }
