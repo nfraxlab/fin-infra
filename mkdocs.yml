@@ -86,7 +86,6 @@ nav:
       - Observability: observability.md
       - Persistence: persistence.md
   - Reference:
-      - API Reference: reference/api.md
       - Core vs Scaffold: core-vs-scaffold.md
       - Insights: insights.md
       - Documents: documents.md
