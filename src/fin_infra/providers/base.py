@@ -32,6 +32,13 @@ from ..models import Candle, Quote
 
 
 class MarketDataProvider(ABC):
+    """Abstract base class for stock and equity market data providers.
+
+    Implement this class to integrate with market data sources like
+    Yahoo Finance, Alpha Vantage, or Polygon.io for real-time quotes
+    and historical price data.
+    """
+
     @abstractmethod
     def quote(self, symbol: str) -> Quote:
         pass
@@ -44,6 +51,12 @@ class MarketDataProvider(ABC):
 
 
 class CryptoDataProvider(ABC):
+    """Abstract base class for cryptocurrency market data providers.
+
+    Implement this class to integrate with crypto exchanges like
+    Binance, Coinbase, or Kraken for ticker data and OHLCV candles.
+    """
+
     @abstractmethod
     def ticker(self, symbol_pair: str) -> Any:
         pass
@@ -90,6 +103,13 @@ class BankingProvider(ABC):
 
 
 class BrokerageProvider(ABC):
+    """Abstract base class for brokerage trading integrations.
+
+    Implement this class to integrate with trading platforms like
+    Alpaca, Interactive Brokers, or TD Ameritrade for order execution,
+    position management, and portfolio tracking.
+    """
+
     @abstractmethod
     def submit_order(
         self,
@@ -185,6 +205,13 @@ class IdentityProvider(ABC):
 
 
 class CreditProvider(ABC):
+    """Abstract base class for credit data providers.
+
+    Implement this class to integrate with credit bureaus like
+    Experian, Equifax, or TransUnion for credit score retrieval
+    and full credit report access.
+    """
+
     @abstractmethod
     def get_credit_score(self, user_id: str, **kwargs: Any) -> Any:
         pass
