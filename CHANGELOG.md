@@ -1,6 +1,27 @@
 # CHANGELOG
 
 
+## v0.5.1 (2026-01-05)
+
+### Bug Fixes
+
+- Use griffe labels for async method detection
+  ([#41](https://github.com/nfraxlab/fin-infra/pull/41),
+  [`aeb5602`](https://github.com/nfraxlab/fin-infra/commit/aeb5602dc5194a06b74a19c3838afb938d6c73df))
+
+### Documentation
+
+- Add docstrings to classes missing API documentation
+  ([#38](https://github.com/nfraxlab/fin-infra/pull/38),
+  [`636b71e`](https://github.com/nfraxlab/fin-infra/commit/636b71e8c8a9a06aa084379ccaffbcef4559f95f))
+
+- Enhance API extraction with auto-discovery ([#39](https://github.com/nfraxlab/fin-infra/pull/39),
+  [`ac321cb`](https://github.com/nfraxlab/fin-infra/commit/ac321cb404e08be4b663ef7292ed099ca1e5d6af))
+
+- Remove stale dataclass JSON files ([#40](https://github.com/nfraxlab/fin-infra/pull/40),
+  [`db2f098`](https://github.com/nfraxlab/fin-infra/commit/db2f0984642c5872c90ce9162ea6186616236255))
+
+
 ## v0.5.0 (2026-01-05)
 
 ### Features
