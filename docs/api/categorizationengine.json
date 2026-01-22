@@ -171,7 +171,7 @@
         }
       ],
       "returns": "CategoryPrediction",
-      "is_async": false,
+      "is_async": true,
       "is_classmethod": false,
       "is_staticmethod": false,
       "is_property": false,

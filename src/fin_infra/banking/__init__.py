@@ -89,6 +89,15 @@ class CreateLinkTokenResponse(BaseModel):
     link_token: str
 
 
+class CreateUpdateLinkTokenRequest(BaseModel):
+    """Request model for creating a link token in update mode (re-authentication)."""
+
+    user_id: str
+    access_token: str = Field(
+        ..., description="Existing access token for the item requiring re-auth"
+    )
+
+
 class ExchangeTokenRequest(BaseModel):
     """Request model for exchanging public token."""
 
@@ -334,6 +343,23 @@ def add_banking(
         link_token = banking.create_link_token(user_id=request.user_id)
         return CreateLinkTokenResponse(link_token=link_token)
 
+    @router.post("/link/update", response_model=CreateLinkTokenResponse)
+    async def create_update_link_token(request: CreateUpdateLinkTokenRequest):
+        """Create link token in update mode for re-authentication.
+
+        Use this endpoint when a user's bank connection has expired
+        (ITEM_LOGIN_REQUIRED error). The returned link token will open
+        Plaid Link in update mode, allowing the user to re-authenticate
+        without creating a new connection.
+
+        After successful re-authentication, the existing access_token
+        remains valid and no token exchange is needed.
+        """
+        link_token = banking.create_link_token(
+            user_id=request.user_id, access_token=request.access_token
+        )
+        return CreateLinkTokenResponse(link_token=link_token)
+
     @router.post("/exchange", response_model=ExchangeTokenResponse)
     async def exchange_token(request: ExchangeTokenRequest):
         """Exchange public token for access token (Plaid flow)."""
@@ -343,8 +369,29 @@ def add_banking(
     @router.get("/accounts")
     async def get_accounts(access_token: str = Depends(get_access_token)):
         """List accounts for access token."""
-        accounts = banking.accounts(access_token=access_token)
-        return {"accounts": accounts}
+        try:
+            accounts = banking.accounts(access_token=access_token)
+            return {"accounts": accounts}
+        except Exception as e:
+            error_str = str(e)
+            # Check for Plaid-specific errors that require user action
+            if "ITEM_LOGIN_REQUIRED" in error_str:
+                raise HTTPException(
+                    status_code=401,
+                    detail="ITEM_LOGIN_REQUIRED: Your bank connection has expired. Please re-authenticate your bank account.",
+                )
+            elif "INVALID_ACCESS_TOKEN" in error_str:
+                raise HTTPException(
+                    status_code=401,
+                    detail="INVALID_ACCESS_TOKEN: The access token is invalid or expired. Please reconnect your bank account.",
+                )
+            elif "ITEM_NOT_FOUND" in error_str:
+                raise HTTPException(
+                    status_code=404,
+                    detail="ITEM_NOT_FOUND: This bank connection no longer exists. Please reconnect your bank account.",
+                )
+            # Re-raise other errors
+            raise
 
     @router.get("/transactions")
     async def get_transactions(

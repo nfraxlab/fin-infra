@@ -207,7 +207,7 @@
         }
       ],
       "returns": "BenchmarkComparison",
-      "is_async": false,
+      "is_async": true,
       "is_classmethod": false,
       "is_staticmethod": false,
       "is_property": false,
@@ -255,7 +255,7 @@
         }
       ],
       "returns": "CashFlowAnalysis",
-      "is_async": false,
+      "is_async": true,
       "is_classmethod": false,
       "is_staticmethod": false,
       "is_property": false,
@@ -337,7 +337,7 @@
         }
       ],
       "returns": "GrowthProjection",
-      "is_async": false,
+      "is_async": true,
       "is_classmethod": false,
       "is_staticmethod": false,
       "is_property": false,
@@ -371,7 +371,7 @@
         }
       ],
       "returns": "PortfolioMetrics",
-      "is_async": false,
+      "is_async": true,
       "is_classmethod": false,
       "is_staticmethod": false,
       "is_property": false,
@@ -412,7 +412,7 @@
         }
       ],
       "returns": "SavingsRateData",
-      "is_async": false,
+      "is_async": true,
       "is_classmethod": false,
       "is_staticmethod": false,
       "is_property": false,
@@ -453,7 +453,7 @@
         }
       ],
       "returns": "PersonalizedSpendingAdvice",
-      "is_async": false,
+      "is_async": true,
       "is_classmethod": false,
       "is_staticmethod": false,
       "is_property": false,
@@ -494,7 +494,7 @@
         }
       ],
       "returns": "SpendingInsight",
-      "is_async": false,
+      "is_async": true,
       "is_classmethod": false,
       "is_staticmethod": false,
       "is_property": false,

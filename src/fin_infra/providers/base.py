@@ -70,8 +70,17 @@ class BankingProvider(ABC):
     """Abstract provider for bank account aggregation (Teller, Plaid, MX)."""
 
     @abstractmethod
-    def create_link_token(self, user_id: str) -> str:
-        """Create a link/connect token for user to authenticate with their bank."""
+    def create_link_token(self, user_id: str, access_token: str | None = None) -> str:
+        """Create a link/connect token for user to authenticate with their bank.
+
+        Args:
+            user_id: Client-defined user ID for the Link session
+            access_token: If provided, creates Link in update mode for re-authentication
+                         (used when ITEM_LOGIN_REQUIRED error occurs)
+
+        Returns:
+            Link token string for initializing the bank connection UI
+        """
         pass
 
     @abstractmethod
