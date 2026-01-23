@@ -133,22 +133,28 @@ async def compare_to_benchmark(
     accounts: list[str] | None = None,
     brokerage_provider=None,
     market_provider=None,
+    portfolio_history: list[tuple] | None = None,
 ) -> BenchmarkComparison:
     """Compare portfolio performance to benchmark index.
 
     Calculates relative performance metrics including alpha (excess return),
     beta (volatility relative to benchmark), and Sharpe ratio (risk-adjusted return).
 
+    Now uses REAL market data from fin-infra's market data providers (easy_market).
+
     Args:
         user_id: User identifier
         benchmark: Benchmark ticker symbol (default: SPY for S&P 500)
-        period: Time period for comparison (1y, 3y, 5y, ytd, max)
+        period: Time period for comparison (1m, 3m, 6m, 1y, 2y, 5y, ytd, all)
         accounts: Optional list of account IDs to include
         brokerage_provider: Optional brokerage provider instance
         market_provider: Optional market data provider instance
+        portfolio_history: Optional list of (date, value) tuples for portfolio history.
+                          If not provided, will attempt to fetch from brokerage_provider
+                          or fall back to mock data.
 
     Returns:
-        BenchmarkComparison with alpha, beta, and performance metrics
+        BenchmarkComparison with alpha, beta, Sharpe ratio, and performance metrics
 
     Supported Benchmarks:
         - SPY: S&P 500
@@ -156,6 +162,7 @@ async def compare_to_benchmark(
         - VTI: Total US Stock Market
         - AGG: Total Bond Market
         - VT: Total World Stock
+        - BND: Total Bond Market (Vanguard)
         - Custom: Any valid ticker symbol
 
     Performance Metrics:
@@ -164,53 +171,136 @@ async def compare_to_benchmark(
         - Sharpe Ratio: (Return - Risk-free rate) / Standard deviation
 
     Examples:
-        >>> # Compare to S&P 500 over 1 year
+        >>> # Compare to S&P 500 over 1 year (real benchmark data!)
         >>> comp = await compare_to_benchmark("user123", benchmark="SPY", period="1y")
         >>> print(f"Alpha: {comp.alpha:.2f}%")
+        >>> print(f"Benchmark (SPY) return: {comp.benchmark_return_percent:.2f}%")
 
-        >>> # Compare to Nasdaq 100 YTD
-        >>> comp = await compare_to_benchmark("user123", benchmark="QQQ", period="ytd")
+        >>> # Compare with custom portfolio history
+        >>> from datetime import date
+        >>> history = [(date(2024, 1, 1), 100000), (date(2024, 12, 31), 115000)]
+        >>> comp = await compare_to_benchmark(
+        ...     "user123",
+        ...     benchmark="QQQ",
+        ...     period="1y",
+        ...     portfolio_history=history,
+        ... )
 
-        >>> # Custom benchmark with specific accounts
+        >>> # Using a market provider (caching, etc.)
+        >>> from fin_infra.markets import easy_market
+        >>> market = easy_market()
         >>> comp = await compare_to_benchmark(
         ...     "user123",
         ...     benchmark="VTI",
-        ...     period="3y",
-        ...     accounts=["taxable_brokerage"]
+        ...     market_provider=market,
         ... )
     """
-    # Parse period to days
+    import logging
+
+    from .benchmark import get_benchmark_history
+
+    logger = logging.getLogger(__name__)
+
+    # Parse period to days for portfolio return calculation
     period_days = _parse_benchmark_period(period)
 
     # Get portfolio return for period
-    # TODO: Integrate with real brokerage provider
-    portfolio_return_dollars, portfolio_return_percent = _calculate_portfolio_return(
-        user_id, period_days, accounts
-    )
+    if portfolio_history:
+        # Use provided portfolio history
+        first_value = portfolio_history[0][1]
+        last_value = portfolio_history[-1][1]
+        portfolio_return_dollars = last_value - first_value
+        portfolio_return_percent = (
+            (portfolio_return_dollars / first_value * 100) if first_value > 0 else 0.0
+        )
+    else:
+        # Fall back to mock calculation (for now - integrate with brokerage_provider in future)
+        portfolio_return_dollars, portfolio_return_percent = _calculate_portfolio_return(
+            user_id, period_days, accounts
+        )
 
-    # Get benchmark return for period
-    # TODO: Integrate with real market data provider
-    benchmark_return_dollars, benchmark_return_percent = _get_benchmark_return(
-        benchmark, period_days
-    )
+    # Get REAL benchmark return from market data provider
+    try:
+        logger.info(f"[Portfolio] Fetching real benchmark data for {benchmark} period={period}")
+        benchmark_history = await get_benchmark_history(
+            benchmark,
+            period=period,
+            market_provider=market_provider,
+        )
+        benchmark_return_dollars = benchmark_history.end_price - benchmark_history.start_price
+        benchmark_return_percent = benchmark_history.total_return_percent
+        start_date = benchmark_history.start_date
+        end_date = benchmark_history.end_date
+
+        logger.info(
+            f"[Portfolio] Real benchmark data: {benchmark}={benchmark_return_percent:.2f}% "
+            f"({start_date} to {end_date})"
+        )
+    except Exception as e:
+        # Fall back to mock data on error
+        logger.warning(f"[Portfolio] Failed to fetch real benchmark data, using mock: {e}")
+        benchmark_return_dollars, benchmark_return_percent = _get_benchmark_return(
+            benchmark, period_days
+        )
+        start_date = None
+        end_date = None
 
     # Calculate alpha (excess return)
     alpha = portfolio_return_percent - benchmark_return_percent
 
     # Calculate beta (volatility relative to benchmark)
-    # TODO: Implement real beta calculation with historical returns
     beta = _calculate_beta(user_id, benchmark, period_days)
+
+    # Calculate Sharpe ratio (simplified)
+    sharpe_ratio = _calculate_sharpe_ratio(portfolio_return_percent, period_days)
 
     return BenchmarkComparison(
         portfolio_return=portfolio_return_dollars,
-        portfolio_return_percent=portfolio_return_percent,
+        portfolio_return_percent=round(portfolio_return_percent, 2),
         benchmark_return=benchmark_return_dollars,
-        benchmark_return_percent=benchmark_return_percent,
+        benchmark_return_percent=round(benchmark_return_percent, 2),
         benchmark_symbol=benchmark,
-        alpha=alpha,
-        beta=beta,
+        alpha=round(alpha, 2),
+        beta=round(beta, 2) if beta is not None else None,
+        sharpe_ratio=round(sharpe_ratio, 2) if sharpe_ratio is not None else None,
         period=period,
+        start_date=start_date,
+        end_date=end_date,
     )
+
+
+def _calculate_sharpe_ratio(
+    return_percent: float,
+    period_days: int,
+    risk_free_rate: float = 0.03,
+) -> float | None:
+    """Calculate simplified Sharpe ratio.
+
+    Args:
+        return_percent: Portfolio return percentage for period
+        period_days: Number of days in period
+        risk_free_rate: Annual risk-free rate (default: 3%)
+
+    Returns:
+        Sharpe ratio or None if cannot calculate
+    """
+    if period_days < 30:
+        return None
+
+    # Annualize return
+    if period_days < 365:
+        annualized_return = return_percent * (365 / period_days)
+    else:
+        years = period_days / 365
+        annualized_return = ((1 + return_percent / 100) ** (1 / years) - 1) * 100
+
+    # Excess return over risk-free rate
+    excess_return = annualized_return - (risk_free_rate * 100)
+
+    # Estimate volatility (15% for diversified portfolio - simplified)
+    estimated_volatility = 15.0
+
+    return excess_return / estimated_volatility if estimated_volatility > 0 else None
 
 
 # ============================================================================

@@ -184,7 +184,10 @@ class BenchmarkComparison(BaseModel):
     benchmark_symbol: str = Field(..., description="Benchmark ticker (e.g., SPY)")
     alpha: float = Field(..., description="Portfolio alpha (excess return)")
     beta: float | None = Field(None, description="Portfolio beta (volatility vs benchmark)")
+    sharpe_ratio: float | None = Field(None, description="Risk-adjusted return")
     period: str = Field(..., description="Comparison period (1y, 3y, 5y, etc.)")
+    start_date: Any | None = Field(None, description="Comparison start date")
+    end_date: Any | None = Field(None, description="Comparison end date")
 
 
 class Scenario(BaseModel):
