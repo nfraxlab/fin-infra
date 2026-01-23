@@ -128,7 +128,7 @@
         }
       ],
       "returns": "CryptoTaxReport",
-      "is_async": false,
+      "is_async": true,
       "is_classmethod": false,
       "is_staticmethod": false,
       "is_property": false,
@@ -190,7 +190,7 @@
         }
       ],
       "returns": "TaxLiability",
-      "is_async": false,
+      "is_async": true,
       "is_classmethod": false,
       "is_staticmethod": false,
       "is_property": false,
@@ -224,7 +224,7 @@
         }
       ],
       "returns": "bytes",
-      "is_async": false,
+      "is_async": true,
       "is_classmethod": false,
       "is_staticmethod": false,
       "is_property": false,
@@ -258,7 +258,7 @@
         }
       ],
       "returns": "TaxDocument",
-      "is_async": false,
+      "is_async": true,
       "is_classmethod": false,
       "is_staticmethod": false,
       "is_property": false,
@@ -299,7 +299,7 @@
         }
       ],
       "returns": "list[TaxDocument]",
-      "is_async": false,
+      "is_async": true,
       "is_classmethod": false,
       "is_staticmethod": false,
       "is_property": false,
@@ -340,7 +340,7 @@
         }
       ],
       "returns": "list[dict]",
-      "is_async": false,
+      "is_async": true,
       "is_classmethod": false,
       "is_staticmethod": false,
       "is_property": false,

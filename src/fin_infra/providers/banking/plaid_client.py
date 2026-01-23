@@ -81,21 +81,41 @@ class PlaidClient(BankingProvider):
         api_client = plaid.ApiClient(configuration)
         self.client = plaid_api.PlaidApi(api_client)
 
-    def create_link_token(self, user_id: str) -> str:
-        request = LinkTokenCreateRequest(
-            user=LinkTokenCreateRequestUser(client_user_id=user_id),
-            client_name="fin-infra",
-            products=[
+    def create_link_token(self, user_id: str, access_token: str | None = None) -> str:
+        """Create a Plaid Link token for new connections or re-authentication.
+
+        Args:
+            user_id: Client-defined user ID for the Link session
+            access_token: If provided, creates Link in update mode for re-authentication
+                         (used when ITEM_LOGIN_REQUIRED error occurs)
+
+        Returns:
+            Link token string for Plaid Link initialization
+        """
+        # Build base request parameters
+        request_params = {
+            "user": LinkTokenCreateRequestUser(client_user_id=user_id),
+            "client_name": "fin-infra",
+            "country_codes": [CountryCode("US")],
+            "language": "en",
+        }
+
+        if access_token:
+            # Update mode: re-authenticate existing connection
+            # Don't include products - Plaid uses existing item's products
+            request_params["access_token"] = access_token
+        else:
+            # New connection: specify products to enable
+            request_params["products"] = [
                 Products("auth"),  # Account/routing numbers for ACH
                 Products("transactions"),  # Transaction history
                 Products("liabilities"),  # Credit cards, loans, student loans
                 Products("investments"),  # Brokerage, retirement accounts
                 Products("assets"),  # Asset reports for lending/verification
                 Products("identity"),  # Account holder info (name, email, phone)
-            ],
-            country_codes=[CountryCode("US")],
-            language="en",
-        )
+            ]
+
+        request = LinkTokenCreateRequest(**request_params)
         response = self.client.link_token_create(request)
         return cast("str", response["link_token"])
 

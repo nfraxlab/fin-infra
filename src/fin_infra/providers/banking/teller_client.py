@@ -121,7 +121,7 @@ class TellerClient(BankingProvider):
         response.raise_for_status()
         return response.json()
 
-    def create_link_token(self, user_id: str) -> str:
+    def create_link_token(self, user_id: str, access_token: str | None = None) -> str:
         """Create link token for user authentication.
 
         Note: Teller uses a simpler auth flow than Plaid. In production,
@@ -130,6 +130,9 @@ class TellerClient(BankingProvider):
 
         Args:
             user_id: Your application's user identifier
+            access_token: If provided, creates Link in update mode for re-authentication
+                         (used when connection needs to be repaired). Teller handles
+                         this differently than Plaid - see Teller Connect docs.
 
         Returns:
             Link token or enrollment ID for user to authenticate
@@ -138,13 +141,18 @@ class TellerClient(BankingProvider):
             httpx.HTTPStatusError: On HTTP errors
         """
         # Teller's enrollment endpoint for creating application links
+        payload: dict[str, Any] = {
+            "user_id": user_id,
+            "products": ["accounts", "transactions", "balances", "identity"],
+        }
+        # If access_token provided, add it for update mode (re-authentication)
+        if access_token:
+            payload["access_token"] = access_token
+
         response = self._request(
             "POST",
             "/enrollments",
-            json={
-                "user_id": user_id,
-                "products": ["accounts", "transactions", "balances", "identity"],
-            },
+            json=payload,
         )
         return cast("str", response.get("enrollment_id", ""))
 
