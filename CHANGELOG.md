@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v0.6.0 (2026-01-23)
+
+### Features
+
+- **banking**: Add update mode link token for re-authentication
+  ([#42](https://github.com/nfraxlab/fin-infra/pull/42),
+  [`7559757`](https://github.com/nfraxlab/fin-infra/commit/755975735e94684c681a5217a91a3d001caf21cf))
+
+
 ## v0.5.1 (2026-01-05)
 
 ### Bug Fixes
