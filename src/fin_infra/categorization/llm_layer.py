@@ -108,7 +108,7 @@ class LLMCategorizer:
 
     Args:
         provider: LLM provider ("google_genai", "openai", "anthropic")
-        model_name: Model name (e.g., "gemini-2.5-flash", "gpt-4.1-mini")
+        model_name: Model name (e.g., "gemini-2.5-flash", "gpt-5-mini")
         max_cost_per_day: Daily budget cap in USD (default $0.10)
         max_cost_per_month: Monthly budget cap in USD (default $2.00)
         cache_ttl: Cache TTL in seconds (default 24 hours)

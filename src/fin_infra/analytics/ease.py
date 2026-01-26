@@ -252,17 +252,22 @@ class AnalyticsEngine:
         benchmark: str | None = None,
         period: str = "1y",
         accounts: list[str] | None = None,
+        portfolio_history: list[tuple] | None = None,
     ) -> BenchmarkComparison:
         """Compare portfolio to benchmark index.
+
+        Uses REAL market data from fin-infra's market data providers.
 
         Args:
             user_id: User identifier
             benchmark: Benchmark symbol (default: self.default_benchmark)
-            period: Comparison period ("1y", "3y", "5y", "ytd", "max")
+            period: Comparison period ("1m", "3m", "6m", "1y", "2y", "5y", "ytd", "all")
             accounts: Optional list of account IDs to include
+            portfolio_history: Optional list of (date, value) tuples for portfolio history.
+                              If not provided, will use brokerage_provider or mock data.
 
         Returns:
-            BenchmarkComparison with alpha, beta, returns
+            BenchmarkComparison with alpha, beta, Sharpe ratio, and returns
         """
         if benchmark is None:
             benchmark = self.default_benchmark
@@ -273,6 +278,32 @@ class AnalyticsEngine:
             period=period,
             accounts=accounts,
             brokerage_provider=self.brokerage_provider,
+            market_provider=self.market_provider,
+            portfolio_history=portfolio_history,
+        )
+
+    async def benchmark_history(
+        self,
+        symbol: str,
+        *,
+        period: str = "1y",
+    ):
+        """Get historical benchmark data for charting.
+
+        Returns normalized time series (starting at 100) for easy comparison charts.
+
+        Args:
+            symbol: Benchmark ticker symbol (SPY, QQQ, VTI, BND, etc.)
+            period: Time period ("1m", "3m", "6m", "1y", "2y", "5y", "ytd", "all")
+
+        Returns:
+            BenchmarkHistory with normalized time series and summary metrics
+        """
+        from .benchmark import get_benchmark_history
+
+        return await get_benchmark_history(
+            symbol,
+            period=period,
             market_provider=self.market_provider,
         )
 

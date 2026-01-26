@@ -48,6 +48,13 @@ cashews = { version = ">=7.0", extras = ["redis"] }
 loguru = ">=0.7.0"
 numpy = ">=1.24.0"
 numpy-financial = ">=1.0.0"
+# Security fixes for CVEs
+protobuf = ">=6.33.3"  # CVE-2026-0994
+authlib = ">=1.6.6"  # CVE-2025-68158
+filelock = ">=3.20.3"  # CVE-2026-22701
+urllib3 = ">=2.6.3"  # CVE-2026-21441
+virtualenv = ">=20.36.1"  # CVE-2026-22702
+werkzeug = ">=3.1.5"  # CVE-2026-21860
 # svc-infra = { path = "../svc-infra", develop = true }  # Local dev only - uncomment for local development
 
 # ai-infra for LLM-powered features (always included)

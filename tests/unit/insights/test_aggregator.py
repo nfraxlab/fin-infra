@@ -286,14 +286,15 @@ def test_recurring_patterns_high_cost(recurring_patterns_high_cost):
 
 
 def test_portfolio_tracked():
-    """Test insight for tracked portfolio."""
+    """Test that portfolio value alone doesn't generate redundant insights.
+
+    Portfolio value is shown in KPI cards, so we don't generate a
+    separate "tracked" insight. Only actionable insights are generated.
+    """
     feed = aggregate_insights(user_id="user_123", portfolio_value=Decimal("50000"))
 
-    assert len(feed.insights) == 1
-    insight = feed.insights[0]
-    assert insight.category == InsightCategory.PORTFOLIO
-    assert insight.priority == InsightPriority.LOW
-    assert "Tracked" in insight.title
+    # No insight generated - portfolio value is shown in KPI cards
+    assert len(feed.insights) == 0
 
 
 def test_tax_opportunities():

@@ -167,8 +167,8 @@
     },
     {
       "name": "benchmark_comparison",
-      "signature": "(user_id: str, benchmark: str | None = None, period: str = '1y', accounts: list[str] | None = None) -> BenchmarkComparison",
-      "docstring": "Compare portfolio to benchmark index.\n\nArgs:\n    user_id: User identifier\n    benchmark: Benchmark symbol (default: self.default_benchmark)\n    period: Comparison period (\"1y\", \"3y\", \"5y\", \"ytd\", \"max\")\n    accounts: Optional list of account IDs to include\n\nReturns:\n    BenchmarkComparison with alpha, beta, returns",
+      "signature": "(user_id: str, benchmark: str | None = None, period: str = '1y', accounts: list[str] | None = None, portfolio_history: list[tuple] | None = None) -> BenchmarkComparison",
+      "docstring": "Compare portfolio to benchmark index.\n\nUses REAL market data from fin-infra's market data providers.\n\nArgs:\n    user_id: User identifier\n    benchmark: Benchmark symbol (default: self.default_benchmark)\n    period: Comparison period (\"1m\", \"3m\", \"6m\", \"1y\", \"2y\", \"5y\", \"ytd\", \"all\")\n    accounts: Optional list of account IDs to include\n    portfolio_history: Optional list of (date, value) tuples for portfolio history.\n                      If not provided, will use brokerage_provider or mock data.\n\nReturns:\n    BenchmarkComparison with alpha, beta, Sharpe ratio, and returns",
       "parameters": [
         {
           "name": "self",
@@ -195,7 +195,7 @@
           "name": "period",
           "type": "str",
           "default": "'1y'",
-          "description": "Comparison period (\"1y\", \"3y\", \"5y\", \"ytd\", \"max\")",
+          "description": "Comparison period (\"1m\", \"3m\", \"6m\", \"1y\", \"2y\", \"5y\", \"ytd\", \"all\")",
           "required": false
         },
         {
@@ -204,9 +204,50 @@
           "default": "None",
           "description": "Optional list of account IDs to include",
           "required": false
+        },
+        {
+          "name": "portfolio_history",
+          "type": "list[tuple] | None",
+          "default": "None",
+          "description": "Optional list of (date, value) tuples for portfolio history. If not provided, will use brokerage_provider or mock data.",
+          "required": false
         }
       ],
       "returns": "BenchmarkComparison",
+      "is_async": true,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
+    },
+    {
+      "name": "benchmark_history",
+      "signature": "(symbol: str, period: str = '1y')",
+      "docstring": "Get historical benchmark data for charting.\n\nReturns normalized time series (starting at 100) for easy comparison charts.\n\nArgs:\n    symbol: Benchmark ticker symbol (SPY, QQQ, VTI, BND, etc.)\n    period: Time period (\"1m\", \"3m\", \"6m\", \"1y\", \"2y\", \"5y\", \"ytd\", \"all\")\n\nReturns:\n    BenchmarkHistory with normalized time series and summary metrics",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "symbol",
+          "type": "str",
+          "default": null,
+          "description": "Benchmark ticker symbol (SPY, QQQ, VTI, BND, etc.)",
+          "required": true
+        },
+        {
+          "name": "period",
+          "type": "str",
+          "default": "'1y'",
+          "description": "Time period (\"1m\", \"3m\", \"6m\", \"1y\", \"2y\", \"5y\", \"ytd\", \"all\")",
+          "required": false
+        }
+      ],
+      "returns": null,
       "is_async": true,
       "is_classmethod": false,
       "is_staticmethod": false,

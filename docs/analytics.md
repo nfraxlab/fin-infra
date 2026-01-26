@@ -397,6 +397,101 @@ curl "http://localhost:8000/analytics/performance?user_id=user_123&benchmark=SPY
 curl "http://localhost:8000/analytics/performance?user_id=user_123&benchmark=QQQ&period=6mo"
 ```
 
+#### Programmatic Benchmark Functions
+
+For direct programmatic access, fin-infra provides benchmark functions that fetch real market data:
+
+**`get_benchmark_history()`** - Fetch historical benchmark data for charting
+
+```python
+from fin_infra.analytics import get_benchmark_history
+
+# Get SPY data for the past year
+history = await get_benchmark_history(
+    symbol="SPY",
+    period="1y",  # 1m, 3m, 6m, 1y, 2y, 5y, ytd, all
+)
+
+print(f"Start: {history.start_date}, End: {history.end_date}")
+print(f"Return: {history.total_return_percent:.2f}%")
+
+# Data points are normalized to 100 for easy charting
+for point in history.data_points:
+    print(f"{point.date}: {point.normalized:.2f} ({point.return_pct:+.2f}%)")
+```
+
+Returns `BenchmarkHistory`:
+- `symbol`: Ticker symbol
+- `period`: Requested period
+- `start_date` / `end_date`: Date range
+- `data_points`: List of `BenchmarkDataPoint` (date, close, normalized, return_pct)
+- `total_return_percent`: Overall return for the period
+- `annualized_return_percent`: Annualized return (if period > 1 year)
+
+**`compare_portfolio_to_benchmark()`** - Compare portfolio performance against a benchmark
+
+```python
+from fin_infra.analytics import compare_portfolio_to_benchmark
+
+# Your portfolio value history (list of dicts with date and value)
+portfolio_history = [
+    {"date": "2024-01-01", "value": 100000.0},
+    {"date": "2024-06-01", "value": 108000.0},
+    {"date": "2024-12-01", "value": 115000.0},
+]
+
+comparison = await compare_portfolio_to_benchmark(
+    portfolio_history=portfolio_history,
+    benchmark="SPY",
+    period="1y",
+)
+
+print(f"Portfolio: {comparison.portfolio_return_percent:+.2f}%")
+print(f"Benchmark: {comparison.benchmark_return_percent:+.2f}%")
+print(f"Alpha: {comparison.alpha:+.2f}%")
+print(f"Beta: {comparison.beta:.2f}")
+print(f"Sharpe: {comparison.sharpe_ratio:.2f}")
+```
+
+Returns `PortfolioVsBenchmark`:
+- `portfolio_return_percent`: Portfolio total return
+- `benchmark_return_percent`: Benchmark total return
+- `alpha`: Excess return vs benchmark
+- `beta`: Portfolio volatility relative to benchmark
+- `sharpe_ratio`: Risk-adjusted return
+- `portfolio_series` / `benchmark_series`: Normalized time series for charting
+
+**Common Benchmarks Reference**
+
+```python
+from fin_infra.analytics import COMMON_BENCHMARKS, list_common_benchmarks
+
+# Get list of commonly used benchmarks
+benchmarks = list_common_benchmarks()
+# Returns: [("SPY", "S&P 500 (SPDR)"), ("QQQ", "Nasdaq 100 (Invesco)"), ...]
+
+# Check if a symbol is a common benchmark
+from fin_infra.analytics import is_common_benchmark
+is_common_benchmark("SPY")  # True
+is_common_benchmark("AAPL")  # False (but still usable as a benchmark)
+```
+
+Available common benchmarks:
+| Symbol | Description |
+|--------|-------------|
+| SPY | S&P 500 (SPDR) |
+| QQQ | Nasdaq 100 (Invesco) |
+| VTI | Total US Stock Market (Vanguard) |
+| BND | Total Bond Market (Vanguard) |
+| VT | Total World Stock (Vanguard) |
+| AGG | US Aggregate Bond (iShares) |
+| IWM | Russell 2000 (iShares) |
+| EFA | EAFE International (iShares) |
+| VNQ | Real Estate (Vanguard) |
+| GLD | Gold (SPDR) |
+
+Note: Any valid ticker symbol can be used as a benchmark - the common benchmarks list is for reference only.
+
 ---
 
 ### 7. Net Worth Forecast

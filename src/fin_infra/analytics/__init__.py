@@ -57,11 +57,35 @@ from __future__ import annotations
 
 from .add import add_analytics
 
+# Import benchmark functions for direct access
+from .benchmark import (
+    COMMON_BENCHMARKS,
+    BenchmarkDataPoint,
+    BenchmarkHistory,
+    PortfolioVsBenchmark,
+    compare_portfolio_to_benchmark,
+    get_benchmark_history,
+    is_common_benchmark,
+    list_common_benchmarks,
+)
+
 # Import actual implementations
 from .ease import AnalyticsEngine, easy_analytics
 
 __all__ = [
+    # Easy setup
     "easy_analytics",
     "add_analytics",
     "AnalyticsEngine",
+    # Benchmark functions (real market data - accepts ANY ticker)
+    "get_benchmark_history",
+    "compare_portfolio_to_benchmark",
+    # Reference list of common benchmarks (not a restriction)
+    "COMMON_BENCHMARKS",
+    "list_common_benchmarks",
+    "is_common_benchmark",
+    # Benchmark models
+    "BenchmarkHistory",
+    "BenchmarkDataPoint",
+    "PortfolioVsBenchmark",
 ]
