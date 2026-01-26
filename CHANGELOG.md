@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v0.7.0 (2026-01-26)
+
+### Features
+
+- Add benchmark comparison with real market data
+  ([#43](https://github.com/nfraxlab/fin-infra/pull/43),
+  [`67f15fa`](https://github.com/nfraxlab/fin-infra/commit/67f15fa4947abb974f98824ed3e6a658be574397))
+
+
 ## v0.6.0 (2026-01-23)
 
 ### Features
