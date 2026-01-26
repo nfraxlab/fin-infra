@@ -261,8 +261,8 @@ class RebalancingInsightsGenerator:
                 provider=self.provider,
                 model_name=self.model_name,
             )
-            if result:
-                return result
+            if result is not None:
+                return result  # type: ignore[no-any-return]
             # Fallback if cached call failed
             logger.warning("[REBALANCE_CACHE] Cached call returned None, trying direct")
 
@@ -290,10 +290,10 @@ class RebalancingInsightsGenerator:
             holdings.append(holding)
 
         # Calculate percentages
-        total = sum(h["market_value"] for h in holdings)
+        total: float = sum(float(h["market_value"]) for h in holdings)
         if total > 0:
             for h in holdings:
-                h["percentage"] = round(h["market_value"] / total * 100, 2)
+                h["percentage"] = round(float(h["market_value"]) / total * 100, 2)
 
         # Sort by value descending
         holdings.sort(key=lambda x: x["market_value"], reverse=True)

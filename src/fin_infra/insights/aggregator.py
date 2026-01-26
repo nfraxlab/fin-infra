@@ -308,7 +308,7 @@ def _generate_portfolio_insights(
 
     Focus on actionable insights, not redundant value statements.
     """
-    insights = []
+    insights: list[Insight] = []
 
     # Skip the basic "portfolio is valued at X" - that's shown in KPI cards
     # Only generate insights when there's something actionable
