@@ -110,12 +110,17 @@ def generate_rebalancing_plan(
         )
 
     # Map symbols to asset classes (simplified mapping)
-    asset_class_map = _get_asset_class_mapping()
+    symbol_class_map = _get_asset_class_mapping()
 
-    # Calculate current allocation
+    # Calculate current allocation using position's asset_class or fallback to symbol map
     current_allocation: dict[str, Decimal] = {}
     for position in positions:
-        asset_class = asset_class_map.get(position.symbol, "other")
+        # Use position's asset_class field if available, otherwise fall back to symbol map
+        raw_asset_class = getattr(position, "asset_class", None) or symbol_class_map.get(
+            position.symbol, "other"
+        )
+        # Normalize asset class to match target allocation keys
+        asset_class = _normalize_asset_class(raw_asset_class)
         position_value = Decimal(str(position.market_value))
         current_allocation[asset_class] = (
             current_allocation.get(asset_class, Decimal("0")) + position_value
@@ -143,7 +148,11 @@ def generate_rebalancing_plan(
     )
 
     for position in sorted_positions:
-        asset_class = asset_class_map.get(position.symbol, "other")
+        # Use position's asset_class field if available, otherwise fall back to symbol map
+        raw_asset_class = getattr(position, "asset_class", None) or symbol_class_map.get(
+            position.symbol, "other"
+        )
+        asset_class = _normalize_asset_class(raw_asset_class)
         if asset_class not in target_values:
             continue
 
@@ -242,6 +251,43 @@ def generate_rebalancing_plan(
         recommendations=recommendations,
         warnings=warnings,
     )
+
+
+def _normalize_asset_class(raw_asset_class: str | None) -> str:
+    """
+    Normalize asset class strings to standard rebalancing categories.
+
+    Maps detailed asset classes (e.g., 'us_equity', 'fixed_income') to
+    simplified categories that match target allocation keys ('stocks', 'bonds').
+    """
+    if not raw_asset_class:
+        return "other"
+
+    raw = raw_asset_class.lower()
+
+    # Map to stocks
+    if raw in ["stocks", "us_equity", "equity", "stock", "international"]:
+        return "stocks"
+
+    # Map to bonds
+    if raw in ["bonds", "fixed_income", "bond"]:
+        return "bonds"
+
+    # Map to cash
+    if raw in ["cash", "money_market", "currency"]:
+        return "cash"
+
+    # Map to other specific categories
+    if raw in ["crypto", "cryptocurrency"]:
+        return "crypto"
+
+    if raw in ["realestate", "real_estate", "reit"]:
+        return "realestate"
+
+    if raw in ["commodities", "commodity"]:
+        return "commodities"
+
+    return raw  # Return as-is for unknown categories
 
 
 def _get_asset_class_mapping() -> dict[str, str]:

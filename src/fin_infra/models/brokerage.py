@@ -74,6 +74,7 @@ class Position(BaseModel):
     """Position model for current holdings."""
 
     symbol: str = Field(description="Trading symbol")
+    name: str | None = Field(None, description="Security name")
     qty: Decimal = Field(description="Total quantity held")
     side: Literal["long", "short"] = Field(description="Position side: long or short")
     avg_entry_price: Decimal = Field(description="Average entry price")

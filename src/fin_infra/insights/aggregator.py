@@ -4,9 +4,12 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from .models import Insight, InsightCategory, InsightFeed, InsightPriority
+
+# Tone type for insight text generation
+InsightTone = Literal["professional", "fun"]
 
 if TYPE_CHECKING:
     from fin_infra.budgets.models import Budget
@@ -23,6 +26,7 @@ def aggregate_insights(
     recurring_patterns: list[RecurringPattern] | None = None,
     portfolio_value: Decimal | None = None,
     tax_opportunities: list[dict] | None = None,
+    tone: InsightTone = "professional",
 ) -> InsightFeed:
     """
     Aggregate insights from multiple financial data sources.
@@ -35,6 +39,7 @@ def aggregate_insights(
         recurring_patterns: Detected recurring transactions
         portfolio_value: Current portfolio value
         tax_opportunities: Tax-loss harvesting or other tax insights
+        tone: Insight text tone - "professional" (formal) or "fun" (casual with emojis)
 
     Returns:
         InsightFeed with prioritized insights
@@ -44,6 +49,7 @@ def aggregate_insights(
         ...     user_id="user_123",
         ...     budgets=[budget1, budget2],
         ...     goals=[goal1],
+        ...     tone="fun",
         ... )
         >>> print(insights.critical_count)
         2
@@ -52,27 +58,27 @@ def aggregate_insights(
 
     # Net worth insights
     if net_worth_snapshots and len(net_worth_snapshots) >= 2:
-        insights.extend(_generate_net_worth_insights(user_id, net_worth_snapshots))
+        insights.extend(_generate_net_worth_insights(user_id, net_worth_snapshots, tone))
 
     # Budget insights (critical if overspending)
     if budgets:
-        insights.extend(_generate_budget_insights(user_id, budgets))
+        insights.extend(_generate_budget_insights(user_id, budgets, tone))
 
     # Goal insights
     if goals:
-        insights.extend(_generate_goal_insights(user_id, goals))
+        insights.extend(_generate_goal_insights(user_id, goals, tone))
 
     # Recurring pattern insights
     if recurring_patterns:
-        insights.extend(_generate_recurring_insights(user_id, recurring_patterns))
+        insights.extend(_generate_recurring_insights(user_id, recurring_patterns, tone))
 
     # Portfolio insights
     if portfolio_value:
-        insights.extend(_generate_portfolio_insights(user_id, portfolio_value))
+        insights.extend(_generate_portfolio_insights(user_id, portfolio_value, tone))
 
     # Tax insights (high priority)
     if tax_opportunities:
-        insights.extend(_generate_tax_insights(user_id, tax_opportunities))
+        insights.extend(_generate_tax_insights(user_id, tax_opportunities, tone))
 
     # Sort by priority: critical > high > medium > low
     priority_order = {
@@ -113,7 +119,9 @@ def get_user_insights(user_id: str, include_read: bool = False) -> InsightFeed:
     return InsightFeed(user_id=user_id, insights=[])
 
 
-def _generate_net_worth_insights(user_id: str, snapshots: list[NetWorthSnapshot]) -> list[Insight]:
+def _generate_net_worth_insights(
+    user_id: str, snapshots: list[NetWorthSnapshot], tone: InsightTone
+) -> list[Insight]:
     """Generate insights from net worth trends."""
     insights = []
 
@@ -131,28 +139,42 @@ def _generate_net_worth_insights(user_id: str, snapshots: list[NetWorthSnapshot]
     )
 
     if change > 0:
+        if tone == "fun":
+            title = "Net Worth Glow Up! 📈"
+            desc = f"You're up ${change:,.2f} ({change_pct:.1f}%)! That's what we call winning 💪"
+        else:
+            title = "Net Worth Increased"
+            desc = f"Your net worth grew by ${change:,.2f} ({change_pct:.1f}%) this period"
         insights.append(
             Insight(
                 id=f"nw_{user_id}_{datetime.now().timestamp()}",
                 user_id=user_id,
                 category=InsightCategory.NET_WORTH,
                 priority=InsightPriority.MEDIUM,
-                title="Net Worth Increased",
-                description=f"Your net worth grew by ${change:,.2f} ({change_pct:.1f}%) this period",
+                title=title,
+                description=desc,
                 value=change,
             )
         )
     elif change < 0:
         priority = InsightPriority.HIGH if abs(change_pct) > 10 else InsightPriority.MEDIUM
+        if tone == "fun":
+            title = "Net Worth Took a Hit 📉"
+            desc = f"Down ${abs(change):,.2f} ({abs(change_pct):.1f}%) - no stress, let's figure this out"
+            action = "Time to check what's up with your transactions 🔍"
+        else:
+            title = "Net Worth Decreased"
+            desc = f"Your net worth declined by ${abs(change):,.2f} ({abs(change_pct):.1f}%) this period"
+            action = "Review recent transactions and market changes"
         insights.append(
             Insight(
                 id=f"nw_{user_id}_{datetime.now().timestamp()}",
                 user_id=user_id,
                 category=InsightCategory.NET_WORTH,
                 priority=priority,
-                title="Net Worth Decreased",
-                description=f"Your net worth declined by ${abs(change):,.2f} ({abs(change_pct):.1f}%) this period",
-                action="Review recent transactions and market changes",
+                title=title,
+                description=desc,
+                action=action,
                 value=change,
             )
         )
@@ -160,7 +182,9 @@ def _generate_net_worth_insights(user_id: str, snapshots: list[NetWorthSnapshot]
     return insights
 
 
-def _generate_budget_insights(user_id: str, budgets: list[Budget]) -> list[Insight]:
+def _generate_budget_insights(
+    user_id: str, budgets: list[Budget], tone: InsightTone
+) -> list[Insight]:
     """Generate insights from budget tracking."""
     insights: list[Insight] = []
 
@@ -174,7 +198,7 @@ def _generate_budget_insights(user_id: str, budgets: list[Budget]) -> list[Insig
     return insights
 
 
-def _generate_goal_insights(user_id: str, goals: list[Goal]) -> list[Insight]:
+def _generate_goal_insights(user_id: str, goals: list[Goal], tone: InsightTone) -> list[Insight]:
     """Generate insights from goal progress."""
     insights = []
 
@@ -185,29 +209,45 @@ def _generate_goal_insights(user_id: str, goals: list[Goal]) -> list[Insight]:
 
         # Goal milestones
         if pct >= 100:
+            if tone == "fun":
+                title = f"🎉 '{goal.name}' Goal Crushed!"
+                desc = f"You hit ${target:,.2f}! Absolute legend 👑"
+                action = "Time to dream bigger - what's the next goal? 🚀"
+            else:
+                title = f"Goal '{goal.name}' Achieved!"
+                desc = f"You've reached your ${target:,.2f} goal"
+                action = "Consider setting a new goal or increasing this one"
             insights.append(
                 Insight(
                     id=f"goal_{goal.id}_{datetime.now().timestamp()}",
                     user_id=user_id,
                     category=InsightCategory.GOAL,
                     priority=InsightPriority.HIGH,
-                    title=f"Goal '{goal.name}' Achieved!",
-                    description=f"You've reached your ${target:,.2f} goal",
-                    action="Consider setting a new goal or increasing this one",
+                    title=title,
+                    description=desc,
+                    action=action,
                     value=current,
                     metadata={"goal_id": goal.id},
                 )
             )
         elif pct >= 75:
+            if tone == "fun":
+                title = f"🔥 '{goal.name}' Almost There!"
+                desc = f"${current:,.2f} of ${target:,.2f} - you're {pct:.0f}% there, keep going!"
+                action = f"Just ${target - current:,.2f} more and you're golden ✨"
+            else:
+                title = f"Goal '{goal.name}' Almost There"
+                desc = f"${current:,.2f} of ${target:,.2f} saved ({pct:.0f}%)"
+                action = f"${target - current:,.2f} more to reach your goal"
             insights.append(
                 Insight(
                     id=f"goal_{goal.id}_{datetime.now().timestamp()}",
                     user_id=user_id,
                     category=InsightCategory.GOAL,
                     priority=InsightPriority.MEDIUM,
-                    title=f"Goal '{goal.name}' Almost There",
-                    description=f"${current:,.2f} of ${target:,.2f} saved ({pct:.0f}%)",
-                    action=f"${target - current:,.2f} more to reach your goal",
+                    title=title,
+                    description=desc,
+                    action=action,
                     value=current,
                     metadata={"goal_id": goal.id},
                 )
@@ -216,7 +256,9 @@ def _generate_goal_insights(user_id: str, goals: list[Goal]) -> list[Insight]:
     return insights
 
 
-def _generate_recurring_insights(user_id: str, patterns: list[RecurringPattern]) -> list[Insight]:
+def _generate_recurring_insights(
+    user_id: str, patterns: list[RecurringPattern], tone: InsightTone
+) -> list[Insight]:
     """Generate insights from recurring transactions."""
     insights = []
 
@@ -235,15 +277,23 @@ def _generate_recurring_insights(user_id: str, patterns: list[RecurringPattern])
                 # Use average of range
                 total += Decimal(str((p.amount_range[0] + p.amount_range[1]) / 2))
 
+        if tone == "fun":
+            title = "💸 Subscription Check!"
+            desc = f"{len(high_cost)} subscriptions over $50/mo = ${total:,.2f}. That's some serious recurring vibes"
+            action = "Time for a subscription audit? 🧐"
+        else:
+            title = "High-Cost Subscriptions Detected"
+            desc = f"You have {len(high_cost)} subscriptions over $50/month totaling ${total:,.2f}"
+            action = "Review if all subscriptions are still needed"
         insights.append(
             Insight(
                 id=f"recurring_{user_id}_{datetime.now().timestamp()}",
                 user_id=user_id,
                 category=InsightCategory.RECURRING,
                 priority=InsightPriority.MEDIUM,
-                title="High-Cost Subscriptions Detected",
-                description=f"You have {len(high_cost)} subscriptions over $50/month totaling ${total:,.2f}",
-                action="Review if all subscriptions are still needed",
+                title=title,
+                description=desc,
+                action=action,
                 value=total,
             )
         )
@@ -251,41 +301,52 @@ def _generate_recurring_insights(user_id: str, patterns: list[RecurringPattern])
     return insights
 
 
-def _generate_portfolio_insights(user_id: str, portfolio_value: Decimal) -> list[Insight]:
-    """Generate insights from portfolio analysis."""
+def _generate_portfolio_insights(
+    user_id: str, portfolio_value: Decimal, tone: InsightTone
+) -> list[Insight]:
+    """Generate insights from portfolio analysis.
+
+    Focus on actionable insights, not redundant value statements.
+    """
     insights = []
 
-    # Simple insight: portfolio exists
-    if portfolio_value > 0:
-        insights.append(
-            Insight(
-                id=f"portfolio_{user_id}_{datetime.now().timestamp()}",
-                user_id=user_id,
-                category=InsightCategory.PORTFOLIO,
-                priority=InsightPriority.LOW,
-                title="Portfolio Tracked",
-                description=f"Your portfolio is valued at ${portfolio_value:,.2f}",
-                value=portfolio_value,
-            )
-        )
+    # Skip the basic "portfolio is valued at X" - that's shown in KPI cards
+    # Only generate insights when there's something actionable
+
+    # Example: Diversification check (would need account breakdown data)
+    # This is a placeholder - in production, pass account-level data
+
+    # Example: Rebalancing reminder based on market conditions
+    # This would integrate with market data APIs
 
     return insights
 
 
-def _generate_tax_insights(user_id: str, opportunities: list[dict]) -> list[Insight]:
+def _generate_tax_insights(
+    user_id: str, opportunities: list[dict], tone: InsightTone
+) -> list[Insight]:
     """Generate insights from tax opportunities."""
     insights = []
 
     for opp in opportunities:
+        # Tax insights use the provided text, but we can add tone to default values
+        if tone == "fun":
+            default_title = "💰 Tax Savings Alert!"
+            default_desc = "Found a way to keep more of your money 🎉"
+            default_action = "Chat with a tax pro to lock this in 🔐"
+        else:
+            default_title = "Tax Opportunity"
+            default_desc = "Review this tax opportunity"
+            default_action = "Consult with tax professional"
         insights.append(
             Insight(
                 id=f"tax_{user_id}_{datetime.now().timestamp()}",
                 user_id=user_id,
                 category=InsightCategory.TAX,
                 priority=InsightPriority.HIGH,
-                title=opp.get("title", "Tax Opportunity"),
-                description=opp.get("description", "Review this tax opportunity"),
-                action=opp.get("action", "Consult with tax professional"),
+                title=opp.get("title", default_title),
+                description=opp.get("description", default_desc),
+                action=opp.get("action", default_action),
                 value=opp.get("value"),
                 metadata=opp.get("metadata"),
             )

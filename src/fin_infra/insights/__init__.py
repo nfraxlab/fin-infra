@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from fastapi import FastAPI
 
-from .aggregator import aggregate_insights, get_user_insights
+from .aggregator import InsightTone, aggregate_insights, get_user_insights
 from .models import Insight, InsightCategory, InsightFeed, InsightPriority
 
 logger = logging.getLogger(__name__)
@@ -26,6 +26,7 @@ __all__ = [
     "InsightFeed",
     "InsightPriority",
     "InsightCategory",
+    "InsightTone",
     "aggregate_insights",
     "get_user_insights",
     "add_insights",
