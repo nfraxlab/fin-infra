@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v0.8.0 (2026-01-31)
+
+### Features
+
+- **teller**: Support inline certificate content for Railway/Vercel deployment
+  ([#44](https://github.com/nfraxlab/fin-infra/pull/44),
+  [`f1cb8d2`](https://github.com/nfraxlab/fin-infra/commit/f1cb8d2e32554b963ba1fffae8547431d6b16ab6))
+
+
 ## v0.7.0 (2026-01-26)
 
 ### Features
