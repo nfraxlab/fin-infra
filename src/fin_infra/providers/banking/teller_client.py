@@ -106,12 +106,16 @@ class TellerClient(BankingProvider):
 
         # Add certificate using SSL context (recommended approach, not deprecated)
         if has_file_creds:
-            # Use file paths directly
+            # Use file paths directly (assertions for type narrowing)
+            assert cert_path is not None
+            assert key_path is not None
             ssl_context = ssl.create_default_context()
             ssl_context.load_cert_chain(certfile=cert_path, keyfile=key_path)
             client_kwargs["verify"] = ssl_context
         elif has_inline_creds:
-            # Write inline content to temp files for SSL context
+            # Write inline content to temp files for SSL context (assertions for type narrowing)
+            assert cert_content is not None
+            assert key_content is not None
             import tempfile
 
             self._cert_file = tempfile.NamedTemporaryFile(mode="w", suffix=".pem", delete=False)
