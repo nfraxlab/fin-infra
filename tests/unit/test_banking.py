@@ -118,7 +118,7 @@ class TestTellerClient:
 
     def test_init_production_requires_certificates(self):
         """Test TellerClient requires certificates in production."""
-        with pytest.raises(ValueError, match="cert_path and key_path are required"):
+        with pytest.raises(ValueError, match="are required for production environment"):
             TellerClient(environment="production")
 
     def test_create_link_token(self):

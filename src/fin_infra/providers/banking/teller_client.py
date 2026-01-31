@@ -52,25 +52,42 @@ class TellerClient(BankingProvider):
         self,
         cert_path: str | None = None,
         key_path: str | None = None,
+        cert_content: str | None = None,
+        key_content: str | None = None,
         environment: str = "sandbox",
         timeout: float = 30.0,
     ) -> None:
         """Initialize TellerClient banking provider.
 
         Args:
-            cert_path: Path to certificate.pem file (required for real usage)
-            key_path: Path to private_key.pem file (required for real usage)
+            cert_path: Path to certificate.pem file
+            key_path: Path to private_key.pem file
+            cert_content: Inline certificate PEM content (alternative to cert_path)
+            key_content: Inline private key PEM content (alternative to key_path)
             environment: "sandbox" or "production" (default: sandbox)
             timeout: HTTP request timeout in seconds (default: 30.0)
 
+        Note:
+            Either (cert_path, key_path) or (cert_content, key_content) must be provided
+            for production. The inline content options are useful for Railway/Vercel
+            where env vars are preferred over mounted files.
+
         Raises:
-            ValueError: If cert/key paths are missing in production environment
+            ValueError: If cert/key are missing in production environment
         """
-        if environment == "production" and (not cert_path or not key_path):
-            raise ValueError("cert_path and key_path are required for production environment")
+        has_file_creds = cert_path and key_path
+        has_inline_creds = cert_content and key_content
+
+        if environment == "production" and not (has_file_creds or has_inline_creds):
+            raise ValueError(
+                "Either (cert_path, key_path) or (cert_content, key_content) "
+                "are required for production environment"
+            )
 
         self.cert_path = cert_path
         self.key_path = key_path
+        self.cert_content = cert_content
+        self.key_content = key_content
         self.environment = environment
         self.timeout = timeout
 
@@ -81,17 +98,35 @@ class TellerClient(BankingProvider):
             self.base_url = "https://api.teller.io"
 
         # Create HTTP client with mTLS certificate authentication
-        client_kwargs = {
+        client_kwargs: dict = {
             "base_url": self.base_url,
             "timeout": timeout,
             "headers": {"User-Agent": "fin-infra/1.0"},
         }
 
         # Add certificate using SSL context (recommended approach, not deprecated)
-        if cert_path and key_path:
-            # Create SSL context with client certificate
+        if has_file_creds:
+            # Use file paths directly (assertions for type narrowing)
+            assert cert_path is not None
+            assert key_path is not None
             ssl_context = ssl.create_default_context()
             ssl_context.load_cert_chain(certfile=cert_path, keyfile=key_path)
+            client_kwargs["verify"] = ssl_context
+        elif has_inline_creds:
+            # Write inline content to temp files for SSL context (assertions for type narrowing)
+            assert cert_content is not None
+            assert key_content is not None
+            import tempfile
+
+            self._cert_file = tempfile.NamedTemporaryFile(mode="w", suffix=".pem", delete=False)
+            self._key_file = tempfile.NamedTemporaryFile(mode="w", suffix=".pem", delete=False)
+            self._cert_file.write(cert_content)
+            self._key_file.write(key_content)
+            self._cert_file.close()
+            self._key_file.close()
+
+            ssl_context = ssl.create_default_context()
+            ssl_context.load_cert_chain(certfile=self._cert_file.name, keyfile=self._key_file.name)
             client_kwargs["verify"] = ssl_context
 
         # Create client with explicit parameters to satisfy type checker
