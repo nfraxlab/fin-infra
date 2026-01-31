@@ -28,6 +28,8 @@ Environment Variables:
     Teller:
         TELLER_CERTIFICATE_PATH: Path to certificate.pem file
         TELLER_PRIVATE_KEY_PATH: Path to private_key.pem file
+        TELLER_CERTIFICATE: Inline certificate PEM content (alternative to path)
+        TELLER_PRIVATE_KEY: Inline private key PEM content (alternative to path)
         TELLER_ENVIRONMENT: "sandbox" or "production" (default: sandbox)
 
     Plaid:
@@ -191,6 +193,8 @@ def easy_banking(provider: str = "teller", **config) -> BankingProvider:
             config = {
                 "cert_path": os.getenv("TELLER_CERTIFICATE_PATH"),
                 "key_path": os.getenv("TELLER_PRIVATE_KEY_PATH"),
+                "cert_content": os.getenv("TELLER_CERTIFICATE"),
+                "key_content": os.getenv("TELLER_PRIVATE_KEY"),
                 "environment": os.getenv("TELLER_ENVIRONMENT", "sandbox"),
             }
         elif provider == "plaid":
