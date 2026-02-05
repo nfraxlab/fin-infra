@@ -5,6 +5,13 @@ from functools import lru_cache
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+# Default products: only the ones we actually use
+# auth: Account/routing numbers for ACH
+# transactions: Transaction history
+# investments: Brokerage, retirement accounts
+# Excluded: identity, liabilities, assets (not used, cost extra per API call)
+DEFAULT_PLAID_PRODUCTS = "auth,transactions,investments"
+
 
 class Settings(BaseSettings):
     # Cache / infra
@@ -14,6 +21,7 @@ class Settings(BaseSettings):
     plaid_client_id: str | None = Field(default=None, alias="PLAID_CLIENT_ID")
     plaid_secret: str | None = Field(default=None, alias="PLAID_SECRET")
     plaid_env: str = Field(default="sandbox", alias="PLAID_ENVIRONMENT")
+    plaid_products: str = Field(default=DEFAULT_PLAID_PRODUCTS, alias="PLAID_PRODUCTS")
 
     # Alpaca
     alpaca_api_key: str | None = Field(default=None, alias="ALPACA_API_KEY")
