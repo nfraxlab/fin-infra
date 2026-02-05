@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v0.9.0 (2026-02-05)
+
+### Features
+
+- **plaid**: Make products configurable via PLAID_PRODUCTS env var
+  ([#45](https://github.com/nfraxlab/fin-infra/pull/45),
+  [`dcadf58`](https://github.com/nfraxlab/fin-infra/commit/dcadf5828ea2a4e64822c3288fa5e2c1bd3578fe))
+
+
 ## v0.8.0 (2026-01-31)
 
 ### Features
