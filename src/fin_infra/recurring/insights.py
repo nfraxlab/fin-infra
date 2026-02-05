@@ -331,7 +331,7 @@ class SubscriptionInsightsGenerator:
         cache_key = self._make_cache_key(subscriptions, user_id)
 
         try:
-            await self.cache.set(cache_key, result.model_dump(), ttl=self.cache_ttl)
+            await self.cache.set(cache_key, result.model_dump(), expire=self.cache_ttl)
         except Exception as e:
             logger.warning(f"Cache set failed for insights: {e}")
 

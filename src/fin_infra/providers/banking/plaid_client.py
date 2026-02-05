@@ -52,6 +52,12 @@ class PlaidClient(BankingProvider):
             client_id = client_id or settings.plaid_client_id
             secret = secret or settings.plaid_secret
             environment = environment or settings.plaid_env
+            self._products = settings.plaid_products
+        else:
+            # Use default products when no settings object provided
+            from ...settings import DEFAULT_PLAID_PRODUCTS
+
+            self._products = DEFAULT_PLAID_PRODUCTS
 
         # Map environment string to Plaid Environment enum
         # Note: Plaid only has Sandbox and Production (no Development in SDK)
@@ -105,15 +111,11 @@ class PlaidClient(BankingProvider):
             # Don't include products - Plaid uses existing item's products
             request_params["access_token"] = access_token
         else:
-            # New connection: specify products to enable
-            request_params["products"] = [
-                Products("auth"),  # Account/routing numbers for ACH
-                Products("transactions"),  # Transaction history
-                Products("liabilities"),  # Credit cards, loans, student loans
-                Products("investments"),  # Brokerage, retirement accounts
-                Products("assets"),  # Asset reports for lending/verification
-                Products("identity"),  # Account holder info (name, email, phone)
-            ]
+            # New connection: specify products from settings
+            # Configurable via PLAID_PRODUCTS env var (comma-separated)
+            # Default: auth,transactions,investments (excludes costly unused products)
+            product_list = [Products(p.strip()) for p in self._products.split(",") if p.strip()]
+            request_params["products"] = product_list
 
         request = LinkTokenCreateRequest(**request_params)
         response = self.client.link_token_create(request)
