@@ -12,6 +12,7 @@ try:
     from plaid.model.country_code import CountryCode
     from plaid.model.identity_get_request import IdentityGetRequest
     from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
+    from plaid.model.item_remove_request import ItemRemoveRequest
     from plaid.model.link_token_create_request import LinkTokenCreateRequest
     from plaid.model.link_token_create_request_user import LinkTokenCreateRequestUser
     from plaid.model.products import Products
@@ -59,12 +60,14 @@ class PlaidClient(BankingProvider):
 
             self._products = DEFAULT_PLAID_PRODUCTS
 
-        # Map environment string to Plaid Environment enum
-        # Note: Plaid only has Sandbox and Production (no Development in SDK)
+        # Map environment string to Plaid SDK host
+        # Plaid retired the development.plaid.com hostname and merged
+        # Development into Production (production.plaid.com).
+        # Development keys are accepted by the Production host.
         env_str = environment or "sandbox"
-        env_map = {
+        env_map: dict[str, str] = {
             "sandbox": plaid.Environment.Sandbox,
-            "development": plaid.Environment.Sandbox,  # Map development to sandbox (Plaid SDK limitation)
+            "development": plaid.Environment.Production,
             "production": plaid.Environment.Production,
         }
 
@@ -174,3 +177,31 @@ class PlaidClient(BankingProvider):
         request = IdentityGetRequest(access_token=access_token)
         response = self.client.identity_get(request)
         return cast("dict[Any, Any]", response.to_dict())
+
+    def remove_item(self, access_token: str) -> bool:
+        """Remove a Plaid Item, revoking the access token.
+
+        Calls Plaid's /item/remove endpoint which:
+        - Invalidates the access_token permanently
+        - Stops Plaid from maintaining the connection
+        - Stops billing for this Item
+        - Fires an ITEM_REMOVED webhook
+
+        Args:
+            access_token: The access token of the Item to remove.
+
+        Returns:
+            True if the Item was successfully removed.
+
+        Raises:
+            ValueError: If the token is invalid or already removed.
+        """
+        try:
+            request = ItemRemoveRequest(access_token=access_token)
+            self.client.item_remove(request)
+            return True
+        except plaid.ApiException as e:
+            # ITEM_NOT_FOUND means already removed — treat as success
+            if "ITEM_NOT_FOUND" in str(e):
+                return True
+            raise ValueError(f"Failed to remove Plaid item: {e}") from e

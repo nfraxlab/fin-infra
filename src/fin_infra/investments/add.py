@@ -166,6 +166,39 @@ def add_investments(
 
     router = user_router(prefix=prefix, tags=tags or ["Investments"])
 
+    def _resolve_plaid_access_token(identity: Identity) -> str:
+        """Resolve primary Plaid access token, supporting multi-item format."""
+        banking_providers = getattr(identity.user, "banking_providers", {})
+        if not banking_providers or "plaid" not in banking_providers:
+            raise HTTPException(
+                status_code=400,
+                detail="No Plaid connection found. Please connect your accounts first.",
+            )
+
+        plaid_data = banking_providers["plaid"]
+
+        # Multi-item format: {"items": {"item_id": {"access_token": "..."}}}
+        if isinstance(plaid_data, dict) and "items" in plaid_data:
+            for item_data in plaid_data["items"].values():
+                if isinstance(item_data, dict) and item_data.get("is_healthy", True):
+                    token = item_data.get("access_token")
+                    if token:
+                        return token
+            # Fallback to any token if none marked healthy
+            for item_data in plaid_data["items"].values():
+                if isinstance(item_data, dict):
+                    token = item_data.get("access_token")
+                    if token:
+                        return token
+
+        # Legacy format: {"access_token": "..."}
+        access_token = plaid_data.get("access_token") if isinstance(plaid_data, dict) else None
+        if not access_token:
+            raise HTTPException(
+                status_code=400, detail="No access token found. Please reconnect your accounts."
+            )
+        return access_token
+
     # 4. Define endpoint handlers
 
     @router.post(
@@ -188,18 +221,7 @@ def add_investments(
             access_token = f"{request.user_id}:{request.user_secret}"
         else:
             # Auto-resolve from authenticated user (user_router guarantees identity.user exists)
-            banking_providers = getattr(identity.user, "banking_providers", {})
-            if not banking_providers or "plaid" not in banking_providers:
-                raise HTTPException(
-                    status_code=400,
-                    detail="No Plaid connection found. Please connect your accounts first.",
-                )
-
-            access_token = banking_providers["plaid"].get("access_token")
-            if not access_token:
-                raise HTTPException(
-                    status_code=400, detail="No access token found. Please reconnect your accounts."
-                )
+            access_token = _resolve_plaid_access_token(identity)
 
         # Call provider with resolved token
         try:
@@ -241,18 +263,7 @@ def add_investments(
         elif request.user_id and request.user_secret:
             access_token = f"{request.user_id}:{request.user_secret}"
         else:
-            banking_providers = getattr(identity.user, "banking_providers", {})
-            if not banking_providers or "plaid" not in banking_providers:
-                raise HTTPException(
-                    status_code=400,
-                    detail="No Plaid connection found. Please connect your accounts first.",
-                )
-
-            access_token = banking_providers["plaid"].get("access_token")
-            if not access_token:
-                raise HTTPException(
-                    status_code=400, detail="No access token found. Please reconnect your accounts."
-                )
+            access_token = _resolve_plaid_access_token(identity)
 
         try:
             transactions = await investment_provider.get_transactions(
@@ -285,18 +296,7 @@ def add_investments(
         elif request.user_id and request.user_secret:
             access_token = f"{request.user_id}:{request.user_secret}"
         else:
-            banking_providers = getattr(identity.user, "banking_providers", {})
-            if not banking_providers or "plaid" not in banking_providers:
-                raise HTTPException(
-                    status_code=400,
-                    detail="No Plaid connection found. Please connect your accounts first.",
-                )
-
-            access_token = banking_providers["plaid"].get("access_token")
-            if not access_token:
-                raise HTTPException(
-                    status_code=400, detail="No access token found. Please reconnect your accounts."
-                )
+            access_token = _resolve_plaid_access_token(identity)
 
         try:
             accounts = await investment_provider.get_investment_accounts(
@@ -326,18 +326,7 @@ def add_investments(
         elif request.user_id and request.user_secret:
             access_token = f"{request.user_id}:{request.user_secret}"
         else:
-            banking_providers = getattr(identity.user, "banking_providers", {})
-            if not banking_providers or "plaid" not in banking_providers:
-                raise HTTPException(
-                    status_code=400,
-                    detail="No Plaid connection found. Please connect your accounts first.",
-                )
-
-            access_token = banking_providers["plaid"].get("access_token")
-            if not access_token:
-                raise HTTPException(
-                    status_code=400, detail="No access token found. Please reconnect your accounts."
-                )
+            access_token = _resolve_plaid_access_token(identity)
 
         # Fetch holdings
         try:
@@ -372,18 +361,7 @@ def add_investments(
         elif request.user_id and request.user_secret:
             access_token = f"{request.user_id}:{request.user_secret}"
         else:
-            banking_providers = getattr(identity.user, "banking_providers", {})
-            if not banking_providers or "plaid" not in banking_providers:
-                raise HTTPException(
-                    status_code=400,
-                    detail="No Plaid connection found. Please connect your accounts first.",
-                )
-
-            access_token = banking_providers["plaid"].get("access_token")
-            if not access_token:
-                raise HTTPException(
-                    status_code=400, detail="No access token found. Please reconnect your accounts."
-                )
+            access_token = _resolve_plaid_access_token(identity)
 
         try:
             securities = await investment_provider.get_securities(

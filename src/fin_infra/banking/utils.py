@@ -184,15 +184,16 @@ def parse_banking_providers(banking_providers: dict[str, Any]) -> BankingConnect
     """
     Parse banking_providers JSON field into structured status.
 
+    Handles both legacy single-item format and new multi-item format.
+
     Args:
         banking_providers: Dictionary from User.banking_providers field
-            Structure: {
-                "plaid": {"access_token": "...", "item_id": "...", "connected_at": "..."},
-                "teller": {"access_token": "...", "enrollment_id": "..."}
-            }
+            Legacy: {"plaid": {"access_token": "...", "item_id": "..."}}
+            Multi:  {"plaid": {"items": {"id1": {...}, "id2": {...}}}}
 
     Returns:
         Structured status with connection info for all providers
+        For multi-item Plaid, uses the first healthy item as the primary.
 
     Example:
         >>> status = parse_banking_providers(user.banking_providers)
@@ -206,19 +207,41 @@ def parse_banking_providers(banking_providers: dict[str, Any]) -> BankingConnect
     if not banking_providers:
         return status
 
-    # Parse Plaid
+    # Parse Plaid (handles both legacy and multi-item format)
     if "plaid" in banking_providers:
         plaid_data = banking_providers["plaid"]
-        status.plaid = BankingConnectionInfo(
-            provider="plaid",
-            connected=bool(plaid_data.get("access_token")),
-            access_token=plaid_data.get("access_token"),
-            item_id=plaid_data.get("item_id"),
-            connected_at=_parse_datetime(plaid_data.get("connected_at")),
-            last_synced_at=_parse_datetime(plaid_data.get("last_synced_at")),
-            is_healthy=plaid_data.get("is_healthy", True),
-            error_message=plaid_data.get("error_message"),
-        )
+
+        # Detect multi-item format
+        if "items" in plaid_data and isinstance(plaid_data["items"], dict):
+            # Multi-item: pick first healthy item
+            for item_data in plaid_data["items"].values():
+                if isinstance(item_data, dict) and item_data.get("access_token"):
+                    is_healthy = item_data.get("is_healthy", True)
+                    if is_healthy or status.plaid is None:
+                        status.plaid = BankingConnectionInfo(
+                            provider="plaid",
+                            connected=True,
+                            access_token=item_data.get("access_token"),
+                            item_id=item_data.get("item_id"),
+                            connected_at=_parse_datetime(item_data.get("connected_at")),
+                            last_synced_at=_parse_datetime(item_data.get("last_synced_at")),
+                            is_healthy=is_healthy,
+                            error_message=item_data.get("error_message"),
+                        )
+                    if is_healthy:
+                        break  # Found a healthy item, use it
+        else:
+            # Legacy single-item format
+            status.plaid = BankingConnectionInfo(
+                provider="plaid",
+                connected=bool(plaid_data.get("access_token")),
+                access_token=plaid_data.get("access_token"),
+                item_id=plaid_data.get("item_id"),
+                connected_at=_parse_datetime(plaid_data.get("connected_at")),
+                last_synced_at=_parse_datetime(plaid_data.get("last_synced_at")),
+                is_healthy=plaid_data.get("is_healthy", True),
+                error_message=plaid_data.get("error_message"),
+            )
 
     # Parse Teller
     if "teller" in banking_providers:
