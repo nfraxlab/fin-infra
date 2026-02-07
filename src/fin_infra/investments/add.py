@@ -183,13 +183,13 @@ def add_investments(
                 if isinstance(item_data, dict) and item_data.get("is_healthy", True):
                     token = item_data.get("access_token")
                     if token:
-                        return token
+                        return str(token)
             # Fallback to any token if none marked healthy
             for item_data in plaid_data["items"].values():
                 if isinstance(item_data, dict):
                     token = item_data.get("access_token")
                     if token:
-                        return token
+                        return str(token)
 
         # Legacy format: {"access_token": "..."}
         access_token = plaid_data.get("access_token") if isinstance(plaid_data, dict) else None
@@ -197,7 +197,7 @@ def add_investments(
             raise HTTPException(
                 status_code=400, detail="No access token found. Please reconnect your accounts."
             )
-        return access_token
+        return str(access_token)
 
     # 4. Define endpoint handlers
 
