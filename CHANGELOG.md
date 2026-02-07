@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v0.10.0 (2026-02-07)
+
+### Features
+
+- Multi-item banking support, Plaid env fix, and remove_item for all providers
+  ([#46](https://github.com/nfraxlab/fin-infra/pull/46),
+  [`3773704`](https://github.com/nfraxlab/fin-infra/commit/3773704c1dfbef5276fe7fa1e96ec0c04af14882))
+
+
 ## v0.9.0 (2026-02-05)
 
 ### Features
