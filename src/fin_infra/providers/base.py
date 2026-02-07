@@ -110,6 +110,26 @@ class BankingProvider(ABC):
         """Fetch identity/account holder information."""
         pass
 
+    @abstractmethod
+    def remove_item(self, access_token: str) -> bool:
+        """Remove/disconnect an item from the provider.
+
+        Permanently revokes the access token and notifies the provider to
+        stop maintaining the connection. This is critical for billing —
+        providers like Plaid bill per active Item, so failing to call this
+        on disconnect results in phantom charges.
+
+        Args:
+            access_token: The access token of the item to remove.
+
+        Returns:
+            True if the item was successfully removed, False otherwise.
+
+        Raises:
+            ValueError: If the access token is invalid or already revoked.
+        """
+        pass
+
 
 class BrokerageProvider(ABC):
     """Abstract base class for brokerage trading integrations.

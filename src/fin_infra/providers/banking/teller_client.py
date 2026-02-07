@@ -337,6 +337,36 @@ class TellerClient(BankingProvider):
         response.raise_for_status()
         return cast("dict[Any, Any]", response.json())
 
+    def remove_item(self, access_token: str) -> bool:
+        """Remove a Teller enrollment, revoking the access token.
+
+        Calls Teller's DELETE /accounts/:enrollment_id endpoint which:
+        - Revokes the access token
+        - Stops Teller from maintaining the connection
+        - Stops billing for this enrollment
+
+        Args:
+            access_token: The access token (enrollment token) to revoke.
+
+        Returns:
+            True if successfully removed.
+
+        Raises:
+            ValueError: If the token is invalid or request fails.
+        """
+        try:
+            response = self.client.delete(
+                "/enrollments",
+                auth=(access_token, ""),
+            )
+            response.raise_for_status()
+            return True
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
+                # Already removed — treat as success
+                return True
+            raise ValueError(f"Failed to remove Teller enrollment: {e}") from e
+
     def __del__(self) -> None:
         """Close HTTP client on cleanup."""
         try:
