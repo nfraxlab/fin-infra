@@ -6,21 +6,12 @@ transactions, accounts, allocation, and securities data.
 
 from __future__ import annotations
 
+import logging
 from datetime import date
 from typing import TYPE_CHECKING
 
 from fastapi import HTTPException
 from pydantic import BaseModel, Field
-
-if TYPE_CHECKING:
-    from fastapi import FastAPI
-
-# Import Identity for dependency injection
-try:
-    from svc_infra.api.fastapi.auth.security import Identity
-except ImportError:
-    # Fallback type for type checking if svc-infra not installed
-    Identity = None  # type: ignore
 
 from .ease import easy_investments
 from .models import (
@@ -31,6 +22,18 @@ from .models import (
     Security,
 )
 from .providers.base import InvestmentProvider
+
+logger = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+    from fastapi import FastAPI
+
+# Import Identity for dependency injection
+try:
+    from svc_infra.api.fastapi.auth.security import Identity
+except ImportError:
+    # Fallback type for type checking if svc-infra not installed
+    Identity = None  # type: ignore
 
 
 # Request models for API
@@ -199,6 +202,42 @@ def add_investments(
             )
         return str(access_token)
 
+    def _resolve_all_plaid_access_tokens(identity: Identity) -> list[str]:
+        """Resolve ALL Plaid access tokens for multi-item support.
+
+        Returns a list of access tokens from all connected Plaid items.
+        Falls back to _resolve_plaid_access_token for legacy single-token format.
+        """
+        banking_providers = getattr(identity.user, "banking_providers", {})
+        if not banking_providers or "plaid" not in banking_providers:
+            raise HTTPException(
+                status_code=400,
+                detail="No Plaid connection found. Please connect your accounts first.",
+            )
+
+        plaid_data = banking_providers["plaid"]
+        tokens: list[str] = []
+
+        # Multi-item format: {"items": {"item_id": {"access_token": "..."}}}
+        if isinstance(plaid_data, dict) and "items" in plaid_data:
+            for item_data in plaid_data["items"].values():
+                if isinstance(item_data, dict):
+                    token = item_data.get("access_token")
+                    if token:
+                        tokens.append(str(token))
+
+        # Legacy single-token format
+        if not tokens:
+            access_token = plaid_data.get("access_token") if isinstance(plaid_data, dict) else None
+            if access_token:
+                tokens.append(str(access_token))
+
+        if not tokens:
+            raise HTTPException(
+                status_code=400, detail="No access token found. Please reconnect your accounts."
+            )
+        return tokens
+
     # 4. Define endpoint handlers
 
     @router.post(
@@ -216,24 +255,30 @@ def add_investments(
         """
         # Get access token - prefer explicit, fallback to user's stored token
         if request.access_token:
-            access_token = request.access_token
+            access_tokens = [request.access_token]
         elif request.user_id and request.user_secret:
-            access_token = f"{request.user_id}:{request.user_secret}"
+            access_tokens = [f"{request.user_id}:{request.user_secret}"]
         else:
-            # Auto-resolve from authenticated user (user_router guarantees identity.user exists)
-            access_token = _resolve_plaid_access_token(identity)
+            # Auto-resolve ALL tokens from authenticated user for multi-item support
+            access_tokens = _resolve_all_plaid_access_tokens(identity)
 
-        # Call provider with resolved token
-        try:
-            holdings = await investment_provider.get_holdings(
-                access_token=access_token,
-                account_ids=request.account_ids,
-            )
-        except ValueError as e:
-            raise HTTPException(status_code=401, detail=str(e))
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to fetch holdings: {e}")
-        return holdings
+        # Fetch holdings from ALL items and merge results
+        all_holdings: list[Holding] = []
+        for access_token in access_tokens:
+            try:
+                holdings = await investment_provider.get_holdings(
+                    access_token=access_token,
+                    account_ids=request.account_ids,
+                )
+                if holdings:
+                    all_holdings.extend(holdings)
+            except ValueError as e:
+                raise HTTPException(status_code=401, detail=str(e))
+            except Exception as e:
+                if len(access_tokens) == 1:
+                    raise HTTPException(status_code=500, detail=f"Failed to fetch holdings: {e}")
+                logger.warning("Failed to fetch holdings for an item: %s", e)
+        return all_holdings
 
     @router.post(
         "/transactions",
@@ -259,24 +304,33 @@ def add_investments(
 
         # Get access token
         if request.access_token:
-            access_token = request.access_token
+            access_tokens = [request.access_token]
         elif request.user_id and request.user_secret:
-            access_token = f"{request.user_id}:{request.user_secret}"
+            access_tokens = [f"{request.user_id}:{request.user_secret}"]
         else:
-            access_token = _resolve_plaid_access_token(identity)
+            access_tokens = _resolve_all_plaid_access_tokens(identity)
 
-        try:
-            transactions = await investment_provider.get_transactions(
-                access_token=access_token,
-                start_date=request.start_date,
-                end_date=request.end_date,
-                account_ids=request.account_ids,
-            )
-        except ValueError as e:
-            raise HTTPException(status_code=401, detail=str(e))
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to fetch transactions: {e}")
-        return transactions
+        # Fetch transactions from ALL items and merge results
+        all_transactions: list[InvestmentTransaction] = []
+        for access_token in access_tokens:
+            try:
+                transactions = await investment_provider.get_transactions(
+                    access_token=access_token,
+                    start_date=request.start_date,
+                    end_date=request.end_date,
+                    account_ids=request.account_ids,
+                )
+                if transactions:
+                    all_transactions.extend(transactions)
+            except ValueError as e:
+                raise HTTPException(status_code=401, detail=str(e))
+            except Exception as e:
+                if len(access_tokens) == 1:
+                    raise HTTPException(
+                        status_code=500, detail=f"Failed to fetch transactions: {e}"
+                    )
+                logger.warning("Failed to fetch transactions for an item: %s", e)
+        return all_transactions
 
     @router.post(
         "/accounts",
@@ -292,21 +346,28 @@ def add_investments(
         Provider access: Auto-resolved from user's stored Plaid token or explicit override
         """
         if request.access_token:
-            access_token = request.access_token
+            access_tokens = [request.access_token]
         elif request.user_id and request.user_secret:
-            access_token = f"{request.user_id}:{request.user_secret}"
+            access_tokens = [f"{request.user_id}:{request.user_secret}"]
         else:
-            access_token = _resolve_plaid_access_token(identity)
+            access_tokens = _resolve_all_plaid_access_tokens(identity)
 
-        try:
-            accounts = await investment_provider.get_investment_accounts(
-                access_token=access_token,
-            )
-        except ValueError as e:
-            raise HTTPException(status_code=401, detail=str(e))
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to fetch accounts: {e}")
-        return accounts
+        # Fetch accounts from ALL items and merge results
+        all_accounts: list[InvestmentAccount] = []
+        for access_token in access_tokens:
+            try:
+                accounts = await investment_provider.get_investment_accounts(
+                    access_token=access_token,
+                )
+                if accounts:
+                    all_accounts.extend(accounts)
+            except ValueError as e:
+                raise HTTPException(status_code=401, detail=str(e))
+            except Exception as e:
+                if len(access_tokens) == 1:
+                    raise HTTPException(status_code=500, detail=f"Failed to fetch accounts: {e}")
+                logger.warning("Failed to fetch accounts for an item: %s", e)
+        return all_accounts
 
     @router.post(
         "/allocation",
@@ -322,22 +383,29 @@ def add_investments(
         Provider access: Auto-resolved from user's stored Plaid token or explicit override
         """
         if request.access_token:
-            access_token = request.access_token
+            access_tokens = [request.access_token]
         elif request.user_id and request.user_secret:
-            access_token = f"{request.user_id}:{request.user_secret}"
+            access_tokens = [f"{request.user_id}:{request.user_secret}"]
         else:
-            access_token = _resolve_plaid_access_token(identity)
+            access_tokens = _resolve_all_plaid_access_tokens(identity)
 
-        # Fetch holdings
-        try:
-            holdings = await investment_provider.get_holdings(
-                access_token=access_token,
-                account_ids=request.account_ids,
-            )
-        except ValueError as e:
-            raise HTTPException(status_code=401, detail=str(e))
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to fetch allocation: {e}")
+        # Fetch holdings from ALL items for allocation calculation
+        all_holdings: list[Holding] = []
+        for access_token in access_tokens:
+            try:
+                holdings = await investment_provider.get_holdings(
+                    access_token=access_token,
+                    account_ids=request.account_ids,
+                )
+                if holdings:
+                    all_holdings.extend(holdings)
+            except ValueError as e:
+                raise HTTPException(status_code=401, detail=str(e))
+            except Exception as e:
+                if len(access_tokens) == 1:
+                    raise HTTPException(status_code=500, detail=f"Failed to fetch allocation: {e}")
+                logger.warning("Failed to fetch holdings for allocation: %s", e)
+        holdings = all_holdings
 
         # Calculate allocation using base provider helper
         allocation = investment_provider.calculate_allocation(holdings)
@@ -357,22 +425,32 @@ def add_investments(
         Provider access: Auto-resolved from user's stored Plaid token or explicit override
         """
         if request.access_token:
-            access_token = request.access_token
+            access_tokens = [request.access_token]
         elif request.user_id and request.user_secret:
-            access_token = f"{request.user_id}:{request.user_secret}"
+            access_tokens = [f"{request.user_id}:{request.user_secret}"]
         else:
-            access_token = _resolve_plaid_access_token(identity)
+            access_tokens = _resolve_all_plaid_access_tokens(identity)
 
-        try:
-            securities = await investment_provider.get_securities(
-                access_token=access_token,
-                security_ids=request.security_ids,
-            )
-        except ValueError as e:
-            raise HTTPException(status_code=401, detail=str(e))
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to fetch securities: {e}")
-        return securities
+        # Fetch securities from ALL items and merge (deduplicate by security_id)
+        seen_ids: set[str] = set()
+        all_securities: list[Security] = []
+        for access_token in access_tokens:
+            try:
+                securities = await investment_provider.get_securities(
+                    access_token=access_token,
+                    security_ids=request.security_ids,
+                )
+                for sec in securities or []:
+                    if sec.security_id not in seen_ids:
+                        seen_ids.add(sec.security_id)
+                        all_securities.append(sec)
+            except ValueError as e:
+                raise HTTPException(status_code=401, detail=str(e))
+            except Exception as e:
+                if len(access_tokens) == 1:
+                    raise HTTPException(status_code=500, detail=f"Failed to fetch securities: {e}")
+                logger.warning("Failed to fetch securities for an item: %s", e)
+        return all_securities
 
     # 5. Mount router
     app.include_router(router, include_in_schema=include_in_schema)
