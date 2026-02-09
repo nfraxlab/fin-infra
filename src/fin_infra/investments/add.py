@@ -326,7 +326,9 @@ def add_investments(
                 raise HTTPException(status_code=401, detail=str(e))
             except Exception as e:
                 if len(access_tokens) == 1:
-                    raise HTTPException(status_code=500, detail=f"Failed to fetch transactions: {e}")
+                    raise HTTPException(
+                        status_code=500, detail=f"Failed to fetch transactions: {e}"
+                    )
                 logger.warning("Failed to fetch transactions for an item: %s", e)
         return all_transactions
 
