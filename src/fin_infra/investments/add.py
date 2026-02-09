@@ -13,6 +13,16 @@ from typing import TYPE_CHECKING
 from fastapi import HTTPException
 from pydantic import BaseModel, Field
 
+from .ease import easy_investments
+from .models import (
+    AssetAllocation,
+    Holding,
+    InvestmentAccount,
+    InvestmentTransaction,
+    Security,
+)
+from .providers.base import InvestmentProvider
+
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
@@ -24,16 +34,6 @@ try:
 except ImportError:
     # Fallback type for type checking if svc-infra not installed
     Identity = None  # type: ignore
-
-from .ease import easy_investments
-from .models import (
-    AssetAllocation,
-    Holding,
-    InvestmentAccount,
-    InvestmentTransaction,
-    Security,
-)
-from .providers.base import InvestmentProvider
 
 
 # Request models for API
