@@ -275,6 +275,8 @@ def add_investments(
             except ValueError as e:
                 raise HTTPException(status_code=401, detail=str(e))
             except Exception as e:
+                if len(access_tokens) == 1:
+                    raise HTTPException(status_code=500, detail=f"Failed to fetch holdings: {e}")
                 logger.warning("Failed to fetch holdings for an item: %s", e)
         return all_holdings
 
@@ -323,6 +325,8 @@ def add_investments(
             except ValueError as e:
                 raise HTTPException(status_code=401, detail=str(e))
             except Exception as e:
+                if len(access_tokens) == 1:
+                    raise HTTPException(status_code=500, detail=f"Failed to fetch transactions: {e}")
                 logger.warning("Failed to fetch transactions for an item: %s", e)
         return all_transactions
 
@@ -358,6 +362,8 @@ def add_investments(
             except ValueError as e:
                 raise HTTPException(status_code=401, detail=str(e))
             except Exception as e:
+                if len(access_tokens) == 1:
+                    raise HTTPException(status_code=500, detail=f"Failed to fetch accounts: {e}")
                 logger.warning("Failed to fetch accounts for an item: %s", e)
         return all_accounts
 
@@ -394,6 +400,8 @@ def add_investments(
             except ValueError as e:
                 raise HTTPException(status_code=401, detail=str(e))
             except Exception as e:
+                if len(access_tokens) == 1:
+                    raise HTTPException(status_code=500, detail=f"Failed to fetch holdings: {e}")
                 logger.warning("Failed to fetch holdings for allocation: %s", e)
         holdings = all_holdings
 
@@ -437,6 +445,8 @@ def add_investments(
             except ValueError as e:
                 raise HTTPException(status_code=401, detail=str(e))
             except Exception as e:
+                if len(access_tokens) == 1:
+                    raise HTTPException(status_code=500, detail=f"Failed to fetch securities: {e}")
                 logger.warning("Failed to fetch securities for an item: %s", e)
         return all_securities
 
