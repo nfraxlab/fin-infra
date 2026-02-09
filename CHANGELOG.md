@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v0.10.1 (2026-02-09)
+
+### Bug Fixes
+
+- Resolve all plaid access tokens for multi-item investment endpoints
+  ([#47](https://github.com/nfraxlab/fin-infra/pull/47),
+  [`8e2dbcf`](https://github.com/nfraxlab/fin-infra/commit/8e2dbcf4b8073879ae0436ece9969d2d765889cf))
+
+
 ## v0.10.0 (2026-02-07)
 
 ### Features
