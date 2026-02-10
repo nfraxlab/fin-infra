@@ -23,9 +23,12 @@ Be respectful, inclusive, and constructive. We're all here to build great softwa
 ### Development Setup
 
 ```bash
-# Clone the repository
-git clone https://github.com/nfraxlab/fin-infra.git
+# Fork the repository on GitHub, then clone your fork
+git clone https://github.com/<your-username>/fin-infra.git
 cd fin-infra
+
+# Add upstream remote
+git remote add upstream https://github.com/nfraxlab/fin-infra.git
 
 # Install dependencies
 poetry install
