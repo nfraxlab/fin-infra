@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     plaid_secret: str | None = Field(default=None, alias="PLAID_SECRET")
     plaid_env: str = Field(default="sandbox", alias="PLAID_ENVIRONMENT")
     plaid_products: str = Field(default=DEFAULT_PLAID_PRODUCTS, alias="PLAID_PRODUCTS")
+    plaid_client_name: str = Field(default="fin-infra", alias="PLAID_CLIENT_NAME")
 
     # Alpaca
     alpaca_api_key: str | None = Field(default=None, alias="ALPACA_API_KEY")

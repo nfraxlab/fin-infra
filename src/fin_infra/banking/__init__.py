@@ -202,6 +202,7 @@ def easy_banking(provider: str = "teller", **config) -> BankingProvider:
                 "client_id": os.getenv("PLAID_CLIENT_ID"),
                 "secret": os.getenv("PLAID_SECRET"),
                 "environment": os.getenv("PLAID_ENVIRONMENT", "sandbox"),
+                "client_name": os.getenv("PLAID_CLIENT_NAME", "fin-infra"),
             }
         elif provider == "mx":
             config = {
