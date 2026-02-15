@@ -58,7 +58,6 @@ werkzeug = ">=3.1.5"  # CVE-2026-21860
 # svc-infra = { path = "../svc-infra", develop = true }  # Local dev only - uncomment for local development
 
 # ai-infra for LLM-powered features (always included)
-ai-infra = ">=0.1.142"
 
 # Optional provider dependencies (install via extras)
 yahooquery = { version = ">=2.3.0", optional = true }
@@ -67,6 +66,8 @@ plaid-python = { version = ">=25.0.0", optional = true }
 fastapi-users = "^15.0.2"
 langchain-core = "^1.2.11"
 cryptography = ">=46.0.5"
+svc-infra = "^1.14.0"
+ai-infra = "^1.8.1"
 
 [tool.poetry.extras]
 # Market data providers
