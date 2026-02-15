@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.11.0 (2026-02-15)
+
+### Documentation
+
+- Switch to fork-based contribution model ([#48](https://github.com/nfraxlab/fin-infra/pull/48),
+  [`96d108d`](https://github.com/nfraxlab/fin-infra/commit/96d108d3bde4704bd92820c462f4c0327dd802a1))
+
+### Features
+
+- Make plaid link client name configurable ([#49](https://github.com/nfraxlab/fin-infra/pull/49),
+  [`9ecc9de`](https://github.com/nfraxlab/fin-infra/commit/9ecc9de318c632285399e1766bfebed71d6e9bbe))
+
+
 ## v0.10.1 (2026-02-09)
 
 ### Bug Fixes
