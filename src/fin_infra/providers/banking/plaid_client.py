@@ -33,6 +33,7 @@ class PlaidClient(BankingProvider):
         client_id: str | None = None,
         secret: str | None = None,
         environment: str | None = None,
+        client_name: str | None = None,
     ) -> None:
         """Initialize Plaid client with either Settings object or individual parameters.
 
@@ -41,6 +42,7 @@ class PlaidClient(BankingProvider):
             client_id: Plaid client ID (preferred - from env or passed directly)
             secret: Plaid secret (preferred - from env or passed directly)
             environment: Plaid environment - sandbox, development, or production
+            client_name: App name displayed in Plaid Link consent pane (default: "fin-infra")
         """
         if not PLAID_AVAILABLE:
             raise RuntimeError(
@@ -54,11 +56,13 @@ class PlaidClient(BankingProvider):
             secret = secret or settings.plaid_secret
             environment = environment or settings.plaid_env
             self._products = settings.plaid_products
+            self._client_name = client_name or settings.plaid_client_name
         else:
             # Use default products when no settings object provided
             from ...settings import DEFAULT_PLAID_PRODUCTS
 
             self._products = DEFAULT_PLAID_PRODUCTS
+            self._client_name = client_name or "fin-infra"
 
         # Map environment string to Plaid SDK host
         # Plaid retired the development.plaid.com hostname and merged
@@ -104,7 +108,7 @@ class PlaidClient(BankingProvider):
         # Build base request parameters
         request_params = {
             "user": LinkTokenCreateRequestUser(client_user_id=user_id),
-            "client_name": "fin-infra",
+            "client_name": self._client_name,
             "country_codes": [CountryCode("US")],
             "language": "en",
         }
