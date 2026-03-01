@@ -230,7 +230,8 @@ class PlaidClient(BankingProvider):
             request = ItemGetRequest(access_token=access_token)
             response = self.client.item_get(request)
             item = response["item"].to_dict()
-            return item.get("institution_id")
+            value = item.get("institution_id")
+            return str(value) if value is not None else None
         except Exception:
             return None
 
