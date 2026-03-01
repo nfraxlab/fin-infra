@@ -407,12 +407,23 @@ class TestPlaidClientInstitutionMethods:
     (which raises AttributeError and was silently swallowed as None).
     """
 
-    def _make_client(self, mock_plaid_api: Mock):
-        """Build a PlaidClient with the Plaid SDK replaced by a mock.
+    # Patches started by _make_client; stopped in teardown_method.
+    _active_patchers: list
 
-        Uses create=True on all Plaid patches so the tests run whether or
-        not the plaid-python SDK is installed in the current environment
-        (e.g. in CI where it may be absent).
+    def setup_method(self) -> None:
+        self._active_patchers = []
+
+    def teardown_method(self) -> None:
+        for p in reversed(self._active_patchers):
+            p.stop()
+        self._active_patchers = []
+
+    def _make_client(self, mock_plaid_api: Mock):
+        """Build a PlaidClient with all Plaid SDK names replaced by mocks.
+
+        Uses patch.start() so every patch remains active for the full test
+        body (not just during construction), regardless of whether the
+        plaid-python SDK is installed in the current environment.
         """
         from unittest.mock import MagicMock
 
@@ -421,28 +432,32 @@ class TestPlaidClientInstitutionMethods:
         fake_plaid.Configuration.return_value = MagicMock()
         fake_plaid.ApiClient.return_value = MagicMock()
 
-        fake_plaid_api = MagicMock()
-        fake_plaid_api.PlaidApi.return_value = mock_plaid_api
+        fake_plaid_api_mod = MagicMock()
+        fake_plaid_api_mod.PlaidApi.return_value = mock_plaid_api
 
-        with patch("fin_infra.providers.banking.plaid_client.PLAID_AVAILABLE", True):
-            with patch(
-                "fin_infra.providers.banking.plaid_client.plaid",
-                fake_plaid,
-                create=True,
-            ):
-                with patch(
-                    "fin_infra.providers.banking.plaid_client.plaid_api",
-                    fake_plaid_api,
-                    create=True,
-                ):
-                    from fin_infra.providers.banking.plaid_client import PlaidClient
+        # Patches are started here and stopped in teardown_method so they
+        # remain active when the test body calls methods on the client.
+        _mod = "fin_infra.providers.banking.plaid_client"
+        for attr, value in [
+            ("PLAID_AVAILABLE", True),
+            ("plaid", fake_plaid),
+            ("plaid_api", fake_plaid_api_mod),
+            ("ItemGetRequest", MagicMock()),
+            ("InstitutionsGetByIdRequest", MagicMock()),
+            ("InstitutionsGetByIdRequestOptions", MagicMock()),
+            ("CountryCode", MagicMock()),
+        ]:
+            p = patch(f"{_mod}.{attr}", value, create=True)
+            p.start()
+            self._active_patchers.append(p)
 
-                    client = PlaidClient(
-                        client_id="test_client_id",
-                        secret="test_secret",
-                        environment="sandbox",
-                    )
-        return client
+        from fin_infra.providers.banking.plaid_client import PlaidClient
+
+        return PlaidClient(
+            client_id="test_client_id",
+            secret="test_secret",
+            environment="sandbox",
+        )
 
     def test_get_item_institution_id_returns_id(self) -> None:
         """get_item_institution_id returns institution_id from item dict."""
