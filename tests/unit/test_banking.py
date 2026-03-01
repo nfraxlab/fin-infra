@@ -408,22 +408,40 @@ class TestPlaidClientInstitutionMethods:
     """
 
     def _make_client(self, mock_plaid_api: Mock):
-        """Build a PlaidClient with the Plaid SDK replaced by a mock."""
-        from fin_infra.providers.banking.plaid_client import PlaidClient
+        """Build a PlaidClient with the Plaid SDK replaced by a mock.
 
-        with patch("fin_infra.providers.banking.plaid_client.plaid") as mock_plaid_mod:
-            mock_plaid_mod.Environment.Sandbox = "https://sandbox.plaid.com"
-            mock_plaid_mod.Configuration.return_value = Mock()
-            mock_plaid_mod.ApiClient.return_value = Mock()
+        Uses create=True on all Plaid patches so the tests run whether or
+        not the plaid-python SDK is installed in the current environment
+        (e.g. in CI where it may be absent).
+        """
+        from unittest.mock import MagicMock
+
+        fake_plaid = MagicMock()
+        fake_plaid.Environment.Sandbox = "https://sandbox.plaid.com"
+        fake_plaid.Configuration.return_value = MagicMock()
+        fake_plaid.ApiClient.return_value = MagicMock()
+
+        fake_plaid_api = MagicMock()
+        fake_plaid_api.PlaidApi.return_value = mock_plaid_api
+
+        with patch("fin_infra.providers.banking.plaid_client.PLAID_AVAILABLE", True):
             with patch(
-                "fin_infra.providers.banking.plaid_client.plaid_api.PlaidApi",
-                return_value=mock_plaid_api,
+                "fin_infra.providers.banking.plaid_client.plaid",
+                fake_plaid,
+                create=True,
             ):
-                client = PlaidClient(
-                    client_id="test_client_id",
-                    secret="test_secret",
-                    environment="sandbox",
-                )
+                with patch(
+                    "fin_infra.providers.banking.plaid_client.plaid_api",
+                    fake_plaid_api,
+                    create=True,
+                ):
+                    from fin_infra.providers.banking.plaid_client import PlaidClient
+
+                    client = PlaidClient(
+                        client_id="test_client_id",
+                        secret="test_secret",
+                        environment="sandbox",
+                    )
         return client
 
     def test_get_item_institution_id_returns_id(self) -> None:
