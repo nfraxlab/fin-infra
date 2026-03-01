@@ -11,6 +11,9 @@ try:
     from plaid.model.accounts_get_request import AccountsGetRequest
     from plaid.model.country_code import CountryCode
     from plaid.model.identity_get_request import IdentityGetRequest
+    from plaid.model.institutions_get_by_id_request import InstitutionsGetByIdRequest
+    from plaid.model.institutions_get_by_id_request_options import InstitutionsGetByIdRequestOptions
+    from plaid.model.item_get_request import ItemGetRequest
     from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
     from plaid.model.item_remove_request import ItemRemoveRequest
     from plaid.model.link_token_create_request import LinkTokenCreateRequest
@@ -209,3 +212,55 @@ class PlaidClient(BankingProvider):
             if "ITEM_NOT_FOUND" in str(e):
                 return True
             raise ValueError(f"Failed to remove Plaid item: {e}") from e
+
+    def get_item_institution_id(self, access_token: str) -> str | None:
+        """Retrieve the institution_id for a connected Plaid item.
+
+        Calls /item/get which is a free, non-billable endpoint.  Useful for
+        backfilling institution_id on items connected before logo support was
+        added.
+
+        Args:
+            access_token: The access token for the connected item.
+
+        Returns:
+            The institution_id string (e.g. "ins_3"), or None if unavailable.
+        """
+        try:
+            request = ItemGetRequest(access_token=access_token)
+            response = self.client.item_get(request)
+            item = response["item"].to_dict()
+            return item.get("institution_id")
+        except Exception:
+            return None
+
+    def get_institution(self, institution_id: str) -> dict[str, Any]:
+        """Fetch institution metadata including logo and primary color.
+
+        Calls Plaid's /institutions/get_by_id endpoint with
+        include_optional_metadata=True to retrieve the logo (base64 PNG)
+        and primary_color (hex string).  This endpoint is free — it does
+        not count as a billable Plaid product call.
+
+        Args:
+            institution_id: The Plaid institution_id (e.g. "ins_3").
+
+        Returns:
+            Dict with keys: institution_id, name, logo (base64 PNG or None),
+            primary_color (hex string or None).
+        """
+        request = InstitutionsGetByIdRequest(
+            institution_id=institution_id,
+            country_codes=[CountryCode("US")],
+            options=InstitutionsGetByIdRequestOptions(
+                include_optional_metadata=True,
+            ),
+        )
+        response = self.client.institutions_get_by_id(request)
+        inst = response["institution"].to_dict()
+        return {
+            "institution_id": inst.get("institution_id"),
+            "name": inst.get("name"),
+            "logo": inst.get("logo"),  # base64-encoded PNG or None
+            "primary_color": inst.get("primary_color"),  # hex string or None
+        }

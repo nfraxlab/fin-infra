@@ -396,3 +396,106 @@ class TestAddBanking:
         # Should NOT be at default prefix
         response = client.post("/banking/link")
         assert response.status_code == 404
+
+
+class TestPlaidClientInstitutionMethods:
+    """Tests for PlaidClient.get_item_institution_id and get_institution.
+
+    These methods call .to_dict() on Plaid SDK model objects before using
+    .get().  The regression tests below guard against re-introducing the
+    original bug where .get() was called directly on a model object
+    (which raises AttributeError and was silently swallowed as None).
+    """
+
+    def _make_client(self, mock_plaid_api: Mock):
+        """Build a PlaidClient with the Plaid SDK replaced by a mock."""
+        from fin_infra.providers.banking.plaid_client import PlaidClient
+
+        with patch("fin_infra.providers.banking.plaid_client.plaid") as mock_plaid_mod:
+            mock_plaid_mod.Environment.Sandbox = "https://sandbox.plaid.com"
+            mock_plaid_mod.Configuration.return_value = Mock()
+            mock_plaid_mod.ApiClient.return_value = Mock()
+            with patch(
+                "fin_infra.providers.banking.plaid_client.plaid_api.PlaidApi",
+                return_value=mock_plaid_api,
+            ):
+                client = PlaidClient(
+                    client_id="test_client_id",
+                    secret="test_secret",
+                    environment="sandbox",
+                )
+        return client
+
+    def test_get_item_institution_id_returns_id(self) -> None:
+        """get_item_institution_id returns institution_id from item dict."""
+        mock_api = Mock()
+        item_model = Mock()
+        item_model.to_dict.return_value = {"institution_id": "ins_14", "item_id": "item_abc"}
+        mock_api.item_get.return_value = {"item": item_model}
+
+        client = self._make_client(mock_api)
+        result = client.get_item_institution_id("access-sandbox-abc")
+
+        assert result == "ins_14"
+        item_model.to_dict.assert_called_once()
+
+    def test_get_item_institution_id_returns_none_on_exception(self) -> None:
+        """get_item_institution_id returns None when the Plaid call fails."""
+        mock_api = Mock()
+        mock_api.item_get.side_effect = Exception("INVALID_ACCESS_TOKEN")
+
+        client = self._make_client(mock_api)
+        result = client.get_item_institution_id("access-sandbox-bad")
+
+        assert result is None
+
+    def test_get_item_institution_id_returns_none_when_missing(self) -> None:
+        """get_item_institution_id returns None when institution_id absent."""
+        mock_api = Mock()
+        item_model = Mock()
+        item_model.to_dict.return_value = {"item_id": "item_abc"}  # no institution_id key
+        mock_api.item_get.return_value = {"item": item_model}
+
+        client = self._make_client(mock_api)
+        result = client.get_item_institution_id("access-sandbox-abc")
+
+        assert result is None
+
+    def test_get_institution_returns_metadata(self) -> None:
+        """get_institution returns name, logo, and primary_color from Plaid."""
+        mock_api = Mock()
+        inst_model = Mock()
+        inst_model.to_dict.return_value = {
+            "institution_id": "ins_14",
+            "name": "TD Bank",
+            "logo": "iVBORw0KGgoAAAANS",  # truncated base64
+            "primary_color": "#2bb250",
+        }
+        mock_api.institutions_get_by_id.return_value = {"institution": inst_model}
+
+        client = self._make_client(mock_api)
+        result = client.get_institution("ins_14")
+
+        assert result["institution_id"] == "ins_14"
+        assert result["name"] == "TD Bank"
+        assert result["logo"] == "iVBORw0KGgoAAAANS"
+        assert result["primary_color"] == "#2bb250"
+        inst_model.to_dict.assert_called_once()
+
+    def test_get_institution_handles_null_logo(self) -> None:
+        """get_institution returns logo=None when Plaid omits the field."""
+        mock_api = Mock()
+        inst_model = Mock()
+        inst_model.to_dict.return_value = {
+            "institution_id": "ins_5",
+            "name": "Citibank Online",
+            "primary_color": "#204081",
+            # logo key absent — common for real institutions in sandbox
+        }
+        mock_api.institutions_get_by_id.return_value = {"institution": inst_model}
+
+        client = self._make_client(mock_api)
+        result = client.get_institution("ins_5")
+
+        assert result["logo"] is None
+        assert result["primary_color"] == "#204081"
