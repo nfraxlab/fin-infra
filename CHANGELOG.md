@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v0.11.2 (2026-03-03)
+
+### Bug Fixes
+
+- Let semantic-release version handle push and github release creation
+  ([#53](https://github.com/nfraxlab/fin-infra/pull/53),
+  [`d804070`](https://github.com/nfraxlab/fin-infra/commit/d804070d4b93a06a5bb56a13918a1f7a1698490d))
+
+
 ## v0.11.1 (2026-03-03)
 
 ### Bug Fixes
