@@ -1,6 +1,25 @@
 # CHANGELOG
 
 
+## v0.11.1 (2026-03-03)
+
+### Bug Fixes
+
+- Call to_dict() on Plaid model objects in get_institution and get_item_institution_id
+  ([#51](https://github.com/nfraxlab/fin-infra/pull/51),
+  [`f200068`](https://github.com/nfraxlab/fin-infra/commit/f200068138eee494589be2e23a9f4b9673bb96a1))
+
+- Detect semantic-release version via git tag instead of parsing stdout
+  ([#52](https://github.com/nfraxlab/fin-infra/pull/52),
+  [`b3dcc5a`](https://github.com/nfraxlab/fin-infra/commit/b3dcc5adef25f0021a08cb49caad786a1d5c6221))
+
+### Continuous Integration
+
+- Fix PyPI publish by calling workflow directly instead of relying on tag event delivery
+  ([#50](https://github.com/nfraxlab/fin-infra/pull/50),
+  [`c7bd60b`](https://github.com/nfraxlab/fin-infra/commit/c7bd60b444853d308fe5d5a945c3dd432beffc8d))
+
+
 ## v0.11.0 (2026-02-15)
 
 ### Documentation
