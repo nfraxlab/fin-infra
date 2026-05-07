@@ -1,0 +1,121 @@
+{
+  "name": "UsageLedger",
+  "module": "fin_infra.billing.rating",
+  "docstring": "Small idempotent in-memory ledger useful for tests and service adapters.",
+  "parameters": [
+    {
+      "name": "price_book",
+      "type": "BillingPriceBook | None",
+      "default": "None",
+      "description": null,
+      "required": false
+    }
+  ],
+  "methods": [
+    {
+      "name": "__init__",
+      "signature": "(price_book: BillingPriceBook | None = None) -> None",
+      "docstring": null,
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "price_book",
+          "type": "BillingPriceBook | None",
+          "default": "None",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "None",
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
+    },
+    {
+      "name": "record_ai_usage",
+      "signature": "(event: AIUsageEvent) -> RatedUsageLine",
+      "docstring": "Record a usage event once and return the rated line.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "event",
+          "type": "AIUsageEvent",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "RatedUsageLine",
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
+    },
+    {
+      "name": "summarize",
+      "signature": "(account_id: str, period_start: datetime, period_end: datetime, currency: str = 'USD') -> BillingPeriodSummary",
+      "docstring": "Aggregate rated lines for an account and billing period.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "account_id",
+          "type": "str",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "period_start",
+          "type": "datetime",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "period_end",
+          "type": "datetime",
+          "default": null,
+          "description": null,
+          "required": true
+        },
+        {
+          "name": "currency",
+          "type": "str",
+          "default": "'USD'",
+          "description": null,
+          "required": false
+        }
+      ],
+      "returns": "BillingPeriodSummary",
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
+    }
+  ],
+  "bases": [],
+  "source_file": "src/fin_infra/billing/rating.py",
+  "source_line": 65
+}
