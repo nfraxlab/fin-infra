@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.12.0 (2026-05-07)
+
+### Features
+
+- Release usage billing primitives
+  ([`ba9cf48`](https://github.com/nfraxlab/fin-infra/commit/ba9cf4881753fd80e21bfe7d0ea5cca9e2c54ff8))
+
+
 ## v0.11.2 (2026-03-03)
 
 ### Bug Fixes
