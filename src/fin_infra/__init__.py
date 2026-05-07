@@ -26,6 +26,7 @@ from __future__ import annotations
 from . import (
     analytics,
     banking,
+    billing,
     brokerage,
     budgets,
     cashflows,
@@ -53,6 +54,7 @@ __all__ = [
     # Core modules
     "analytics",
     "banking",
+    "billing",
     "brokerage",
     "budgets",
     "cashflows",
