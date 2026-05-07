@@ -91,7 +91,7 @@ jobs:
 
       # Security scanning with Trivy (matching svc-infra pattern)
       - name: Scan python:3.12-slim with Trivy (CRITICAL gate)
-        uses: aquasecurity/trivy-action@0.20.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'image'
           image-ref: 'python:3.12-slim'
@@ -107,7 +107,7 @@ jobs:
 
       - name: Scan redis:7-alpine with Trivy (CRITICAL gate)
         if: matrix.profile == 'redis'
-        uses: aquasecurity/trivy-action@0.20.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: 'image'
           image-ref: 'redis:7-alpine'

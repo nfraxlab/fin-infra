@@ -1,0 +1,40 @@
+{
+  "name": "BillingPriceBook",
+  "module": "fin_infra.billing.rating",
+  "docstring": "Pricing policy for provider-cost-plus metered billing.",
+  "parameters": [],
+  "methods": [
+    {
+      "name": "rate_ai_usage",
+      "signature": "(event: AIUsageEvent) -> RatedUsageLine",
+      "docstring": "Rate one AI usage event using direct provider cost plus configured markup.",
+      "parameters": [
+        {
+          "name": "self",
+          "type": null,
+          "default": null,
+          "description": null,
+          "required": false
+        },
+        {
+          "name": "event",
+          "type": "AIUsageEvent",
+          "default": null,
+          "description": null,
+          "required": true
+        }
+      ],
+      "returns": "RatedUsageLine",
+      "is_async": false,
+      "is_classmethod": false,
+      "is_staticmethod": false,
+      "is_property": false,
+      "raises": null
+    }
+  ],
+  "bases": [
+    "BaseModel"
+  ],
+  "source_file": "src/fin_infra/billing/rating.py",
+  "source_line": 26
+}
