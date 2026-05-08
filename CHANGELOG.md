@@ -1,6 +1,17 @@
 # CHANGELOG
 
 
+## v0.13.0 (2026-05-08)
+
+### Features
+
+- Estimate provider cost from verified model pricing
+  ([#55](https://github.com/nfraxlab/fin-infra/pull/55),
+  [`d894ccf`](https://github.com/nfraxlab/fin-infra/commit/d894ccf4ea5ad7b5964994b81f41b393a9b18839))
+
+Co-authored-by: nfraxlab <246413163+nfraxlab@users.noreply.github.com>
+
+
 ## v0.12.0 (2026-05-07)
 
 ### Features
