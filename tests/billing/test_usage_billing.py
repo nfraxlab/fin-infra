@@ -27,6 +27,47 @@ def test_rates_ai_usage_with_margin_and_platform_fee() -> None:
     assert line.billable_amount == Decimal("0.028000")
 
 
+def test_rates_ai_usage_with_verified_model_pricing_when_cost_missing() -> None:
+    price_book = BillingPriceBook(
+        margin_rate=Decimal("0.10"),
+        platform_fee_rate=Decimal("0.05"),
+    )
+    event = AIUsageEvent(
+        idempotency_key="usage-estimated-1",
+        account_id="user-1",
+        provider="anthropic",
+        model="claude-sonnet-4",
+        input_tokens=2000,
+        output_tokens=1000,
+        provider_cost=Decimal("0"),
+        occurred_at=datetime(2026, 5, 6, tzinfo=UTC),
+    )
+
+    line = price_book.rate_ai_usage(event)
+
+    assert line.event.provider_cost == Decimal("0.021000")
+    assert line.billable_amount == Decimal("0.024150")
+
+
+def test_rates_ai_usage_keeps_zero_cost_for_unknown_model() -> None:
+    price_book = BillingPriceBook()
+    event = AIUsageEvent(
+        idempotency_key="usage-unknown-model",
+        account_id="user-1",
+        provider="openai",
+        model="gpt-4.1",
+        input_tokens=2000,
+        output_tokens=1000,
+        provider_cost=Decimal("0"),
+        occurred_at=datetime(2026, 5, 6, tzinfo=UTC),
+    )
+
+    line = price_book.rate_ai_usage(event)
+
+    assert line.event.provider_cost == Decimal("0")
+    assert line.billable_amount == Decimal("0.000000")
+
+
 def test_ledger_is_idempotent_and_summarizes_period() -> None:
     ledger = UsageLedger(
         BillingPriceBook(margin_rate=Decimal("0.25"), platform_fee_rate=Decimal("0.05"))
