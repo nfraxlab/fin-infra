@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import datetime
 from decimal import ROUND_HALF_UP, Decimal
 
@@ -11,6 +12,51 @@ from .models import AIUsageEvent, BillingPeriodSummary, RatedUsageLine
 
 _USAGE_PLACES = Decimal("0.000001")
 _CURRENCY_PLACES = Decimal("0.01")
+_TOKENS_PER_MILLION = Decimal("1000000")
+
+
+@dataclass(frozen=True)
+class _TokenRate:
+    input_per_million_tokens: Decimal
+    output_per_million_tokens: Decimal
+
+
+_VERIFIED_MODEL_TOKEN_RATES: dict[tuple[str, str], _TokenRate] = {
+    ("anthropic", "claude-haiku-4-5"): _TokenRate(Decimal("1.00"), Decimal("5.00")),
+    ("anthropic", "claude-sonnet-4"): _TokenRate(Decimal("3.00"), Decimal("15.00")),
+    ("anthropic", "claude-sonnet-4-5"): _TokenRate(Decimal("3.00"), Decimal("15.00")),
+    ("anthropic", "claude-sonnet-4-6"): _TokenRate(Decimal("3.00"), Decimal("15.00")),
+    ("anthropic", "claude-opus-4"): _TokenRate(Decimal("15.00"), Decimal("75.00")),
+    ("anthropic", "claude-opus-4-1"): _TokenRate(Decimal("15.00"), Decimal("75.00")),
+    ("anthropic", "claude-opus-4-5"): _TokenRate(Decimal("5.00"), Decimal("25.00")),
+    ("anthropic", "claude-opus-4-6"): _TokenRate(Decimal("5.00"), Decimal("25.00")),
+    ("google", "gemini-2.5-flash-lite"): _TokenRate(Decimal("0.10"), Decimal("0.40")),
+    ("google", "gemini-2.5-flash"): _TokenRate(Decimal("0.30"), Decimal("2.50")),
+    ("google", "gemini-2.5-pro"): _TokenRate(Decimal("1.25"), Decimal("10.00")),
+    ("google", "gemini-3-flash-preview"): _TokenRate(Decimal("0.50"), Decimal("3.00")),
+    ("google", "gemini-3.1-flash-lite-preview"): _TokenRate(Decimal("0.25"), Decimal("1.50")),
+    ("google", "gemini-3.1-pro-preview"): _TokenRate(Decimal("2.00"), Decimal("12.00")),
+    ("openai", "gpt-5.4"): _TokenRate(Decimal("2.50"), Decimal("15.00")),
+    ("openai", "gpt-5.4-mini"): _TokenRate(Decimal("0.75"), Decimal("4.50")),
+    ("openai", "gpt-5.4-nano"): _TokenRate(Decimal("0.20"), Decimal("1.25")),
+}
+
+
+def _lookup_verified_token_rate(provider: str, model: str) -> _TokenRate | None:
+    return _VERIFIED_MODEL_TOKEN_RATES.get((provider.strip().lower(), model.strip().lower()))
+
+
+def _estimate_provider_cost_from_tokens(event: AIUsageEvent) -> Decimal:
+    if event.currency != "USD":
+        return Decimal("0")
+    rate = _lookup_verified_token_rate(event.provider, event.model)
+    if rate is None:
+        return Decimal("0")
+    input_cost = Decimal(event.input_tokens) * rate.input_per_million_tokens / _TOKENS_PER_MILLION
+    output_cost = (
+        Decimal(event.output_tokens) * rate.output_per_million_tokens / _TOKENS_PER_MILLION
+    )
+    return round_usage_amount(input_cost + output_cost)
 
 
 def round_usage_amount(amount: Decimal) -> Decimal:
@@ -48,9 +94,16 @@ class BillingPriceBook(BaseModel):
             return value
         return Decimal(str(value))
 
+    def resolve_provider_cost(self, event: AIUsageEvent) -> Decimal:
+        """Return direct provider cost or a verified model-price estimate when absent."""
+        direct_provider_cost = round_usage_amount(event.provider_cost)
+        if direct_provider_cost > Decimal("0"):
+            return direct_provider_cost
+        return _estimate_provider_cost_from_tokens(event)
+
     def rate_ai_usage(self, event: AIUsageEvent) -> RatedUsageLine:
         """Rate one AI usage event using direct provider cost plus configured markup."""
-        provider_cost = round_usage_amount(event.provider_cost)
+        provider_cost = self.resolve_provider_cost(event)
         platform_fee = provider_cost * self.platform_fee_rate
         margin = provider_cost * self.margin_rate
         billable_amount = round_usage_amount(provider_cost + platform_fee + margin)
